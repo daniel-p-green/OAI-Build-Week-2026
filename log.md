@@ -2063,3 +2063,22 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Multi-artifact partial-success recovery is still unimplemented; the broad reliability checkbox remains open.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:33 CT — Studio video cancellation control exposed
+
+**Area:** Studio / Worker controls
+
+### Changed
+
+- Added `cancelVideoRender` API wiring and a Studio **Cancel video** action shown while a video render is queued or retrying.
+
+### Verified
+
+- Web typecheck and 25 worker tests passed. The control delegates to the previously verified durable cancellation path.
+
+### Open items
+
+- Partial-success recovery remains open; cancellation does not claim to salvage a partially rendered artifact.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
