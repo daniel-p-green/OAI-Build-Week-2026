@@ -815,3 +815,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Green deterministic checks do not prove unimplemented Studio output history, editable storyboard panels, PDF/URL adapters, live provider behavior, or a plugin installation in the host.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-13 23:46 CT — Durable Studio deck and infographic generation
+
+**Area:** Deliver / Runtime / Product
+
+### Changed
+
+- Added current-brief/current-style-gated deck and infographic generation to the local Workshop service. Each renderer writes its real HTML output, stores a content-hashed artifact copy, and records its claim IDs and paths in durable Workshop state.
+- Connected the Studio Deck and Infographic controls plus output history to that service. Map edits now mark prior generated outputs stale with the rest of the downstream state.
+
+### Verified
+
+- Worker tests passed 7/7 and worker typecheck passed; web typecheck and optimized production build passed.
+- A fresh production HTTP run approved the brief and manual style, produced `deck-v1` and `infographic-v1`, and returned their hash-addressed artifact paths in persisted state.
+- Reset and recorded `pnpm demo:e2e` passed after the local live check.
+
+### Decisions
+
+- Outputs are deliberately real deterministic HTML artifacts now, not screenshots or decorative cards. GPT Image batches and editable storyboard generation remain separate required output paths.
+
+### Open items
+
+- Add editable storyboard persistence, image-batch generation/evaluation, PDF/URL adapters, website style extraction, full provenance UI, and trace outputs directly to persisted chunks/claims.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

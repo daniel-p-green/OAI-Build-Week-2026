@@ -5,7 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 type View = "Map" | "Brief" | "Design" | "Story" | "Trace";
 type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string };
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number };
-type PersistedWorkshop = { briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sourceItems: SourceItem[]; mapNodes: MapNode[]; frame?: { version: number; markdown: string; stale: boolean }; style?: { version: number; name: string; accent: string; ink: string; paper: string; stale: boolean } };
+type PersistedWorkshop = { briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sourceItems: SourceItem[]; mapNodes: MapNode[]; outputs: { id: string; type: "deck" | "infographic"; stale: boolean; artifactPath: string }[]; frame?: { version: number; markdown: string; stale: boolean }; style?: { version: number; name: string; accent: string; ink: string; paper: string; stale: boolean } };
 
 export default function WorkshopPage() {
   const [view, setView] = useState<View>("Map");
@@ -58,6 +58,12 @@ export default function WorkshopPage() {
     if (!response.ok) throw new Error(state.error ?? "Map undo failed");
     setPersisted(state); setNodeLabel("");
   }
+  async function generateOutput(outputType: "deck" | "infographic") {
+    const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "generateOutput", outputType }) });
+    const state = await response.json() as PersistedWorkshop & { error?: string };
+    if (!response.ok) throw new Error(state.error ?? "Output generation failed");
+    setPersisted(state);
+  }
 
   return (
     <main className="workspace">
@@ -96,9 +102,9 @@ export default function WorkshopPage() {
 
       <aside className="studio" aria-label="Studio">
         <div className="rail-heading"><div><span className="eyebrow">DELIVER</span><h2>Studio</h2></div><button className="icon-button" aria-label="Studio options">•••</button></div>
-        <section className="output-actions"><span>Output types</span><div><button>Deck</button><button>Infographic</button><button>Images</button><button onClick={() => setView("Story")}>Storyboard</button><button disabled={!storyApproved} onClick={renderVideo}>Video</button></div></section>
+        <section className="output-actions"><span>Output types</span><div><button onClick={() => { void generateOutput("deck"); }}>Deck</button><button onClick={() => { void generateOutput("infographic"); }}>Infographic</button><button>Images</button><button onClick={() => setView("Story")}>Storyboard</button><button disabled={!storyApproved} onClick={renderVideo}>Video</button></div></section>
         <section className="queue"><h3>Production queue</h3><article><span className="job-icon">▤</span><div><strong>Build Week deck</strong><small>Current · brief v1</small></div><span className="done">Ready</span></article><article><span className="job-icon">◫</span><div><strong>Visual contact sheet</strong><small>Current · 6 assets</small></div><span className="done">Ready</span></article><article className={!(persisted?.storyboardApproved ?? storyApproved) ? "blocked" : ""}><span className="job-icon">▷</span><div><strong>Meta-demo video</strong><small>{rendering ? "Rendering locally…" : (persisted?.videoState ?? "blocked") === "queued" ? "Queued in local worker" : (persisted?.storyboardApproved ?? storyApproved) ? "Storyboard approved" : "Needs storyboard approval"}</small></div><span>{rendering ? "…" : (persisted?.videoState ?? "blocked") === "queued" ? "Queued" : (persisted?.storyboardApproved ?? storyApproved) ? "Ready" : "Blocked"}</span></article></section>
-        <section className="history"><h3>Output history</h3><button>FRAME.md <small>{briefApproved ? "v1 current" : "awaiting map approval"}</small></button><button>DESIGN.md <small>v1 locked</small></button></section>
+        <section className="history"><h3>Output history</h3><button>FRAME.md <small>{persisted?.frame?.stale ? "stale" : persisted?.frame ? `v${persisted.frame.version} current` : "awaiting map approval"}</small></button><button>DESIGN.md <small>{persisted?.style ? `v${persisted.style.version} locked` : "awaiting lock"}</small></button>{(persisted?.outputs ?? []).map((output) => <button key={output.id}>{output.type} <small>{output.stale ? "stale" : output.artifactPath}</small></button>)}</section>
       </aside>
       <footer className="host-strip"><span><i />Linked ChatGPT task · last grounded update just now</span><button>Continue in ChatGPT ↗</button></footer>
 

@@ -48,6 +48,9 @@ importers:
       '@workshoplm/domain':
         specifier: workspace:*
         version: link:../../packages/domain
+      '@workshoplm/production':
+        specifier: workspace:*
+        version: link:../../packages/production
 
   packages/ai: {}
 

@@ -1,1 +1,1 @@
-{ "name": "@workshoplm/production", "private": true, "type": "module", "scripts": { "build": "tsc --noEmit", "lint": "tsc --noEmit", "typecheck": "tsc --noEmit", "test": "vitest run" } }
+{ "name": "@workshoplm/production", "private": true, "type": "module", "exports": "./src/render.ts", "scripts": { "build": "tsc --noEmit", "lint": "tsc --noEmit", "typecheck": "tsc --noEmit", "test": "vitest run" } }
