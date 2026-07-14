@@ -2298,3 +2298,25 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - The deterministic fixture still uses planned image panels rather than a paid GPT Image 2 batch; live provider evidence, native host sync, and final judge-facing video remain separate obligations.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:52 CT — Live application Capture → Shape → Deliver seam passed
+
+**Area:** Live local application / Integration
+
+### Verified
+
+- Current `apps/web` production build passed, then served successfully on isolated local port `3101`.
+- Through the live `/api/workshop` surface, a capture-only transcript persisted; the app produced an approved brief and locked style, five-item asset plan, source-traceable deck and infographic, six-panel image manifest, editable five-panel storyboard, storyboard approval, and queued video.
+- The local worker consumed that queued job and persisted a `326674`-byte `video/mp4` artifact. A final live API read confirmed `videoState: rendered`, current deck and infographic outputs, five storyboard panels, and transcript/output timestamps.
+- Standalone Playwright was used because the Codex in-app Browser plugin was unavailable. At `1440×900`, the production UI displayed Sources, the captured fallback transcript Map node, Studio history with deck/infographic artifacts, and the capture fallback control. Browser console had zero errors.
+
+### Decisions
+
+- This is the first direct live-local application proof of the full deterministic seam. It does not claim a paid-provider or native ChatGPT host route.
+
+### Open items
+
+- Produce the public under-three-minute video, final submission materials, live-provider evaluation, and fresh intended in-app-browser inspection.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

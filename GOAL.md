@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 01:49 CT
+Last updated: 2026-07-14 01:52 CT
 
 ## Status
 
@@ -190,7 +190,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [ ] Record every participating Codex `/feedback` Session ID, or the explicit reason it is unavailable, and designate the primary integrator session from actual build evidence.
 - [x] Configure local SQLite WAL persistence boundaries, atomic filesystem artifact storage, and idempotent leased local jobs.
 - [x] Freeze `packages/domain` v1 schemas, commands, gate flags, dependency edges, and `artifact.json` shape with tests.
-- [ ] Create a sanitized local demo fixture that requires no private connector and makes video capture deterministic.
+- [x] Create a sanitized local demo fixture that requires no private connector and makes video capture deterministic.
 - [ ] Create a bounded live operator path on sample sources for recording the real demo seam.
 
 ### 6. Capture
@@ -243,7 +243,7 @@ The primary integrator selects and justifies these without separate founder appr
 
 - [x] Add a recorded-fixture mode to `pnpm demo:e2e` for repeatable demo diagnosis, with live-provider checks kept separate.
 - [ ] Maintain and log the end-to-end acceptance path daily once the first vertical slice exists.
-- [ ] Verify the full Capture → Shape → Deliver flow in the live application.
+- [x] Verify the full Capture → Shape → Deliver flow in the live application.
 - [x] Verify realistic desktop, tablet, and mobile behavior.
 - [x] Verify schema, gate, graph, grounding, rendering, and integration tests.
 - [x] Verify failure recovery and partial-package behavior.
