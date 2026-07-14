@@ -1696,3 +1696,30 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Record a bounded live operator run and surface delivery video timing once the full operator seam is exercised.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:57 CT — Configurable manual Style Foundation added
+
+**Area:** Style / GUI / Runtime
+
+### Changed
+
+- Replaced the fixed manual style preset with a versioned foundation containing exact accent/ink/paper hex values, logo or asset references, licensed fonts, visual references, negative rules, and one of three professional Intent Profiles.
+- Added safe hydration for earlier style records and surfaced the configured foundation in the Design review UI.
+
+### Verified
+
+- Worker tests passed: 16 tests across 3 files, including style versioning and exact-six-digit-hex rejection.
+- Worker/web typechecks, web production build, fixture reset, and `pnpm demo:e2e` passed.
+- Production API replay persisted `WorkshopLM proof system` with `#1155AA`, a local logo reference, `Inter` and `Source Serif`, two visual references, two negative rules, and the `board_deck` profile.
+- Live local Design view displayed the locked style version, board-deck intent, licensed fonts, and negative rules.
+
+### Decisions
+
+- Asset references are deliberately local identifiers in the local-first demo; the app does not claim external asset upload, licensing verification, or brand-rights clearance.
+
+### Open items
+
+- Add separately previewable/approvable Visual DNA and richer website-derived foundation extraction beyond palette/title/reference URL.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

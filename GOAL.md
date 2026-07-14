@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 00:52 CT
+Last updated: 2026-07-14 00:57 CT
 
 ## Status
 
@@ -211,8 +211,8 @@ The primary integrator selects and justifies these without separate founder appr
 ### 8. Style
 
 - [ ] Create Brand Foundation from a public website URL.
-- [ ] Support manual logos, exact hex values, licensed fonts, references, and negative rules.
-- [ ] Create at least one professional Intent Profile.
+- [x] Support manual logos, exact hex values, licensed fonts, references, and negative rules.
+- [x] Create professional Intent Profiles for client-facing pitch, board deck, and internal workshop use.
 - [ ] Create, preview, approve, and version Visual DNA.
 - [ ] Produce inspectable `DESIGN.md` plus machine-readable tokens.
 
