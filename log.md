@@ -2204,3 +2204,19 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - The fixture currently exercises the approved default storyboard; it does not yet prove a current asset-plan-generated storyboard end to end. Paid provider paths and the final public recording remain separate evidence obligations.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:42 CT — Full deterministic baseline remains green
+
+**Area:** Integration / Verification
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and tests in all 13 workspace packages after the expanded recorded acceptance path.
+- `pnpm demo:reset && pnpm demo:e2e` passed afterward, including grounded evidence, approved brief/style/storyboard gates, traceable deck and infographic artifacts, and a persisted local video artifact.
+
+### Open items
+
+- The complete recorded seam does not substitute for paid-provider evaluation, native host synchronization, live asset-plan storyboard coverage, active-render cancellation, partial-package recovery, or public demo/submission proof.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
