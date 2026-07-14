@@ -920,3 +920,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add PDF parsing, coherent image-batch generation/evaluation, richer graph operations, full provenance UI, and live-provider/host proof.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-13 23:55 CT — Coherent image-batch manifest in Studio
+
+**Area:** Deliver / Runtime / Product
+
+### Changed
+
+- Added a durable six-panel Image Batch manifest derived from the locked Style Library, with one reference ID shared by every panel, deterministic prompt intent, panel versions, stale state, and selective-regeneration state.
+- Connected the Studio Images action and output history to this manifest.
+
+### Verified
+
+- Worker tests passed 10/10 and worker typecheck passed; web typecheck and production build passed.
+- The focused worker test proves six panels share the locked style reference and that selecting panel 3 only increments that panel to version 2 with regeneration state.
+- Reset and recorded `pnpm demo:e2e` passed.
+
+### Decisions
+
+- The batch is honestly marked `planned` pending a live GPT Image 2 run. Its deterministic coherence/version contract is implemented, but no provider image asset is claimed until the credential-gated provider path is recorded.
+
+### Open items
+
+- Add PDF parsing, live GPT Image 2 generation/evaluation when authorized, richer graph operations, full provenance UI, and live-provider/host proof.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

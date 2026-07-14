@@ -18,8 +18,10 @@ export type WorkshopFrame = { version: number; markdown: string; stale: boolean;
 export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; referenceUrl?: string; lockedAt: string; stale: boolean };
 export type StoryboardPanel = { id: string; title: string; narration: string; durationSeconds: number; approved: boolean; stale: boolean };
 export type WorkshopStoryboard = { version: number; panels: StoryboardPanel[]; stale: boolean };
+export type ImageBatchPanel = { id: string; version: number; prompt: string; state: "planned" | "selected_for_regeneration"; referenceId: string };
+export type WorkshopImageBatch = { id: string; styleVersion: number; referenceId: string; panels: ImageBatchPanel[]; stale: boolean; createdAt: string };
 export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; artifactPath: string; claimIds: string[]; stale: boolean; createdAt: string };
-export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; sourceItems: WorkshopSource[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; mapNodes: WorkshopMapNode[]; frame?: WorkshopFrame; style?: WorkshopStyle; storyboard: WorkshopStoryboard; outputs: WorkshopOutput[]; graphState?: string; updatedAt: string };
+export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; sourceItems: WorkshopSource[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; mapNodes: WorkshopMapNode[]; frame?: WorkshopFrame; style?: WorkshopStyle; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; outputs: WorkshopOutput[]; graphState?: string; updatedAt: string };
 export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string };
 const id = "workshop-build-week";
 const defaultState = (): WorkshopState => ({ id, title: "WorkshopLM Build Week", briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: 3, groundedClaims: 5, sourceItems: [
@@ -117,6 +119,15 @@ export async function generateOutput(type: "deck" | "infographic", root?: string
   const rendered = await writeRenderedArtifact(dataRoot, outputId, type, { workshopTitle: current.title, version: `FRAME v${current.frame.version}`, style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, blocks });
   const stored = await storeArtifact(dataRoot, outputId, Buffer.from(await readFile(join(dataRoot, rendered.relativePath))), "text/html"); const createdAt = new Date().toISOString();
   return write({ ...current, outputs: [...current.outputs, { id: outputId, type, relativePath: rendered.relativePath, artifactPath: stored.relativePath, claimIds: blocks.map((block) => block.id), stale: false, createdAt }], updatedAt: createdAt }, root);
+}
+export function createImageBatch(root?: string): WorkshopState {
+  const current = readWorkshopState(root); if (!current.style || current.style.stale) throw new Error("Image batch generation requires a locked current style.");
+  const referenceId = `style-v${current.style.version}`; const createdAt = new Date().toISOString(); const prompts = ["editorial workbench", "source evidence detail", "semantic Map on paper", "approved brief", "storyboard panels", "finished delivery artifact"];
+  return write({ ...current, imageBatch: { id: `image-batch-v${(current.imageBatch ? Number(current.imageBatch.id.match(/\d+$/)?.[0]) + 1 : 1)}`, styleVersion: current.style.version, referenceId, createdAt, stale: false, panels: prompts.map((prompt, index) => ({ id: `image-panel-${index + 1}`, version: 1, prompt: `${prompt}; ${current.style!.name}; ${current.style!.accent}; no text or logos`, state: "planned", referenceId })) }, updatedAt: createdAt }, root);
+}
+export function selectImagePanelForRegeneration(panelId: string, root?: string): WorkshopState {
+  const current = readWorkshopState(root); if (!current.imageBatch || current.imageBatch.stale) throw new Error("A current image batch is required."); const found = current.imageBatch.panels.some((panel) => panel.id === panelId); if (!found) throw new Error(`Image panel not found: ${panelId}.`);
+  return write({ ...current, imageBatch: { ...current.imageBatch, panels: current.imageBatch.panels.map((panel) => panel.id === panelId ? { ...panel, version: panel.version + 1, state: "selected_for_regeneration" } : panel) }, updatedAt: new Date().toISOString() }, root);
 }
 export function updateStoryboardPanel(panelId: string, patch: Pick<StoryboardPanel, "title" | "narration" | "durationSeconds">, root?: string): WorkshopState {
   const current = readWorkshopState(root); const index = current.storyboard.panels.findIndex((panel) => panel.id === panelId); if (index < 0) throw new Error(`Storyboard panel not found: ${panelId}.`);
