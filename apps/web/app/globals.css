@@ -6,3 +6,4 @@
 .image-batch{display:grid;gap:5px;padding:9px 0;border-top:1px solid #ebe9e3}.image-batch>span{display:flex;justify-content:space-between;font-weight:700}.image-batch button{padding:6px 0!important;font-size:11px}.image-batch button:disabled{opacity:.45;cursor:not-allowed}
 .map-label button{margin-left:8px;border:0;background:transparent;color:var(--blue);font:inherit;font-weight:700;cursor:pointer}.map-inspector .danger-action{color:var(--danger)}
 .source-divider{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:11px;font-weight:700}.source-divider::before,.source-divider::after{content:"";height:1px;background:var(--line);flex:1}
+.excalidraw-map{position:absolute;inset:0;opacity:.9;pointer-events:none}.excalidraw-map .excalidraw{height:100%!important}.map>.claim-card,.map>.map-inspector,.map>.map-label,.map>.cluster{z-index:1}.map>.map-inspector,.map>.map-label,.map>.cluster{position:absolute}

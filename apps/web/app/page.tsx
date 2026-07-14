@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 
 type View = "Map" | "Brief" | "Design" | "Story" | "Trace";
 type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string };
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number };
+const ExcalidrawMap = dynamic<{ nodes: MapNode[] }>(() => import("./excalidraw-map.js").then((module) => module.ExcalidrawMap), { ssr: false });
 type PersistedWorkshop = { briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sourceItems: SourceItem[]; sourceChunks?: { id: string; sourceId: string; text: string; locator: string }[]; claims?: { id: string; sourceId: string; chunkId: string; text: string; locator: string }[]; mapNodes: MapNode[]; storyboard: { version: number; stale: boolean; panels: { id: string; title: string; narration: string; durationSeconds: number; approved: boolean; stale: boolean }[] }; imageBatch?: { id: string; stale: boolean; referenceId: string; panels: { id: string; version: number; prompt: string; state: "planned" | "selected_for_regeneration" }[] }; outputs: { id: string; type: "deck" | "infographic"; stale: boolean; artifactPath: string }[]; frame?: { version: number; markdown: string; stale: boolean }; style?: { version: number; name: string; accent: string; ink: string; paper: string; stale: boolean } };
 
 export default function WorkshopPage() {
@@ -129,7 +131,7 @@ export default function WorkshopPage() {
         </nav>
         {view === "Map" ? <section className="map" aria-label="Semantic Map">
           <div className="map-label">Evidence becoming structure <button onClick={() => { void addMapIdea(); }}>+ Add idea</button></div>
-          <svg className="threads" viewBox="0 0 900 620" aria-hidden="true"><path d="M210 180 C340 110 430 135 510 180" /><path d="M240 225 C335 340 430 380 475 410" /><path d="M580 220 C665 305 690 390 700 435" /></svg>
+          <ExcalidrawMap nodes={activeNodes} />
           {activeNodes.map((node) => <button key={node.id} className={`claim-card ${node.kind} ${selected === node.id ? "focus" : ""}`} style={{ left: `${node.x}%`, top: `${node.y}%` }} onClick={() => { setSelected(node.id); setNodeLabel(node.title); }}>
             <span className="claim-kind">{node.kind === "grounded" ? "Grounded" : node.kind === "derived" ? "Derived" : "Creative"}</span><strong>{node.title}</strong><span>{node.body}</span><small>{node.locator}</small>
           </button>)}

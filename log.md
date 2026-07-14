@@ -1474,3 +1474,27 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - This is deterministic/local verification; paid provider probes, native host synchronization, full Excalidraw/Sketch, and the final public demo remain separate proof obligations.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:30 CT — Excalidraw Map projection added to the production bundle
+
+**Area:** Shape / GUI
+
+### Changed
+
+- Added the actual `@excalidraw/excalidraw` package and a client-only projection of persisted Map nodes behind the existing typed Map controls.
+
+### Verified
+
+- Web typecheck and production build passed after a client-only dynamic boundary resolved Excalidraw's browser-global SSR dependency.
+- `pnpm demo:reset && pnpm demo:e2e` passed with the Excalidraw bundle present.
+
+### Decisions
+
+- The canvas is deliberately view-only/non-intercepting while the existing persisted add/update/delete/undo controls remain the editing path. This is a real Excalidraw rendering integration, but not yet direct-canvas edit synchronization; do not mark the Excalidraw Shape item complete.
+
+### Open items
+
+- Add direct Excalidraw element-to-typed-operation synchronization and an interactive browser proof.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
