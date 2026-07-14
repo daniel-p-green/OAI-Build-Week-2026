@@ -1643,3 +1643,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add model-assisted, reviewable graph-operation proposals and direct Excalidraw element synchronization.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:47 CT — Source permissions made durable and visible
+
+**Area:** Capture / Grounding / Privacy
+
+### Changed
+
+- Added durable `private`, `sanitized`, and `shareable` source permissions to Workshop state, including safe hydration of pre-existing local state.
+- Added a visible permission control for local text/PDF ingestion and a permission label in Sources. Capture-only fallback sources are private; safe public-URL ingestion is shareable by default.
+
+### Verified
+
+- Worker tests passed: 15 tests across 3 files, including requested-permission persistence.
+- Worker/web typechecks, web production build, fixture reset, and `pnpm demo:e2e` passed.
+- Production route replays persisted a `private` local source and a `shareable` `https://example.com` source, each retaining its normalized locator.
+
+### Decisions
+
+- Permission is source-level local handling metadata in this local-first demo; it does not claim external connector ACL synchronization.
+
+### Open items
+
+- Add connected-app/MCP adapters and, if needed, adapter-specific permission import semantics.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

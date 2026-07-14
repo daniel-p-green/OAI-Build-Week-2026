@@ -6,7 +6,7 @@ import { applyMapOperation, applyWorkshopAction, captureFallbackTranscript, crea
 
 export const runtime = "nodejs";
 type Action = "approveBrief" | "lockManualStyle" | "lockWebsiteStyle" | "approveStoryboard" | "renderVideo" | "ingestSource" | "captureFallbackTranscript" | "ingestUrl" | "ingestPdfFile" | "extractCandidates" | "mapOperation" | "undoMapOperation" | "generateOutput" | "createImageBatch" | "regenerateImagePanel" | "updateStoryboardPanel";
-type RequestBody = { action?: Action; source?: SourceIngestion; text?: string; url?: string; filePath?: string; panelId?: string; operation?: unknown; outputType?: "deck" | "infographic"; panel?: { id: string; title: string; narration: string; durationSeconds: number } };
+type RequestBody = { action?: Action; source?: SourceIngestion; text?: string; url?: string; filePath?: string; permission?: "private" | "sanitized" | "shareable"; panelId?: string; operation?: unknown; outputType?: "deck" | "infographic"; panel?: { id: string; title: string; narration: string; durationSeconds: number } };
 
 export async function GET() { return NextResponse.json(readWorkshopState()); }
 
@@ -21,7 +21,10 @@ export async function POST(request: NextRequest) {
       const directory = await mkdtemp(join(tmpdir(), "workshoplm-pdf-"));
       const safeName = upload.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 120);
       const filePath = join(directory, safeName);
-      try { await writeFile(filePath, Buffer.from(await upload.arrayBuffer())); return NextResponse.json(await ingestPdfFile(filePath)); }
+      const rawPermission = form.get("permission");
+      if (rawPermission && rawPermission !== "private" && rawPermission !== "sanitized" && rawPermission !== "shareable") return NextResponse.json({ error: "Invalid source permission" }, { status: 400 });
+      const permission = rawPermission === "private" || rawPermission === "sanitized" || rawPermission === "shareable" ? rawPermission : "sanitized";
+      try { await writeFile(filePath, Buffer.from(await upload.arrayBuffer())); return NextResponse.json(await ingestPdfFile(filePath, undefined, permission ?? "sanitized")); }
       finally { await rm(directory, { recursive: true, force: true }); }
     }
     const body = await request.json() as RequestBody;
@@ -29,7 +32,7 @@ export async function POST(request: NextRequest) {
     if (body.action === "ingestSource") { if (!body.source) return NextResponse.json({ error: "source is required" }, { status: 400 }); return NextResponse.json(await ingestSource(body.source)); }
     if (body.action === "captureFallbackTranscript") { if (!body.text) return NextResponse.json({ error: "text is required" }, { status: 400 }); return NextResponse.json(await captureFallbackTranscript(body.text)); }
     if (body.action === "ingestUrl") { if (!body.url) return NextResponse.json({ error: "url is required" }, { status: 400 }); return NextResponse.json(await ingestUrl(body.url)); }
-    if (body.action === "ingestPdfFile") { if (!body.filePath) return NextResponse.json({ error: "filePath is required" }, { status: 400 }); return NextResponse.json(await ingestPdfFile(body.filePath)); }
+    if (body.action === "ingestPdfFile") { if (!body.filePath) return NextResponse.json({ error: "filePath is required" }, { status: 400 }); return NextResponse.json(await ingestPdfFile(body.filePath, undefined, body.permission)); }
     if (body.action === "extractCandidates") return NextResponse.json(extractWorkshopCandidates());
     if (body.action === "lockWebsiteStyle") { if (!body.url) return NextResponse.json({ error: "url is required" }, { status: 400 }); return NextResponse.json(await lockWebsiteStyle(body.url)); }
     if (body.action === "mapOperation") { if (!body.operation) return NextResponse.json({ error: "operation is required" }, { status: 400 }); return NextResponse.json(applyMapOperation(body.operation)); }

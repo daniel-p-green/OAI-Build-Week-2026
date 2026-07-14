@@ -12,7 +12,7 @@ import { openLocalDatabase } from "./db/client.js";
 import { migrate } from "./db/migrate.js";
 import { enqueue } from "./queue.js";
 
-export type WorkshopSource = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string };
+export type WorkshopSource = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string; permission: "private" | "sanitized" | "shareable" };
 export type WorkshopChunk = { id: string; sourceId: string; text: string; locator: string; ordinal: number };
 export type WorkshopClaim = { id: string; sourceId: string; chunkId: string; text: string; evidenceState: "verified"; locator: string };
 export type WorkshopCandidate = { id: string; category: "goal" | "audience" | "claim" | "constraint" | "question"; text: string; sourceId: string; chunkId: string; locator: string };
@@ -27,13 +27,13 @@ export type ImageBatchPanel = { id: string; version: number; prompt: string; sta
 export type WorkshopImageBatch = { id: string; styleVersion: number; referenceId: string; panels: ImageBatchPanel[]; stale: boolean; createdAt: string };
 export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; artifactPath: string; claimIds: string[]; stale: boolean; createdAt: string };
 export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; sourceItems: WorkshopSource[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; style?: WorkshopStyle; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; outputs: WorkshopOutput[]; graphState?: string; updatedAt: string };
-export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string };
+export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string; permission?: WorkshopSource["permission"] };
 const execFile = promisify(execFileCallback);
 const id = "workshop-build-week";
 const defaultState = (): WorkshopState => ({ id, title: "WorkshopLM Build Week", briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: 3, groundedClaims: 5, sourceItems: [
-  { id: "source-raw", type: "TXT", title: "Raw voice brainstorm", origin: "ChatGPT task", claimCount: 5, excerpt: "The judge should be able to see the messy original thought become a cited map, a real brief, and a finished piece of work.", locator: "ChatGPT task · 12:41 · chunk 04" },
-  { id: "source-brief", type: "PDF", title: "Build Week brief", origin: "Local", claimCount: 3, excerpt: "One visible chain links capture, approved work, and finished delivery.", locator: "Build notes · §2" },
-  { id: "source-design", type: "WEB", title: "WorkshopLM direction", origin: "Local", claimCount: 2, excerpt: "Evidence first becomes an editable production system, not a static report.", locator: "Design · Map" },
+  { id: "source-raw", type: "TXT", title: "Raw voice brainstorm", origin: "ChatGPT task", claimCount: 5, excerpt: "The judge should be able to see the messy original thought become a cited map, a real brief, and a finished piece of work.", locator: "ChatGPT task · 12:41 · chunk 04", permission: "sanitized" },
+  { id: "source-brief", type: "PDF", title: "Build Week brief", origin: "Local", claimCount: 3, excerpt: "One visible chain links capture, approved work, and finished delivery.", locator: "Build notes · §2", permission: "sanitized" },
+  { id: "source-design", type: "WEB", title: "WorkshopLM direction", origin: "Local", claimCount: 2, excerpt: "Evidence first becomes an editable production system, not a static report.", locator: "Design · Map", permission: "sanitized" },
 ], transcriptSegments: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], storyboard: { version: 1, stale: false, panels: [{ id: "panel-1", title: "Raw thought", narration: "Start with the messy original thinking.", durationSeconds: 3, approved: true, stale: false }, { id: "panel-2", title: "Cited Map", narration: "Show the editable Map and evidence locators.", durationSeconds: 5, approved: true, stale: false }, { id: "panel-3", title: "Finished work", narration: "End with traceable production output.", durationSeconds: 4, approved: true, stale: false }] }, outputs: [], mapNodes: [
   { id: "promise", title: "The product promise", body: "Turn raw thinking into finished work without losing the trail back to source material.", kind: "grounded", locator: "Meeting · 12:41", x: 11, y: 18 },
   { id: "proof", title: "Judge proof", body: "Show one continuous capture → map → brief → storyboard → rendered video seam.", kind: "grounded", locator: "Build notes · §2", x: 48, y: 12 },
@@ -46,7 +46,7 @@ export function readWorkshopState(root?: string): WorkshopState {
   const db = dbFor(root); const createdAt = new Date().toISOString();
   db.prepare("INSERT OR IGNORE INTO workshop VALUES (?, ?, ?)").run(id, "WorkshopLM Build Week", createdAt);
   const row = db.prepare("SELECT state_json FROM workshop_state WHERE workshop_id=?").get(id) as { state_json: string } | undefined;
-  if (row) { const state = JSON.parse(row.state_json) as Partial<WorkshopState>; if (state.sourceItems && state.mapNodes) return state.sourceChunks && state.claims ? { ...state, transcriptSegments: state.transcriptSegments ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], storyboard: state.storyboard ?? defaultState().storyboard, outputs: state.outputs ?? [] } as WorkshopState : write({ ...state, transcriptSegments: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], storyboard: defaultState().storyboard, outputs: [] } as WorkshopState, root); return write({ ...defaultState(), ...state, sourceItems: defaultState().sourceItems, transcriptSegments: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], storyboard: defaultState().storyboard, outputs: [], mapNodes: defaultState().mapNodes } as WorkshopState, root); }
+  if (row) { const state = JSON.parse(row.state_json) as Partial<WorkshopState>; if (state.sourceItems && state.mapNodes) return state.sourceChunks && state.claims ? { ...state, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), transcriptSegments: state.transcriptSegments ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], storyboard: state.storyboard ?? defaultState().storyboard, outputs: state.outputs ?? [] } as WorkshopState : write({ ...state, transcriptSegments: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], storyboard: defaultState().storyboard, outputs: [] } as WorkshopState, root); return write({ ...defaultState(), ...state, sourceItems: defaultState().sourceItems, transcriptSegments: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], storyboard: defaultState().storyboard, outputs: [], mapNodes: defaultState().mapNodes } as WorkshopState, root); }
   const state = defaultState(); db.prepare("INSERT INTO workshop_state VALUES (?, ?, ?)").run(id, JSON.stringify(state), state.updatedAt); return state;
 }
 function write(next: WorkshopState, root?: string) { const db = dbFor(root); db.prepare("UPDATE workshop_state SET state_json=?, updated_at=? WHERE workshop_id=?").run(JSON.stringify(next), next.updatedAt, id); return next; }
@@ -86,6 +86,8 @@ export async function ingestSource(input: SourceIngestion, root?: string): Promi
   const title = input.title.trim();
   const origin = input.origin.trim();
   if (!title || !origin) throw new Error("Source title and origin are required.");
+  const permission = input.permission ?? "sanitized";
+  if (!(["private", "sanitized", "shareable"] as const).includes(permission)) throw new Error("Source permission must be private, sanitized, or shareable.");
   const hash = createHash("sha256").update(`${origin}\n${text}`).digest("hex");
   const sourceId = `source-${hash.slice(0, 12)}`;
   const current = readWorkshopState(root);
@@ -95,7 +97,7 @@ export async function ingestSource(input: SourceIngestion, root?: string): Promi
   await mkdir(sourceDirectory, { recursive: true });
   await writeFile(join(sourceDirectory, `${hash}.txt`), text, "utf8");
   const claimCount = sourceClaimCount(text);
-  const source: WorkshopSource = { id: sourceId, type: input.type ?? "TXT", title, origin, claimCount, excerpt: text.slice(0, 240), locator: `${origin} · normalized:${hash.slice(0, 12)}` };
+  const source: WorkshopSource = { id: sourceId, type: input.type ?? "TXT", title, origin, claimCount, excerpt: text.slice(0, 240), locator: `${origin} · normalized:${hash.slice(0, 12)}`, permission };
   const chunks = chunksFor(text, sourceId, hash, origin); const claims = claimsFor(chunks, hash);
   const node: WorkshopMapNode = { id: `evidence-${hash.slice(0, 12)}`, title, body: source.excerpt, kind: "grounded", locator: source.locator, sourceId, x: 18 + (current.mapNodes.length * 13) % 64, y: 24 + (current.mapNodes.length * 17) % 54 };
   const createdAt = new Date().toISOString(); const snapshot = graphFor(current);
@@ -105,7 +107,7 @@ export async function ingestSource(input: SourceIngestion, root?: string): Promi
 }
 export async function captureFallbackTranscript(text: string, root?: string): Promise<WorkshopState> {
   const normalized = normalizeSourceText(text); if (!normalized) throw new Error("Capture text is required."); const capturedAt = new Date().toISOString();
-  const ingested = await ingestSource({ title: `Capture-only transcript ${capturedAt}`, origin: "gpt-realtime-2.1 capture-only fallback", type: "TXT", text: normalized }, root);
+  const ingested = await ingestSource({ title: `Capture-only transcript ${capturedAt}`, origin: "gpt-realtime-2.1 capture-only fallback", type: "TXT", text: normalized, permission: "private" }, root);
   const segment: WorkshopTranscriptSegment = { id: `fallback-${createHash("sha256").update(`${capturedAt}\n${normalized}`).digest("hex").slice(0, 12)}`, origin: "realtime_fallback", text: normalized, capturedAt };
   return write({ ...ingested, transcriptSegments: [...ingested.transcriptSegments, segment], updatedAt: capturedAt }, root);
 }
@@ -121,12 +123,12 @@ async function fetchPublicText(rawUrl: string, fetchImpl: typeof fetch = fetch) 
 }
 export async function ingestUrl(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch): Promise<WorkshopState> {
   const { url, text } = await fetchPublicText(rawUrl, fetchImpl);
-  return ingestSource({ title: url.hostname, origin: url.toString(), type: "WEB", text: text.replace(/<[^>]+>/g, " ") }, root);
+  return ingestSource({ title: url.hostname, origin: url.toString(), type: "WEB", text: text.replace(/<[^>]+>/g, " "), permission: "shareable" }, root);
 }
-export async function ingestPdfFile(filePath: string, root?: string): Promise<WorkshopState> {
+export async function ingestPdfFile(filePath: string, root?: string, permission: WorkshopSource["permission"] = "sanitized"): Promise<WorkshopState> {
   if (!filePath.toLowerCase().endsWith(".pdf")) throw new Error("Local PDF ingestion requires a .pdf file.");
   let stdout: string; try { ({ stdout } = await execFile("pdftotext", ["-layout", filePath, "-"], { maxBuffer: 1_000_000 })); } catch { throw new Error("PDF text extraction failed. Use a readable text-based PDF or provide extracted text."); }
-  const text = normalizeSourceText(stdout); if (!text) throw new Error("PDF contains no extractable text."); return ingestSource({ title: basename(filePath), origin: `Local PDF · ${basename(filePath)}`, type: "PDF", text }, root);
+  const text = normalizeSourceText(stdout); if (!text) throw new Error("PDF contains no extractable text."); return ingestSource({ title: basename(filePath), origin: `Local PDF · ${basename(filePath)}`, type: "PDF", text, permission }, root);
 }
 export async function lockWebsiteStyle(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch): Promise<WorkshopState> {
   const { url, text } = await fetchPublicText(rawUrl, fetchImpl); const current = readWorkshopState(root); const colors = [...text.matchAll(/#[0-9a-fA-F]{6}\b/g)].map((match) => match[0].toUpperCase()); const palette = [...new Set(colors)]; const title = text.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim() || url.hostname; const updatedAt = new Date().toISOString();
