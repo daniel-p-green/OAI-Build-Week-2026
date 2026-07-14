@@ -39,6 +39,17 @@ pnpm check
 pnpm demo:e2e
 ```
 
+## Codex plugin install
+
+The repository is also a public Codex marketplace. From a machine with the Codex CLI:
+
+```bash
+codex plugin marketplace add daniel-p-green/OAI-Build-Week-2026
+codex plugin add workshoplm@workshoplm-local
+```
+
+Restart or open a fresh Codex task after installation so newly registered plugin tools are available. The plugin's stdio server uses the local workspace state; run the fixture commands above before trying its grounded `search` and `fetch` tools.
+
 ## Architecture
 
 ```text
@@ -52,6 +63,7 @@ Capture sources → normalized evidence → grounded Map → approved brief
 - `packages/plugin-mcp` — compact stdio MCP/plugin entry point.
 - `packages/production` — traceable production artifacts.
 - `spikes/` — deterministic evidence for host sync, grounding, image manifests, and HyperFrames.
+- `.agents/plugins/marketplace.json` — public Codex marketplace descriptor for the unified plugin.
 
 ## Privacy and judging
 

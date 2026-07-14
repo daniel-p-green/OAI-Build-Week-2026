@@ -1150,3 +1150,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - This remains deterministic/local verification. It does not prove provider-media outputs, installed host/plugin surface, native voice synchronization, or the public demo recording.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:16 CT — Unified plugin marketplace install verified
+
+**Area:** Plugin / Host Integration
+
+### Changed
+
+- Added `.agents/plugins/marketplace.json`, the Codex marketplace descriptor that exposes the repository's unified `workshoplm` plugin.
+- Added concise public plugin-install instructions to `README.md`.
+
+### Verified
+
+- `codex plugin marketplace add . --json` registered the local repository as marketplace `workshoplm-local`.
+- `codex plugin add workshoplm@workshoplm-local --json` installed version `0.1.0` into Codex's local plugin cache, and `codex plugin list` reported it as `installed, enabled`.
+
+### Decisions
+
+- Codex CLI discovers plugins through a marketplace descriptor; it does not install an arbitrary plugin directory directly. The descriptor resolves its local source from the marketplace root (`"path": "."`).
+- The host is required to start a fresh task before newly registered plugin tools can appear. This entry therefore proves installation, not an in-task tool invocation or native Work surface support.
+
+### Open items
+
+- Install from the public GitHub marketplace snapshot, invoke the registered skill and MCP server in a fresh Codex task, and then complete Spike E evidence.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
