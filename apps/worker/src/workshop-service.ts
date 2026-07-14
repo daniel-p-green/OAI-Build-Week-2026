@@ -1,8 +1,10 @@
 import { createHash } from "node:crypto";
 import { lookup } from "node:dns/promises";
+import { execFile as execFileCallback } from "node:child_process";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { dirname, basename, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { promisify } from "node:util";
 import { appendGraphOperation, GraphOperation, parseGraphState, SemanticGraph, serializeGraphState, undoLatestGraphOperation, type SemanticGraph as SemanticGraphType } from "@workshoplm/domain";
 import { writeRenderedArtifact } from "@workshoplm/production";
 import { storeArtifact } from "./artifacts/local-artifact-store.js";
@@ -23,6 +25,7 @@ export type WorkshopImageBatch = { id: string; styleVersion: number; referenceId
 export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; artifactPath: string; claimIds: string[]; stale: boolean; createdAt: string };
 export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; sourceItems: WorkshopSource[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; mapNodes: WorkshopMapNode[]; frame?: WorkshopFrame; style?: WorkshopStyle; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; outputs: WorkshopOutput[]; graphState?: string; updatedAt: string };
 export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string };
+const execFile = promisify(execFileCallback);
 const id = "workshop-build-week";
 const defaultState = (): WorkshopState => ({ id, title: "WorkshopLM Build Week", briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: 3, groundedClaims: 5, sourceItems: [
   { id: "source-raw", type: "TXT", title: "Raw voice brainstorm", origin: "ChatGPT task", claimCount: 5, excerpt: "The judge should be able to see the messy original thought become a cited map, a real brief, and a finished piece of work.", locator: "ChatGPT task · 12:41 · chunk 04" },
@@ -104,6 +107,11 @@ async function fetchPublicText(rawUrl: string, fetchImpl: typeof fetch = fetch) 
 export async function ingestUrl(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch): Promise<WorkshopState> {
   const { url, text } = await fetchPublicText(rawUrl, fetchImpl);
   return ingestSource({ title: url.hostname, origin: url.toString(), type: "WEB", text: text.replace(/<[^>]+>/g, " ") }, root);
+}
+export async function ingestPdfFile(filePath: string, root?: string): Promise<WorkshopState> {
+  if (!filePath.toLowerCase().endsWith(".pdf")) throw new Error("Local PDF ingestion requires a .pdf file.");
+  let stdout: string; try { ({ stdout } = await execFile("pdftotext", ["-layout", filePath, "-"], { maxBuffer: 1_000_000 })); } catch { throw new Error("PDF text extraction failed. Use a readable text-based PDF or provide extracted text."); }
+  const text = normalizeSourceText(stdout); if (!text) throw new Error("PDF contains no extractable text."); return ingestSource({ title: basename(filePath), origin: `Local PDF · ${basename(filePath)}`, type: "PDF", text }, root);
 }
 export async function lockWebsiteStyle(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch): Promise<WorkshopState> {
   const { url, text } = await fetchPublicText(rawUrl, fetchImpl); const current = readWorkshopState(root); const colors = [...text.matchAll(/#[0-9a-fA-F]{6}\b/g)].map((match) => match[0].toUpperCase()); const palette = [...new Set(colors)]; const title = text.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim() || url.hostname; const updatedAt = new Date().toISOString();

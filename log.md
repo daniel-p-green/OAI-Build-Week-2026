@@ -971,3 +971,28 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add PDF parsing, live GPT Image 2 generation/evaluation when authorized, richer graph operations, multi-claim provenance browsing, and live-provider/host proof.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-13 23:59 CT — Local text-PDF adapter
+
+**Area:** Capture / Grounding
+
+### Changed
+
+- Added `ingestPdfFile`, a local `.pdf` source adapter using the installed `pdftotext` executable. Extracted text enters the existing normalized source/chunk/claim/Map ingestion path as `PDF` source material.
+- Exposed the adapter through the local Workshop API.
+
+### Verified
+
+- `pdftotext` is available at `/opt/homebrew/bin/pdftotext` in this runtime.
+- Worker tests/typecheck plus web typecheck/build passed; recorded fixture reset/E2E passed.
+
+### Decisions
+
+- The adapter supports text-extractable PDFs only and clearly errors for scanned/protected/unreadable files. OCR is a separate capability and is not claimed here.
+
+### Open items
+
+- Run an inspectable text-PDF fixture through the adapter, add live GPT Image 2 generation/evaluation when authorized, richer graph operations, multi-claim provenance browsing, and live-provider/host proof.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
