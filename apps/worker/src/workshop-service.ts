@@ -15,7 +15,7 @@ export type WorkshopChunk = { id: string; sourceId: string; text: string; locato
 export type WorkshopClaim = { id: string; sourceId: string; chunkId: string; text: string; evidenceState: "verified"; locator: string };
 export type WorkshopMapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number };
 export type WorkshopFrame = { version: number; markdown: string; stale: boolean; approvedAt: string };
-export type WorkshopStyle = { version: number; source: "manual"; name: string; accent: string; ink: string; paper: string; lockedAt: string; stale: boolean };
+export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; referenceUrl?: string; lockedAt: string; stale: boolean };
 export type StoryboardPanel = { id: string; title: string; narration: string; durationSeconds: number; approved: boolean; stale: boolean };
 export type WorkshopStoryboard = { version: number; panels: StoryboardPanel[]; stale: boolean };
 export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; artifactPath: string; claimIds: string[]; stale: boolean; createdAt: string };
@@ -90,15 +90,22 @@ export async function ingestSource(input: SourceIngestion, root?: string): Promi
   return write({ ...current, sources: current.sources + 1, groundedClaims: current.groundedClaims + claims.length, sourceItems: [...current.sourceItems, source], sourceChunks: [...current.sourceChunks, ...chunks], claims: [...current.claims, ...claims], mapNodes: [...current.mapNodes, node], updatedAt: new Date().toISOString() }, root);
 }
 function isPrivateAddress(address: string) { return address === "::1" || address.startsWith("127.") || address.startsWith("10.") || address.startsWith("192.168.") || /^172\.(1[6-9]|2\d|3[0-1])\./.test(address) || address.startsWith("fc") || address.startsWith("fd") || address.startsWith("fe80:"); }
-export async function ingestUrl(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch): Promise<WorkshopState> {
+async function fetchPublicText(rawUrl: string, fetchImpl: typeof fetch = fetch) {
   let url: URL; try { url = new URL(rawUrl); } catch { throw new Error("A valid HTTP(S) URL is required."); }
   if (!/^https?:$/.test(url.protocol) || url.username || url.password) throw new Error("Only credential-free HTTP(S) URLs are allowed.");
   if (url.hostname === "localhost" || url.hostname.endsWith(".local")) throw new Error("Local network URLs are not allowed.");
   const addresses = await lookup(url.hostname, { all: true }); if (addresses.some(({ address }) => isPrivateAddress(address))) throw new Error("Private network URLs are not allowed.");
   const response = await fetchImpl(url, { redirect: "follow", signal: AbortSignal.timeout(10_000) }); if (!response.ok) throw new Error(`URL fetch failed: HTTP ${response.status}.`);
   const contentType = response.headers.get("content-type") ?? ""; if (!/^(text\/|application\/(json|xml|javascript))/.test(contentType)) throw new Error("URL must return text content.");
-  const text = await response.text(); if (text.length > 1_000_000) throw new Error("URL content exceeds the 1 MB local ingestion limit.");
+  const text = await response.text(); if (text.length > 1_000_000) throw new Error("URL content exceeds the 1 MB local ingestion limit."); return { url, text };
+}
+export async function ingestUrl(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch): Promise<WorkshopState> {
+  const { url, text } = await fetchPublicText(rawUrl, fetchImpl);
   return ingestSource({ title: url.hostname, origin: url.toString(), type: "WEB", text: text.replace(/<[^>]+>/g, " ") }, root);
+}
+export async function lockWebsiteStyle(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch): Promise<WorkshopState> {
+  const { url, text } = await fetchPublicText(rawUrl, fetchImpl); const current = readWorkshopState(root); const colors = [...text.matchAll(/#[0-9a-fA-F]{6}\b/g)].map((match) => match[0].toUpperCase()); const palette = [...new Set(colors)]; const title = text.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim() || url.hostname; const updatedAt = new Date().toISOString();
+  return write({ ...current, style: { version: (current.style?.version ?? 0) + 1, source: "website", name: `${title} foundation`, accent: palette[0] ?? "#1668E3", ink: palette[1] ?? "#171816", paper: palette[2] ?? "#F4F2EC", referenceUrl: url.toString(), lockedAt: updatedAt, stale: false }, storyboardApproved: false, videoState: "blocked", updatedAt }, root);
 }
 export async function generateOutput(type: "deck" | "infographic", root?: string): Promise<WorkshopState> {
   const current = readWorkshopState(root);

@@ -894,3 +894,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add PDF parsing, website style extraction, coherent image-batch generation/evaluation, richer graph operations, full provenance UI, and live-provider/host proof.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-13 23:53 CT — Website-derived Style Library path
+
+**Area:** Style / Runtime
+
+### Changed
+
+- Added a public-website style adapter that reuses the safe public-text fetch boundary, records the reference URL and page title, extracts available six-digit color tokens, and persists a website-derived Style Library version.
+- Exposed `lockWebsiteStyle` through the local Workshop API; it resets downstream storyboard/video approval just like a manual style change.
+
+### Verified
+
+- Worker and web typechecks plus production web build passed.
+- A real local API call to `https://example.com` produced `Example Domain foundation`, recorded the canonical URL, and returned `storyboardApproved: false` and `videoState: blocked`.
+- Reset and recorded `pnpm demo:e2e` passed after the live call.
+
+### Decisions
+
+- Website style extraction is intentionally conservative: it captures inspectable page metadata/color evidence and retains manual style as the exact-token fallback. It does not claim arbitrary website asset licensing or a full brand scrape.
+
+### Open items
+
+- Add PDF parsing, coherent image-batch generation/evaluation, richer graph operations, full provenance UI, and live-provider/host proof.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
