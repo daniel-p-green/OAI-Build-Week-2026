@@ -2620,3 +2620,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Implement and interactively test the current-object shell and Library sheet against the existing recorded fixture.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 13:45 CT — Focused Workshop UI shell implemented and verified
+
+**Area:** Flagship browser GUI / UX simplification
+
+### Changed
+
+- Replaced the persistent three-column dashboard, permanent Studio rail, and view-tab strip with a 64px contextual header and one current Workshop object.
+- Made Map the visual home. Sources, Library/Create, Details, transcript capture, and source addition are transient sheets; evidence detail appears only after a Map selection.
+- Retained the real local actions and state: source ingestion, capture-only fallback, Map approval, style lock, Sketch, Storyboard edit/approval, output creation, render enqueueing, and source-to-output trace.
+- Added an intentional mobile review layout: the spatial Map becomes a readable evidence outline rather than a cropped miniature whiteboard.
+
+### Decision
+
+- Chose progressive disclosure and a single focused canvas because the previous interface exposed every capability at once and made a capable MVP feel like an admin dashboard.
+- Kept a quiet `Continue in ChatGPT` control as a host-return affordance, without adding a second chat composer.
+
+### Alternatives considered
+
+- Incrementally shrinking the old rails and tabs would preserve the confusing information architecture and leave the most important action competing with setup controls.
+- A decorative landing-page treatment would improve screenshots but not the working capture-to-render flow.
+- Hiding advanced capability entirely would make the product feel simpler but would remove judge-visible proof of the Map, approvals, provenance, and deliverables.
+
+### Verification
+
+- `pnpm --filter @workshoplm/web lint` passed.
+- `pnpm --filter @workshoplm/web test:e2e` passed its recorded-fixture UI contract: Map, both approval labels, and `Continue in ChatGPT` are present.
+- A clean isolated production build passed. Chrome-headless was used because the in-app browser plugin was unavailable; 1200×800 and 390×844 screenshots verified the desktop focused canvas and the mobile outline fallback against `DESIGN.md`.
+
+### Open items
+
+- This is a major usability increment, not final product-polish sign-off. Continue testing the real capture-to-output path and refine any workflow friction found in the demo recording.
+- Native host sync, paid-provider evidence, public video, and Devpost submission remain separate open requirements.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

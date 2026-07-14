@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 UI simplification audit
+Last updated: 2026-07-14 13:45 CT
 
 ## Status
 
@@ -161,7 +161,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Lock exactly two approval moments for the product and three-minute demo: brief and storyboard.
 - [x] Audit the live MVP against NotebookLM and the official Apps in ChatGPT UI guidance; record the simplification direction in `research/ui-ux-simplification-audit-2026-07-14.md`.
 - [x] Supersede both the persistent three-rail/six-tab MVP and the interim three-tab concept with one current object, a transient Workshop Library, and progressive disclosure in `DESIGN.md`.
-- [ ] Implement the simplified OpenAI-aligned shell: system tokens/type, one current-object canvas, Sources drawer, Library/Create sheets, contextual inspector, and no persistent tabs or host strip.
+- [x] Implement the simplified OpenAI-aligned shell: system tokens/type, one current-object canvas, Sources drawer, Library/Create sheets, contextual inspector, and no persistent tabs or host strip.
 - [ ] Move Style into Brief settings; move Sketch and Storyboard into Outputs; move Trace into citation/Details drawers.
 - [ ] Replace metadata-only Studio rows with a visual Outputs gallery and real deck, infographic, image-batch, storyboard, and video previews.
 - [ ] Remove raw artifact paths, internal IDs, absent trace stages, and gate implementation language from normal UI while preserving them under Details.
