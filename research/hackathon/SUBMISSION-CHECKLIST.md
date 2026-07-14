@@ -22,7 +22,7 @@
 
 ## Repository
 
-- [ ] Public repository has an appropriate license, or private repository is shared with `testing@devpost.com` and `build-week-event@openai.com`
+- [x] Public repository has an appropriate license, or private repository is shared with `testing@devpost.com` and `build-week-event@openai.com`
 - [ ] README contains installation and run instructions
 - [ ] README contains sample-data instructions when needed
 - [ ] README explains how we collaborated with Codex

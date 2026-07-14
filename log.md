@@ -2469,3 +2469,33 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Native host sync, live GPT-5.6/Image/TTS evidence, pre-code brainstorm, fresh Work surface, public video, Devpost submission/session ID, and licensing remain open or require authority.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 02:08 CT — Public repository license decision
+
+**Area:** Public repository and submission readiness
+
+### Changed
+
+- Added a root `LICENSE` containing the standard MIT License (copyright 2026 Daniel Green) and marked the corresponding local submission-checklist item complete.
+
+### Decision
+
+- Chose MIT as the simple, permissive license for a public hackathon repository. It lets judges and future users inspect, run, modify, and reuse the code without adding adoption friction.
+
+### Alternatives considered
+
+- Apache-2.0 provides an explicit patent grant but adds legal text without a demonstrated project need.
+- GPL-family licenses impose copyleft obligations that are unnecessary for the intended judge path.
+- Leaving the repository unlicensed would retain default all-rights-reserved restrictions and contradict the public-access checklist.
+
+### Why and verification
+
+- The user explicitly delegated non-spend decisions, with a requirement to record the chosen path, rationale, and alternatives in this log.
+- `LICENSE` is present at the repository root; `git diff --check` passes. This license applies to repository code, not third-party services, API outputs, or external media whose terms remain separate.
+
+### Open items
+
+- Public video publication and Devpost submission remain external actions; paid-provider checks remain deliberately blocked pending spend authorization.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
