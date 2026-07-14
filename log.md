@@ -868,3 +868,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add coherent image-batch generation/evaluation, PDF/URL adapters, website style extraction, richer graph operations, full provenance UI, and live-provider/host proof.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-13 23:51 CT — Safe public-URL source adapter
+
+**Area:** Capture / Grounding / Security
+
+### Changed
+
+- Added `ingestUrl`, a local adapter that accepts credential-free public HTTP(S) text responses, resolves DNS before retrieval, rejects localhost/private-network targets, caps fetched content at 1 MB, and normalizes the result into the same local source/chunk/claim/Map path.
+- Exposed the adapter through the local Workshop API.
+
+### Verified
+
+- Worker tests passed 9/9 and worker typecheck passed; web typecheck and production build passed.
+- A real local API request for `https://example.com` stored a `WEB` source with one normalized chunk and five verified claims.
+- Unsafe localhost and non-HTTP URL inputs are covered by tests and reject before a network request. Reset and recorded `pnpm demo:e2e` passed afterward.
+
+### Decisions
+
+- URL ingestion is public-text only. It deliberately rejects credentials and private destinations to keep the local product from becoming a network pivot.
+
+### Open items
+
+- Add PDF parsing, website style extraction, coherent image-batch generation/evaluation, richer graph operations, full provenance UI, and live-provider/host proof.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
