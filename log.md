@@ -2431,3 +2431,22 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Record, edit, upload, and verify the actual public YouTube video; this script is not evidence that those actions occurred.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 02:05 CT — Deterministic submission thumbnail command added
+
+**Area:** Submission materials / Local media
+
+### Changed
+
+- Added `pnpm demo:thumbnail`, which derives a PNG preview and `thumbnail.json` SHA-256 metadata from the locally rendered storyboard MP4.
+
+### Verified
+
+- From a clean fixture reset, `pnpm demo:render` produced a current local MP4 and `pnpm demo:thumbnail` produced `submission/workshoplm-demo-thumbnail.png` (`137921` bytes) plus hash metadata in the local data root.
+
+### Open items
+
+- This local thumbnail is not yet a final public-video thumbnail or Devpost upload.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
