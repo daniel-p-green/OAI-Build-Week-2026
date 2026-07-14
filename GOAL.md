@@ -175,7 +175,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [ ] Spike A: Codex app-server account/login read, ChatGPT task linking, native text/voice-turn persistence, and `gpt-realtime-2.1` fallback decision.
 - [x] Spike B: deterministic normalized local sources, standard plugin `search`/`fetch`, FTS5/exact retrieval, and durable Source/Claim citations; live GPT-5.6 expansion remains entitlement-gated.
 - [x] Spike C: six-image batch manifest, locked reference, and selective regeneration contract; live image generation remains opt-in and unrun.
-- [ ] Spike D: local HyperFrames CLI health check, validated three-scene composition, narration, disclosure, and rendered MP4.
+- [x] Spike D: local HyperFrames CLI health check, validated three-scene composition, disclosed narration fixture, and rendered MP4.
 - [ ] Spike E: locally install the unified plugin, invoke its skill, call its stdio MCP tools, and record actual Work/Codex surface support.
 - [ ] Activate and verify a designed fallback for any failed primary spike before the domain contract freeze.
 
@@ -187,8 +187,8 @@ The primary integrator selects and justifies these without separate founder appr
 - [ ] Create the unified plugin manifest, WorkshopLM skill, local MCP server, and compact status/trace widget.
 - [x] Establish linting, type checking, tests, and deterministic local fixture reset; typed environment validation remains next.
 - [ ] Record every participating Codex `/feedback` Session ID, or the explicit reason it is unavailable, and designate the primary integrator session from actual build evidence.
-- [ ] Configure local SQLite persistence, filesystem artifact storage, and the durable local job worker.
-- [ ] Freeze `packages/domain` v1 schemas, commands, gate flags, dependency edges, and `artifact.json` shape with tests.
+- [x] Configure local SQLite WAL persistence boundaries, atomic filesystem artifact storage, and idempotent leased local jobs.
+- [x] Freeze `packages/domain` v1 schemas, commands, gate flags, dependency edges, and `artifact.json` shape with tests.
 - [ ] Create a sanitized local demo fixture that requires no private connector and makes video capture deterministic.
 - [ ] Create a bounded live operator path on sample sources for recording the real demo seam.
 

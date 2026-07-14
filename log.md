@@ -496,3 +496,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Implement durable SQLite/domain contracts, real worker outputs, provider-backed image/TTS checks, HyperFrames render spike, and actual in-app plugin installation validation.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-13 23:06 CT — Domain freeze, durable local runtime, and HyperFrames proof
+
+**Area:** Engineering / Testing
+
+### Changed
+
+- Added v1 typed domain contracts for evidence, graph operations/undo, independent gates, stale propagation, FRAME/style/storyboard, jobs, and `artifact.json`.
+- Added the SQLite WAL local worker boundary with foreign keys, atomic hash-addressed artifact storage, and idempotent input-key job leasing.
+- Added the HyperFrames three-scene render spike and root `spike:video` command.
+
+### Verified
+
+- Domain typecheck and six schema/transition tests passed. Worker typecheck and two storage/queue tests passed.
+- HyperFrames test/typecheck/verify passed; the local render at `artifacts/spikes/spike-d.mp4` has audio and video streams and is 6.037333 seconds by `ffprobe`.
+
+### Decisions
+
+- HyperFrames remains the local video renderer; no FFmpeg fallback is active. The fixture narration is deterministic/disclosed; live TTS remains separately unverified.
+
+### Open items
+
+- Connect domain/runtime commands to the web and MCP surface, persist the sanitized fixture into SQLite, implement source/graph/style/output commands, and prove plugin installation plus live provider behavior.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
