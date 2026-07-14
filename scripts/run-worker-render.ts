@@ -5,6 +5,7 @@ import { applyWorkshopAction } from "../apps/worker/src/workshop-service.ts";
 async function main() {
   const root = resolve(process.cwd(), ".workshoplm");
   applyWorkshopAction("approveBrief", root);
+  applyWorkshopAction("lockManualStyle", root);
   applyWorkshopAction("approveStoryboard", root);
   applyWorkshopAction("renderVideo", root);
   console.log(JSON.stringify(await executeOne(root)));

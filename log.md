@@ -2220,3 +2220,22 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - The complete recorded seam does not substitute for paid-provider evaluation, native host synchronization, live asset-plan storyboard coverage, active-render cancellation, partial-package recovery, or public demo/submission proof.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:43 CT — Clean fixture render command repaired
+
+**Area:** Public fixture / Video
+
+### Changed
+
+- Fixed `pnpm demo:render` to lock the required manual style between brief and storyboard approval, matching the product gate contract.
+
+### Verified
+
+- From `pnpm demo:reset`, `pnpm demo:render` completed successfully and returned a persisted `video/mp4` artifact (`326674` bytes) from the local worker.
+
+### Open items
+
+- This validates the sanitized fixture command, not a public demo recording or a live provider narration path.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
