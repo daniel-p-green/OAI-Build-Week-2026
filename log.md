@@ -745,3 +745,30 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Connect full graph-operation controls, durable source chunks/claims, real frame/style versions, output history, and complete stale propagation to the same document.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-13 23:40 CT — Persisted FRAME and manual Style Library gates
+
+**Area:** Shape / Style / Runtime
+
+### Changed
+
+- Map approval now creates and stores a versioned `FRAME.md` document derived from current Map evidence. The Brief view reads that persisted markdown instead of presenting only a static brief.
+- Added a manual Style Library lock with explicit palette tokens and version metadata. Storyboard approval now requires both a current approved brief and a locked current style.
+- The Design view exposes the real manual-style lock action and the Storyboard view communicates when style is the blocking gate.
+
+### Verified
+
+- Worker tests passed 6/6 and worker typecheck passed; web typecheck and optimized production build passed.
+- On a fresh production server, HTTP actions produced `FRAME.md` v1, persisted manual style v1 tokens, then approved the storyboard in the required order.
+- Reset and `pnpm demo:e2e` passed after that live state check.
+
+### Decisions
+
+- The manual style path is intentionally available now; website extraction remains a separate required adapter, not a hidden claim made by the manual lock.
+
+### Open items
+
+- Add website style ingestion, durable generated-output history, editable storyboard panels, complete source chunks/claims, and transitive stale states across production artifacts.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

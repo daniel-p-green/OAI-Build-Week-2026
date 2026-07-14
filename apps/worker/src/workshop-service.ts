@@ -9,7 +9,9 @@ import { enqueue } from "./queue.js";
 
 export type WorkshopSource = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string };
 export type WorkshopMapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; x: number; y: number };
-export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; sourceItems: WorkshopSource[]; mapNodes: WorkshopMapNode[]; graphState?: string; updatedAt: string };
+export type WorkshopFrame = { version: number; markdown: string; stale: boolean; approvedAt: string };
+export type WorkshopStyle = { version: number; source: "manual"; name: string; accent: string; ink: string; paper: string; lockedAt: string; stale: boolean };
+export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; sourceItems: WorkshopSource[]; mapNodes: WorkshopMapNode[]; frame?: WorkshopFrame; style?: WorkshopStyle; graphState?: string; updatedAt: string };
 export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string };
 const id = "workshop-build-week";
 const defaultState = (): WorkshopState => ({ id, title: "WorkshopLM Build Week", briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: 3, groundedClaims: 5, sourceItems: [
@@ -40,14 +42,19 @@ function graphFor(state: WorkshopState): ReturnType<typeof parseGraphState> {
 function mapNodesFor(graph: SemanticGraphType, existing: WorkshopMapNode[]): WorkshopMapNode[] {
   return graph.nodes.map((node, index) => { const prior = existing.find((item) => `node-${item.id}` === node.id); const metadata = node.metadata as { body?: unknown; locator?: unknown }; return { id: node.id.replace(/^node-/, ""), title: node.label, body: typeof metadata.body === "string" ? metadata.body : prior?.body ?? node.label, kind: node.evidenceState === "verified" ? "grounded" : node.evidenceState === "unverified" ? "derived" : node.evidenceState, locator: typeof metadata.locator === "string" ? metadata.locator : prior?.locator ?? "Map operation", x: prior?.x ?? 16 + (index * 15) % 65, y: prior?.y ?? 18 + (index * 19) % 58 }; });
 }
+function frameFor(state: WorkshopState, approvedAt: string): WorkshopFrame {
+  const core = state.mapNodes.filter((node) => node.kind !== "creative").slice(0, 3);
+  const evidence = core.map((node) => `- ${node.title}: ${node.body} (${node.locator})`).join("\n");
+  return { version: (state.frame?.version ?? 0) + 1, approvedAt, stale: false, markdown: `# FRAME.md\n\n## Outcome\n${core[0]?.body ?? "Turn raw thinking into finished work."}\n\n## Evidence\n${evidence}\n\n## Production proof\nShow the approved Map, source locators, and a finished output in one continuous path.\n` };
+}
 export function applyMapOperation(operation: unknown, root?: string): WorkshopState {
   const current = readWorkshopState(root); const snapshot = graphFor(current); const parsed = GraphOperation.parse(operation);
   const applied = appendGraphOperation(snapshot.graph, snapshot.history, parsed, { id: `operation-${Date.now()}`, actor: "user", createdAt: new Date().toISOString() });
-  return write({ ...current, graphState: serializeGraphState(applied.graph, applied.history), mapNodes: mapNodesFor(applied.graph, current.mapNodes), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
+  return write({ ...current, graphState: serializeGraphState(applied.graph, applied.history), mapNodes: mapNodesFor(applied.graph, current.mapNodes), frame: current.frame ? { ...current.frame, stale: true } : undefined, briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
 export function undoMapOperation(root?: string): WorkshopState {
   const current = readWorkshopState(root); const snapshot = graphFor(current); const undone = undoLatestGraphOperation(snapshot.graph, snapshot.history);
-  return write({ ...current, graphState: serializeGraphState(undone.graph, undone.history), mapNodes: mapNodesFor(undone.graph, current.mapNodes), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
+  return write({ ...current, graphState: serializeGraphState(undone.graph, undone.history), mapNodes: mapNodesFor(undone.graph, current.mapNodes), frame: current.frame ? { ...current.frame, stale: true } : undefined, briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
 function normalizeSourceText(text: string) { return text.replace(/\r\n?/g, "\n").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim(); }
 function sourceClaimCount(text: string) { return Math.max(1, text.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean).length); }
@@ -71,11 +78,13 @@ export async function ingestSource(input: SourceIngestion, root?: string): Promi
   return write({ ...current, sources: current.sources + 1, groundedClaims: current.groundedClaims + claimCount, sourceItems: [...current.sourceItems, source], mapNodes: [...current.mapNodes, node], updatedAt: new Date().toISOString() }, root);
 }
 export function setVideoState(videoState: WorkshopState["videoState"], root?: string) { const current = readWorkshopState(root); return write({ ...current, videoState, updatedAt: new Date().toISOString() }, root); }
-export function applyWorkshopAction(action: "approveBrief" | "approveStoryboard" | "renderVideo", root?: string): WorkshopState {
+export function applyWorkshopAction(action: "approveBrief" | "lockManualStyle" | "approveStoryboard" | "renderVideo", root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
-  if (action === "approveBrief") return write({ ...current, briefApproved: true, updatedAt }, root);
+  if (action === "approveBrief") return write({ ...current, frame: frameFor(current, updatedAt), briefApproved: true, storyboardApproved: false, videoState: "blocked", updatedAt }, root);
+  if (action === "lockManualStyle") return write({ ...current, style: { version: (current.style?.version ?? 0) + 1, source: "manual", name: "Editorial thinking instrument", accent: "#1668E3", ink: "#171816", paper: "#F4F2EC", lockedAt: updatedAt, stale: false }, storyboardApproved: false, videoState: "blocked", updatedAt }, root);
   if (action === "approveStoryboard") {
     if (!current.briefApproved) throw new Error("Storyboard approval requires an approved current brief.");
+    if (!current.style || current.style.stale) throw new Error("Storyboard approval requires a locked current style.");
     return write({ ...current, storyboardApproved: true, updatedAt }, root);
   }
   if (!current.storyboardApproved) throw new Error("Video render requires an approved current storyboard.");
