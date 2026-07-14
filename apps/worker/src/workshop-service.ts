@@ -17,6 +17,7 @@ export function readWorkshopState(root?: string): WorkshopState {
   const state = defaultState(); db.prepare("INSERT INTO workshop_state VALUES (?, ?, ?)").run(id, JSON.stringify(state), state.updatedAt); return state;
 }
 function write(next: WorkshopState, root?: string) { const db = dbFor(root); db.prepare("UPDATE workshop_state SET state_json=?, updated_at=? WHERE workshop_id=?").run(JSON.stringify(next), next.updatedAt, id); return next; }
+export function setVideoState(videoState: WorkshopState["videoState"], root?: string) { const current = readWorkshopState(root); return write({ ...current, videoState, updatedAt: new Date().toISOString() }, root); }
 export function applyWorkshopAction(action: "approveBrief" | "approveStoryboard" | "renderVideo", root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
   if (action === "approveBrief") return write({ ...current, briefApproved: true, updatedAt }, root);

@@ -11,6 +11,7 @@
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "demo:reset": "node scripts/reset-demo.mjs",
     "demo:e2e": "tsx scripts/demo-e2e.ts",
+    "demo:render": "tsx scripts/run-worker-render.ts",
     "plugin:inspect": "pnpm --filter @workshoplm/plugin-mcp test",
     "spike:grounding": "pnpm --filter @workshoplm/spike-grounding run",
     "spike:images": "pnpm --filter @workshoplm/spike-images run",

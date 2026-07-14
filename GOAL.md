@@ -224,7 +224,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [ ] Generate and evaluate a coherent GPT Image 2 batch.
 - [ ] Generate an editable, panel-level storyboard.
 - [x] Block video enqueueing until the current storyboard approval is persisted; worker execution remains pending.
-- [ ] Render narrated video through HyperFrames from the approved storyboard.
+- [x] Render the sanitized approved storyboard through the local HyperFrames worker path with disclosed fixture narration and verified MP4 streams.
 - [ ] Propagate upstream changes into accurate downstream stale states.
 
 ### 10. Meta-demo, provenance, and submission

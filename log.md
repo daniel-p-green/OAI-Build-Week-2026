@@ -499,6 +499,31 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-13 23:21 CT — Queued HyperFrames worker execution verified
+
+**Area:** Worker / Rendering / Testing
+
+### Changed
+
+- Added queue completion/failure recording, video state persistence, and a one-shot worker executor. The executor leases a queued `render_video` job, runs the local approved HyperFrames fixture composition, stores the MP4 atomically by SHA-256, and only marks the Workshop rendered after success.
+- Added `pnpm demo:render` as the deterministic local render proof command.
+
+### Verified
+
+- Worker typecheck and four worker tests passed, including honest renderer-failure handling.
+- `pnpm demo:reset && pnpm demo:render` returned a succeeded job and stored `video/mp4` artifact. `ffprobe` confirmed video and audio streams and a 6.037333-second duration. `pnpm demo:e2e` remained green.
+
+### Decisions
+
+- The worker runs the sanitized approved storyboard fixture through HyperFrames. It does not claim live TTS or arbitrary user-authored storyboard rendering yet.
+
+### Open items
+
+- Persist and render arbitrary current storyboard panels, replace remaining static browser content with durable entities, and prove plugin installation inside the actual supported host surface.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-13 23:18 CT — Plugin stdio state and command gates verified
 
 **Area:** Plugin / Integration / Testing
