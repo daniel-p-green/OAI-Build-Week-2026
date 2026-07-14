@@ -1293,3 +1293,24 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Obtain paid-call authorization for one minimal `gpt-5.6-sol` Responses request and one GPT Image 2 batch.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:22 CT — Public installed MCP cache smoke test passed
+
+**Area:** Plugin / Host Integration
+
+### Verified
+
+- Removed and reinstalled WorkshopLM from `daniel-p-green/OAI-Build-Week-2026` using the Codex CLI marketplace path.
+- The newly installed cache executed its compiled MCP server with a configured local data root. A valid `workshop_create` JSON-RPC request returned `Created local Workshop: workshop-installed-plugin-smoke-test.` with persisted workshop state.
+- The disposable local state was reset with `pnpm demo:reset`; the recorded `pnpm demo:e2e` acceptance run then passed.
+
+### Decisions
+
+- The public package now has verified marketplace discovery, installation, compiled MCP startup, and a write response from its installed cache. Spike E remains open because a fresh Codex desktop task has not yet invoked the registered plugin skill/tool surface through the host UI.
+
+### Open items
+
+- Capture the fresh-task Codex desktop invocation and its available `/feedback` Session ID if the surface exposes one.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
