@@ -1548,3 +1548,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add PDF browser upload and connected-app adapters; improve candidate grouping/ranking when a live reasoning provider is authorized.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:37 CT — Browser-safe PDF capture added
+
+**Area:** Capture / GUI / Runtime
+
+### Changed
+
+- Added a multipart PDF upload path to the visible Sources sheet. It writes each upload only to a temporary local directory, extracts text with the existing local adapter, and removes the temporary file afterward.
+- Preserved a sanitized original PDF filename in the stored source title and locator; text files, safe public URLs, and manual sanitized meeting text remain separate capture paths.
+
+### Verified
+
+- `pdftotext` is present at `/opt/homebrew/bin/pdftotext`.
+- Web typecheck and production build passed; fixture reset and `pnpm demo:e2e` passed.
+- A real multipart replay against the production route uploaded a one-page text-based PDF and persisted `{ title: "workshop-upload.pdf", type: "PDF", locator: "Local PDF · workshop-upload.pdf · normalized:…", claimCount: 1 }` plus its grounded Map node.
+
+### Decisions
+
+- Uploads are limited to 10 MB and only text-based PDFs are supported in this increment. Scanned/image-only PDFs fail honestly instead of silently fabricating text.
+
+### Open items
+
+- Add connected-app/MCP source adapters, source-permission UI, and an optional OCR path if the demo needs scans.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

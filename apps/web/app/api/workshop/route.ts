@@ -1,4 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { applyMapOperation, applyWorkshopAction, captureFallbackTranscript, createImageBatch, extractWorkshopCandidates, generateOutput, ingestPdfFile, ingestSource, ingestUrl, lockWebsiteStyle, readWorkshopState, selectImagePanelForRegeneration, type SourceIngestion, undoMapOperation, updateStoryboardPanel } from "../../../../worker/src/workshop-service";
 
 export const runtime = "nodejs";
@@ -9,6 +12,18 @@ export async function GET() { return NextResponse.json(readWorkshopState()); }
 
 export async function POST(request: NextRequest) {
   try {
+    if (request.headers.get("content-type")?.includes("multipart/form-data")) {
+      const form = await request.formData();
+      if (form.get("action") !== "ingestPdfUpload") return NextResponse.json({ error: "Unsupported upload action" }, { status: 400 });
+      const upload = form.get("file");
+      if (!upload || typeof upload === "string" || !upload.name.toLowerCase().endsWith(".pdf")) return NextResponse.json({ error: "A PDF file is required" }, { status: 400 });
+      if (upload.size > 10_000_000) return NextResponse.json({ error: "PDF uploads are limited to 10 MB" }, { status: 413 });
+      const directory = await mkdtemp(join(tmpdir(), "workshoplm-pdf-"));
+      const safeName = upload.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 120);
+      const filePath = join(directory, safeName);
+      try { await writeFile(filePath, Buffer.from(await upload.arrayBuffer())); return NextResponse.json(await ingestPdfFile(filePath)); }
+      finally { await rm(directory, { recursive: true, force: true }); }
+    }
     const body = await request.json() as RequestBody;
     if (!body.action) return NextResponse.json({ error: "action is required" }, { status: 400 });
     if (body.action === "ingestSource") { if (!body.source) return NextResponse.json({ error: "source is required" }, { status: 400 }); return NextResponse.json(await ingestSource(body.source)); }

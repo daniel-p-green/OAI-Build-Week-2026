@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 00:34 CT
+Last updated: 2026-07-14 00:37 CT
 
 ## Status
 
@@ -194,7 +194,7 @@ The primary integrator selects and justifies these without separate founder appr
 
 ### 6. Capture
 
-- [ ] Ingest files, URLs, and sanitized meeting material.
+- [x] Ingest local text/PDF files, safe public URLs, and sanitized meeting material.
 - [ ] Normalize local and connected-app/MCP sources for grounded `search`/`fetch` retrieval.
 - [ ] Link the ChatGPT task/account to the Workshop and persist native typed/voice turns; implement the Realtime fallback only if required by the live spike.
 - [x] Extract candidate goals, audience, claims, constraints, and unresolved questions from grounded claims with source locators.
