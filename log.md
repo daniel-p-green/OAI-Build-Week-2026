@@ -2412,3 +2412,22 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Produce/verify the public video, choose repository licensing, complete Devpost fields, and capture the `/feedback` Session ID when available.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 02:03 CT — Timed public-demo recording script prepared
+
+**Area:** Submission materials / Video
+
+### Changed
+
+- Added `submission/DEMO-SCRIPT.md`, a 2:35–2:50 recording script that follows the verified local Capture → Shape → Deliver seam and explicitly includes both approval gates, edit control, provenance, plugin moment, and Codex/GPT-5.6 disclosure.
+
+### Decisions
+
+- The script prohibits claiming the local placeholder tone is AI voice and distinguishes planned image panels from paid GPT Image output.
+
+### Open items
+
+- Record, edit, upload, and verify the actual public YouTube video; this script is not evidence that those actions occurred.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
