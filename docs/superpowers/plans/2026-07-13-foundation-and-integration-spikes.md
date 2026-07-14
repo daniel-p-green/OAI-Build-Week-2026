@@ -300,7 +300,7 @@ type EvidenceLocator = {
 };
 ```
 
-The normalizer must produce stable chunk IDs and omit `nativeLocator` when it cannot prove one. Add a paraphrase fixture whose exact words do not appear in the source and an unsupported-claim fixture.
+The normalizer must produce stable chunk IDs and omit `nativeLocator` when it cannot prove one. Add a hostile paraphrase fixture with zero intentional lexical overlap with the source, plus an unsupported-claim fixture. Instrument query expansion to report latency, token use, and estimated cost per retrieval without logging source content.
 
 Run: `pnpm --filter @workshoplm/spike-grounding test`
 
@@ -314,7 +314,7 @@ Parse the three fixtures locally, persist deterministic chunks in SQLite FTS5, a
 
 Run: `pnpm spike:grounding`
 
-Expected: exact and paraphrased queries retrieve the right source; the grounded response resolves at least three citations; the unsupported claim is marked `unverified`; ChatGPT/Codex and worker adapters return the same evidence shape. If paraphrase recall is insufficient, record the evidence and activate optional semantic vectors or hosted File Search behind the same interface.
+Expected: exact and hostile-paraphrase queries retrieve the right source; the grounded response resolves at least three citations; the unsupported claim is marked `unverified`; ChatGPT/Codex and worker adapters return the same evidence shape; query-expansion latency, tokens, and estimated cost are present. If paraphrase recall is insufficient, record the evidence and activate optional semantic vectors or hosted File Search behind the same interface.
 
 ### Step 4: Record and commit
 
@@ -403,6 +403,8 @@ Run `pnpm spike:host-sync`, complete typed and voice capture attempts, restart t
 
 Expected: account state, task linkage, typed-turn persistence, restart idempotency, and token scanning pass. The report explicitly selects native voice sync or the narrow `gpt-realtime-2.1` fallback; uncertainty is not a passing result.
 
+Stop native-path investigation at July 14 end of day CT. If durable native voice linkage is not proven, activate the fallback automatically as a capture-only host-strip or top-bar control. It must not add a text field, transcript pane, or duplicate conversation surface.
+
 ### Step 5: Record and commit
 
 Commit: `spike: verify ChatGPT task and voice capture`
@@ -480,7 +482,7 @@ Update engineering direction only where live evidence changes latency, locators,
 
 ### Step 3: Write the domain-contract plan
 
-The next plan must enumerate every Zod schema, command, gate derivation, dependency rule, fixture, and test required for the v1 freeze. It must incorporate the actual spike result shapes instead of guessed provider payloads.
+The next plan must enumerate every Zod schema, command, gate derivation, dependency rule, fixture, and test required for the v1 freeze. Freeze provider-independent contracts by July 14 end of day. The transcript/turn schema alone may remain behind an adapter boundary until July 15 morning if Spike A changes its observable fields. It must incorporate the actual spike result shapes instead of guessed provider payloads.
 
 ### Step 4: Run the documentation consistency check
 

@@ -409,3 +409,64 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Run the host-sync spike to prove current-task linkage and whether native voice-originated turns are durably observable.
 - Run the plugin-host spike to prove actual local stdio/widget support separately in Work and Codex.
 - Build and visually verify the root `DESIGN.md` shell in the in-app browser before expanding feature breadth.
+
+---
+
+## 2026-07-13 22:41 CT — Full implementation goal and video-first judge path locked
+
+**Area:** Product / Engineering / Submission
+
+### Changed
+
+- Reconciled the colleague's execution-readiness audit into the live goal and plans without reducing WorkshopLM's product scope.
+- Converted `GOAL.md` from an architecture/planning tracker into an explicit full-implementation mandate with ten observable completion conditions.
+- Made the public under-three-minute demo video the canonical judge experience; the sanitized fixture now supports repeatable recording and optional inspection rather than a separate judge-installation product.
+- Pre-decided the Spike A fallback placement and deadline, split the domain freeze around the transcript adapter, strengthened the hostile retrieval fixture, and made recorded-fixture E2E replay explicit.
+- Made Codex Session ID recording unconditional: each milestone records the ID or explicitly states why the surface could not expose it.
+
+### Verified
+
+- Read the colleague's complete archive review and compared each finding against the current `GOAL.md`, `AGENTS.md`, `DESIGN.md`, execution runbook, foundation plan, submission checklist, and build-log tail.
+- Verified an OpenAI API key is present in the current environment without exposing its value. Model entitlement and spend-cap behavior have not yet been proven by a live provider check.
+- Confirmed the revised goal retains every locked user-visible capability: unified plugin/browser surface, voice capture, grounded sources, Map and Sketch, `FRAME.md`, website/manual style, deck, infographic, coherent images, editable storyboard, HyperFrames video, stale propagation, and provenance.
+
+### Decisions
+
+- Full product implementation is authorized. Integration spikes gate only the provider-dependent code they inform; foundation, contracts, deterministic adapters, GUI, and fixture work proceed in parallel.
+- Judges should not be expected to recreate the local Codex/plugin environment. The video must show a real functioning product, while setup instructions and a sanitized inspection path remain concise supporting evidence.
+- Designed fallbacks may change mechanics but may not silently remove the user-visible capability they preserve.
+
+### Open items
+
+- Start the implementation run in a fresh Codex task using the revised `GOAL.md`, on the user's requested Terra model.
+- Capture and timestamp the original raw voice brainstorm before application implementation begins.
+- Run the no-spend model-list authentication check, then the five live spikes and parallel platform foundation.
+- Codex `/feedback` Session ID: the current surface has not exposed a verified `/feedback` ID for this milestone; do not infer one from unrelated local identifiers.
+
+---
+
+## 2026-07-13 22:45 CT — OpenAI key authentication and model visibility checked
+
+**Area:** Engineering / Testing
+
+### Changed
+
+- Recorded the current API-key entitlement fact in `GOAL.md` before implementation handoff.
+
+### Verified
+
+- `GET /v1/models` returned HTTP 200 using the configured key; no generation call or paid model operation was made.
+- Exact model endpoints returned HTTP 200 for `gpt-image-2`, `gpt-4o-mini-tts`, and `gpt-realtime-2.1`.
+- `GET /v1/models/gpt-5.6` returned HTTP 404 with `model_not_found` for the current key/project context.
+- The temporary response files were deleted after extracting only model IDs and error codes; no credential value was printed or persisted.
+
+### Decisions
+
+- Image, narration, and Realtime spikes may proceed with the configured key.
+- Do not claim live GPT-5.6 product use until the correct model entitlement, alias, or project context is proven. Resolve it as an early provider spike without blocking deterministic foundation work.
+
+### Open items
+
+- Determine whether GPT-5.6 requires a different project-scoped key, model alias, or hackathon entitlement before the first paid reasoning call.
+- Spend-cap availability is still unverified because the model endpoints do not expose project budget policy.
+- Codex `/feedback` Session ID: the current surface has not exposed a verified `/feedback` ID for this milestone.

@@ -1,12 +1,13 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-13 22:08 CT
+Last updated: 2026-07-13 22:45 CT
 
 ## Status
 
-**Active phase:** Integration spikes → contract freeze → parallel build
-**Implementation:** Authorized; repository scaffold and live integration spikes are next
+**Active phase:** Full implementation — integration spikes and platform foundation in parallel
+**Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
 **Current gate:** No founder approval gate. Execute the plan autonomously and escalate only for credentials/spend, material privacy/security/licensing decisions, irreversible external actions, or an objective-changing breaking decision.
+**Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, and `gpt-realtime-2.1`. The exact `gpt-5.6` model endpoint currently returns `404 model_not_found`; resolve the correct entitled model/project during the reasoning spike before claiming live GPT-5.6 product use.
 
 **Hard schedule gates:**
 
@@ -15,7 +16,7 @@ Last updated: 2026-07-13 22:08 CT
 
 ## Objective
 
-Design, build, and verify a hackathon-ready professional thought-to-delivery product for OpenAI Build Week in a pnpm/Turborepo monorepo.
+Implement and verify the complete locked WorkshopLM product for OpenAI Build Week in a pnpm/Turborepo monorepo.
 
 Deliver the full WorkshopLM scope through one exceptionally intuitive **Capture → Shape → Deliver** happy path:
 
@@ -27,6 +28,23 @@ Deliver the full WorkshopLM scope through one exceptionally intuitive **Capture 
 Preserve citations, exact brand rules, dependency-aware versions, and stale-state propagation across every artifact. Use WorkshopLM to create its own truthful hackathon demo package and final meta-demo video. Target **Work & Productivity**. Keep Education/Learning mode, general-purpose Canva scope, and unsupported production claims out of scope.
 
 Completion requires verification of the live product, responsive UX, core tests, OpenAI integration behavior, and judge-facing submission artifacts against the current research and hackathon rules.
+
+## Definition of fully implemented
+
+This goal is not complete when the architecture, shell, mocks, or isolated model calls exist. It is complete only when one coherent local product demonstrates all of the following:
+
+1. A locally installed unified WorkshopLM plugin opens and controls the full visual Workshop in the ChatGPT/Codex in-app browser.
+2. Native ChatGPT text/voice—or the deadline-triggered Realtime capture fallback—feeds a durable Workshop transcript without creating a duplicate browser chat product.
+3. Local files, URLs, and sanitized meeting material become normalized, searchable sources with inspectable claim → chunk → source grounding.
+4. GPT-5.6 turns the conversation and selected evidence into an editable semantic graph rendered as an Excalidraw Map, with typed operations, undo, evidence states, and a regenerable Sketch view.
+5. `Approve map as brief` produces inspectable `FRAME.md` plus executable data; a website URL or manual assets produce a reviewable, versioned `DESIGN.md`, Brand Foundation, Intent Profile, and Visual DNA.
+6. Studio generates the complete locked output set: source-traceable deck, source-traceable infographic, coherent GPT Image 2 batch, editable storyboard, and narrated local HyperFrames video.
+7. Storyboard approval, dependency versions, stale propagation, retry/cancel/partial-success behavior, and artifact provenance work across the real seam—not only in isolated tests.
+8. The provenance view traces the actual WorkshopLM submission from raw brainstorm through sources, Map, brief, style, outputs, build evidence, and measured time-to-first-output.
+9. The under-three-minute public demo video shows the real working flow clearly enough that judges do not need to recreate the local plugin environment to understand or score it.
+10. The repository passes the documented deterministic checks, the live demo seam is recorded from the intended surface, and all judge-facing claims match captured evidence.
+
+All items above are committed scope for this hackathon version. Fallbacks may change implementation mechanics, but may not silently remove the user-visible capability they preserve.
 
 ## Integration priority
 
@@ -77,16 +95,20 @@ The NotebookLM association is intentional category shorthand for hackathon judgi
 - OpenAI project reasoning and structured operations use the Responses API with `gpt-5.6`.
 - Project grounding uses local parsing, deterministic chunks/locators, SQLite FTS5/BM25, exact text search, and standard plugin `search`/`fetch` tools. GPT-5.6 receives retrieved evidence bundles and may not mark a factual claim `verified` without durable claim→chunk→source edges. Hosted OpenAI `file_search` is an optional adapter/comparison, not a requirement.
 - Native ChatGPT voice is the primary capture path. A live spike must prove durable thread/voice-turn synchronization into WorkshopLM. If the host cannot expose the needed durable capture, fall back to a narrow `gpt-realtime-2.1` WebRTC capture surface; standard API keys remain server-only.
+- Spike A has a hard decision deadline of July 14 end of day CT. If native voice-turn synchronization is not proven by then, activate the Realtime fallback automatically as a capture-only control in the host strip or top bar. It is visually distinct from a composer and does not duplicate ChatGPT conversation.
 - Narration uses `gpt-4o-mini-tts`, stores panel-level provenance, and clearly discloses that the voice is AI-generated.
 - Batch image generation uses the direct Image API with `gpt-image-2`; conversational image edits may use the Responses image-generation tool.
 - `Notedex`, `Notex`, and `ChatGPT Notes` are rejected names.
 - **Studio** is the creation area; an **Output type** is a guided creation path; an **Output** is one artifact; an **Output set** is a user-selected group generated from the same approved state.
 - Exactly two blocking approval gates exist: approve the Map as the brief, then approve the storyboard before video. Style selection is inline review, not a third gate.
-- The judge path includes a one-click sanitized sample Workshop with no private connector, plus a bounded live “run it yourself” path on sample sources.
+- The demo path includes a one-click sanitized sample Workshop with no private connector, plus a bounded live operator run on sample sources for recording and optional inspection.
+- The public demo video is the primary judge experience and must prove the live thought-to-delivery seam clearly. The sanitized fixture makes recording repeatable and supports optional inspection without requiring judges to supply or spend their own API credits.
+- The submission is a local plugin/developer-tool experience. Provide concise installation instructions and the verified supported platform, but do not divert implementation time into making judges recreate the full local stack. The verified Spike E surface controls the README, Devpost, and video platform claim.
 - Workshop progress is represented by independent gate flags rather than one linear lifecycle: `transcript_ready`, `board_approved`, `brief_ready`, `style_locked`, `storyboard_approved`, and `video_rendered`. Staleness remains a per-object overlay.
-- Five live integration spikes precede product implementation: native ChatGPT task/account/voice synchronization (with Realtime fallback), local plugin search/fetch grounding (with optional File Search comparison), GPT Image 2 batching, local HyperFrames rendering, and unified-plugin loading across the available Work/Codex surfaces.
+- Five live integration spikes gate only the provider- or host-dependent implementation they inform: native ChatGPT task/account/voice synchronization (with Realtime fallback), local plugin search/fetch grounding (with optional File Search comparison), GPT Image 2 batching, local HyperFrames rendering, and unified-plugin loading across the available Work/Codex surfaces. Monorepo foundation, domain work, deterministic adapters, GUI shell, and fixture work proceed in parallel.
 - The GUI is the flagship product proof. Plugin widgets remain compact doorways; they never duplicate the Map, Studio, storyboard editor, or asset browser.
 - Freeze `packages/domain` contracts before parallel feature work. Afterward, the integrator may approve compatible changes with tests; only product-changing breaking decisions escalate.
+- Freeze all provider-independent domain contracts by July 14 end of day. The transcript/turn schema may remain behind its adapter interface until Spike A resolves, but must freeze by July 15 morning without delaying independent lanes.
 - Use at most four concurrent execution slots: one primary integrator and three isolated implementation lanes.
 - Run a daily end-to-end acceptance path once the first vertical slice exists. A red run pauses breadth, not the build.
 - Deterministic presentation and infographic rendering uses HTML/CSS templates exported to PDF/PNG.
@@ -149,6 +171,7 @@ The primary integrator selects and justifies these without separate founder appr
 ### 4. Integration spikes
 
 - [ ] Capture and timestamp the original raw voice brainstorm before product code exists.
+- [x] Verify API-key authentication and list access for the required OpenAI model IDs without spending generation credits; record any entitlement or spend-cap uncertainty.
 - [ ] Spike A: Codex app-server account/login read, ChatGPT task linking, native text/voice-turn persistence, and `gpt-realtime-2.1` fallback decision.
 - [ ] Spike B: normalized local sources, standard plugin `search`/`fetch`, FTS5/exact retrieval, durable Source/Claim citations, and optional hosted `file_search` comparison.
 - [ ] Spike C: six-image `gpt-image-2` batch with a locked reference, measured latency, and selective regeneration.
@@ -163,10 +186,11 @@ The primary integrator selects and justifies these without separate founder appr
 - [ ] Create `apps/web`, `apps/worker`, and focused shared packages.
 - [ ] Create the unified plugin manifest, WorkshopLM skill, local MCP server, and compact status/trace widget.
 - [ ] Establish environment validation, linting, type checking, tests, and deterministic local setup.
+- [ ] Record every participating Codex `/feedback` Session ID, or the explicit reason it is unavailable, and designate the primary integrator session from actual build evidence.
 - [ ] Configure local SQLite persistence, filesystem artifact storage, and the durable local job worker.
 - [ ] Freeze `packages/domain` v1 schemas, commands, gate flags, dependency edges, and `artifact.json` shape with tests.
-- [ ] Create a sanitized local judge fixture that requires no login or private connector.
-- [ ] Create the bounded live “run it yourself” judge path on sample sources.
+- [ ] Create a sanitized local demo fixture that requires no private connector and makes video capture deterministic.
+- [ ] Create a bounded live operator path on sample sources for recording the real demo seam.
 
 ### 6. Capture
 
@@ -209,18 +233,20 @@ The primary integrator selects and justifies these without separate founder appr
 - [ ] Instrument and display time from first transcript segment to first rendered output.
 - [ ] Produce the Devpost description, README narrative, deck, thumbnails, storyboard, narration, and video as one traced WorkshopLM Output set.
 - [ ] Include real UI evidence and the raw-transcript reveal.
+- [ ] Make the public video the canonical judge path: show the live seam, one plugin widget moment, both approval gates, editable control, provenance, and the raw brainstorm → finished submission reveal in under three minutes.
 - [ ] Keep all judge-facing claims proportional to captured evidence.
 - [ ] Produce a public YouTube demo under three minutes with clear audio.
 - [ ] Complete repository, README, Codex collaboration, GPT-5.6, judge-access, and Devpost materials.
 
 ### 11. Daily acceptance and completion verification
 
+- [ ] Add a recorded-fixture mode to `pnpm demo:e2e` for repeatable demo diagnosis, with live-provider checks kept separate.
 - [ ] Run and log the end-to-end acceptance path daily once the first vertical slice exists.
 - [ ] Verify the full Capture → Shape → Deliver flow in the live application.
 - [ ] Verify realistic desktop, tablet, and mobile behavior.
 - [ ] Verify schema, gate, graph, grounding, rendering, and integration tests.
 - [ ] Verify failure recovery and partial-package behavior.
-- [ ] Verify all submitted links and the documented clean local judge setup in a fresh ChatGPT/Codex in-app browser session.
+- [ ] Verify all submitted links, the repeatable recording setup, and the optional inspection instructions in a fresh ChatGPT/Codex in-app browser session.
 - [ ] Audit every objective requirement against direct evidence before marking the goal complete.
 
 ## Current evidence

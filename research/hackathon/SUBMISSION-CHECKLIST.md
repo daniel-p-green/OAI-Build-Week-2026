@@ -7,7 +7,7 @@
 - [ ] Product runs consistently on its intended platform
 - [ ] Live/testable experience matches the submitted description and video
 - [ ] Third-party SDKs, APIs, data, fonts, images, music, and integrations are licensed or authorized
-- [ ] Sample data and a privacy-safe judge path are available
+- [ ] Sample data and a privacy-safe, repeatable demo fixture are available
 
 ## Devpost entry
 
@@ -46,18 +46,20 @@
 ## Judge access
 
 - [ ] Free and unrestricted through the end of judging
-- [ ] Login credentials included when necessary
+- [ ] Public video makes the full value and working flow understandable without local setup
+- [ ] Sanitized recorded fixture supports repeatable capture and optional inspection without paid calls
+- [ ] Login credentials included only if a later verified judge path requires them
 - [ ] Supported browser/platform documented
 - [ ] A judge can understand the value even if they never run the app
 
 ## Plugin/developer-tool requirements
 
-These apply only if the final submission is categorized as a plugin or developer tool:
+WorkshopLM is a local plugin/developer-tool experience. Keep these concise and secondary to the public demo video:
 
 - [ ] Installation instructions
 - [ ] Supported platforms
 - [ ] Test path that does not require rebuilding from scratch
-- [ ] Demo instance, sandbox, or test account
+- [ ] Sanitized fixture or inspection path
 
 ## Final live verification
 

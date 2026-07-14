@@ -85,7 +85,7 @@ Work autonomously from the locked product vision:
 2. Take the highest-priority unchecked item owned by the current lane.
 3. Implement the smallest complete increment.
 4. Verify it with the narrowest real command, test, or live run. Never check a `GOAL.md` box without evidence that proves the exact claim.
-5. Append a `log.md` entry with evidence, decisions, open risk, and the Codex Session ID when available.
+5. Append a `log.md` entry with evidence, decisions, open risk, and the Codex Session ID. If the current surface does not expose one, state that explicitly instead of omitting the field.
 6. Update `GOAL.md`, commit the verified increment, and continue.
 
 Do not stop between already-authorized items. Routine architecture, implementation, UX, fallback, and compatible contract decisions are delegated to the primary integrator. Escalate only when progress requires:
@@ -110,7 +110,7 @@ Use at most four concurrent slots: one primary integrator plus three isolated im
 - Merge small verified increments continuously.
 - A lane runs its package tests, typecheck, and lint before handoff. The integrator rebases, runs the applicable broader suite and acceptance path, and merges only when green.
 - If lanes need the same file, the integrator performs or serializes the change. Lanes do not resolve cross-ownership conflicts unilaterally.
-- Record each participating task/Session ID when available. Prefer the integrator's Session ID for the final Devpost `/feedback` field because it owns integration and acceptance evidence, but decide from the actual build record.
+- Record every participating task/Session ID, or an explicit reason it could not be captured, in `log.md`. Prefer the integrator's Session ID for the final Devpost `/feedback` field because it owns integration and acceptance evidence, but decide from the actual build record.
 
 ## Domain-contract changes
 
@@ -125,6 +125,7 @@ Freeze `packages/domain` at the milestone in the plan. After the freeze, a reque
 
 Starting with the first vertical slice, run `pnpm demo:e2e` daily plus the narrowest live-provider checks available. Cover source/voice capture, transcript, grounded Map, brief approval and `FRAME.md`, locked style, deck/image/storyboard generation, storyboard approval, video rendering, and at least one artifact-to-claim-to-source trace.
 
+- `pnpm demo:e2e` must default to a recorded-fixture mode that can replay and diagnose the demo seam without network credentials or paid calls. Keep live-provider checks separate and credential-gated.
 - Record pass/fail, time from first transcript segment to first rendered output, and seam failures in `log.md`.
 - A red run halts breadth merges until the seam is green.
 - Red-team work attempts approval bypass, stale-version rendering, citation corruption, job interruption, and unsupported checked-box claims. Findings become failing tests and logged evidence.
@@ -137,6 +138,7 @@ Starting with the first vertical slice, run `pnpm demo:e2e` daily plus the narro
 - Keep original and normalized sources in the local data root for the core demo. Ground ChatGPT Work/Codex through standard local `search`/`fetch` tools backed by deterministic chunks, locators, FTS5/BM25, and exact search. Hosted File Search is optional and must not become a hidden requirement.
 - Open, test, and record the local app primarily in the ChatGPT/Codex in-app browser (`iab`). Do not build a native wrapper or claim a private ChatGPT product integration.
 - Keep setup and fixture reset deterministic so the demo does not depend on Daniel's existing local state.
+- Treat the final video as the primary judge experience. The sanitized fixture exists to make demo capture repeatable and optional inspection easy; do not spend build time turning local installation into a second product. Judges must not need to supply or spend their own API credits to understand the submission.
 
 ## Build log
 
@@ -164,6 +166,7 @@ Starting with the first vertical slice, run `pnpm demo:e2e` daily plus the narro
 
 - Build a coherent, runnable product experience rather than a disconnected collection of model features.
 - Provide a privacy-safe judge path with sanitized sample data; private accounts or connectors must not be required to understand or test the core product.
+- Because WorkshopLM is a plugin/developer tool, provide concise installation instructions, the verified supported platform, and an optional sanitized inspection path. Optimize judging effort around the public demo video, not judge-side environment recreation.
 - Keep third-party data, SDKs, APIs, media, fonts, logos, and brand assets properly authorized and licensed.
 - Keep setup simple, deterministic, and testable from a clean environment.
 - Record demo proof as the product develops. The final public YouTube video must be under three minutes and explain what was built, how Codex was used, and how GPT-5.6 was used.

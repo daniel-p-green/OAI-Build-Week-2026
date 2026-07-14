@@ -19,7 +19,7 @@ WorkshopLM has two coordinated native surfaces:
 1. **ChatGPT task** — conversation, voice, questions, reasoning, and plugin commands.
 2. **In-app browser Workshop** — Sources, Map, FRAME.md/DESIGN.md review, Studio, asset batches, storyboard, final outputs, and provenance.
 
-The browser contains no second chat transcript or composer. A quiet `Continue in ChatGPT` control returns focus to the host conversation.
+The browser contains no second chat transcript or composer. A quiet `Continue in ChatGPT` control returns focus to the host conversation. If native voice synchronization fails its July 14 spike deadline, a capture-only microphone control may appear in the host strip or top bar. It has no text field or conversation history and is visually labeled as capture rather than chat.
 
 Compact plugin widgets may show Workshop status, an evidence trace, or an output preview. They may never reproduce the Map, storyboard editor, image-batch browser, or full Studio.
 
@@ -94,7 +94,7 @@ Design first for the ChatGPT in-app browser at approximately 1200×800, then ver
 - Sources rail: 264px default, resizable 220–360px, collapsible to a 48px icon rail.
 - Studio rail: 320px default, resizable 280–400px, collapsible to a 48px status rail.
 - Center: never narrower than 560px on desktop. It receives all surplus width.
-- Bottom host strip: 36px and visually quiet. It shows linked ChatGPT task state and the return action; it is not a composer.
+- Bottom host strip: 36px and visually quiet. It shows linked ChatGPT task state and the return action; it is not a composer. The spike-gated Realtime fallback may add one compact capture-only microphone control here.
 - Rails sit flush with the canvas. Use borders, not detached floating panels.
 
 ## Primary screens
@@ -218,4 +218,4 @@ The three-minute video should capture these visual beats:
 5. Website-derived style visibly changes the same content system.
 6. Studio produces a coherent contact sheet, deck, and editable storyboard.
 7. `Approve storyboard & render` runs local HyperFrames.
-8. The provenance view reveals that the displayed submission came from the original raw task.
+8. A compact plugin trace widget opens the provenance view, which reveals that the displayed submission came from the original raw task.
