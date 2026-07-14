@@ -2003,3 +2003,24 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Native ChatGPT task/voice linkage is still unproven; the capture-only fallback remains the designed operating path.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:30 CT — Responsive local GUI verified and repaired
+
+**Area:** GUI / Responsive verification
+
+### Changed
+
+- Tightened the mobile header: compacted spacing and hid nonessential sync/overflow controls below 800px, leaving a bounded title and Trace control.
+
+### Verified
+
+- Local browser snapshots verified the intended three-column desktop at 1440px, single-canvas tablet at 768px, and bounded mobile header/canvas at 390px. The 390px post-fix snapshot has no negative-position header control; browser console returned zero errors.
+- Web typecheck, production build, fixture reset, and `pnpm demo:e2e` passed.
+- The Codex in-app Browser plugin was unavailable, so responsive UI inspection used the configured standalone Playwright fallback.
+
+### Open items
+
+- Native ChatGPT task/voice linkage and live GPT Image 2 execution still require their respective external evidence.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 01:29 CT
+Last updated: 2026-07-14 01:30 CT
 
 ## Status
 
@@ -243,7 +243,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Add a recorded-fixture mode to `pnpm demo:e2e` for repeatable demo diagnosis, with live-provider checks kept separate.
 - [ ] Maintain and log the end-to-end acceptance path daily once the first vertical slice exists.
 - [ ] Verify the full Capture → Shape → Deliver flow in the live application.
-- [ ] Verify realistic desktop, tablet, and mobile behavior.
+- [x] Verify realistic desktop, tablet, and mobile behavior.
 - [ ] Verify schema, gate, graph, grounding, rendering, and integration tests.
 - [ ] Verify failure recovery and partial-package behavior.
 - [ ] Verify all submitted links, the repeatable recording setup, and the optional inspection instructions in a fresh ChatGPT/Codex in-app browser session.
