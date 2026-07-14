@@ -1498,3 +1498,26 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add direct Excalidraw element-to-typed-operation synchronization and an interactive browser proof.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:31 CT — Map-derived Sketch view added
+
+**Area:** Shape / GUI
+
+### Changed
+
+- Added a dedicated Sketch view that converts the current semantic Map into an ordered concept flow with source/evidence locators and an approval-state indicator.
+
+### Verified
+
+- Web typecheck and production build passed; reset recorded `pnpm demo:e2e` passed.
+
+### Decisions
+
+- Sketch is currently a deterministic projection of the persisted Map, so Map edits regenerate it immediately. It is not yet a separately versioned artifact from an approved graph; that distinction remains open.
+
+### Open items
+
+- Version approved Sketch output and add direct Excalidraw edit synchronization.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
