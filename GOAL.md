@@ -1,13 +1,13 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 00:19 CT
+Last updated: 2026-07-14 00:21 CT
 
 ## Status
 
 **Active phase:** Full implementation — integration spikes and platform foundation in parallel
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
 **Current gate:** No founder approval gate. Execute the plan autonomously and escalate only for credentials/spend, material privacy/security/licensing decisions, irreversible external actions, or an objective-changing breaking decision.
-**Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, and `gpt-realtime-2.1`. The exact `gpt-5.6` model endpoint currently returns `404 model_not_found`; resolve the correct entitled model/project during the reasoning spike before claiming live GPT-5.6 product use.
+**Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the project-specific GPT-5.6 aliases `gpt-5.6-luna`, `gpt-5.6-sol`, and `gpt-5.6-terra`. The bare `gpt-5.6` endpoint returns `404 model_not_found`; the locked runtime uses official frontier alias `gpt-5.6-sol`. A paid Responses call remains required before claiming live GPT-5.6 product use.
 
 **Hard schedule gates:**
 
@@ -92,7 +92,7 @@ The NotebookLM association is intentional category shorthand for hackathon judgi
 - Deliver is a Studio of output types over one shared grounded Workshop core, not a mandatory fixed package.
 - `Production Kit` is rejected as the output label.
 - Pipecat is deferred from the MVP; retain an adapter seam and revisit only for telephony, provider switching, or server-side audio pipelines.
-- OpenAI project reasoning and structured operations use the Responses API with `gpt-5.6`.
+- OpenAI project reasoning and structured operations use the Responses API with `gpt-5.6-sol` (the official frontier GPT-5.6 alias for this project).
 - Project grounding uses local parsing, deterministic chunks/locators, SQLite FTS5/BM25, exact text search, and standard plugin `search`/`fetch` tools. GPT-5.6 receives retrieved evidence bundles and may not mark a factual claim `verified` without durable claim→chunk→source edges. Hosted OpenAI `file_search` is an optional adapter/comparison, not a requirement.
 - Native ChatGPT voice is the primary capture path. A live spike must prove durable thread/voice-turn synchronization into WorkshopLM. If the host cannot expose the needed durable capture, fall back to a narrow `gpt-realtime-2.1` WebRTC capture surface; standard API keys remain server-only.
 - Spike A has a hard decision deadline of July 14 end of day CT. If native voice-turn synchronization is not proven by then, activate the Realtime fallback automatically as a capture-only control in the host strip or top bar. It is visually distinct from a composer and does not duplicate ChatGPT conversation.
@@ -183,7 +183,7 @@ The primary integrator selects and justifies these without separate founder appr
 
 - [x] Initialize Git and preserve dated Build Week commits.
 - [x] Scaffold the pnpm/Turborepo monorepo.
-- [ ] Create `apps/web`, `apps/worker`, and focused shared packages.
+- [x] Create `apps/web`, `apps/worker`, and focused shared packages.
 - [x] Create the unified plugin manifest, WorkshopLM skill, local MCP server, and compact status/trace widget with tested persisted-fixture tools.
 - [x] Establish linting, type checking, tests, and deterministic local fixture reset; typed environment validation remains next.
 - [ ] Record every participating Codex `/feedback` Session ID, or the explicit reason it is unavailable, and designate the primary integrator session from actual build evidence.
@@ -241,7 +241,7 @@ The primary integrator selects and justifies these without separate founder appr
 ### 11. Daily acceptance and completion verification
 
 - [x] Add a recorded-fixture mode to `pnpm demo:e2e` for repeatable demo diagnosis, with live-provider checks kept separate.
-- [x] Run and log the end-to-end acceptance path daily once the first vertical slice exists.
+- [ ] Maintain and log the end-to-end acceptance path daily once the first vertical slice exists.
 - [ ] Verify the full Capture → Shape → Deliver flow in the live application.
 - [ ] Verify realistic desktop, tablet, and mobile behavior.
 - [ ] Verify schema, gate, graph, grounding, rendering, and integration tests.

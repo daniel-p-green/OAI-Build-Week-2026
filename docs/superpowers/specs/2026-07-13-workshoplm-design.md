@@ -285,8 +285,8 @@ All OpenAI SDK usage lives in `packages/ai` behind narrow adapters.
 
 | Adapter | Model/API | Responsibility |
 | --- | --- | --- |
-| `createGroundedResponse` | Responses + `gpt-5.6` | synthesis over locally retrieved evidence bundles, questions, typed plan proposals |
-| `extractWorkshopGraph` | Responses + `gpt-5.6` | structured claims, nodes, edges, and unresolved items |
+| `createGroundedResponse` | Responses + `gpt-5.6-sol` | synthesis over locally retrieved evidence bundles, questions, typed plan proposals |
+| `extractWorkshopGraph` | Responses + `gpt-5.6-sol` | structured claims, nodes, edges, and unresolved items |
 | `syncChatGptTask` | Codex app-server protocol | account state, task linkage, durable native conversation turns |
 | `createRealtimeClientSecret` | Realtime + `gpt-realtime-2.1` | fallback browser-safe WebRTC capture only if native task/voice synchronization cannot satisfy capture |
 | `renderNarrationSegment` | Speech + `gpt-4o-mini-tts` | approved panel narration, default `marin` voice |

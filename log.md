@@ -1246,3 +1246,50 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Refresh the public GitHub plugin snapshot and repeat the installed-cache write/read smoke test; then exercise it from a fresh Codex desktop task.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:20 CT — GPT-5.6 entitlement narrowed and checklist audit corrected
+
+**Area:** Provider / Planning Integrity
+
+### Verified
+
+- A read-only authenticated model-catalog request returned `gpt-5.6-luna`, `gpt-5.6-sol`, and `gpt-5.6-terra`; direct `GET /v1/models/{id}` requests for all three returned `200`.
+- The bare `gpt-5.6` and `gpt-5.6-mini` identifiers returned `404 model_not_found`; `gpt-5` and `gpt-5.4` returned `200` but are not silent substitutes for the locked GPT-5.6 requirement.
+- The repository contains `apps/web`, `apps/worker`, and seven focused shared packages, so the corresponding foundation item now reflects the actual filesystem.
+
+### Decisions
+
+- No Responses generation call was made because it can incur paid usage. An entitled GPT-5.6 alias must pass that narrow live check before the runtime identifier or judge-facing GPT-5.6 claim changes.
+- The daily acceptance item is now an open recurring obligation. Its recorded-fixture mechanism is complete, but the full vertical slice is not yet complete.
+
+### Open items
+
+- Obtain paid-call authorization for a minimal Responses check against the candidate GPT-5.6 aliases and one real GPT Image 2 batch.
+- Native host synchronization remains unproven; retain the active capture-only fallback decision through the Spike A deadline.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:21 CT — GPT-5.6 runtime identifier repaired from official guidance
+
+**Area:** Provider / Domain Contract
+
+### Changed
+
+- Updated forward-looking reasoning and graph-extraction contracts from the unavailable bare `gpt-5.6` alias to `gpt-5.6-sol`.
+
+### Verified
+
+- Current official OpenAI model guidance identifies `gpt-5.6-sol` as the frontier GPT-5.6 model and says the bare `gpt-5.6` alias routes to it; it also recommends the Responses API for reasoning, tool calling, and multi-turn workflows.
+- The configured project previously returned `200` for `GET /v1/models/gpt-5.6-sol`, while the bare alias returned `404`.
+
+### Decisions
+
+- This is a correction of an invalid project-specific identifier, not a model downgrade or a fallback narrative. No paid generation call has been made; live product use remains unclaimed until a minimal Responses smoke check passes.
+
+### Open items
+
+- Obtain paid-call authorization for one minimal `gpt-5.6-sol` Responses request and one GPT Image 2 batch.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
