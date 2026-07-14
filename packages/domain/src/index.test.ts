@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ArtifactJson, Claim, DomainError, GraphOperation, SemanticGraph, applyGraphOperation, applyStalePropagation, assertCommandEligible, assertEligible, collectStaleDependents, deriveGates, undoGraphOperation } from "./index.js";
+import { ArtifactJson, Claim, DomainError, GraphOperation, SemanticGraph, appendGraphOperation, applyGraphOperation, applyStalePropagation, assertCommandEligible, assertEligible, collectStaleDependents, deriveGates, parseGraphState, serializeGraphState, undoGraphOperation, undoLatestGraphOperation } from "./index.js";
 
 const now = "2026-07-13T12:00:00.000Z";
 const ids = { workshopId: "workshop-1", graphId: "graph-1", nodeA: "node-a", nodeB: "node-b", edge: "edge-1", claim: "claim-1", source: "source-1", chunk: "chunk-1", artifact: "artifact-1" };
@@ -10,6 +10,19 @@ describe("domain contracts", () => {
   it("applies graph operations and undoes an AI mutation", () => {
     const result = applyGraphOperation(graph(), GraphOperation.parse({ type: "add_node", node: { id: ids.nodeB, kind: "idea", label: "Narrative", evidenceState: "derived" } }));
     expect(result.graph.nodes).toHaveLength(2); expect(undoGraphOperation(result.graph, result.inverse).nodes).toHaveLength(1);
+  });
+  it("persists typed graph operations, hydrates safely, and undoes the latest operation", () => {
+    const history = { graphVersionId: ids.graphId as never, records: [] };
+    const appended = appendGraphOperation(graph(), history, GraphOperation.parse({ type: "add_node", node: { id: ids.nodeB, kind: "idea", label: "Narrative", evidenceState: "derived" } }), { id: "operation-1", actor: "assistant", createdAt: now });
+    const hydrated = parseGraphState(serializeGraphState(appended.graph, appended.history));
+    expect(hydrated.history.records[0].operation.type).toBe("add_node");
+    const undone = undoLatestGraphOperation(hydrated.graph, hydrated.history);
+    expect(undone.graph.nodes.map((node) => node.id)).toEqual([ids.nodeA]);
+    expect(undone.record.status).toBe("undone");
+  });
+  it("rejects graph snapshots that are malformed or attached to another graph", () => {
+    expect(() => parseGraphState("not json")).toThrow(expect.objectContaining({ code: "INVALID" }));
+    expect(() => appendGraphOperation(graph(), { graphVersionId: "another-graph" as never, records: [] }, GraphOperation.parse({ type: "add_node", node: { id: ids.nodeB, kind: "idea", label: "Narrative", evidenceState: "derived" } }), { id: "operation-1", actor: "user", createdAt: now })).toThrow(/different graph version/);
   });
   it("prevents dangling edges and locked-node mutations", () => {
     expect(() => applyGraphOperation(graph(), GraphOperation.parse({ type: "add_edge", edge: { id: ids.edge, from: ids.nodeA, to: ids.nodeB, kind: "supports" } }))).toThrow(DomainError);

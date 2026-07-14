@@ -204,6 +204,58 @@ export function undoGraphOperation(graph: SemanticGraph, inverse: GraphOperation
   return inverse.reduce((current, operation) => applyGraphOperation(current, operation).graph, graph);
 }
 
+/** JSON-safe audit history; persistence layers store this record rather than executable callbacks. */
+export const GraphOperationRecord = z.object({
+  id: z.string().min(1),
+  graphVersionId: VersionId,
+  operation: GraphOperation,
+  inverse: z.array(GraphOperation).min(1),
+  actor: z.enum(["user", "assistant", "system"]),
+  createdAt: z.string().datetime(),
+  status: z.enum(["applied", "undone"]),
+}).strict();
+export type GraphOperationRecord = z.infer<typeof GraphOperationRecord>;
+export const GraphOperationHistory = z.object({ graphVersionId: VersionId, records: z.array(GraphOperationRecord) }).strict().superRefine((history, context) => {
+  if (history.records.some((record) => record.graphVersionId !== history.graphVersionId)) context.addIssue({ code: z.ZodIssueCode.custom, message: "history records must belong to the current graph" });
+});
+export type GraphOperationHistory = z.infer<typeof GraphOperationHistory>;
+export const GraphStateSnapshot = z.object({ schemaVersion: z.literal(1), graph: SemanticGraph, history: GraphOperationHistory }).strict().superRefine((snapshot, context) => {
+  if (snapshot.graph.id !== snapshot.history.graphVersionId) context.addIssue({ code: z.ZodIssueCode.custom, message: "snapshot graph and history must share a graph version" });
+});
+export type GraphStateSnapshot = z.infer<typeof GraphStateSnapshot>;
+export function appendGraphOperation(
+  graph: SemanticGraph,
+  history: GraphOperationHistory,
+  rawOperation: GraphOperation,
+  metadata: Pick<GraphOperationRecord, "id" | "actor" | "createdAt">,
+): { graph: SemanticGraph; history: GraphOperationHistory; record: GraphOperationRecord } {
+  const parsedGraph = SemanticGraph.parse(graph);
+  const parsedHistory = GraphOperationHistory.parse(history);
+  if (parsedGraph.id !== parsedHistory.graphVersionId) throw new DomainError("CONFLICT", "graph history belongs to a different graph version");
+  const applied = applyGraphOperation(parsedGraph, rawOperation);
+  const record = GraphOperationRecord.parse({ ...metadata, graphVersionId: parsedGraph.id, operation: rawOperation, inverse: applied.inverse, status: "applied" });
+  return { graph: applied.graph, history: GraphOperationHistory.parse({ ...parsedHistory, records: [...parsedHistory.records, record] }), record };
+}
+export function undoLatestGraphOperation(graph: SemanticGraph, history: GraphOperationHistory): { graph: SemanticGraph; history: GraphOperationHistory; record: GraphOperationRecord } {
+  const parsedGraph = SemanticGraph.parse(graph);
+  const parsedHistory = GraphOperationHistory.parse(history);
+  if (parsedGraph.id !== parsedHistory.graphVersionId) throw new DomainError("CONFLICT", "graph history belongs to a different graph version");
+  const recordIndex = parsedHistory.records.map((record) => record.status).lastIndexOf("applied");
+  if (recordIndex < 0) throw new DomainError("NOT_FOUND", "no applied graph operation is available to undo");
+  const record = parsedHistory.records[recordIndex];
+  const undone = undoGraphOperation(parsedGraph, record.inverse);
+  const records = [...parsedHistory.records];
+  records[recordIndex] = { ...record, status: "undone" };
+  return { graph: undone, history: GraphOperationHistory.parse({ ...parsedHistory, records }), record: records[recordIndex] };
+}
+export function serializeGraphState(graph: SemanticGraph, history: GraphOperationHistory): string {
+  return JSON.stringify(GraphStateSnapshot.parse({ schemaVersion: 1, graph, history }));
+}
+export function parseGraphState(serialized: string): GraphStateSnapshot {
+  try { return GraphStateSnapshot.parse(JSON.parse(serialized)); }
+  catch (error) { throw new DomainError("INVALID", `invalid graph state snapshot: ${error instanceof Error ? error.message : "unknown error"}`); }
+}
+
 export const GateFlags = z.object({
   transcript_ready: z.boolean(), board_approved: z.boolean(), brief_ready: z.boolean(), style_locked: z.boolean(), storyboard_approved: z.boolean(), video_rendered: z.boolean(),
 }).strict();
