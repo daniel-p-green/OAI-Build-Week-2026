@@ -1831,3 +1831,30 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - The website capture remains intentionally bounded to public title, palette, and reference URL; richer asset extraction needs a privacy/licensing review before it can become a stronger claim.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:17 CT — Approved Map materializes executable FRAME artifacts
+
+**Area:** Shape / Brief / Local artifacts
+
+### Changed
+
+- `Approve map as brief` now writes a versioned `generated/FRAME-vN.md` and `generated/FRAME-vN.json` alongside the persisted approval state.
+- The JSON representation records the graph revision, outcome, grounded node evidence, locators, and approval timestamp. The Brief UI exposes both local artifact paths.
+- Added a worker proof test that reads and parses both brief artifacts after approval.
+
+### Verified
+
+- Worker tests passed: 19 tests across 3 files. Worker/web typechecks and the web production build passed.
+- A live local API approval returned `generated/FRAME-v1.md` and `generated/FRAME-v1.json`; the executable JSON was read from the data root and contained schema version 1, graph revision 0, and all three visible evidence locators.
+- The local browser Brief view displayed `generated/FRAME-v1.md · generated/FRAME-v1.json`. The Codex in-app Browser plugin was unavailable, so this UI replay used the configured standalone Playwright fallback.
+
+### Decisions
+
+- The executable brief is a concise deterministic projection of the approved graph, not an ungrounded model-generated replacement for it.
+
+### Open items
+
+- Map approval still needs a fully synchronized direct Excalidraw editing surface and an approved-version Sketch, tracked separately in Shape.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

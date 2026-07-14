@@ -20,7 +20,7 @@ export type WorkshopCandidate = { id: string; category: "goal" | "audience" | "c
 export type WorkshopMapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
 export type WorkshopTranscriptSegment = { id: string; origin: "manual_import" | "realtime_fallback"; text: string; capturedAt: string };
 export type WorkshopMapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number };
-export type WorkshopFrame = { version: number; markdown: string; stale: boolean; approvedAt: string };
+export type WorkshopFrame = { version: number; markdown: string; markdownPath: string; executablePath: string; stale: boolean; approvedAt: string };
 export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop"; referenceUrl?: string; lockedAt: string; stale: boolean };
 export type WorkshopDesignArtifact = { version: number; styleVersion: number; markdownPath: string; tokensPath: string; stale: boolean; createdAt: string };
 export type ManualStyleInput = { name?: string; accent?: string; ink?: string; paper?: string; logos?: string[]; licensedFonts?: string[]; references?: string[]; negativeRules?: string[]; intentProfile?: WorkshopStyle["intentProfile"] };
@@ -64,10 +64,12 @@ function mapNodesFor(graph: SemanticGraphType, existing: WorkshopMapNode[]): Wor
   return graph.nodes.map((node, index) => { const prior = existing.find((item) => `node-${item.id}` === node.id); const metadata = node.metadata as { body?: unknown; locator?: unknown; sourceId?: unknown }; return { id: node.id.replace(/^node-/, ""), title: node.label, body: typeof metadata.body === "string" ? metadata.body : prior?.body ?? node.label, kind: node.evidenceState === "verified" ? "grounded" : node.evidenceState === "unverified" ? "derived" : node.evidenceState, locator: typeof metadata.locator === "string" ? metadata.locator : prior?.locator ?? "Map operation", sourceId: typeof metadata.sourceId === "string" ? metadata.sourceId : prior?.sourceId, x: prior?.x ?? 16 + (index * 15) % 65, y: prior?.y ?? 18 + (index * 19) % 58 }; });
 }
 function mapEdgesFor(graph: SemanticGraphType): WorkshopMapEdge[] { return graph.edges.map((edge) => ({ ...edge, from: edge.from.replace(/^node-/, ""), to: edge.to.replace(/^node-/, "") })); }
-function frameFor(state: WorkshopState, approvedAt: string): WorkshopFrame {
+function frameFor(state: WorkshopState, approvedAt: string, root?: string): WorkshopFrame {
   const core = state.mapNodes.filter((node) => node.kind !== "creative").slice(0, 3);
   const evidence = core.map((node) => `- ${node.title}: ${node.body} (${node.locator})`).join("\n");
-  return { version: (state.frame?.version ?? 0) + 1, approvedAt, stale: false, markdown: `# FRAME.md\n\n## Outcome\n${core[0]?.body ?? "Turn raw thinking into finished work."}\n\n## Evidence\n${evidence}\n\n## Production proof\nShow the approved Map, source locators, and a finished output in one continuous path.\n` };
+  const version = (state.frame?.version ?? 0) + 1; const markdown = `# FRAME.md\n\n## Outcome\n${core[0]?.body ?? "Turn raw thinking into finished work."}\n\n## Evidence\n${evidence}\n\n## Production proof\nShow the approved Map, source locators, and a finished output in one continuous path.\n`; const dataRoot = root ?? repositoryDataRoot(); const generated = join(dataRoot, "generated"); const markdownPath = `generated/FRAME-v${version}.md`; const executablePath = `generated/FRAME-v${version}.json`;
+  mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, executablePath), `${JSON.stringify({ schemaVersion: 1, frameVersion: version, graphRevision: graphFor(state).graph.revision, outcome: core[0]?.body ?? "Turn raw thinking into finished work.", evidence: core.map((node) => ({ nodeId: node.id, title: node.title, body: node.body, locator: node.locator, sourceId: node.sourceId })), productionProof: "Show the approved Map, source locators, and a finished output in one continuous path.", approvedAt }, null, 2)}\n`, "utf8");
+  return { version, approvedAt, stale: false, markdown, markdownPath, executablePath };
 }
 export function applyMapOperation(operation: unknown, root?: string): WorkshopState {
   const current = readWorkshopState(root); const snapshot = graphFor(current); const parsed = GraphOperation.parse(operation);
@@ -187,7 +189,7 @@ export function updateStoryboardPanel(panelId: string, patch: Pick<StoryboardPan
 export function setVideoState(videoState: WorkshopState["videoState"], root?: string) { const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); return write({ ...current, videoState, firstRenderedOutputAt: videoState === "rendered" ? current.firstRenderedOutputAt ?? updatedAt : current.firstRenderedOutputAt, updatedAt }, root); }
 export function applyWorkshopAction(action: "approveBrief" | "lockManualStyle" | "approveStoryboard" | "renderVideo", root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
-  if (action === "approveBrief") return write({ ...current, frame: frameFor(current, updatedAt), briefApproved: true, storyboardApproved: false, videoState: "blocked", updatedAt }, root);
+  if (action === "approveBrief") return write({ ...current, frame: frameFor(current, updatedAt, root), briefApproved: true, storyboardApproved: false, videoState: "blocked", updatedAt }, root);
   if (action === "lockManualStyle") return lockManualStyle({}, root);
   if (action === "approveStoryboard") {
     if (!current.briefApproved) throw new Error("Storyboard approval requires an approved current brief.");
