@@ -30,7 +30,7 @@ export type WorkshopVisualDna = { version: number; styleVersion: number; palette
 export type WorkshopAssetPlan = { version: number; graphRevision: number; briefVersion: number; styleVersion: number; visualDnaVersion?: number; evidenceClaimIds: string[]; items: { id: string; outputType: "deck" | "infographic" | "images" | "storyboard" | "video"; title: string; prompt: string; locator: string }[]; stale: boolean; createdAt: string };
 export type StoryboardPanel = { id: string; title: string; narration: string; durationSeconds: number; approved: boolean; stale: boolean };
 export type WorkshopStoryboard = { version: number; panels: StoryboardPanel[]; stale: boolean };
-export type ImageBatchPanel = { id: string; version: number; prompt: string; state: "planned" | "selected_for_regeneration"; referenceId: string };
+export type ImageBatchPanel = { id: string; version: number; prompt: string; state: "planned" | "selected_for_regeneration" | "failed"; referenceId: string; error?: string };
 export type WorkshopImageBatch = { id: string; styleVersion: number; referenceId: string; panels: ImageBatchPanel[]; stale: boolean; createdAt: string };
 export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; artifactPath: string; claimIds: string[]; stale: boolean; createdAt: string };
 export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; outputs: WorkshopOutput[]; graphState?: string; updatedAt: string };
@@ -195,7 +195,11 @@ export function createImageBatch(root?: string): WorkshopState {
 }
 export function selectImagePanelForRegeneration(panelId: string, root?: string): WorkshopState {
   const current = readWorkshopState(root); if (!current.imageBatch || current.imageBatch.stale) throw new Error("A current image batch is required."); const found = current.imageBatch.panels.some((panel) => panel.id === panelId); if (!found) throw new Error(`Image panel not found: ${panelId}.`);
-  return write({ ...current, imageBatch: { ...current.imageBatch, panels: current.imageBatch.panels.map((panel) => panel.id === panelId ? { ...panel, version: panel.version + 1, state: "selected_for_regeneration" } : panel) }, updatedAt: new Date().toISOString() }, root);
+  return write({ ...current, imageBatch: { ...current.imageBatch, panels: current.imageBatch.panels.map((panel) => panel.id === panelId ? { ...panel, version: panel.version + 1, state: "selected_for_regeneration", error: undefined } : panel) }, updatedAt: new Date().toISOString() }, root);
+}
+export function markImagePanelFailed(panelId: string, error: string, root?: string): WorkshopState {
+  const current = readWorkshopState(root); if (!current.imageBatch || current.imageBatch.stale) throw new Error("A current image batch is required."); const message = error.trim(); if (!message) throw new Error("A failed image panel requires an error message."); const found = current.imageBatch.panels.some((panel) => panel.id === panelId); if (!found) throw new Error(`Image panel not found: ${panelId}.`);
+  return write({ ...current, imageBatch: { ...current.imageBatch, panels: current.imageBatch.panels.map((panel) => panel.id === panelId ? { ...panel, state: "failed", error: message } : panel) }, updatedAt: new Date().toISOString() }, root);
 }
 export function updateStoryboardPanel(panelId: string, patch: Pick<StoryboardPanel, "title" | "narration" | "durationSeconds">, root?: string): WorkshopState {
   const current = readWorkshopState(root); const index = current.storyboard.panels.findIndex((panel) => panel.id === panelId); if (index < 0) throw new Error(`Storyboard panel not found: ${panelId}.`);

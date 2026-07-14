@@ -2254,3 +2254,28 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Public repository visibility does not prove final README completeness, public demo video, Devpost submission, or provider-backed feature claims.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:47 CT — Partial image output recovery made durable
+
+**Area:** Studio / Failure recovery
+
+### Changed
+
+- Added a durable failed state and error message for individual image-batch panels.
+- A failed panel is shown honestly in Studio as **Failed · Retry**; selective retry clears only its error and increments only its own version.
+
+### Verified
+
+- Worker tests passed: 26 tests across 3 files. The partial-recovery test creates a source-traceable deck, marks image panel 2 failed, proves the deck remains current, then proves retry changes only panel 2.
+- Worker and web typechecks passed.
+
+### Decisions
+
+- This implements the locked recovery rule that an image-panel failure must not invalidate an already completed deck. It is a deterministic provider-adapter state, not a claim that live GPT Image generation has run.
+
+### Open items
+
+- Live GPT Image 2 error mapping and exponential provider retry remain pending paid-provider authorization.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
