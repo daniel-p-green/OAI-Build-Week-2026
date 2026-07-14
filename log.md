@@ -1723,3 +1723,30 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add separately previewable/approvable Visual DNA and richer website-derived foundation extraction beyond palette/title/reference URL.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:01 CT — Versioned Visual DNA review added
+
+**Area:** Style / GUI / Versioning
+
+### Changed
+
+- Added a distinct Visual DNA record derived from the current Style Foundation: palette, composition, texture, image, and negative-rule guidance, with preview, explicit approval, version, and stale state.
+- Added Design controls for creating a preview and approving it; a later style lock stales and unapproves the prior Visual DNA.
+
+### Verified
+
+- Worker tests passed: 17 tests across 3 files, including Visual DNA creation, approval, versioning, and style-change staleness.
+- Worker/web typechecks, web production build, fixture reset, and `pnpm demo:e2e` passed.
+- Production API replay locked a board-deck foundation, created Visual DNA v1, and approved it. The persisted record included the locked palette, executive composition rule, reference anchor, negative rule, and `approved: true`.
+- Live local Design view displayed `Visual DNA v1 · approved` with the approval control correctly disabled.
+
+### Decisions
+
+- Visual DNA is intentionally a reviewable derivative of Style Foundation rather than another global theme; it becomes stale whenever the upstream foundation changes.
+
+### Open items
+
+- Feed approved Visual DNA rules into the live GPT Image 2 batch when provider spend is authorized.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

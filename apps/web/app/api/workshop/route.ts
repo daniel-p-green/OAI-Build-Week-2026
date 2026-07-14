@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { applyMapOperation, applyWorkshopAction, captureFallbackTranscript, createImageBatch, extractWorkshopCandidates, generateOutput, ingestPdfFile, ingestSource, ingestUrl, lockManualStyle, lockWebsiteStyle, readWorkshopState, selectImagePanelForRegeneration, type ManualStyleInput, type SourceIngestion, undoMapOperation, updateStoryboardPanel } from "../../../../worker/src/workshop-service";
+import { applyMapOperation, applyWorkshopAction, approveVisualDna, captureFallbackTranscript, createImageBatch, createVisualDna, extractWorkshopCandidates, generateOutput, ingestPdfFile, ingestSource, ingestUrl, lockManualStyle, lockWebsiteStyle, readWorkshopState, selectImagePanelForRegeneration, type ManualStyleInput, type SourceIngestion, undoMapOperation, updateStoryboardPanel } from "../../../../worker/src/workshop-service";
 
 export const runtime = "nodejs";
-type Action = "approveBrief" | "lockManualStyle" | "lockWebsiteStyle" | "approveStoryboard" | "renderVideo" | "ingestSource" | "captureFallbackTranscript" | "ingestUrl" | "ingestPdfFile" | "extractCandidates" | "mapOperation" | "undoMapOperation" | "generateOutput" | "createImageBatch" | "regenerateImagePanel" | "updateStoryboardPanel";
+type Action = "approveBrief" | "lockManualStyle" | "lockWebsiteStyle" | "createVisualDna" | "approveVisualDna" | "approveStoryboard" | "renderVideo" | "ingestSource" | "captureFallbackTranscript" | "ingestUrl" | "ingestPdfFile" | "extractCandidates" | "mapOperation" | "undoMapOperation" | "generateOutput" | "createImageBatch" | "regenerateImagePanel" | "updateStoryboardPanel";
 type RequestBody = { action?: Action; source?: SourceIngestion; text?: string; url?: string; filePath?: string; permission?: "private" | "sanitized" | "shareable"; panelId?: string; operation?: unknown; outputType?: "deck" | "infographic"; manualStyle?: ManualStyleInput; panel?: { id: string; title: string; narration: string; durationSeconds: number } };
 
 export async function GET() { return NextResponse.json(readWorkshopState()); }
@@ -35,6 +35,8 @@ export async function POST(request: NextRequest) {
     if (body.action === "ingestPdfFile") { if (!body.filePath) return NextResponse.json({ error: "filePath is required" }, { status: 400 }); return NextResponse.json(await ingestPdfFile(body.filePath, undefined, body.permission)); }
     if (body.action === "extractCandidates") return NextResponse.json(extractWorkshopCandidates());
     if (body.action === "lockManualStyle") return NextResponse.json(lockManualStyle(body.manualStyle));
+    if (body.action === "createVisualDna") return NextResponse.json(createVisualDna());
+    if (body.action === "approveVisualDna") return NextResponse.json(approveVisualDna());
     if (body.action === "lockWebsiteStyle") { if (!body.url) return NextResponse.json({ error: "url is required" }, { status: 400 }); return NextResponse.json(await lockWebsiteStyle(body.url)); }
     if (body.action === "mapOperation") { if (!body.operation) return NextResponse.json({ error: "operation is required" }, { status: 400 }); return NextResponse.json(applyMapOperation(body.operation)); }
     if (body.action === "undoMapOperation") return NextResponse.json(undoMapOperation());
