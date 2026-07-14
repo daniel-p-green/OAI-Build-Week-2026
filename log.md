@@ -772,3 +772,30 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add website style ingestion, durable generated-output history, editable storyboard panels, complete source chunks/claims, and transitive stale states across production artifacts.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-13 23:43 CT — Durable evidence chunks and plugin retrieval
+
+**Area:** Capture / Plugin / Grounding
+
+### Changed
+
+- Local sanitized-source ingestion now persists normalized chunks and verified claim records with source and chunk locators, alongside its source and Map records.
+- The source form can read supported local text files into the same normalized ingestion path.
+- The plugin's `search` and `fetch` tools now query persisted chunks and linked claims, ranking matching evidence and returning explicit missing-chunk errors rather than placeholder fixture results.
+
+### Verified
+
+- Worker tests passed 6/6 and worker typecheck passed; the ingestion test proves a source becomes two linked claims, two durable chunks, and an exact local search result.
+- Plugin tests passed 5/5, including its stdio fixture search/fetch flow; plugin typecheck passed.
+- Web production build, `pnpm demo:reset`, and recorded `pnpm demo:e2e` passed.
+
+### Decisions
+
+- The browser file affordance intentionally accepts text-like local files only. PDF parsing and safe URL retrieval remain open adapters, so the UI does not pretend arbitrary file/URL import is complete.
+
+### Open items
+
+- Add PDF and safe URL adapters, claim selection/trace UI, full graph controls, output history, editable storyboard panels, and transitive stale propagation.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
