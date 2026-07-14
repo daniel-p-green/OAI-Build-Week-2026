@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 02:14 CT
+Last updated: 2026-07-14 UI simplification audit
 
 ## Status
 
@@ -89,7 +89,7 @@ The NotebookLM association is intentional category shorthand for hackathon judgi
 - The primary demo scenario is meta: WorkshopLM creates the assets and final video used for its own Build Week submission.
 - WorkshopLM is organized into Workshops; each Workshop is the durable top-level container equivalent to a Notebook in NotebookLM.
 - A Workshop contains its sources, conversation, semantic map, approved brief, style, and outputs.
-- Preserve NotebookLM's familiar mental model across two native surfaces: ChatGPT owns Conversation; the in-app browser owns a three-panel visual Workshop with Sources left, Map/artifact workspace center, and Studio right.
+- Preserve NotebookLM's familiar Sources → central work → Outputs mental model across two native surfaces, but use progressive disclosure: ChatGPT owns Conversation; the in-app browser defaults to one visual canvas with optional Sources and contextual creation/detail drawers.
 - Deliver is a Studio of output types over one shared grounded Workshop core, not a mandatory fixed package.
 - `Production Kit` is rejected as the output label.
 - Pipecat is deferred from the MVP; retain an adapter seam and revisit only for telephony, provider switching, or server-side audio pipelines.
@@ -159,6 +159,15 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Approve the meta-demo scenario in which WorkshopLM creates its own submission assets and video.
 - [x] Approve Studio / Output type / Output as the replacement for the rejected fixed package label.
 - [x] Lock exactly two approval moments for the product and three-minute demo: brief and storyboard.
+- [x] Audit the live MVP against NotebookLM and the official Apps in ChatGPT UI guidance; record the simplification direction in `research/ui-ux-simplification-audit-2026-07-14.md`.
+- [x] Replace the persistent three-rail/six-tab design contract with three destinations—Map, Brief, Outputs—and progressive disclosure in `DESIGN.md`.
+- [ ] Implement the simplified OpenAI-aligned shell: system tokens/type, Map-first canvas, Sources drawer, Create sheet, contextual inspector, and no permanent host strip.
+- [ ] Move Style into Brief settings; move Sketch and Storyboard into Outputs; move Trace into citation/Details drawers.
+- [ ] Replace metadata-only Studio rows with a visual Outputs gallery and real deck, infographic, image-batch, storyboard, and video previews.
+- [ ] Remove raw artifact paths, internal IDs, absent trace stages, and gate implementation language from normal UI while preserving them under Details.
+- [ ] Make each screen expose no more than seven immediate actions and exactly one visually dominant next action when a gate is ready.
+- [ ] Add frontend tests for progressive disclosure, contextual citations, two approval bars, visual output previews, and suppression of incomplete provenance rows.
+- [ ] Re-verify the simplified UI at 1200×800, 1024×768, and mobile review width; capture fresh screenshots for the demo storyboard.
 
 ### 3. Specification and implementation plan
 
@@ -254,6 +263,7 @@ The primary integrator selects and justifies these without separate founder appr
 
 - [Public GitHub repository](https://github.com/daniel-p-green/OAI-Build-Week-2026)
 - [WorkshopLM interface design system](DESIGN.md)
+- [UI/UX simplification audit](research/ui-ux-simplification-audit-2026-07-14.md)
 - [Product opportunity](research/product-opportunity.md)
 - [Workflow map](research/workflow-map.md)
 - [NotebookLM live user-flow map](research/notebooklm-user-flow.md)

@@ -1,16 +1,22 @@
 # WorkshopLM Interface Design System
 
-Status: locked direction for the hackathon build
+Status: revised simplification direction for the hackathon build (2026-07-14)
 
 This file governs WorkshopLM's product UI. Per-Workshop brand systems generated from customer sources are separate artifacts stored with that Workshop as `DESIGN.md` plus machine-readable tokens.
 
 ## Design thesis
 
-WorkshopLM is an **editorial thinking instrument**, not an AI dashboard.
+WorkshopLM is a **conversation-native thinking and production canvas**, not an AI dashboard.
 
-It should feel like a serious team spread a project across a beautiful physical worktable: source folders at hand, the thinking visible in the center, and production outputs arranged within reach. The interface borrows the composure and restraint of OpenAI's current ChatGPT/Codex surfaces without copying their chrome or implying an official OpenAI product.
+It should feel native inside ChatGPT/Codex: one calm artifact surface, a clear next action, and complexity revealed only in context. Customer brand expression belongs inside generated work; WorkshopLM's structural chrome inherits the host's neutral system language without copying OpenAI marks or implying an official OpenAI product.
 
-The memorable visual is **evidence becoming structure**: a native ChatGPT conversation creates cited cards on a spacious Map, thin evidence threads lead back to sources, and the same cards visibly become polished outputs in Studio.
+The memorable visual remains **evidence becoming structure**: a native ChatGPT conversation creates cited cards on a spacious Map, those cards become an approved brief, and the same content becomes a gallery of polished outputs.
+
+## Simplification rule
+
+The product may be technically deep, but the default viewport must not expose the whole system. WorkshopLM has three user-facing destinations: **Map, Brief, and Outputs**. Sources, Style, Trace, Sketch, Storyboard, jobs, versions, and technical provenance are contextual drawers, sheets, output details, or disclosures—not peer navigation modes.
+
+This rule supersedes older clauses in this document that prescribe two permanently visible rails, six center tabs, a persistent host strip, or Studio as an always-open production console.
 
 ## Surface model
 
@@ -21,15 +27,15 @@ WorkshopLM has two coordinated native surfaces:
 
 The browser contains no second chat transcript or composer. A quiet `Continue in ChatGPT` control returns focus to the host conversation. If native voice synchronization fails its July 14 spike deadline, a capture-only microphone control may appear in the host strip or top bar. It has no text field or conversation history and is visually labeled as capture rather than chat.
 
-Compact plugin widgets may show Workshop status, an evidence trace, or an output preview. They may never reproduce the Map, storyboard editor, image-batch browser, or full Studio.
+The inline plugin widget is a single-purpose doorway. It shows Workshop title, source count, current outcome/status, and at most two actions: one primary `Open workshop` action and one optional contextual secondary action. It has no tabs, nested navigation, or duplicate composer.
 
 ## Visual atmosphere
 
-Calm, exact, tactile, and editorial. Dense enough for professional work, spacious enough that the Map remains legible. Warm paper replaces sterile gray dashboards. Structure comes from hairlines, alignment, and typography—not a stack of rounded floating cards.
+Calm, exact, and native to the ChatGPT/Codex environment. The Map stays spacious; generated artifacts carry the editorial personality. Structure comes from alignment, system spacing, restrained hairlines, and progressive disclosure—not a stack of rounded floating cards.
 
 Avoid:
 
-- purple AI gradients, glassmorphism, neon glows, and chat bubbles;
+- decorative AI gradients, glassmorphism, neon glows, and chat bubbles;
 - excessive pills, giant empty cards, and decorative metrics;
 - copying NotebookLM colors or Google's visual identity;
 - hiding evidence, approvals, or stale states behind hover-only UI;
@@ -39,16 +45,16 @@ Avoid:
 
 | Token | Value | Role |
 | --- | --- | --- |
-| `paper` | `#F4F2EC` | Map canvas and overall atmosphere |
-| `surface` | `#FCFBF8` | Rails, inspectors, sheets, menus |
+| `paper` | `#FFFFFF` | Primary canvas and artifact background |
+| `surface` | `#F7F7F8` | Drawers, inspectors, sheets, menus |
 | `white` | `#FFFFFF` | Focused artifact pages and selected cards |
-| `ink` | `#171816` | Primary text and high-emphasis strokes |
-| `ink-muted` | `#686963` | Secondary labels and metadata |
-| `hairline` | `#D9D7D0` | Dividers, card outlines, canvas grid |
-| `action` | `#1668E3` | Primary actions, active tool, current selection |
-| `action-soft` | `#E8F0FD` | Selected rows and focused evidence paths |
-| `grounded` | `#177A55` | Verified source-backed claims |
-| `grounded-soft` | `#E4F2EB` | Grounded card edge/background accent |
+| `ink` | `#0D0D0D` | Primary text and high-emphasis strokes |
+| `ink-muted` | `#6B6B6B` | Secondary labels and metadata |
+| `hairline` | `#E5E5E5` | Dividers, card outlines, canvas grid |
+| `action` | `#0D0D0D` | Primary actions and highest-emphasis controls |
+| `action-soft` | `#ECECF1` | Selected rows and focused evidence paths |
+| `grounded` | `#10A37F` | Verified source-backed claims |
+| `grounded-soft` | `#E7F5F0` | Grounded card edge/background accent |
 | `derived` | `#9A650F` | Reasoned but not directly quoted content |
 | `derived-soft` | `#F7EDD8` | Derived content accent |
 | `creative` | `#7356B8` | Deliberately invented visual/story content |
@@ -60,13 +66,14 @@ Color communicates evidence state only when paired with an icon and text label.
 
 ## Typography
 
-- **Interface:** Instrument Sans, with system sans fallback. Compact, human, and neutral enough for dense professional work.
-- **Workshop and artifact titles:** Newsreader. Use sparingly for a confident editorial voice; never for controls or long body copy.
-- **Evidence, IDs, locators, timing, and provenance:** IBM Plex Mono.
+- **Interface:** inherit the host/platform system font stack.
+- **Workshop titles:** use the same system family with restrained weight and size changes.
+- **Generated artifacts:** may use the active Workshop style library inside the artifact preview only.
+- **Evidence, locators, timing, and provenance:** use system body-small styling; monospace is reserved for explicit technical detail views.
 - Default body size: 14px with 1.45 line height.
 - Rail metadata: 12px; controls never smaller than 12px.
-- Workshop title: 22–26px Newsreader, medium weight.
-- Artifact titles: 30–42px Newsreader inside focused previews.
+- Workshop title: 18–22px, semibold.
+- Artifact titles: follow the generated artifact's own style inside focused previews.
 
 All shipped fonts must have a verified redistribution license or use local/system fallbacks.
 
@@ -76,26 +83,24 @@ Design first for the ChatGPT in-app browser at approximately 1200×800, then ver
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────┐
-│ Workshop / title     sync + intent + account       trace  more      │ 52
-├──────────────┬──────────────────────────────────────┬────────────────┤
-│ Sources      │ Map · Brief · Design · Story · View │ Studio         │
-│ 264 px       │ flexible, visual center             │ 320 px         │
-│              │                                      │                │
-│ groups       │ cited semantic cards / artifact     │ output types   │
-│ source rows  │ preview / storyboard                │ jobs/history   │
-│ evidence     │                                      │ approvals      │
-│              │                                      │                │
-├──────────────┴──────────────────────────────────────┴────────────────┤
-│ host status · last grounded update          Continue in ChatGPT  ↗  │ 36
+│ Workshop title   Sources 3    Map · Brief · Outputs       Create    │ 52
+├──────────────────────────────────────────────────────────────────────┤
+│                                                                      │
+│                     one focused canvas                               │
+│              Map / Brief / selected Output                           │
+│                                                                      │
+│  optional source drawer                    optional context inspector│
+│                                                                      │
+│                 contextual approval bar when ready                   │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-- Top bar: 52px, flat surface, one hairline bottom border.
-- Sources rail: 264px default, resizable 220–360px, collapsible to a 48px icon rail.
-- Studio rail: 320px default, resizable 280–400px, collapsible to a 48px status rail.
-- Center: never narrower than 560px on desktop. It receives all surplus width.
-- Bottom host strip: 36px and visually quiet. It shows linked ChatGPT task state and the return action; it is not a composer. The spike-gated Realtime fallback may add one compact capture-only microphone control here.
-- Rails sit flush with the canvas. Use borders, not detached floating panels.
+- Top bar: 52px, flat white surface, one hairline bottom border.
+- Sources: closed by default; a 280–320px drawer opens from a labeled count button.
+- Creation: one `Create` button opens an output-type sheet. There is no permanent Studio rail.
+- Context inspector: closed by default and appears only after selecting a Map node, brief field, or output element.
+- Center: at least 80% of default workspace width and never narrower than 640px on desktop.
+- Host synchronization and technical state live under Details. Do not reserve a permanent bottom strip.
 
 ## Primary screens
 
@@ -140,15 +145,15 @@ Clicking a source opens an adjacent evidence sheet over part of the center, not 
 
 Editing a field previews exactly which outputs would become stale. Style review uses real palette, type, logo, image-treatment, and layout previews—not a JSON form.
 
-### 5. Studio rail
+### 5. Outputs gallery and Create sheet
 
-Studio is a production queue and output history, not a gallery of prompt cards.
+Outputs is a visual gallery of finished and in-progress work. Every completed output has a real thumbnail or playable preview above its metadata.
 
-- Top: five compact Output type actions—Deck, Infographic, Images, Storyboard, Video.
-- Middle: active jobs with real progress stages and cancellation.
-- Bottom: durable output history grouped by approved brief/style version.
-- Current, stale, failed, and partial outputs remain visible and honest.
-- Output-set selection is a subtle multi-select mode, not a permanent package metaphor.
+- One `Create` button opens five output types—Deck, Infographic, Images, Storyboard, and Video.
+- The default gallery shows durable outputs grouped by current brief/style version.
+- A compact activity disclosure shows real job stages, cancellation, failures, and partial success.
+- Current, stale, failed, and partial outputs remain visible and honest without exposing internal artifact paths.
+- Output-set selection is a temporary multi-select action, not permanent chrome.
 
 ### 6. Image batch
 
@@ -160,7 +165,7 @@ Use a horizontal filmstrip above a large selected-panel editor. Every panel disp
 
 ### 8. Provenance / trace
 
-Trace is a purposeful overlay that answers “why is this here?” It displays a vertical chain:
+Trace is a contextual evidence drawer opened from a citation or `Why this?` control. It answers “why is this here?” and displays only the complete available chain:
 
 ```text
 source locator → evidence chunk → claim → Map node → brief block → output block
@@ -192,8 +197,8 @@ No looping ambient animation. Standard transitions are 140–220ms; the signatur
 
 ## Responsive behavior
 
-- **Wide desktop (≥1280):** full Sources + center + Studio.
-- **Compact desktop/tablet (800–1279):** one rail open at a time; center remains primary.
+- **Wide desktop (≥1280):** center canvas with optional source drawer or context inspector; both are closed by default.
+- **Compact desktop/tablet (800–1279):** only one drawer may be open at a time; center remains primary.
 - **Mobile (<800):** review companion only—Sources, transcript/evidence, approvals, output review, and `Continue in ChatGPT`. Do not render a fake miniature whiteboard or full slide editor.
 
 The judged desktop path must be visually complete at 1200×800 and remain usable at 1024×768.

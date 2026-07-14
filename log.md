@@ -2558,3 +2558,37 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - This proves the sanitized recorded fixture, not native host sync, paid-provider results, a fresh Work-surface invocation, or public-video/Devpost completion.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 10:41 CT — UI simplification audit and revised design contract
+
+**Area:** Product design / judge-facing Workshop experience
+
+### Changed
+
+- Audited the current six-view, persistent-three-rail MVP against the live NotebookLM notebook flow and the official Apps in ChatGPT Figma community page/UI guidelines.
+- Added `research/ui-ux-simplification-audit-2026-07-14.md` with the evidence, complexity diagnosis, new information architecture, visual system, three target screens, acceptance bar, and implementation sequence.
+- Revised `DESIGN.md` so Map, Brief, and Outputs are the only top-level destinations; Sources, Create, Style, Trace, Storyboard, jobs, and technical provenance now use progressive disclosure.
+- Added the implementation and verification steps to `GOAL.md` without removing any underlying product capability.
+
+### Verified
+
+- The live NotebookLM workspace exposes a stable Sources / Chat / Studio model, collapsible side panels, inline citations, and recognizable output rows while hiding implementation details.
+- The official Apps SDK guidance says inline cards should remain single-purpose, expose at most two actions, avoid tabs/deep navigation/nested scrolling, and use fullscreen for rich maps or interactive diagrams while retaining the native system composer.
+- The official guidance also calls for system font, system color/spacing/radii, monochrome outlined icons, restrained partner accents, and no custom structural gradients.
+- The Figma community page's `Open in Figma` control is a duplicate action with no read-only `/design/{fileKey}` link. It was intentionally not invoked because it would create an external artifact.
+- `git diff --check` passed after the documentation changes.
+
+### Decision
+
+- Keep WorkshopLM's full capability set, but reduce the default mental model to three destinations and one primary action per state.
+- Treat ChatGPT as the conversation layer, an inline Workshop card as the doorway, and a fullscreen Map/Brief/Output canvas as the production layer.
+- Move OpenAI-aligned styling into the structural shell while preserving customer branding inside generated artifacts.
+
+### Open items
+
+- Implement the simplified shell, visual output gallery, contextual citations/trace, and the two focused approval bars.
+- Add component-level tests and recapture desktop/mobile proof before judge-facing recording.
+- A Figma connector inspection requires an actual copied design-file key; no external Figma file was created in this audit.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
