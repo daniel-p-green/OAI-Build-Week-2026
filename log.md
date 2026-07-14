@@ -1041,3 +1041,24 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Extend stale red-team coverage to every artifact type and job interruption/retry paths; resolve the entitled GPT-5.6 alias/project and run an inspectable PDF fixture.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:05 CT — Full local approval-to-video seam
+
+**Area:** Integration / Rendering / Testing
+
+### Verified
+
+- A fresh production browser API sequence approved the Map brief, locked the manual style, approved the storyboard, and queued the video job in order.
+- `pnpm demo:render` leased and completed that queued job through the local HyperFrames worker. It produced hash-addressed artifact `artifacts/a6/workshoplm-demo-a69896d3e9cd5e45b0d94c8964d1a1158d8889648ad9fd143a072c3a517072ab` (326,674 bytes).
+- `ffprobe` confirms both audio and video streams and a 6.037333-second duration.
+
+### Decisions
+
+- This proves the local approved-fixture rendering path end to end. It does not claim live TTS, arbitrary user-authored video composition, or final demo recording.
+
+### Open items
+
+- Extend this acceptance run through live source ingestion and all generated artifact types; resolve GPT-5.6 entitlement; record the actual public demo and host/plugin installation proof.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

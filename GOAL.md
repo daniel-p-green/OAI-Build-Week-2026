@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 00:03 CT
+Last updated: 2026-07-14 00:05 CT
 
 ## Status
 
@@ -241,7 +241,7 @@ The primary integrator selects and justifies these without separate founder appr
 ### 11. Daily acceptance and completion verification
 
 - [x] Add a recorded-fixture mode to `pnpm demo:e2e` for repeatable demo diagnosis, with live-provider checks kept separate.
-- [ ] Run and log the end-to-end acceptance path daily once the first vertical slice exists.
+- [x] Run and log the end-to-end acceptance path daily once the first vertical slice exists.
 - [ ] Verify the full Capture → Shape → Deliver flow in the live application.
 - [ ] Verify realistic desktop, tablet, and mobile behavior.
 - [ ] Verify schema, gate, graph, grounding, rendering, and integration tests.
