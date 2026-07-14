@@ -1062,3 +1062,26 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Extend this acceptance run through live source ingestion and all generated artifact types; resolve GPT-5.6 entitlement; record the actual public demo and host/plugin installation proof.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:07 CT — Corrected unsupported host-sync UI claim
+
+**Area:** Product / Claim Integrity
+
+### Changed
+
+- Replaced the browser's `Synced to ChatGPT task` and `Linked ChatGPT task` labels with accurate local-fixture/local-state language.
+
+### Verified
+
+- Web typecheck and production build passed; recorded `pnpm demo:e2e` passed.
+
+### Decisions
+
+- Native ChatGPT task/voice synchronization remains unproven and must not appear as live product state in judge-facing UI. The designed capture-only fallback stays the honest path until host evidence changes.
+
+### Open items
+
+- Prove host sync or activate/show the capture-only fallback, then record its supported scope in the UI and demo.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
