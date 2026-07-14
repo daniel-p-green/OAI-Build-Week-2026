@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 01:35 CT
+Last updated: 2026-07-14 01:37 CT
 
 ## Status
 
@@ -8,6 +8,7 @@ Last updated: 2026-07-14 01:35 CT
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
 **Current gate:** No founder approval gate. Execute the plan autonomously and escalate only for credentials/spend, material privacy/security/licensing decisions, irreversible external actions, or an objective-changing breaking decision.
 **Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found`. The locked runtime uses an operation-level GPT-5.6 routing policy; paid Responses benchmarks must validate cost, latency, and quality before claiming live product use or changing per-operation defaults.
+**Known host risk:** The July 14 host-sync verification is credential-blocked, so it does not prove native task or voice-turn persistence. The designed capture-only fallback remains active; Spike A stays open until the end-of-day decision deadline or a separately authorized live host check.
 
 **Hard schedule gates:**
 

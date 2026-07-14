@@ -2143,3 +2143,23 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Active-render interruption, multi-artifact partial-success recovery, paid provider runs, native durable ChatGPT sync, and the final public demo remain separate unproven or unfinished work.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:37 CT — Host-sync decision evidence remains credential-blocked
+
+**Area:** Spike A / Capture
+
+### Verified
+
+- `pnpm spike:host-sync:verify` wrote `artifacts/spikes/host-sync-2026-07-14T06-37-52-460Z.json` with status `credential_blocked`.
+- The credential-gated native checks (`accountRead`, task linkage, typed turn, native voice turn, and token scan) were skipped. No native host capability was inferred.
+
+### Decisions
+
+- Keep the already implemented capture-only fallback active. This run is evidence against claiming native durable synchronization, not a reason to remove the pending end-of-day Spike A decision.
+
+### Open items
+
+- A separately authorized live host check is required to pass the native route before the July 14 EOD CT deadline; otherwise the existing fallback becomes the final implemented path.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
