@@ -1933,3 +1933,27 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 ### Open items
 
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:26 CT — Source-traceable deck and infographic verified
+
+**Area:** Deliver / Rendering / Provenance
+
+### Changed
+
+- Added explicit coverage for the rendered infographic’s source locator, complementing the existing deck provenance test.
+
+### Verified
+
+- Worker tests passed: 23 tests across 3 files. The deck and infographic outputs both persist claim IDs; the infographic test reads the generated HTML and proves the original `Fixture locator · chunk 01` is embedded in the rendered artifact.
+- Web production build, fixture reset, and `pnpm demo:e2e` passed. The recorded fixture produces both `generated/deck-v1.deck.html` and `generated/infographic-v1.infographic.html`.
+
+### Decisions
+
+- Deliverable provenance is emitted within each artifact’s visible citation line as well as persisted in output metadata, so it remains inspectable outside the app state.
+
+### Open items
+
+- Live GPT Image 2 execution remains pending paid-provider authorization and evaluation evidence.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
