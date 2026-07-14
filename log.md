@@ -1669,3 +1669,30 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add connected-app/MCP adapters and, if needed, adapter-specific permission import semantics.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:52 CT — Time-to-first-output instrumentation and trace coherence added
+
+**Area:** Provenance / GUI / Runtime
+
+### Changed
+
+- Added persisted timestamps for the first capture-only transcript segment and first locally rendered output (deck, infographic, or video).
+- Added the computed duration to Trace and corrected Trace selection so a captured transcript, its chunk, claim, and Map node are presented as one coherent provenance chain.
+
+### Verified
+
+- Worker tests passed: 15 tests across 3 files, including timestamp ordering from fallback transcript capture through deck rendering.
+- Worker/web typechecks, web production build, fixture reset, and `pnpm demo:e2e` passed.
+- Production replay captured a transcript, approved brief/style, generated a deck, and persisted `firstTranscriptAt`, `firstRenderedOutputAt`, and `elapsedMs: 59`.
+- Live local Trace displayed `First transcript → first rendered output: 0.1s` with the matching capture source, fallback chunk, claim, Map node, `FRAME.md`, and stored deck artifact.
+
+### Decisions
+
+- This measures the local end-to-end path from persisted transcript capture to the first local output. It is not presented as a live-provider performance benchmark.
+
+### Open items
+
+- Record a bounded live operator run and surface delivery video timing once the full operator seam is exercised.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
