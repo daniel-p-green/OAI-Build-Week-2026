@@ -16,7 +16,7 @@ async function fixture(): Promise<string> {
   await mkdir(join(root, "data"));
   const database = new DatabaseSync(join(root, "data", "workshoplm.sqlite"));
   database.exec("CREATE TABLE workshop (id TEXT PRIMARY KEY, title TEXT NOT NULL, created_at TEXT NOT NULL); CREATE TABLE workshop_state (workshop_id TEXT PRIMARY KEY, state_json TEXT NOT NULL, updated_at TEXT NOT NULL);");
-  const state = { id: "workshop-build-week", title: "Sanitized Build Week", briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: 3, groundedClaims: 5, updatedAt: "2026-07-14T00:00:00.000Z" };
+  const state = { id: "workshop-build-week", title: "Sanitized Build Week", briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: 3, groundedClaims: 1, sourceChunks: [{ id: "chunk-evidence-1", sourceId: "source-brief", text: "The approved Map keeps evidence visible for judges.", locator: "Sanitized brief · chunk 01", ordinal: 1 }], claims: [{ id: "claim-evidence-1", sourceId: "source-brief", chunkId: "chunk-evidence-1", text: "Evidence remains visible for judges", evidenceState: "verified", locator: "Sanitized brief · chunk 01" }], updatedAt: "2026-07-14T00:00:00.000Z" };
   database.prepare("INSERT INTO workshop VALUES (?, ?, ?)").run(state.id, state.title, state.updatedAt);
   database.prepare("INSERT INTO workshop_state VALUES (?, ?, ?)").run(state.id, JSON.stringify(state), state.updatedAt);
   database.close();
@@ -49,11 +49,15 @@ describe("WorkshopLM stdio MCP server", () => {
       { jsonrpc: "2.0", id: 2, method: "tools/list" },
       { jsonrpc: "2.0", id: 3, method: "tools/call", params: { name: "workshop_list", arguments: {} } },
       { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "workshop_open", arguments: { workshopId: "workshop-build-week" } } },
+      { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "search", arguments: { query: "evidence judges" } } },
+      { jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "fetch", arguments: { sourceId: "source-brief", chunkId: "chunk-evidence-1" } } },
     ]);
     expect(results[0]!.result.serverInfo.name).toBe("workshoplm");
     expect(results[1]!.result.tools.map((tool: { name: string }) => tool.name)).toContain("workshop_render_video");
     expect(results[2]!.result.structuredContent.workshops[0].title).toBe("Sanitized Build Week");
     expect(results[3]!.result.structuredContent.url).toBe("http://127.0.0.1:3000/workshops/workshop-build-week");
+    expect(results[4]!.result.structuredContent.results[0]).toMatchObject({ id: "chunk-evidence-1", claims: [{ id: "claim-evidence-1", evidenceState: "verified" }] });
+    expect(results[5]!.result.structuredContent.result).toMatchObject({ sourceId: "source-brief", id: "chunk-evidence-1", locator: "Sanitized brief · chunk 01" });
   });
 
   it("returns explicit gate errors and persists valid mutation outcomes", async () => {

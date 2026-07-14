@@ -4,7 +4,9 @@ import { join, resolve } from "node:path";
 
 export type ToolKind = "read" | "write";
 export type ToolDefinition = { name: string; kind: ToolKind; description: string; inputSchema: { type: "object"; properties: Record<string, unknown>; required?: string[] } };
-export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; updatedAt: string };
+export type WorkshopChunk = { id: string; sourceId: string; text: string; locator: string; ordinal: number };
+export type WorkshopClaim = { id: string; sourceId: string; chunkId: string; text: string; evidenceState: "verified" | "derived" | "creative" | "unverified"; locator: string };
+export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; sourceChunks?: WorkshopChunk[]; claims?: WorkshopClaim[]; updatedAt: string };
 export type ToolResult = { text: string; data?: Record<string, unknown>; isError?: boolean };
 
 const object = (properties: Record<string, unknown>, required: string[] = []) => ({ type: "object" as const, properties, ...(required.length ? { required } : {}) });
@@ -63,6 +65,27 @@ export function listWorkshops(): WorkshopState[] {
   } finally { database.close(); }
 }
 
+function evidenceStates(): WorkshopState[] { return listWorkshops(); }
+function queryTerms(query: string): string[] { return query.toLocaleLowerCase().split(/\W+/).filter((term) => term.length > 1); }
+
+export function searchEvidence(query: string): Array<WorkshopChunk & { claims: WorkshopClaim[]; score: number }> {
+  const terms = queryTerms(query);
+  if (!terms.length) return [];
+  return evidenceStates().flatMap((workshop) => (workshop.sourceChunks ?? []).map((chunk) => {
+    const claims = (workshop.claims ?? []).filter((claim) => claim.sourceId === chunk.sourceId && claim.chunkId === chunk.id);
+    const searchable = `${chunk.text}\n${claims.map((claim) => claim.text).join("\n")}`.toLocaleLowerCase();
+    return { ...chunk, claims, score: terms.reduce((score, term) => score + (searchable.includes(term) ? 1 : 0), 0) };
+  })).filter((result) => result.score > 0).sort((a, b) => b.score - a.score || a.ordinal - b.ordinal || a.id.localeCompare(b.id));
+}
+
+export function fetchEvidence(sourceId: string, chunkId: string): (WorkshopChunk & { claims: WorkshopClaim[] }) | null {
+  for (const workshop of evidenceStates()) {
+    const chunk = (workshop.sourceChunks ?? []).find((candidate) => candidate.sourceId === sourceId && candidate.id === chunkId);
+    if (chunk) return { ...chunk, claims: (workshop.claims ?? []).filter((claim) => claim.sourceId === sourceId && claim.chunkId === chunkId) };
+  }
+  return null;
+}
+
 export function executeTool(name: string, arguments_: Record<string, unknown> = {}): ToolResult {
   if (name === "workshop_list") {
     const workshops = listWorkshops();
@@ -81,7 +104,20 @@ export function executeTool(name: string, arguments_: Record<string, unknown> = 
       return { text: `Created local Workshop: ${state.id}.`, data: { workshop: state } };
     } finally { database.close(); }
   }
-  if (["search", "fetch", "workshop_get_trace"].includes(name)) return { text: `${name} has no normalized fixture result yet.`, data: { results: [] } };
+  if (name === "search") {
+    const query = typeof arguments_.query === "string" ? arguments_.query.trim() : "";
+    if (!query) return { isError: true, text: "Search requires a non-empty query." };
+    const results = searchEvidence(query);
+    return { text: results.length ? `Found ${results.length} grounded evidence chunk${results.length === 1 ? "" : "s"}.` : "No grounded evidence matched the query.", data: { results } };
+  }
+  if (name === "fetch") {
+    const sourceId = typeof arguments_.sourceId === "string" ? arguments_.sourceId : "";
+    const chunkId = typeof arguments_.chunkId === "string" ? arguments_.chunkId : "";
+    if (!sourceId || !chunkId) return { isError: true, text: "Fetch requires sourceId and chunkId." };
+    const result = fetchEvidence(sourceId, chunkId);
+    return result ? { text: `Fetched grounded evidence chunk ${result.id}.`, data: { result } } : { isError: true, text: `Evidence chunk not found: ${sourceId}/${chunkId}.` };
+  }
+  if (name === "workshop_get_trace") return { text: "workshop_get_trace has no artifact fixture result yet.", data: { results: [] } };
   const workshopId = typeof arguments_.workshopId === "string" ? arguments_.workshopId : "";
   const database = db(name !== "workshop_open");
   const state = requireWorkshop(database, workshopId);
