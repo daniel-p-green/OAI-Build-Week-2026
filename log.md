@@ -1176,3 +1176,23 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Install from the public GitHub marketplace snapshot, invoke the registered skill and MCP server in a fresh Codex task, and then complete Spike E evidence.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:17 CT — Public GitHub marketplace installation verified
+
+**Area:** Plugin / Public Repository
+
+### Verified
+
+- After commit `7a2c7d3` was pushed to public `main`, `codex plugin marketplace add daniel-p-green/OAI-Build-Week-2026 --json` cloned the public marketplace snapshot.
+- `codex plugin add workshoplm@workshoplm-local --json` installed WorkshopLM `0.1.0` from that snapshot; `codex plugin list` reported it `installed, enabled` at Codex's Git marketplace cache.
+
+### Decisions
+
+- README installation instructions now match the exact public GitHub command that was exercised, with the narrow verified-platform boundary stated explicitly.
+
+### Open items
+
+- A fresh Codex desktop task must still invoke the installed skill and stdio MCP tools before Spike E can be checked as complete.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
