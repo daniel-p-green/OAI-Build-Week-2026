@@ -2184,3 +2184,23 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Run the benchmark only with explicit paid-call authorization, then compare reported usage with current official pricing and decide operation defaults from measured quality, latency, and cost.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:41 CT — Recorded acceptance now renders the approved video
+
+**Area:** Integration / Recorded fixture
+
+### Changed
+
+- Extended `pnpm demo:e2e` from a lease-only video assertion to the real local worker path: approve brief/style/storyboard, queue the video, execute the local renderer, verify the MP4 exists, persist the artifact, and require the `video_rendered` gate.
+
+### Verified
+
+- `pnpm demo:e2e` passed with all six gates true, including `video_rendered: true`.
+- The run persisted `generated/workshoplm-demo.mp4` and a hash-addressed local video artifact under the acceptance fixture root.
+
+### Open items
+
+- The fixture currently exercises the approved default storyboard; it does not yet prove a current asset-plan-generated storyboard end to end. Paid provider paths and the final public recording remain separate evidence obligations.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

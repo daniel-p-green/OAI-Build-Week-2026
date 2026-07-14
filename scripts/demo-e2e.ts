@@ -1,4 +1,4 @@
-import { mkdir, readFile, rm } from "node:fs/promises";
+import { mkdir, readFile, rm, stat } from "node:fs/promises";
 import { resolve } from "node:path";
 import { deriveGates, assertEligible, Storyboard } from "../packages/domain/src/index.ts";
 import { normalizeSource } from "../spikes/b-grounding/src/normalize.ts";
@@ -8,7 +8,8 @@ import { renderDeck, renderInfographic, writeRenderedArtifact } from "../package
 import { storeArtifact } from "../apps/worker/src/artifacts/local-artifact-store.ts";
 import { openLocalDatabase } from "../apps/worker/src/db/client.ts";
 import { migrate } from "../apps/worker/src/db/migrate.ts";
-import { enqueue, leaseNext } from "../apps/worker/src/queue.ts";
+import { executeOne } from "../apps/worker/src/executor.ts";
+import { applyWorkshopAction, readWorkshopState } from "../apps/worker/src/workshop-service.ts";
 
 async function main() {
 const root = resolve(process.cwd(), ".workshoplm", "acceptance");
@@ -33,10 +34,18 @@ if (!renderDeck(brief).includes("Judges see") || !renderInfographic(brief).inclu
 
 const db = openLocalDatabase(resolve(root, "workshoplm.sqlite")); migrate(db);
 db.prepare("INSERT INTO workshop VALUES (?, ?, ?)").run("workshop-build-week", "WorkshopLM Build Week", new Date().toISOString());
-enqueue(db, { id: "job-render-video", workshopId: "workshop-build-week", kind: "render_video", inputKey: `storyboard:${storyboard.versionId}`, payload: { storyboardId: storyboard.id } });
-if (leaseNext(db)?.id !== "job-render-video") throw new Error("durable video job was not leased");
 
-console.log(JSON.stringify({ mode: "recorded-fixture", status: "passed", grounding: answer.citations.length, gates, outputs: [deck.relativePath, infographic.relativePath], storedArtifact: stored.relativePath, storyboardPanels: storyboard.panels.length, elapsed: "deterministic" }));
+applyWorkshopAction("approveBrief", root);
+applyWorkshopAction("lockManualStyle", root);
+applyWorkshopAction("approveStoryboard", root);
+applyWorkshopAction("renderVideo", root);
+const video = await executeOne(root);
+if (video.state !== "succeeded" || !(await stat(resolve(root, "generated", "workshoplm-demo.mp4"))).isFile()) throw new Error("approved storyboard did not produce a local video");
+const finalState = readWorkshopState(root);
+const finalGates = deriveGates({ transcriptSegments: 2, boardApprovedCurrent: true, briefCurrent: finalState.briefApproved, styleLockedCurrent: Boolean(finalState.style && !finalState.style.stale), storyboardApprovedCurrent: finalState.storyboardApproved, videoRenderedCurrent: finalState.videoState === "rendered" });
+if (!finalGates.video_rendered) throw new Error("video-rendered gate was not recorded");
+
+console.log(JSON.stringify({ mode: "recorded-fixture", status: "passed", grounding: answer.citations.length, gates: finalGates, outputs: [deck.relativePath, infographic.relativePath], storedArtifact: stored.relativePath, storyboardPanels: storyboard.panels.length, videoArtifact: video.artifact?.relativePath, elapsed: "deterministic" }));
 }
 
 main().catch((error: unknown) => { console.error(error); process.exitCode = 1; });
