@@ -799,3 +799,19 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add PDF and safe URL adapters, claim selection/trace UI, full graph controls, output history, editable storyboard panels, and transitive stale propagation.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-13 23:44 CT — Broadened deterministic verification
+
+**Area:** Integration / Testing
+
+### Verified
+
+- `pnpm check` passed: lint, typecheck, and tests succeeded across all 13 workspace packages.
+- The suite includes domain graph/undo coverage, worker persistence and render-failure coverage, plugin stdio evidence retrieval, production renderer tests, grounding, host-sync fallback, image-manifest, and local HyperFrames spike tests.
+
+### Open items
+
+- Green deterministic checks do not prove unimplemented Studio output history, editable storyboard panels, PDF/URL adapters, live provider behavior, or a plugin installation in the host.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
