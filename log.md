@@ -329,4 +329,4 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 ### Open items
 
 - Obtain founder review of the technical design before writing the detailed implementation plan.
-- Commit the research and proposed specification to the newly initialized repository.
+- Technical design and research committed as `a68f0a8` (`docs: capture WorkshopLM technical design`).

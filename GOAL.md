@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-13 21:22 CT
+Last updated: 2026-07-13 21:23 CT
 
 ## Status
 
@@ -126,7 +126,7 @@ The implementation specification may select and justify these without separate f
 
 ### 4. Repository and platform foundation
 
-- [ ] Initialize Git and preserve dated Build Week commits.
+- [x] Initialize Git and preserve dated Build Week commits.
 - [ ] Scaffold the pnpm/Turborepo monorepo.
 - [ ] Create `apps/web`, `apps/worker`, and focused shared packages.
 - [ ] Establish environment validation, linting, type checking, tests, and deterministic local setup.
