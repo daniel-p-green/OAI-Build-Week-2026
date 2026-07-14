@@ -1,0 +1,3 @@
+[00:00] Maya: The operations team loses time turning workshop notes into finished materials.
+[00:12] Luis: We need one reviewable map before anyone starts producing slides.
+[00:25] Maya: The demo must show exactly where a recommendation came from.

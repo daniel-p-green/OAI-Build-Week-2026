@@ -1,0 +1,4 @@
+metric,value,period
+workshop_to_first_output_minutes,18,fixture
+review_cycles,2,fixture
+source_trace_coverage_percent,100,fixture
