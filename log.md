@@ -2320,3 +2320,19 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Produce the public under-three-minute video, final submission materials, live-provider evaluation, and fresh intended in-app-browser inspection.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:54 CT — Installed plugin MCP surface reads live grounded fixture
+
+**Area:** Spike E / Unified plugin
+
+### Verified
+
+- `codex plugin list` reports `workshoplm@workshoplm-local` as installed and enabled from the Codex local marketplace.
+- Invoked the installed plugin's own stdio MCP server (not the source test helper) against the current `.workshoplm` data root. It initialized, exposed its tool list, and `search` returned the persisted live capture chunk with its verified claim and source locator.
+
+### Open items
+
+- Fresh-task skill invocation and actual ChatGPT Work-surface support remain unproven; do not mark Spike E complete from CLI/MCP evidence alone.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
