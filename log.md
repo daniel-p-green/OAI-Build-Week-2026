@@ -1574,3 +1574,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add connected-app/MCP source adapters, source-permission UI, and an optional OCR path if the demo needs scans.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:40 CT — Persisted Map relationships exposed
+
+**Area:** Shape / Graph / GUI
+
+### Changed
+
+- Added persisted Map-edge projections to Workshop state and visible relationship lines/labels over the Map.
+- Added link, unlink, and existing undo controls in the Map inspector, backed by the frozen typed `add_edge` and `remove_edge` graph operations.
+
+### Verified
+
+- Worker tests passed: 14 tests across 3 files, including add-edge persistence and undo.
+- Worker/web typechecks and web production build passed; fixture reset and `pnpm demo:e2e` passed.
+- Production API replay added `edge-production-smoke` from `promise` to `proof` as `supports/proves`, returned the expected persisted edge projection, then removed it and confirmed it was absent.
+
+### Decisions
+
+- Edge state remains canonical in the semantic graph snapshot; `mapEdges` is only the UI projection used to render and manage relationships.
+
+### Open items
+
+- Add AI-proposed graph operations and direct Excalidraw canvas synchronization before marking the full Shape operation requirement complete.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
