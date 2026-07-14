@@ -2279,3 +2279,22 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Live GPT Image 2 error mapping and exponential provider retry remain pending paid-provider authorization.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:49 CT — Recorded fixture covers asset plan through video
+
+**Area:** Integration / Recorded fixture
+
+### Changed
+
+- The acceptance runner now ingests a sanitized source into Workshop state, creates a current asset plan, generates its editable storyboard, and renders that storyboard rather than relying on the default storyboard fixture.
+
+### Verified
+
+- `pnpm demo:e2e` passed with all gates true, `assetPlanItems: 5`, `storyboardPanels: 5`, source-grounded deck/infographic artifacts, and a stored local MP4.
+
+### Open items
+
+- The deterministic fixture still uses planned image panels rather than a paid GPT Image 2 batch; live provider evidence, native host sync, and final judge-facing video remain separate obligations.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

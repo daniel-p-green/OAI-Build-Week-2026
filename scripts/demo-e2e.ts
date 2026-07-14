@@ -9,7 +9,7 @@ import { storeArtifact } from "../apps/worker/src/artifacts/local-artifact-store
 import { openLocalDatabase } from "../apps/worker/src/db/client.ts";
 import { migrate } from "../apps/worker/src/db/migrate.ts";
 import { executeOne } from "../apps/worker/src/executor.ts";
-import { applyWorkshopAction, readWorkshopState } from "../apps/worker/src/workshop-service.ts";
+import { applyWorkshopAction, generateAssetPlan, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState } from "../apps/worker/src/workshop-service.ts";
 
 async function main() {
 const root = resolve(process.cwd(), ".workshoplm", "acceptance");
@@ -35,8 +35,13 @@ if (!renderDeck(brief).includes("Judges see") || !renderInfographic(brief).inclu
 const db = openLocalDatabase(resolve(root, "workshoplm.sqlite")); migrate(db);
 db.prepare("INSERT INTO workshop VALUES (?, ?, ?)").run("workshop-build-week", "WorkshopLM Build Week", new Date().toISOString());
 
+await ingestSource({ title: "Recorded fixture brainstorm", origin: "Sanitized fixture", text: "Judges need a traced deck, infographic, image batch, storyboard, and narrated video." }, root);
 applyWorkshopAction("approveBrief", root);
-applyWorkshopAction("lockManualStyle", root);
+lockManualStyle({}, root);
+const assetPlan = generateAssetPlan(root).assetPlan;
+if (!assetPlan || assetPlan.stale) throw new Error("approved inputs did not produce a current asset plan");
+const generatedStoryboard = generateStoryboard(root).storyboard;
+if (generatedStoryboard.panels.length !== assetPlan.items.length) throw new Error("asset plan did not produce a complete editable storyboard");
 applyWorkshopAction("approveStoryboard", root);
 applyWorkshopAction("renderVideo", root);
 const video = await executeOne(root);
@@ -45,7 +50,7 @@ const finalState = readWorkshopState(root);
 const finalGates = deriveGates({ transcriptSegments: 2, boardApprovedCurrent: true, briefCurrent: finalState.briefApproved, styleLockedCurrent: Boolean(finalState.style && !finalState.style.stale), storyboardApprovedCurrent: finalState.storyboardApproved, videoRenderedCurrent: finalState.videoState === "rendered" });
 if (!finalGates.video_rendered) throw new Error("video-rendered gate was not recorded");
 
-console.log(JSON.stringify({ mode: "recorded-fixture", status: "passed", grounding: answer.citations.length, gates: finalGates, outputs: [deck.relativePath, infographic.relativePath], storedArtifact: stored.relativePath, storyboardPanels: storyboard.panels.length, videoArtifact: video.artifact?.relativePath, elapsed: "deterministic" }));
+console.log(JSON.stringify({ mode: "recorded-fixture", status: "passed", grounding: answer.citations.length, gates: finalGates, outputs: [deck.relativePath, infographic.relativePath], storedArtifact: stored.relativePath, assetPlanItems: assetPlan.items.length, storyboardPanels: generatedStoryboard.panels.length, videoArtifact: video.artifact?.relativePath, elapsed: "deterministic" }));
 }
 
 main().catch((error: unknown) => { console.error(error); process.exitCode = 1; });
