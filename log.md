@@ -2528,3 +2528,33 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - External submission, public video, fresh Work surface proof, and paid-provider checks remain unchecked and explicitly open.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 02:14 CT — Daily recorded-fixture acceptance rerun
+
+**Area:** Integration acceptance / repeatable judge fixture
+
+### Changed
+
+- No product behavior changed. Reset and reran the complete sanitized fixture so the current public branch has fresh acceptance evidence.
+
+### Verified
+
+- `pnpm demo:reset && pnpm demo:e2e` passed with all six gates true: transcript ready, Map/brief approved, style locked, storyboard approved, and video rendered.
+- The run produced a grounded source, a five-item asset plan, a five-panel storyboard, source-traceable deck and infographic HTML, and a current local MP4 artifact.
+- `pnpm demo:render` then completed a separate approved-fixture render successfully, and `pnpm demo:thumbnail` produced the local PNG preview plus SHA-256 metadata without credentials or paid calls.
+
+### Decision
+
+- Kept the recurring daily-acceptance checkbox open. One verified run supplies today's evidence but cannot prove future daily execution.
+
+### Alternatives considered
+
+- Marking the recurring requirement complete after this run would misstate an ongoing operational obligation.
+- Skipping the rerun because older output existed would leave the current public commit without fresh seam evidence.
+
+### Open items
+
+- This proves the sanitized recorded fixture, not native host sync, paid-provider results, a fresh Work-surface invocation, or public-video/Devpost completion.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
