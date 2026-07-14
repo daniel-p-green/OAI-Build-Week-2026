@@ -219,6 +219,32 @@ export function assertEligible(command: "approve_brief" | "create_output" | "app
   if (missing.length) throw new DomainError("GATE_BLOCKED", `${command} blocked: ${missing.join(", ")} required`);
 }
 
+/** Current-version facts are deliberately separate from historical gate flags. */
+export const CommandEligibility = z.object({
+  transcriptReady: z.boolean(),
+  mapCurrent: z.boolean(),
+  boardApprovedCurrent: z.boolean(),
+  briefCurrent: z.boolean(),
+  styleLockedCurrent: z.boolean(),
+  storyboardCurrent: z.boolean(),
+  storyboardApproved: z.boolean(),
+  allStoryboardPanelsCurrent: z.boolean(),
+}).strict();
+export type CommandEligibility = z.infer<typeof CommandEligibility>;
+export function assertCommandEligible(command: "approve_brief" | "create_output" | "approve_storyboard" | "render_video", rawEligibility: z.input<typeof CommandEligibility>): void {
+  const eligibility = CommandEligibility.parse(rawEligibility);
+  const requirements: Record<typeof command, (keyof CommandEligibility)[]> = {
+    approve_brief: ["transcriptReady", "mapCurrent"],
+    create_output: ["boardApprovedCurrent", "briefCurrent"],
+    approve_storyboard: ["boardApprovedCurrent", "briefCurrent", "styleLockedCurrent", "storyboardCurrent", "allStoryboardPanelsCurrent"],
+    render_video: ["storyboardCurrent", "storyboardApproved", "allStoryboardPanelsCurrent"],
+  };
+  const missing = requirements[command].filter((key) => !eligibility[key]);
+  if (!missing.length) return;
+  const stale = missing.some((key) => key.endsWith("Current"));
+  throw new DomainError(stale ? "STALE" : "GATE_BLOCKED", `${command} blocked: ${missing.join(", ")} required`);
+}
+
 export const DependencyEdge = z.object({ upstreamId: VersionId, downstreamId: VersionId, reason: z.enum(["source", "claim", "graph", "brief", "style", "storyboard", "render"]), }).strict().refine((edge) => edge.upstreamId !== edge.downstreamId, "dependencies cannot self-reference");
 export type DependencyEdge = z.infer<typeof DependencyEdge>;
 export function collectStaleDependents(changed: VersionId, edges: DependencyEdge[]): Set<VersionId> {

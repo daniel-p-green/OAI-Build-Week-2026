@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ArtifactJson, Claim, DomainError, GraphOperation, SemanticGraph, applyGraphOperation, applyStalePropagation, assertEligible, collectStaleDependents, deriveGates, undoGraphOperation } from "./index.js";
+import { ArtifactJson, Claim, DomainError, GraphOperation, SemanticGraph, applyGraphOperation, applyStalePropagation, assertCommandEligible, assertEligible, collectStaleDependents, deriveGates, undoGraphOperation } from "./index.js";
 
 const now = "2026-07-13T12:00:00.000Z";
 const ids = { workshopId: "workshop-1", graphId: "graph-1", nodeA: "node-a", nodeB: "node-b", edge: "edge-1", claim: "claim-1", source: "source-1", chunk: "chunk-1", artifact: "artifact-1" };
@@ -19,6 +19,17 @@ describe("domain contracts", () => {
   it("derives independent gates and blocks only ineligible transitions", () => {
     const gates = deriveGates({ transcriptSegments: 1, boardApprovedCurrent: true, briefCurrent: true, styleLockedCurrent: false, storyboardApprovedCurrent: false, videoRenderedCurrent: false });
     expect(gates.transcript_ready).toBe(true); expect(() => assertEligible("render_video", gates)).toThrow(/storyboard_approved/); expect(() => assertEligible("create_output", gates)).not.toThrow();
+  });
+  it("requires a current transcript-backed Map before brief approval", () => {
+    const base = { transcriptReady: true, mapCurrent: true, boardApprovedCurrent: false, briefCurrent: false, styleLockedCurrent: false, storyboardCurrent: false, storyboardApproved: false, allStoryboardPanelsCurrent: false };
+    expect(() => assertCommandEligible("approve_brief", base)).not.toThrow();
+    expect(() => assertCommandEligible("approve_brief", { ...base, mapCurrent: false })).toThrow(expect.objectContaining({ code: "STALE" }));
+  });
+  it("blocks a video render for stale or partially approved storyboard inputs", () => {
+    const current = { transcriptReady: true, mapCurrent: true, boardApprovedCurrent: true, briefCurrent: true, styleLockedCurrent: true, storyboardCurrent: true, storyboardApproved: true, allStoryboardPanelsCurrent: true };
+    expect(() => assertCommandEligible("render_video", current)).not.toThrow();
+    expect(() => assertCommandEligible("render_video", { ...current, allStoryboardPanelsCurrent: false })).toThrow(expect.objectContaining({ code: "STALE" }));
+    expect(() => assertCommandEligible("render_video", { ...current, storyboardApproved: false })).toThrow(expect.objectContaining({ code: "GATE_BLOCKED" }));
   });
   it("propagates staleness transitively without staling the changed input", () => {
     const stale = collectStaleDependents("graph-1" as never, [{ upstreamId: "graph-1" as never, downstreamId: "brief-1" as never, reason: "graph" }, { upstreamId: "brief-1" as never, downstreamId: "deck-1" as never, reason: "brief" }]);
