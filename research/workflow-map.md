@@ -1,5 +1,7 @@
 # WorkshopLM workflow map
 
+> Architecture update, 2026-07-13: ChatGPT Work/Codex is the Conversation/voice surface, the plugin provides local `search`/`fetch` and optional app/MCP sources, and the in-app browser provides Sources/Map/Studio. Custom Realtime is fallback-only. Root `DESIGN.md`, `GOAL.md`, and the approved technical spec override older composer-specific language below.
+
 Updated: 2026-07-13
 
 ## Product model

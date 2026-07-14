@@ -10,17 +10,22 @@ Use a TypeScript monorepo with **pnpm workspaces** and **Turborepo**. Keep the r
 
 ```text
 apps/
-  web/                  Next.js product UI, route handlers, auth, project APIs
+  web/                  Next.js visual Workshop UI and local route handlers
   worker/               ingestion, clustering, image batches, coherence checks, renders
 packages/
-  domain/               Zod schemas, state machine, IDs, dependency graph
-  ai/                   OpenAI Responses, Realtime, File Search, GPT Image adapters
+  domain/               Zod schemas, gate derivation, IDs, dependency graph
+  ai/                   OpenAI Responses, GPT Image, TTS, and optional Realtime adapters
+  host/                 Codex app-server account/task bridge
+  plugin-mcp/           local stdio tools and compact widgets
   production/           deck, infographic, storyboard, HyperFrames handoff builders
   ui/                   shared shadcn compositions and application components
   config/               shared TypeScript, lint, and build configuration
+.codex-plugin/          unified ChatGPT/Codex plugin manifest
+.mcp.json               bundled local stdio MCP server
+skills/workshoplm/      Capture → Shape → Deliver workflow skill
 ```
 
-Do not create a separate API application initially. The web application's route handlers can own the authenticated product API; the worker handles only queued long-running jobs.
+Do not create a separate API application initially. The web application's local route handlers own validated product commands; the worker handles queued long-running jobs. ChatGPT is the Conversation UI; the web app contains Sources, Map/artifact workspace, and Studio rather than a duplicate composer.
 
 Do not create a separate Excalidraw package unless reusable integration code becomes substantial. The semantic board contracts belong in `packages/domain`; the Excalidraw view and element mapping can begin inside `apps/web`.
 
@@ -45,24 +50,9 @@ Do not create a separate Excalidraw package unless reusable integration code bec
 
 Every rendered artifact references the exact board, brief, style, Visual DNA, and claim versions that produced it.
 
-## Pipeline state machine
+## Progress gates
 
-```text
-capturing
-  → transcript_ready
-  → board_draft
-  → board_approved
-  → brief_ready
-  → style_locked
-  → asset_plan_ready
-  → generating_assets
-  → storyboard_review
-  → storyboard_approved
-  → rendering_video
-  → outputs_ready
-```
-
-Failures remain attached to the stage and individual job. A failed image panel should not invalidate an already generated deck or require restarting the whole package.
+Workshop progress uses independently derived gates rather than one linear state: `transcript_ready`, `board_approved`, `brief_ready`, `style_locked`, `storyboard_approved`, and `video_rendered`. Object versions carry their own `stale` overlay. Failures remain attached to individual jobs; a failed image panel does not invalidate an already generated deck.
 
 ## Dependency graph
 
@@ -77,24 +67,23 @@ Examples:
 
 When an upstream object changes, downstream objects become `stale` until patched, regenerated, or explicitly accepted. This is what turns a collection of generators into a coherent production system.
 
-## Data and jobs
+## Local data, host, and jobs
 
-- Postgres for Workshop, graph, version, and job metadata.
-- Object storage for source files, logos, fonts, reference images, generated assets, audio, and rendered video.
-- OpenAI vector stores/File Search for grounded retrieval.
-- A durable job table or lightweight queue for long-running image and render work.
-- Server-issued ephemeral credentials for browser Realtime sessions.
-
-Select concrete infrastructure vendors during implementation planning; do not add several databases or queue systems for the hackathon.
+- SQLite in WAL mode for Workshop, graph, version, approval, dependency, and job metadata.
+- Local content-addressed artifact storage for sources, logos, fonts, references, generated assets, audio, and video.
+- Local normalization plus standard MCP `search`/`fetch`, SQLite FTS5/BM25, and exact search for source grounding. Existing connected apps/MCPs normalize into the same evidence contract.
+- A local worker polling leased SQLite job rows for long-running image and render work.
+- Codex app-server for ChatGPT account state, supported login flow, and task linkage. WorkshopLM never stores ChatGPT tokens.
+- Native ChatGPT voice is primary. Server-issued Realtime ephemeral credentials exist only if the host-sync spike requires the fallback.
 
 ## Verification strategy
 
-- Schema tests for every canonical object and state transition.
+- Schema tests for every canonical object and gate/command transition.
 - Fixture-based transcript → graph tests.
 - Referential-integrity tests from claims to artifact components.
 - Deterministic storyboard → HyperFrames handoff snapshots.
 - Coherence evaluator tests with deliberately mismatched batch fixtures.
-- Browser tests for the Capture → Shape → Deliver happy path.
+- Plugin/MCP contract tests and browser tests for the ChatGPT task → visual Workshop → Deliver happy path.
 - A clean, sanitized judge fixture that requires no private connector.
 
 ## Scope guardrails

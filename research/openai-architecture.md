@@ -8,14 +8,14 @@ The system should have one canonical project model and several renderers. Chat, 
 
 ```mermaid
 flowchart LR
-    A["Files, URLs, meetings, connectors"] --> B["Source ingestion and retrieval"]
+    A["Local files, URLs, ChatGPT apps, MCPs"] --> B["Normalized search/fetch retrieval"]
     B --> C["Evidence and claim graph"]
     C --> D["FRAME.md"]
     E["Website and brand inputs"] --> F["DESIGN.md"]
     D --> G["Canonical artifact.json"]
     F --> G
     C --> G
-    H["Chat and Realtime voice"] <--> G
+    H["Native ChatGPT task and voice"] <--> G
     G --> I["Deck renderer"]
     G --> J["Social and infographic renderer"]
     G --> K["HyperFrames video renderer"]
@@ -29,8 +29,8 @@ The user explicitly requested text generation, RAG, Realtime voice, text-to-spee
 | Capability | API and model | WorkshopLM responsibility | Non-negotiable guardrail |
 | --- | --- | --- | --- |
 | Workshop reasoning and structured operations | Responses API with `gpt-5.6` | source synthesis, claim extraction, graph operations, `FRAME.md`, asset plans, storyboard structures, propagation previews, and model-based evaluations | Require structured schemas for executable outputs; never parse free-form prose into domain state ad hoc. |
-| RAG and citations | Files API, project vector store, and Responses `file_search` tool | index project material, retrieve relevant evidence, retain file citations, and expose retrieved chunks for inspection | Request `include: ["file_search_call.results"]`; persist source locators and never treat an AI conversation as independent evidence. |
-| Live conversation | Realtime API / Agents SDK with `gpt-realtime-2.1` over WebRTC | low-latency speech-to-speech capture, interruption, transcript events, and spatially aware tools | Mint ephemeral client secrets on the server through `/v1/realtime/client_secrets`; standard API keys never reach the browser. Bind a privacy-preserving safety identifier when a stable user identity exists. |
+| RAG and citations | Local MCP `search`/`fetch`, SQLite FTS5/BM25, exact retrieval, optional semantic/File Search adapters | normalize local and connected-app sources, retrieve inspectable evidence, and preserve claim→chunk→source citations | A factual claim cannot become `verified` without a durable locator; remote adapters must normalize into the same evidence contract. |
+| Conversation and voice | Native ChatGPT Work/Codex task through the unified plugin and Codex app-server | text/voice capture, clarification, task linkage, and typed Workshop commands | WorkshopLM does not duplicate chat or store ChatGPT tokens. Use `gpt-realtime-2.1` only if live proof shows native voice turns cannot be durably synchronized. |
 | Narration | Audio Speech API with `gpt-4o-mini-tts` | render approved storyboard voiceover in bounded scene segments; default to the high-quality `marin` voice unless demo testing favors another built-in voice | Disclose clearly that the voice is AI-generated. Store model, voice, instructions, and storyboard-panel version with every audio artifact. |
 | Coherent image batches | Image API with `gpt-image-2` | generate explicit batches from the locked Visual DNA and approved references; edit/regenerate individual outliers | Batch output is not proof of coherence. Evaluate outputs and selectively regenerate failures. The current model processes reference images at high fidelity automatically. |
 | Conversational image revision | Responses API with `gpt-5.6` and the `image_generation` tool | multi-turn edits when the user refines a selected image conversationally | Use this path for iterative edits, not as the only batch-production mechanism; the tool manages its own GPT Image model selection. |
@@ -43,37 +43,32 @@ Use configurable model aliases in environment-backed server configuration rather
 
 - `createGroundedResponse`
 - `extractWorkshopGraph`
-- `createRealtimeClientSecret`
 - `renderNarrationSegment`
 - `generateImageBatch`
 - `editImageConversationally`
 - `evaluateImageCoherence`
 
+`packages/host` owns Codex app-server account/task synchronization. `createRealtimeClientSecret` exists in `packages/ai` only if the Spike A fallback is activated.
+
 React components and production renderers must not call the OpenAI SDK directly. They submit typed commands through the web API or worker and receive versioned domain results.
 
 ## Source grounding
 
-### Recommended OpenAI components
+### Recommended components
 
 - **Responses API** as the main orchestration surface.
-- **File Search and vector stores** for hosted retrieval over uploaded project material.
+- **Standard plugin `search` and `fetch` tools** over normalized local and connected-app evidence.
+- **SQLite FTS5/BM25 and exact search** as the deterministic core retrieval implementation.
+- **File Search/vector stores or semantic vectors** only as optional adapters if live retrieval evidence justifies them.
 - **Web search** when the user explicitly asks to extend the evidence base beyond supplied sources.
-- **Remote MCP/connectors** for sources such as Granola and other enabled work apps.
+- **Existing ChatGPT apps/MCPs** for sources such as Granola, Drive, and other enabled work apps.
 - Structured outputs for claim extraction, artifact plans, and revision operations.
 
 ### RAG implementation contract
 
-Each Workshop owns a vector store ID. Ingestion uploads the sanitized source representation through the Files API, attaches it to the vector store, waits for indexing to complete, and records both OpenAI file IDs and WorkshopLM source IDs.
+Each Workshop owns a local normalized corpus. Local parsers and connected source apps produce `Source` and `EvidenceChunk` records with stable IDs, content hashes, permission state, and page/section/time/native locators. Standard MCP `search` returns ranked summaries; `fetch` returns the exact chunk/source content needed for inspection.
 
-Grounded Responses calls:
-
-- use `gpt-5.6`;
-- expose the project vector store through the `file_search` tool;
-- limit or filter results only when the product has enough evidence to justify the constraint;
-- request `file_search_call.results` so retrieval quality is inspectable;
-- convert `file_citation` annotations into durable claim-evidence edges.
-
-File Search is the retrieval layer, not the canonical evidence store. WorkshopLM still retains source metadata, permissions, hashes, locators, claim approvals, and artifact dependencies in its own database.
+Grounded GPT-5.6 calls receive an explicit evidence bundle containing chunk IDs and locators. Returned factual claims must reference those chunk IDs or remain `unverified`. Optional hosted File Search must implement the same adapter and never replace WorkshopLM's canonical evidence records.
 
 ### Evidence states
 
@@ -112,32 +107,30 @@ Every artifact component should reference one or more claim IDs. Citations are t
 }
 ```
 
-## Realtime chat and voice
+## ChatGPT conversation and voice
 
 ### Verified — official
 
-OpenAI's Realtime API supports low-latency speech-to-speech interaction. WebRTC is the recommended connection type for browser clients; WebSocket is appropriate for server-side connections. The API can also use tools during a live session.
+The installed Codex app-server protocol supports ChatGPT account state/login and task operations. The unified ChatGPT application is therefore the primary Conversation surface. OpenAI's Realtime API remains a proven low-latency fallback when a browser-owned voice capture is actually required.
 
 ### Recommended interaction
 
-- One composer supports typing, attachments, and push-to-talk/live voice.
-- Voice and text share the same conversation and project state.
+- The native ChatGPT task supports typing/voice and invokes WorkshopLM plugin tools.
+- The in-app browser contains no duplicate composer.
 - The assistant can cite sources verbally and expose the citation card visually.
 - During generation, the user can interrupt: “Use the second source, not the blog post.”
 - Tool actions that alter approved claims or publishable assets require a visible confirmation step.
 
-Realtime voice is not a podcast gimmick here. It is the fastest way to direct a complex creative workspace while looking at the evidence and preview.
+Native ChatGPT voice is the fastest way to direct the visual Workshop without building a second conversation product.
 
-### Browser session contract
+### Host session contract
 
-1. The web client requests a short-lived Realtime client secret from a WorkshopLM server route.
-2. The server authenticates to OpenAI with the standard API key and creates a `gpt-realtime-2.1` session secret.
-3. The browser connects over WebRTC through `RealtimeSession`.
-4. Realtime tools emit typed project commands; they do not mutate database state directly from model-authored arguments.
-5. Server-side command validation, authorization, version checks, and approval requirements run before mutation.
-6. Transcript events are persisted as `TranscriptSegment` records and linked to any resulting graph operation.
-
-The UI must expose idle, connecting, listening, thinking, speaking, interrupted, and failed states. Losing the live connection must not lose transcript segments already acknowledged by the server.
+1. A server-side adapter connects to the local Codex app-server control surface.
+2. `account/read` exposes safe account display state; WorkshopLM does not receive or store raw ChatGPT tokens.
+3. The plugin links one ChatGPT task to one Workshop and persists attributable turns idempotently.
+4. Plugin tools emit typed Workshop commands; model-authored arguments still pass command validation and approval rules.
+5. A live spike determines whether native voice-originated turns have sufficient durable representation.
+6. Only if they do not, the browser receives a server-minted ephemeral secret and exposes a narrow `gpt-realtime-2.1` capture fallback.
 
 ## Images, audio, and video
 

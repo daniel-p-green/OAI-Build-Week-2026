@@ -14,6 +14,8 @@ The product should borrow NotebookLM's legible Sources / Chat / Studio model, Po
 
 This is more defensible than “NotebookLM with more models” or “Canva in a chat.” Both NotebookLM and Canva already cover broad generation and conversational editing.
 
+Current architecture: ChatGPT Work/Codex is the Conversation/voice host; the WorkshopLM unified plugin supplies workflow skills, local tools, and optional app/MCP sources; the in-app browser supplies the strong visual Sources/Map/Studio GUI. Root [`DESIGN.md`](../DESIGN.md), [`GOAL.md`](../GOAL.md), and the approved technical spec are authoritative when earlier research translations differ.
+
 ## Research files
 
 - [Hackathon reference](hackathon/README.md): live Devpost rules, judging, track, announcements, and submission checklist.
@@ -23,6 +25,8 @@ This is more defensible than “NotebookLM with more models” or “Canva in a 
 - [Canva](canva.md): Visual Suite, Canva AI, and where a general creative editor is already strong.
 - [Public user signals](user-signals.md): recurring praise, friction, and the resulting cross-product experience principles.
 - [OpenAI architecture](openai-architecture.md): source grounding, Realtime voice, image generation, connectors, and a shared artifact model.
+- [Unified plugin architecture](unified-plugin-architecture.md): the July 9 plugin model, installed manifest evidence, and WorkshopLM packaging decision.
+- [Codex app-server account/session boundary](codex-app-server-auth.md): live protocol evidence for ChatGPT account state, login, and task synchronization.
 - [Whiteboard, coherent images, and storyboard production](whiteboard-storyboard-production.md): verified Excalidraw, GPT Image 2, Google Flow, and HyperFrames mechanics.
 - [Interface direction](interface-direction.md): NotebookLM-inspired structure with a distinct, ChatGPT-familiar visual and interaction language.
 - [Engineering direction](engineering-direction.md): monorepo boundaries, canonical domain objects, pipeline state, and verification strategy.

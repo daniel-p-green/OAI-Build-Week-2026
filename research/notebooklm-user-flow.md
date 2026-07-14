@@ -52,10 +52,10 @@ Both side panels collapse without taking the user to a different product surface
 
 WorkshopLM translation:
 
-- **Sources** remains the left panel;
-- the center switches between **Conversation** and **Map** without leaving the Workshop;
-- **Studio** remains the right panel;
-- the same Realtime/text composer follows the user between Conversation and Map.
+- the native ChatGPT task replaces NotebookLM's center Chat and owns text/voice conversation;
+- the in-app browser uses **Sources** left, **Map/artifact workspace** center, and **Studio** right;
+- the Workshop browser has no duplicate composer;
+- the WorkshopLM plugin keeps ChatGPT conversation and visual Workshop state synchronized.
 
 ![NotebookLM three-panel shell](screenshots/notebooklm/03-sources-chat-studio-shell.jpg)
 
@@ -133,9 +133,9 @@ The user does not move through a long wizard. They remain inside one Workshop an
 | Decision | WorkshopLM direction |
 | --- | --- |
 | Durable notebook container | Copy as **Workshop** |
-| Sources / Chat / Studio spatial model | Copy, with center **Conversation / Map** switch |
+| Sources / Chat / Studio spatial model | Preserve the mental model across native surfaces: ChatGPT conversation + browser Sources / Map / Studio |
 | Source checkboxes and source count | Copy |
-| Suggested questions and persistent composer | Copy; add Realtime voice |
+| Suggested questions and persistent composer | Use native ChatGPT text/voice rather than rebuilding it |
 | Inline citations and adjacent source preview | Copy and propagate through every output |
 | Durable Studio output history | Copy; add versions, state, and editability |
 | Immediate opaque final generation | Replace with Map/brief and storyboard approval |

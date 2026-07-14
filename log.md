@@ -330,3 +330,82 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Obtain founder review of the technical design before writing the detailed implementation plan.
 - Technical design and research committed as `a68f0a8` (`docs: capture WorkshopLM technical design`).
+
+---
+
+## 2026-07-13 21:49 CT — Autonomous execution architecture locked
+
+**Area:** Product / Engineering / Planning
+
+### Changed
+
+- Reconciled the three files in `/Users/danielgreen/Downloads/hack-build-revised.zip` with the existing project instead of applying them as blind replacements.
+- Preserved the full WorkshopLM product scope and locked the integration-first execution architecture, four-slot model, contract freeze, red-team role, and daily acceptance seam.
+- Merged the colleague's autonomous loop into the broader project instructions supplied by Daniel; routine product, engineering, fallback, and compatible contract decisions no longer wait for scheduled founder approval.
+- Locked Studio vocabulary, exactly two blocking approvals, the sanitized judge fixture plus bounded live sample path, independent gate flags, HTML/CSS presentation rendering, and the meta-demo provenance surface.
+- Added the dated root execution runbook and a task-level test-first foundation/integration-spike plan.
+- Replaced the proposed linear Workshop lifecycle in the technical design with independently derived gate flags and per-object stale overlays.
+- Simplified the demo to a local-first runtime: SQLite WAL persistence, filesystem artifacts, local worker, local HyperFrames, and no hosting/auth/cloud-storage requirement.
+- Selected the ChatGPT/Codex in-app browser as the primary demo surface.
+- Reframed WorkshopLM as a unified ChatGPT/Codex plugin that packages workflow skills, a bundled local stdio MCP server, and compact review widgets while retaining the full local browser workspace for Map/Studio production.
+
+### Verified
+
+- Inspected every file in the colleague zip from an isolated `/tmp` extraction before editing the workspace.
+- Verified the installed HyperFrames guidance describes a local Node/HTML/GSAP/Chrome/FFmpeg CLI workflow with `doctor`, `lint`, `validate`, `inspect`, and `render` commands—not a hosted authenticated submit/poll API.
+- Corrected Spike D to require a local `DESIGN.md`, local MP4 verification, and a narrow FFmpeg fallback; removed Remotion as a preselected duplicate stack.
+- Compared the revised documents against the existing design, GOAL, log, and project instructions for approval bottlenecks and lifecycle/renderer contradictions.
+- Verified OpenAI's July 9, 2026 plugin change from current official help/release material: plugins are now the discovery container across ChatGPT Work and Codex and may package skills, apps, and app templates.
+- Inspected current installed OpenAI plugin manifests. The Data Analytics plugin provides a directly relevant working pattern: skills, optional apps, a local stdio MCP server, and rich widgets in one plugin package.
+
+### Decisions
+
+- Daniel's directive to avoid making him the bottleneck authorizes autonomous execution inside the locked product vision.
+- Progress digests are informational. Escalation is reserved for credentials/spend, material privacy/security/licensing or public-claim decisions, irreversible external actions, product-changing breaking decisions, and evidence-backed inability to preserve an objective-critical capability.
+- The primary integrator may approve additive contract evolution with tests and may activate designed fallbacks from live evidence.
+- HyperFrames remains the primary video renderer because it directly supports the intended DESIGN.md-driven deterministic production path.
+- The plugin is the OpenAI-native packaging and orchestration boundary, not a replacement for the rich local workspace. Core judge use has no required app connection; Granola/Drive remain optional source adapters.
+
+### Open items
+
+- Capture and timestamp the original raw meta-demo brainstorm before application code begins.
+- Scaffold the monorepo and run the four live integration spikes.
+- Live OpenAI and Supabase verification will require project credentials; no credential availability has been claimed yet.
+- Record the active Codex `/feedback` Session ID when the product surface exposes it; none was invented for this entry.
+
+---
+
+## 2026-07-13 22:08 CT — Unified ChatGPT host and flagship GUI locked
+
+**Area:** Product / Architecture / Design
+
+### Changed
+
+- Split the product cleanly across the new unified ChatGPT application: the native ChatGPT task is WorkshopLM's Conversation/voice layer, while the in-app browser is its visual Sources/Map/Studio production workspace.
+- Removed the duplicate WorkshopLM chat/composer from the browser design.
+- Added Codex app-server as the account/task bridge so WorkshopLM does not create a second login system or persist ChatGPT tokens.
+- Made native ChatGPT voice/task synchronization the primary capture path; retained `gpt-realtime-2.1` only as a spike-gated fallback.
+- Replaced hosted-vector-store dependency with plugin-native source grounding: normalized evidence, standard `search`/`fetch`, SQLite FTS5/BM25, exact search, and durable claim→chunk→source edges. Hosted File Search remains an optional adapter/comparison.
+- Added optional existing ChatGPT apps/MCPs as source lanes that normalize into the same evidence contract; the judge fixture remains connector-free.
+- Added root `DESIGN.md` as the concrete flagship GUI contract for layout, palette, typography, Map behavior, evidence visuals, Studio, image batches, storyboard, provenance, motion, accessibility, and demo beats.
+
+### Verified
+
+- Verified the live installed `codex-cli 0.144.1` app-server commands and generated its current v2 JSON protocol schema into `/tmp`.
+- Verified `account/read`, supported ChatGPT login start/cancel/logout flows, account update/completion notifications, and safe ChatGPT account response fields.
+- Verified the external-token login variant is marked unstable/internal and excluded it from the architecture.
+- Verified the current local Codex session reports `Logged in using ChatGPT` without reading or exposing credential files.
+- Verified current installed unified plugins can bundle skills, optional apps, a local stdio MCP server, and rich widget assets.
+
+### Decisions
+
+- Plugin complexity is contained by a thin-shell rule: status/trace/open/actions only; no duplicate Map, Studio, storyboard editor, asset browser, chat, or Realtime client unless the fallback is activated.
+- Existing Granola, Drive, and other app/MCP integrations are optional accelerators, not judge-path dependencies.
+- Source grounding is a product invariant, not a commitment to one retrieval vendor. `verified` claims require durable evidence edges regardless of retrieval adapter.
+- Codex app-server authentication does not automatically prove entitlement to direct Image, TTS, Realtime, or other API endpoints; live provider credentials remain a separate spike fact.
+
+### Open items
+
+- Run the host-sync spike to prove current-task linkage and whether native voice-originated turns are durably observable.
+- Run the plugin-host spike to prove actual local stdio/widget support separately in Work and Codex.
+- Build and visually verify the root `DESIGN.md` shell in the in-app browser before expanding feature breadth.

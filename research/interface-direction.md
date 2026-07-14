@@ -2,36 +2,31 @@
 
 Updated: 2026-07-13
 
+Current visual authority: root [`DESIGN.md`](../DESIGN.md). This file records the product rationale behind that system.
+
 ## Design intent
 
-The interface should feel aligned with ChatGPT: quiet, direct, conversational, and powerful without exposing implementation complexity. NotebookLM contributes the clear relationship between Sources, Chat, and outputs. Pomelli contributes progressive brand extraction and review. The product's own identity comes from the three-stage professional workflow.
+The interface should feel native beside ChatGPT: quiet, direct, and powerful without duplicating ChatGPT's conversation UI. NotebookLM contributes the clear relationship between Sources, conversation, and outputs; WorkshopLM distributes that model across the native ChatGPT task and one visual browser workspace. Pomelli contributes progressive brand extraction and review.
 
 ## Product shell
 
-The left navigation holds **Workshops**, recent work, Style Libraries, and connectors. Creating or opening a Workshop enters one durable container for its Sources, Conversation, Map, Style, and Studio outputs. The main workspace has three stable stages:
+The ChatGPT task is the Conversation/voice layer. The WorkshopLM plugin links it to one durable Workshop and opens the local browser workspace. That workspace contains Sources, Map, Style, and Studio outputs, with three conceptual stages:
 
 - **Capture** — voice and conversation;
 - **Shape** — interactive whiteboard;
 - **Deliver** — a Studio of output types and production controls.
 
-The same composer follows the user across all stages. Text, attachments, and voice never move to an unrelated surface.
+Text and voice remain in ChatGPT. The browser never renders a second composer; it exposes a restrained `Continue in ChatGPT` return action.
 
 ## Stage 1: Capture
 
-Primary surface:
-
-- large, calm conversation area;
-- prominent but familiar voice control;
-- live transcript with unobtrusive timestamps;
-- source and connector chips;
-- short assistant follow-ups;
-- “Shape this” as the primary progression action.
+Primary surface: the native ChatGPT task with the WorkshopLM plugin selected. The linked browser Workshop reflects task turns, source scope, candidate claims, and readiness to shape.
 
 The interface should encourage speed and messiness. Do not ask for a campaign type, format list, audience matrix, or design configuration before the user has expressed the idea.
 
 ## Stage 2: Shape
 
-The whiteboard takes the majority of the workspace. Conversation remains available as a collapsible side panel or floating composer.
+The whiteboard takes the majority of the browser workspace. Conversation remains in the adjacent/native ChatGPT task rather than a collapsible duplicate panel.
 
 Primary whiteboard capabilities:
 
@@ -123,13 +118,13 @@ Color is never the only status indicator.
 
 - Desktop is the full production environment.
 - Tablet supports Capture, whiteboard review/editing, approvals, and storyboard work.
-- Mobile prioritizes voice capture, transcript review, asset review, and approvals; it does not pretend to be a full whiteboard or deck editor.
+- Mobile browser mode prioritizes evidence, asset review, and approvals; voice capture remains in native ChatGPT. It does not pretend to be a full whiteboard or deck editor.
 
 ## Implementation guardrails
 
 - Use shadcn components and composition/global CSS before modifying primitives.
 - Meet WCAG AA contrast and keyboard-navigation requirements.
-- Preserve visible voice states: idle, listening, thinking, speaking, interrupted, and failed.
+- Reflect host/task synchronization state; show custom voice states only if the Realtime fallback is activated.
 - Keep every AI change undoable.
 - Never show a generation as final before its dependencies are current.
 - Do not use OpenAI's logo, wordmark, or product marks as this project's identity.
@@ -138,7 +133,7 @@ Color is never the only status indicator.
 
 A first-time professional should immediately understand:
 
-1. where to start talking;
+1. that talking/typing happens in ChatGPT and the visual work appears in the linked Workshop;
 2. how the transcript became the whiteboard;
 3. which ideas are grounded or unresolved;
 4. how the board becomes the brief;
