@@ -2122,3 +2122,24 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - The recorded fixture does not prove native ChatGPT task sync, paid provider generation, final demo video, or external submission links.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:36 CT — Studio cancellation semantics and public README corrected
+
+**Area:** Studio / Public repository
+
+### Changed
+
+- The Studio now offers **Cancel video** only while a render is queued, which is the state supported by the durable worker cancellation path. During an active local render it shows a disabled **Rendering locally…** control instead of exposing a request that would return a conflict.
+- Updated the public README to describe the implemented capture, editable Map, versioned artifacts, stale propagation, retry, and queued-cancellation behavior. Removed stale wording that listed already implemented UI capabilities as unfinished.
+
+### Verified
+
+- `pnpm --filter @workshoplm/web typecheck` passed.
+- `git diff --check` passed.
+
+### Open items
+
+- Active-render interruption, multi-artifact partial-success recovery, paid provider runs, native durable ChatGPT sync, and the final public demo remain separate unproven or unfinished work.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

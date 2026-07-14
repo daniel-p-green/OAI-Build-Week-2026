@@ -10,13 +10,15 @@ The repository currently provides a local-first deterministic seam with:
 
 - SQLite WAL state, hash-addressed local artifacts, and leased local jobs;
 - normalized, locally searchable sanitized source fixtures and claim-level evidence in the recorded acceptance run;
-- a persistent browser shell for Sources, Map state, approvals, and video-job status;
-- independent brief and storyboard approval gates;
-- source-traceable deck and infographic HTML artifacts;
+- browser capture for text, URLs, and PDFs, plus a capture-only Realtime fallback for voice;
+- an editable, persisted Excalidraw Map with typed operations and versioned approvals;
+- materialized `FRAME.md`, `DESIGN.md`, style-token, asset-plan, deck, infographic, and editable storyboard artifacts;
+- independent brief and storyboard approval gates, stale propagation, retry, and queued-render cancellation;
+- source-traceable deck and infographic HTML artifacts with claim locators;
 - a local HyperFrames render worker for the approved sanitized storyboard fixture;
 - a thin stdio MCP/plugin shell that reads the same local fixture state.
 
-This is active Build Week work, not a claim that every locked capability is complete. Native ChatGPT voice synchronization, GPT-5.6 graph extraction, live GPT Image generation, full source ingestion UI, Excalidraw editing, style capture, and the final public demo are still in progress. See [GOAL.md](GOAL.md) for the exact completion definition and [log.md](log.md) for dated evidence.
+This is active Build Week work, not a claim that every locked capability is complete. Native ChatGPT durable voice synchronization, paid GPT-5.6 reasoning, live GPT Image rendering, and the final public demo remain unproven or in progress. The local app uses deterministic fallbacks where provider access has not been demonstrated. See [GOAL.md](GOAL.md) for the exact completion definition and [log.md](log.md) for dated evidence.
 
 ## Run the recorded fixture
 
