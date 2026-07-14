@@ -1387,3 +1387,27 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add manual logo/font/image asset handling and visual-DNA evaluation/versioning.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:26 CT — Coherent image-batch regeneration exposed in Studio
+
+**Area:** Deliver / GUI / Runtime
+
+### Changed
+
+- Studio now lists each persisted image-manifest panel with version, locked reference, state, and an individual selective-regeneration control.
+
+### Verified
+
+- Web typecheck and production build passed.
+- A production route created a six-panel image batch after style lock. Selecting only `image-panel-2` changed it from `v1/planned` to `v2/selected_for_regeneration` while retaining `style-v1`; the fixture reset and `pnpm demo:e2e` passed.
+
+### Decisions
+
+- This is an editable coherent-batch contract and intentionally does not imply GPT Image 2 pixels were generated. The real provider batch remains an opt-in paid spike.
+
+### Open items
+
+- Run one authorized GPT Image 2 batch, attach generated assets and evaluation results to these panel records.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
