@@ -3,19 +3,22 @@
 import { useEffect, useMemo, useState } from "react";
 
 type View = "Map" | "Brief" | "Design" | "Story" | "Trace";
-type Claim = "promise" | "proof" | "visual" | "risk";
 type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string };
-type MapNode = { id: Claim; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; x: number; y: number };
+type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; x: number; y: number };
 type PersistedWorkshop = { briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sourceItems: SourceItem[]; mapNodes: MapNode[] };
 
 export default function WorkshopPage() {
   const [view, setView] = useState<View>("Map");
-  const [selected, setSelected] = useState<Claim>("promise");
+  const [selected, setSelected] = useState("promise");
   const [briefApproved, setBriefApproved] = useState(false);
   const [storyApproved, setStoryApproved] = useState(false);
   const [rendering, setRendering] = useState(false);
   const [sourceOpen, setSourceOpen] = useState(false);
   const [selectedSource, setSelectedSource] = useState<SourceItem | null>(null);
+  const [sourceInputOpen, setSourceInputOpen] = useState(false);
+  const [sourceTitle, setSourceTitle] = useState("");
+  const [sourceOrigin, setSourceOrigin] = useState("Local note");
+  const [sourceText, setSourceText] = useState("");
   const [persisted, setPersisted] = useState<PersistedWorkshop | null>(null);
   const activeNodes = persisted?.mapNodes ?? [];
   const selectedNode = useMemo(() => activeNodes.find((node) => node.id === selected) ?? activeNodes[0], [activeNodes, selected]);
@@ -32,6 +35,15 @@ export default function WorkshopPage() {
     setRendering(true);
     void mutate("renderVideo").finally(() => setRendering(false));
   }
+  async function addSource() {
+    const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "ingestSource", source: { title: sourceTitle, origin: sourceOrigin, text: sourceText } }) });
+    const state = await response.json() as PersistedWorkshop & { error?: string };
+    if (!response.ok) throw new Error(state.error ?? "Source ingestion failed");
+    setPersisted(state);
+    setSelected(state.mapNodes.at(-1)?.id ?? "promise");
+    setSourceInputOpen(false);
+    setSourceTitle(""); setSourceText("");
+  }
 
   return (
     <main className="workspace">
@@ -41,7 +53,7 @@ export default function WorkshopPage() {
       </header>
 
       <aside className="sources" aria-label="Sources">
-        <div className="rail-heading"><div><span className="eyebrow">CAPTURE</span><h2>Sources</h2></div><button className="icon-button" aria-label="Add source">+</button></div>
+        <div className="rail-heading"><div><span className="eyebrow">CAPTURE</span><h2>Sources</h2></div><button className="icon-button" aria-label="Add source" onClick={() => setSourceInputOpen(true)}>+</button></div>
         <div className="source-group">Selected for this Map <span>{persisted?.sourceItems.length ?? "…"}</span></div>
         <div className="source-list">
           {(persisted?.sourceItems ?? []).map((source, index) => <button className={`source-row ${index === 0 ? "active-source" : ""}`} onClick={() => { setSelectedSource(source); setSourceOpen(true); }} key={source.id}>
@@ -77,6 +89,7 @@ export default function WorkshopPage() {
       <footer className="host-strip"><span><i />Linked ChatGPT task · last grounded update just now</span><button>Continue in ChatGPT ↗</button></footer>
 
       {sourceOpen && selectedSource && <div className="evidence-sheet" role="dialog" aria-label="Evidence source"><div className="sheet-head"><div><span className="eyebrow">SOURCE EVIDENCE</span><h2>{selectedSource.title}</h2></div><button className="icon-button" onClick={() => setSourceOpen(false)}>×</button></div><p>“{selectedSource.excerpt}”</p><div className="locator-line">{selectedSource.locator}</div><button className="approve" onClick={() => { setSelected("promise"); setSourceOpen(false); }}>Show on Map</button></div>}
+      {sourceInputOpen && <form className="evidence-sheet source-form" aria-label="Add source" onSubmit={(event) => { event.preventDefault(); void addSource(); }}><div className="sheet-head"><div><span className="eyebrow">CAPTURE</span><h2>Add local source</h2></div><button type="button" className="icon-button" onClick={() => setSourceInputOpen(false)}>×</button></div><label>Title<input required value={sourceTitle} onChange={(event) => setSourceTitle(event.target.value)} placeholder="Sanitized meeting notes" /></label><label>Origin<input required value={sourceOrigin} onChange={(event) => setSourceOrigin(event.target.value)} placeholder="Local file or URL" /></label><label>Source text<textarea required value={sourceText} onChange={(event) => setSourceText(event.target.value)} placeholder="Paste sanitized text from a local file, URL capture, or meeting." /></label><button className="approve" type="submit">Normalize & add to Map</button></form>}
     </main>
   );
 }

@@ -37,6 +37,33 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-13 23:32 CT — Durable sanitized-source ingestion reaches the browser Map
+
+**Area:** Capture / Runtime / Product
+
+### Changed
+
+- Added a local source-ingestion command that normalizes pasted sanitized text, hashes and stores it beneath the local Workshop data root, persists source metadata in SQLite, and creates a grounded Map evidence card in the same state document.
+- Added the browser's **Add local source** panel and the corresponding `POST /api/workshop` action. The panel accepts a title, origin, and source text; no account or remote connector is involved.
+
+### Verified
+
+- Worker tests passed 5/5 and worker typecheck passed.
+- Web typecheck and production build passed.
+- A production server HTTP request ingested a source, returned four sources and five Map nodes, then exposed the new source and grounded node on a subsequent `GET /api/workshop`.
+- Reset and `pnpm demo:e2e` passed after the live route check.
+
+### Decisions
+
+- This is a durable sanitized-text path, not yet file-byte or URL fetching. Those remain explicitly open rather than being represented as complete by the UI's origin field.
+
+### Open items
+
+- Add local-file and safe URL adapters, normalized chunk/claim persistence, typed graph operation UI/undo, and the full source-to-claim provenance query.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-13 23:27 CT — Public source repository established
 
 **Area:** Submission / Repository

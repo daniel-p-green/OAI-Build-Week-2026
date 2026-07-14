@@ -1,3 +1,5 @@
+import { createHash } from "node:crypto";
+import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { openLocalDatabase } from "./db/client.js";
@@ -5,8 +7,9 @@ import { migrate } from "./db/migrate.js";
 import { enqueue } from "./queue.js";
 
 export type WorkshopSource = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string };
-export type WorkshopMapNode = { id: "promise" | "proof" | "visual" | "risk"; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; x: number; y: number };
+export type WorkshopMapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; x: number; y: number };
 export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; sourceItems: WorkshopSource[]; mapNodes: WorkshopMapNode[]; updatedAt: string };
+export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string };
 const id = "workshop-build-week";
 const defaultState = (): WorkshopState => ({ id, title: "WorkshopLM Build Week", briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: 3, groundedClaims: 5, sourceItems: [
   { id: "source-raw", type: "TXT", title: "Raw voice brainstorm", origin: "ChatGPT task", claimCount: 5, excerpt: "The judge should be able to see the messy original thought become a cited map, a real brief, and a finished piece of work.", locator: "ChatGPT task · 12:41 · chunk 04" },
@@ -28,6 +31,27 @@ export function readWorkshopState(root?: string): WorkshopState {
   const state = defaultState(); db.prepare("INSERT INTO workshop_state VALUES (?, ?, ?)").run(id, JSON.stringify(state), state.updatedAt); return state;
 }
 function write(next: WorkshopState, root?: string) { const db = dbFor(root); db.prepare("UPDATE workshop_state SET state_json=?, updated_at=? WHERE workshop_id=?").run(JSON.stringify(next), next.updatedAt, id); return next; }
+function normalizeSourceText(text: string) { return text.replace(/\r\n?/g, "\n").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim(); }
+function sourceClaimCount(text: string) { return Math.max(1, text.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean).length); }
+export async function ingestSource(input: SourceIngestion, root?: string): Promise<WorkshopState> {
+  const text = normalizeSourceText(input.text);
+  if (!text) throw new Error("Source text is required.");
+  const title = input.title.trim();
+  const origin = input.origin.trim();
+  if (!title || !origin) throw new Error("Source title and origin are required.");
+  const hash = createHash("sha256").update(`${origin}\n${text}`).digest("hex");
+  const sourceId = `source-${hash.slice(0, 12)}`;
+  const current = readWorkshopState(root);
+  if (current.sourceItems.some((source) => source.id === sourceId)) return current;
+  const dataRoot = root ?? repositoryDataRoot();
+  const sourceDirectory = join(dataRoot, "sources");
+  await mkdir(sourceDirectory, { recursive: true });
+  await writeFile(join(sourceDirectory, `${hash}.txt`), text, "utf8");
+  const claimCount = sourceClaimCount(text);
+  const source: WorkshopSource = { id: sourceId, type: input.type ?? "TXT", title, origin, claimCount, excerpt: text.slice(0, 240), locator: `${origin} · normalized:${hash.slice(0, 12)}` };
+  const node: WorkshopMapNode = { id: `evidence-${hash.slice(0, 12)}`, title, body: source.excerpt, kind: "grounded", locator: source.locator, x: 18 + (current.mapNodes.length * 13) % 64, y: 24 + (current.mapNodes.length * 17) % 54 };
+  return write({ ...current, sources: current.sources + 1, groundedClaims: current.groundedClaims + claimCount, sourceItems: [...current.sourceItems, source], mapNodes: [...current.mapNodes, node], updatedAt: new Date().toISOString() }, root);
+}
 export function setVideoState(videoState: WorkshopState["videoState"], root?: string) { const current = readWorkshopState(root); return write({ ...current, videoState, updatedAt: new Date().toISOString() }, root); }
 export function applyWorkshopAction(action: "approveBrief" | "approveStoryboard" | "renderVideo", root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
