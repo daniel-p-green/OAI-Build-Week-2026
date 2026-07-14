@@ -1776,3 +1776,31 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add user-visible regeneration guidance/history for each stale artifact; current state is correctly blocked but not yet a polished recovery wizard.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:08 CT — Approved-input asset plan added to Studio
+
+**Area:** Deliver / Planning / GUI
+
+### Changed
+
+- Added a versioned `assetPlan` derived from the canonical graph revision, approved `FRAME.md`, current Style Foundation, optional current Visual DNA, and evidence claim IDs.
+- The plan names and traces deck, infographic, coherent images, editable storyboard, and video; it is shown in Studio with inspectable prompts and stale state.
+- Map and Style changes now stale the plan along with their downstream deliverables.
+
+### Verified
+
+- Worker tests passed: 19 tests across 3 files, including approved-input plan construction and stale propagation.
+- Worker/web typechecks, web production build, fixture reset, and `pnpm demo:e2e` passed.
+- Production replay ingested a sanitized source, approved its brief, locked style, and generated asset plan v1 with graph revision 1, brief/style version 1, a durable evidence claim ID, and all five output types.
+- Live desktop Studio displayed the current plan and each output prompt.
+
+### Decisions
+
+- The plan is a durable scoped production contract, not a second approval gate. Existing storyboard approval remains the only delivery gate for video.
+
+### Open items
+
+- Feed plan records into GPT Image 2 execution/evaluation once provider spend is authorized and include plan inputs in the final public demo package.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
