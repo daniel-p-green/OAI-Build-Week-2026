@@ -11,7 +11,7 @@ import { writeRenderedArtifact } from "@workshoplm/production";
 import { storeArtifact } from "./artifacts/local-artifact-store.js";
 import { openLocalDatabase } from "./db/client.js";
 import { migrate } from "./db/migrate.js";
-import { enqueue } from "./queue.js";
+import { cancelJob, enqueue } from "./queue.js";
 
 export type WorkshopSource = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string; permission: "private" | "sanitized" | "shareable" };
 export type WorkshopChunk = { id: string; sourceId: string; text: string; locator: string; ordinal: number };
@@ -204,6 +204,7 @@ export function updateStoryboardPanel(panelId: string, patch: Pick<StoryboardPan
   return write({ ...current, storyboard: { version: current.storyboard.version + 1, panels, stale: false }, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
 export function setVideoState(videoState: WorkshopState["videoState"], root?: string) { const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); return write({ ...current, videoState, firstRenderedOutputAt: videoState === "rendered" ? current.firstRenderedOutputAt ?? updatedAt : current.firstRenderedOutputAt, updatedAt }, root); }
+export function cancelVideoRender(root?: string): WorkshopState { const current = readWorkshopState(root); const db = dbFor(root); const job = db.prepare("SELECT id FROM job WHERE workshop_id=? AND kind='render_video' AND state IN ('queued','retrying') ORDER BY created_at DESC LIMIT 1").get(id) as { id: string } | undefined; if (!job || !cancelJob(db, job.id)) throw new Error("No queued video render is available to cancel."); return write({ ...current, videoState: "blocked", updatedAt: new Date().toISOString() }, root); }
 export function applyWorkshopAction(action: "approveBrief" | "lockManualStyle" | "approveStoryboard" | "renderVideo", root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
   if (action === "approveBrief") return write({ ...current, frame: frameFor(current, updatedAt, root), briefApproved: true, storyboardApproved: false, videoState: "blocked", updatedAt }, root);

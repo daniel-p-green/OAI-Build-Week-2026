@@ -18,3 +18,4 @@ export function leaseNext(db: DatabaseSync, leaseMs = 30_000): Job | null {
 export function finishJob(db: DatabaseSync, id: string, state: "succeeded" | "failed" | "retrying", error?: string) {
   db.prepare("UPDATE job SET state=?, error=?, lease_until=NULL, updated_at=? WHERE id=?").run(state, error ?? null, now(), id);
 }
+export function cancelJob(db: DatabaseSync, id: string) { return db.prepare("UPDATE job SET state='cancelled', lease_until=NULL, updated_at=? WHERE id=? AND state IN ('queued','retrying')").run(now(), id).changes > 0; }

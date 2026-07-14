@@ -2043,3 +2043,23 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Explicit user cancellation and multi-artifact partial-success recovery still need their own user-visible flow and evidence; the broad reliability checkbox remains open.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:32 CT — Queued video cancellation added
+
+**Area:** Worker / Failure recovery
+
+### Changed
+
+- Added a durable cancellation path for queued or retrying local video jobs. Cancellation marks the job terminal, clears its lease, and returns the Workshop video state to blocked.
+
+### Verified
+
+- Worker tests passed: 25 tests across 3 files. The cancellation test queues an approved video, cancels it, and proves a subsequent worker pass is idle.
+- Worker typecheck passed.
+
+### Open items
+
+- Multi-artifact partial-success recovery is still unimplemented; the broad reliability checkbox remains open.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
