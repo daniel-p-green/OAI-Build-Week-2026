@@ -1910,3 +1910,26 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 ### Open items
 
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:25 CT — Public website Brand Foundation verified
+
+**Area:** Style / Safety / Local artifacts
+
+### Changed
+
+- Added a deterministic test for the existing public-URL Style Foundation path, covering validated public DNS, title/palette extraction, reference provenance, and generated design artifacts.
+
+### Verified
+
+- Worker tests passed: 22 tests across 3 files; web typecheck, fixture reset, and `pnpm demo:e2e` passed.
+- Live local API replay fetched `https://example.com`, locked `Example Domain foundation` as website style v1, recorded the canonical reference URL, and materialized `generated/DESIGN-v1.md` plus its token JSON.
+
+### Decisions
+
+- Website capture remains bounded to publicly reachable content and conservative metadata extraction. It does not claim logo licensing or richer brand-rights inference.
+
+### Open items
+
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
