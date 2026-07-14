@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 02:05 CT
+Last updated: 2026-07-14 02:07 CT
 
 ## Status
 
@@ -248,7 +248,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Verify schema, gate, graph, grounding, rendering, and integration tests.
 - [x] Verify failure recovery and partial-package behavior.
 - [ ] Verify all submitted links, the repeatable recording setup, and the optional inspection instructions in a fresh ChatGPT/Codex in-app browser session.
-- [ ] Audit every objective requirement against direct evidence before marking the goal complete.
+- [x] Audit every objective requirement against direct evidence before marking the goal complete.
 
 ## Current evidence
 
