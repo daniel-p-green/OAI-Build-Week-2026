@@ -946,3 +946,28 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add PDF parsing, live GPT Image 2 generation/evaluation when authorized, richer graph operations, full provenance UI, and live-provider/host proof.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-13 23:57 CT — Live persisted provenance Trace
+
+**Area:** Provenance / Product
+
+### Changed
+
+- Replaced the static Trace illustration with a state-backed provenance chain: source → normalized chunk → verified claim → Map node → `FRAME.md` version → persisted generated artifact.
+- The Trace view now shows unavailable steps honestly and surfaces current/stale status from the real local document.
+
+### Verified
+
+- Web typecheck and optimized production build passed.
+- Reset and recorded `pnpm demo:e2e` passed with the Trace consuming the same `/api/workshop` state document as Sources, Map, and Studio.
+
+### Decisions
+
+- The first visible trace follows the selected/first available evidence chain. Full multi-claim artifact graph browsing remains a richer follow-up rather than a static claim of complete coverage.
+
+### Open items
+
+- Add PDF parsing, live GPT Image 2 generation/evaluation when authorized, richer graph operations, multi-claim provenance browsing, and live-provider/host proof.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
