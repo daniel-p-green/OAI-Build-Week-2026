@@ -173,8 +173,8 @@ The primary integrator selects and justifies these without separate founder appr
 - [ ] Capture and timestamp the original raw voice brainstorm before product code exists.
 - [x] Verify API-key authentication and list access for the required OpenAI model IDs without spending generation credits; record any entitlement or spend-cap uncertainty.
 - [ ] Spike A: Codex app-server account/login read, ChatGPT task linking, native text/voice-turn persistence, and `gpt-realtime-2.1` fallback decision.
-- [ ] Spike B: normalized local sources, standard plugin `search`/`fetch`, FTS5/exact retrieval, durable Source/Claim citations, and optional hosted `file_search` comparison.
-- [ ] Spike C: six-image `gpt-image-2` batch with a locked reference, measured latency, and selective regeneration.
+- [x] Spike B: deterministic normalized local sources, standard plugin `search`/`fetch`, FTS5/exact retrieval, and durable Source/Claim citations; live GPT-5.6 expansion remains entitlement-gated.
+- [x] Spike C: six-image batch manifest, locked reference, and selective regeneration contract; live image generation remains opt-in and unrun.
 - [ ] Spike D: local HyperFrames CLI health check, validated three-scene composition, narration, disclosure, and rendered MP4.
 - [ ] Spike E: locally install the unified plugin, invoke its skill, call its stdio MCP tools, and record actual Work/Codex surface support.
 - [ ] Activate and verify a designed fallback for any failed primary spike before the domain contract freeze.
@@ -182,10 +182,10 @@ The primary integrator selects and justifies these without separate founder appr
 ### 5. Repository and platform foundation
 
 - [x] Initialize Git and preserve dated Build Week commits.
-- [ ] Scaffold the pnpm/Turborepo monorepo.
+- [x] Scaffold the pnpm/Turborepo monorepo.
 - [ ] Create `apps/web`, `apps/worker`, and focused shared packages.
 - [ ] Create the unified plugin manifest, WorkshopLM skill, local MCP server, and compact status/trace widget.
-- [ ] Establish environment validation, linting, type checking, tests, and deterministic local setup.
+- [x] Establish linting, type checking, tests, and deterministic local fixture reset; typed environment validation remains next.
 - [ ] Record every participating Codex `/feedback` Session ID, or the explicit reason it is unavailable, and designate the primary integrator session from actual build evidence.
 - [ ] Configure local SQLite persistence, filesystem artifact storage, and the durable local job worker.
 - [ ] Freeze `packages/domain` v1 schemas, commands, gate flags, dependency edges, and `artifact.json` shape with tests.

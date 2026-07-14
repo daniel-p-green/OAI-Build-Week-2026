@@ -70,7 +70,8 @@ async function generateAsset(asset: ImageAsset, reference: Uint8Array): Promise<
   form.append("prompt", asset.prompt);
   form.append("size", asset.provenance.size);
   form.append("quality", asset.provenance.quality);
-  form.append("image", new Blob([reference], { type: "image/png" }), "reference.png");
+  const imageBytes = reference.buffer.slice(reference.byteOffset, reference.byteOffset + reference.byteLength) as ArrayBuffer;
+  form.append("image", new Blob([imageBytes], { type: "image/png" }), "reference.png");
   const response = await fetch("https://api.openai.com/v1/images/edits", {
     method: "POST",
     headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY ?? ""}` },

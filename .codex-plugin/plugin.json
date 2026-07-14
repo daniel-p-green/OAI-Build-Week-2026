@@ -1,0 +1,17 @@
+{
+  "name": "workshoplm",
+  "version": "0.1.0",
+  "description": "Turn raw thinking into finished, source-traceable work.",
+  "skills": "./skills/",
+  "apps": "./.app.json",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "WorkshopLM",
+    "shortDescription": "Turn raw thinking into finished work",
+    "longDescription": "A local Capture → Shape → Deliver workflow for grounded professional outputs.",
+    "developerName": "WorkshopLM",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "brandColor": "#171816"
+  }
+}

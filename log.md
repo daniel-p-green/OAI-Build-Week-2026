@@ -470,3 +470,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Determine whether GPT-5.6 requires a different project-scoped key, model alias, or hackathon entitlement before the first paid reasoning call.
 - Spend-cap availability is still unverified because the model endpoints do not expose project budget policy.
 - Codex `/feedback` Session ID: the current surface has not exposed a verified `/feedback` ID for this milestone.
+
+---
+
+## 2026-07-13 22:59 CT — Foundation, GUI slice, and deterministic spikes
+
+**Area:** Engineering / Product / Testing
+
+### Changed
+
+- Added the pnpm/Turborepo workspace, local deterministic reset, unified plugin shell, compact MCP tool surface, sanitized provider-report helpers, and a functional local Sources → Map → Brief → Storyboard UI slice.
+- Added deterministic source-grounding, host-sync, and Image batch spikes. The visual workspace preserves the locked three-panel layout, no duplicate chat composer, evidence sheet, brief gate, storyboard gate, and local-video blocked state.
+
+### Verified
+
+- `pnpm check` passed after workspace type integration fixes; `pnpm --workspace-concurrency=1 test` passed all 12 package tasks (grounding 4 tests, image 2, host sync 3, plugin 3).
+- `pnpm --filter @workshoplm/web build`, `pnpm demo:reset`, and `pnpm demo:e2e` passed. Browser verification at `http://localhost:3000` exercised Map approval, storyboard approval, and render eligibility. Browser plugin was unavailable, so Playwright was used as the documented fallback.
+- Deterministic spike runners passed without provider spend. Image generation was not run live. Host-sync report is `credential_blocked` pending an explicitly opted-in disposable task and selects no native-voice pass.
+
+### Decisions
+
+- GPT-5.6 remains unclaimed in product behavior until the entitled alias/project is proven. Native voice remains undecided until its July 14 deadline; the UI is structured so a capture-only fallback can be added without a browser composer.
+
+### Open items
+
+- Implement durable SQLite/domain contracts, real worker outputs, provider-backed image/TTS checks, HyperFrames render spike, and actual in-app plugin installation validation.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

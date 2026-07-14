@@ -1,0 +1,7 @@
+{
+  "workshoplm": {
+    "command": "node",
+    "args": ["./packages/plugin-mcp/dist/server.js"],
+    "transport": "stdio"
+  }
+}

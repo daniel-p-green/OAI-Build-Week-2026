@@ -1,0 +1,6 @@
+{
+  "name": "@workshoplm/plugin-mcp",
+  "private": true,
+  "type": "module",
+  "scripts": { "build": "tsc -p tsconfig.build.json", "lint": "tsc --noEmit", "typecheck": "tsc --noEmit", "test": "vitest run" }
+}

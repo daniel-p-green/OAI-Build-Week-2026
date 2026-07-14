@@ -1,0 +1,1 @@
+{ "name": "@workshoplm/ui", "private": true, "type": "module", "scripts": { "build": "node -e \"\"", "lint": "node -e \"\"", "typecheck": "node -e \"\"", "test": "node -e \"\"" } }

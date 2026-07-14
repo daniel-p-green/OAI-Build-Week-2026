@@ -28,7 +28,8 @@ export type ImageBatchManifest = {
 };
 
 export type ReplacementAsset = Omit<ImageAsset, "id" | "version"> & {
-  readonly version?: never;
+  /** Ignored on replacement: the manifest owns monotonically increasing versions. */
+  readonly version?: number;
 };
 
 /**

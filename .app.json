@@ -1,0 +1,12 @@
+{
+  "name": "WorkshopLM",
+  "description": "Optional compact status and evidence-trace widgets for the local Workshop.",
+  "dependencies": {
+    "granola": { "optional": true },
+    "google-drive": { "optional": true }
+  },
+  "widgets": [
+    { "name": "workshop-status", "path": "./packages/plugin-mcp/dist/widgets/status.html" },
+    { "name": "workshop-trace", "path": "./packages/plugin-mcp/dist/widgets/trace.html" }
+  ]
+}

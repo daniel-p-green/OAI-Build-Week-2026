@@ -1,0 +1,7 @@
+{
+  "name": "@workshoplm/web",
+  "private": true,
+  "scripts": { "dev": "next dev", "build": "next build", "lint": "tsc --noEmit", "typecheck": "tsc --noEmit", "test": "vitest run --passWithNoTests", "test:e2e": "tsx scripts/e2e.ts" },
+  "dependencies": { "next": "^15.3.0", "react": "^19.1.0", "react-dom": "^19.1.0" },
+  "devDependencies": { "@types/react": "^19.1.0", "@types/react-dom": "^19.1.0" }
+}

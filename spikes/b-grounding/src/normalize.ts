@@ -28,7 +28,7 @@ function markdownParts(content: string): Array<{ text: string; locator?: NativeL
   const sections = content.split(/(?=^#{1,6}\s+)/m);
   return sections.map((section) => {
     const heading = section.match(/^#{1,6}\s+(.+)$/m)?.[1];
-    return { text: normalizeText(section), locator: heading ? { kind: "section", value: heading.trim() } : undefined };
+    return { text: normalizeText(section), locator: heading ? ({ kind: "section", value: heading.trim() } satisfies NativeLocator) : undefined };
   }).filter((part) => part.text.length > 0);
 }
 
@@ -36,7 +36,7 @@ function textParts(content: string): Array<{ text: string; locator?: NativeLocat
   return content.split(/\n(?=\[\d{2}:\d{2}\])/).map((line) => {
     const text = normalizeText(line);
     const timestamp = text.match(/^\[(\d{2}:\d{2})\]/)?.[1];
-    return { text, locator: timestamp ? { kind: "time", value: timestamp } : undefined };
+    return { text, locator: timestamp ? ({ kind: "time", value: timestamp } satisfies NativeLocator) : undefined };
   }).filter((part) => part.text.length > 0);
 }
 
@@ -60,7 +60,7 @@ export function normalizeSource(input: SourceInput): NormalizedSource {
       sourceId,
       sourceName,
       text: part.text,
-      nativeLocator: part.locator,
+      ...(part.locator ? { nativeLocator: part.locator } : {}),
       chunkId: `chk_${digest(`${sourceId}\n${index}\n${part.text}`).slice(0, 20)}`,
     })),
   };
