@@ -1411,3 +1411,27 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Run one authorized GPT Image 2 batch, attach generated assets and evaluation results to these panel records.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:27 CT — Durable typed Map add/delete controls verified
+
+**Area:** Shape / GUI / Runtime
+
+### Changed
+
+- Added user-facing Map controls for typed `add_node` and `remove_node` operations alongside the existing update and undo controls.
+
+### Verified
+
+- Web typecheck and production build passed.
+- Production API run: add `node-manual-smoke` → remove it → undo removal. Undo restored the exact manual node; the brief was invalidated and the storyboard marked stale. Fixture reset and `pnpm demo:e2e` passed.
+
+### Decisions
+
+- The Map UI now exposes real persisted typed user operations, but AI-proposed operations, visible edge editing, and Excalidraw rendering remain open; this does not complete the full Shape requirement.
+
+### Open items
+
+- Add evidence-aware edge controls, AI operation proposals, Excalidraw rendering, and Sketch regeneration.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

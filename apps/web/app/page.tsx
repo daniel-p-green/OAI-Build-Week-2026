@@ -70,6 +70,20 @@ export default function WorkshopPage() {
     if (!response.ok) throw new Error(state.error ?? "Map undo failed");
     setPersisted(state); setNodeLabel("");
   }
+  async function addMapIdea() {
+    const nodeId = `node-manual-${Date.now()}`;
+    const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "mapOperation", operation: { type: "add_node", node: { id: nodeId, kind: "idea", label: "Untitled idea", evidenceState: "creative", metadata: { body: "A user-authored Map idea.", locator: "Manual Map edit" } } } }) });
+    const state = await response.json() as PersistedWorkshop & { error?: string };
+    if (!response.ok) throw new Error(state.error ?? "Map add failed");
+    setPersisted(state); setSelected(nodeId.replace(/^node-/, "")); setNodeLabel("Untitled idea");
+  }
+  async function removeSelectedNode() {
+    if (!selectedNode) return;
+    const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "mapOperation", operation: { type: "remove_node", nodeId: `node-${selectedNode.id}` } }) });
+    const state = await response.json() as PersistedWorkshop & { error?: string };
+    if (!response.ok) throw new Error(state.error ?? "Map remove failed");
+    setPersisted(state); setSelected(state.mapNodes[0]?.id ?? ""); setNodeLabel("");
+  }
   async function generateOutput(outputType: "deck" | "infographic") {
     const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "generateOutput", outputType }) });
     const state = await response.json() as PersistedWorkshop & { error?: string };
@@ -105,13 +119,13 @@ export default function WorkshopPage() {
           {view === "Map" && <button className="approve" onClick={() => { void mutate("approveBrief").then(() => { setBriefApproved(true); setView("Brief"); }); }}>Approve map as brief</button>}
         </nav>
         {view === "Map" ? <section className="map" aria-label="Semantic Map">
-          <div className="map-label">Evidence becoming structure</div>
+          <div className="map-label">Evidence becoming structure <button onClick={() => { void addMapIdea(); }}>+ Add idea</button></div>
           <svg className="threads" viewBox="0 0 900 620" aria-hidden="true"><path d="M210 180 C340 110 430 135 510 180" /><path d="M240 225 C335 340 430 380 475 410" /><path d="M580 220 C665 305 690 390 700 435" /></svg>
           {activeNodes.map((node) => <button key={node.id} className={`claim-card ${node.kind} ${selected === node.id ? "focus" : ""}`} style={{ left: `${node.x}%`, top: `${node.y}%` }} onClick={() => { setSelected(node.id); setNodeLabel(node.title); }}>
             <span className="claim-kind">{node.kind === "grounded" ? "Grounded" : node.kind === "derived" ? "Derived" : "Creative"}</span><strong>{node.title}</strong><span>{node.body}</span><small>{node.locator}</small>
           </button>)}
           <div className="cluster cluster-one">Narrative</div><div className="cluster cluster-two">Delivery proof</div>
-          {selectedNode && <section className="map-inspector"><span className={`state-dot ${selectedNode.kind}`} /><div><input aria-label="Map node title" value={nodeLabel || selectedNode.title} onChange={(event) => setNodeLabel(event.target.value)} /><p>{selectedNode.locator}</p></div><button onClick={() => { void editSelectedNode(); }}>Save edit</button><button onClick={() => { void undoMapEdit(); }}>Undo</button><button onClick={() => { setSelectedSource(persisted?.sourceItems.find((source) => source.id === selectedNode.sourceId) ?? persisted?.sourceItems[0] ?? null); setSourceOpen(true); }}>Open evidence ↗</button></section>}
+          {selectedNode && <section className="map-inspector"><span className={`state-dot ${selectedNode.kind}`} /><div><input aria-label="Map node title" value={nodeLabel || selectedNode.title} onChange={(event) => setNodeLabel(event.target.value)} /><p>{selectedNode.locator}</p></div><button onClick={() => { void editSelectedNode(); }}>Save edit</button><button onClick={() => { void undoMapEdit(); }}>Undo</button><button className="danger-action" onClick={() => { void removeSelectedNode(); }}>Delete</button><button onClick={() => { setSelectedSource(persisted?.sourceItems.find((source) => source.id === selectedNode.sourceId) ?? persisted?.sourceItems[0] ?? null); setSourceOpen(true); }}>Open evidence ↗</button></section>}
         </section> : view === "Brief" ? <Brief approved={persisted?.briefApproved ?? briefApproved} frame={persisted?.frame} /> : view === "Story" ? <Storyboard storyboard={persisted?.storyboard} approved={persisted?.storyboardApproved ?? storyApproved} ready={Boolean(persisted?.style && !persisted.style.stale)} onChange={setPersisted} onApprove={() => { void mutate("approveStoryboard").then(() => setStoryApproved(true)); }} /> : view === "Design" ? <DesignReview style={persisted?.style} onLock={() => { void mutate("lockManualStyle"); }} onWebsiteLock={lockWebsiteStyle} /> : <Trace state={persisted} />}
       </section>
 
