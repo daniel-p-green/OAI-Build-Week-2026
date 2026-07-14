@@ -1600,3 +1600,20 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add AI-proposed graph operations and direct Excalidraw canvas synchronization before marking the full Shape operation requirement complete.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:41 CT — Local browser interaction smoke passed
+
+**Area:** GUI / Verification
+
+### Verified
+
+- The available local browser surface loaded the production app at `http://localhost:3026/`; the required in-app Browser connector was unavailable in this runtime.
+- In the live UI, selecting the `The product promise` Map node, choosing `Judge proof`, and pressing `Link` rendered the relationship label and surfaced an `Unlink` control.
+- At a 390×844 mobile viewport, the workspace retained the top bar, Map navigation/canvas, and host strip without horizontal overflow in the accessibility snapshot.
+
+### Open items
+
+- This is a narrow local browser smoke only. Tablet review, visual screenshot review, and a fresh ChatGPT/Codex in-app-browser session remain unverified.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
