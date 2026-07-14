@@ -48,7 +48,7 @@ codex plugin marketplace add daniel-p-green/OAI-Build-Week-2026
 codex plugin add workshoplm@workshoplm-local
 ```
 
-Restart or open a fresh Codex task after installation so newly registered plugin tools are available. The plugin's stdio server uses the local workspace state; run the fixture commands above before trying its grounded `search` and `fetch` tools.
+Restart or open a fresh Codex task after installation so newly registered plugin tools are available. The plugin's stdio server reads the configured `WORKSHOPLM_DATA_ROOT`; in a source checkout that defaults to this repository's `.workshoplm/` directory. Run the fixture commands above before trying its grounded `search` and `fetch` tools.
 
 Verified installation surface: the Codex CLI marketplace flow on macOS. Fresh-task tool invocation in the Codex desktop UI remains a separately recorded integration check.
 

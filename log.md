@@ -1196,3 +1196,28 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - A fresh Codex desktop task must still invoke the installed skill and stdio MCP tools before Spike E can be checked as complete.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:18 CT — Plugin runtime artifact packaged
+
+**Area:** Plugin / Runtime Integrity
+
+### Changed
+
+- Added the compiled `packages/plugin-mcp/dist` entry point to the public plugin artifact; `.mcp.json` executes this JavaScript file directly.
+- Corrected README wording to state the explicit `WORKSHOPLM_DATA_ROOT` boundary instead of implying an installed plugin cache automatically shares an arbitrary source checkout's state.
+
+### Verified
+
+- `pnpm --filter @workshoplm/plugin-mcp build` and its five tests passed.
+- After `pnpm demo:reset`, the compiled stdio server answered `initialize`, `tools/list`, and a `search` tool call using MCP JSON-RPC.
+
+### Decisions
+
+- The initial public snapshot omitted `dist/server.js`, which made its declared MCP command unrunnable. The release artifact is now versioned deliberately; source-only package tests were not treated as enough evidence.
+
+### Open items
+
+- Reinstall from the public GitHub snapshot and invoke the packaged MCP process from its installed cache. A desktop fresh-task invocation and configured data-root handoff remain separate host checks.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

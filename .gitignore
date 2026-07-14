@@ -2,6 +2,8 @@ node_modules/
 .next/
 *.tsbuildinfo
 dist/
+!packages/plugin-mcp/dist/
+!packages/plugin-mcp/dist/**
 .turbo/
 .playwright-mcp/
 .DS_Store
