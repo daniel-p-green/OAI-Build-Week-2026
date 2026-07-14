@@ -1804,3 +1804,30 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Feed plan records into GPT Image 2 execution/evaluation once provider spend is authorized and include plan inputs in the final public demo package.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:14 CT — Style locks materialize inspectable design artifacts
+
+**Area:** Style / Local artifacts / GUI
+
+### Changed
+
+- Every manual or website-derived Style Foundation lock now writes a versioned `generated/DESIGN-vN.md` and paired `generated/DESIGN-vN.tokens.json` beneath the configured local data root.
+- The persisted workshop state records both artifact paths and the Design UI displays them next to the locked foundation.
+- Added a worker proof test that reads the generated Markdown and parses the token JSON after a manual lock.
+
+### Verified
+
+- Worker tests passed: 19 tests across 3 files. Worker and web typechecks passed; the web production build passed.
+- A live local API replay locked `Judge-safe foundation` as style v2 and returned `generated/DESIGN-v2.md` plus `generated/DESIGN-v2.tokens.json`; both files were read from `.workshoplm/generated` and contained exact `#1155AA`, `#111111`, `#F0EFEA`, `Inter`, the board-deck profile, and the configured negative rule.
+- The local browser Design view displayed `generated/DESIGN-v2.md · generated/DESIGN-v2.tokens.json`. The Codex in-app Browser plugin was unavailable, so this UI replay used the configured standalone Playwright fallback.
+
+### Decisions
+
+- Design artifacts are versioned historical records rather than mutable global files; replacing Style Foundation writes the next version and separately stales dependent production artifacts.
+
+### Open items
+
+- The website capture remains intentionally bounded to public title, palette, and reference URL; richer asset extraction needs a privacy/licensing review before it can become a stronger claim.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
