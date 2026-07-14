@@ -4,19 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 
 type View = "Map" | "Brief" | "Design" | "Story" | "Trace";
 type Claim = "promise" | "proof" | "visual" | "risk";
-
-const nodes: Array<{ id: Claim; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; x: number; y: number }> = [
-  { id: "promise", title: "The product promise", body: "Turn raw thinking into finished work without losing the trail back to source material.", kind: "grounded", locator: "Meeting · 12:41", x: 11, y: 18 },
-  { id: "proof", title: "Judge proof", body: "Show one continuous capture → map → brief → storyboard → rendered video seam.", kind: "grounded", locator: "Build notes · §2", x: 48, y: 12 },
-  { id: "visual", title: "Visual behavior", body: "Evidence first becomes an editable production system, not a static report.", kind: "creative", locator: "Design · Map", x: 39, y: 54 },
-  { id: "risk", title: "Voice capture fallback", body: "Use a capture-only control when durable native voice linkage is not proven.", kind: "derived", locator: "Goal · capture", x: 70, y: 58 },
-];
-
-const sources = [
-  ["TXT", "Raw voice brainstorm", "ChatGPT task", "5 claims"],
-  ["PDF", "Build Week brief", "Local", "3 claims"],
-  ["WEB", "WorkshopLM direction", "Local", "2 claims"],
-];
+type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string };
+type MapNode = { id: Claim; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; x: number; y: number };
+type PersistedWorkshop = { briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sourceItems: SourceItem[]; mapNodes: MapNode[] };
 
 export default function WorkshopPage() {
   const [view, setView] = useState<View>("Map");
@@ -25,15 +15,17 @@ export default function WorkshopPage() {
   const [storyApproved, setStoryApproved] = useState(false);
   const [rendering, setRendering] = useState(false);
   const [sourceOpen, setSourceOpen] = useState(false);
-  const [persisted, setPersisted] = useState<{ briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered" } | null>(null);
-  const selectedNode = useMemo(() => nodes.find((node) => node.id === selected)!, [selected]);
+  const [selectedSource, setSelectedSource] = useState<SourceItem | null>(null);
+  const [persisted, setPersisted] = useState<PersistedWorkshop | null>(null);
+  const activeNodes = persisted?.mapNodes ?? [];
+  const selectedNode = useMemo(() => activeNodes.find((node) => node.id === selected) ?? activeNodes[0], [activeNodes, selected]);
 
   useEffect(() => { fetch("/api/workshop").then((response) => response.ok ? response.json() : null).then(setPersisted).catch(() => setPersisted(null)); }, []);
   async function mutate(action: "approveBrief" | "approveStoryboard" | "renderVideo") {
     const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action }) });
     const state = await response.json() as { error?: string; briefApproved?: boolean; storyboardApproved?: boolean; videoState?: "blocked" | "queued" | "rendering" | "rendered" };
     if (!response.ok) throw new Error(state.error ?? "Workshop action failed");
-    setPersisted(state as NonNullable<typeof persisted>);
+    setPersisted((previous) => ({ ...(previous ?? { sourceItems: [], mapNodes: [] }), ...(state as Omit<PersistedWorkshop, "sourceItems" | "mapNodes">) }));
   }
 
   function renderVideo() {
@@ -50,10 +42,10 @@ export default function WorkshopPage() {
 
       <aside className="sources" aria-label="Sources">
         <div className="rail-heading"><div><span className="eyebrow">CAPTURE</span><h2>Sources</h2></div><button className="icon-button" aria-label="Add source">+</button></div>
-        <div className="source-group">Selected for this Map <span>3</span></div>
+        <div className="source-group">Selected for this Map <span>{persisted?.sourceItems.length ?? "…"}</span></div>
         <div className="source-list">
-          {sources.map(([type, title, origin, claims], index) => <button className={`source-row ${index === 0 ? "active-source" : ""}`} onClick={() => setSourceOpen(true)} key={title}>
-            <span className="file-type">{type}</span><span className="source-copy"><strong>{title}</strong><small>{origin} · indexed</small></span><span className="claim-count">{claims}</span>
+          {(persisted?.sourceItems ?? []).map((source, index) => <button className={`source-row ${index === 0 ? "active-source" : ""}`} onClick={() => { setSelectedSource(source); setSourceOpen(true); }} key={source.id}>
+            <span className="file-type">{source.type}</span><span className="source-copy"><strong>{source.title}</strong><small>{source.origin} · indexed</small></span><span className="claim-count">{source.claimCount} claims</span>
           </button>)}
         </div>
         <div className="source-footer"><span className="ground-dot" />All selected sources are indexed</div>
@@ -68,11 +60,11 @@ export default function WorkshopPage() {
         {view === "Map" ? <section className="map" aria-label="Semantic Map">
           <div className="map-label">Evidence becoming structure</div>
           <svg className="threads" viewBox="0 0 900 620" aria-hidden="true"><path d="M210 180 C340 110 430 135 510 180" /><path d="M240 225 C335 340 430 380 475 410" /><path d="M580 220 C665 305 690 390 700 435" /></svg>
-          {nodes.map((node) => <button key={node.id} className={`claim-card ${node.kind} ${selected === node.id ? "focus" : ""}`} style={{ left: `${node.x}%`, top: `${node.y}%` }} onClick={() => setSelected(node.id)}>
+          {activeNodes.map((node) => <button key={node.id} className={`claim-card ${node.kind} ${selected === node.id ? "focus" : ""}`} style={{ left: `${node.x}%`, top: `${node.y}%` }} onClick={() => setSelected(node.id)}>
             <span className="claim-kind">{node.kind === "grounded" ? "Grounded" : node.kind === "derived" ? "Derived" : "Creative"}</span><strong>{node.title}</strong><span>{node.body}</span><small>{node.locator}</small>
           </button>)}
           <div className="cluster cluster-one">Narrative</div><div className="cluster cluster-two">Delivery proof</div>
-          <section className="map-inspector"><span className={`state-dot ${selectedNode.kind}`} /><div><strong>{selectedNode.title}</strong><p>{selectedNode.locator}</p></div><button onClick={() => setSourceOpen(true)}>Open evidence ↗</button></section>
+          {selectedNode && <section className="map-inspector"><span className={`state-dot ${selectedNode.kind}`} /><div><strong>{selectedNode.title}</strong><p>{selectedNode.locator}</p></div><button onClick={() => { setSelectedSource(persisted?.sourceItems[0] ?? null); setSourceOpen(true); }}>Open evidence ↗</button></section>}
         </section> : view === "Brief" ? <Brief approved={persisted?.briefApproved ?? briefApproved} /> : view === "Story" ? <Storyboard approved={persisted?.storyboardApproved ?? storyApproved} onApprove={() => { void mutate("approveStoryboard").then(() => setStoryApproved(true)); }} /> : view === "Design" ? <DesignReview /> : <Trace />}
       </section>
 
@@ -84,7 +76,7 @@ export default function WorkshopPage() {
       </aside>
       <footer className="host-strip"><span><i />Linked ChatGPT task · last grounded update just now</span><button>Continue in ChatGPT ↗</button></footer>
 
-      {sourceOpen && <div className="evidence-sheet" role="dialog" aria-label="Evidence source"><div className="sheet-head"><div><span className="eyebrow">SOURCE EVIDENCE</span><h2>Raw voice brainstorm</h2></div><button className="icon-button" onClick={() => setSourceOpen(false)}>×</button></div><p>“The judge should be able to see the messy original thought become a cited map, a real brief, and a finished piece of work.”</p><div className="locator-line">ChatGPT task · 12:41 · chunk 04</div><button className="approve" onClick={() => { setSelected("promise"); setSourceOpen(false); }}>Show on Map</button></div>}
+      {sourceOpen && selectedSource && <div className="evidence-sheet" role="dialog" aria-label="Evidence source"><div className="sheet-head"><div><span className="eyebrow">SOURCE EVIDENCE</span><h2>{selectedSource.title}</h2></div><button className="icon-button" onClick={() => setSourceOpen(false)}>×</button></div><p>“{selectedSource.excerpt}”</p><div className="locator-line">{selectedSource.locator}</div><button className="approve" onClick={() => { setSelected("promise"); setSourceOpen(false); }}>Show on Map</button></div>}
     </main>
   );
 }

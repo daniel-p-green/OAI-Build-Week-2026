@@ -499,6 +499,31 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-13 23:23 CT — Browser Sources and Map read durable Workshop state
+
+**Area:** Product / Runtime / Testing
+
+### Changed
+
+- Moved the sanitized fixture source records and Map node records into the persisted `WorkshopState` document. The browser fetches and renders those records; its source evidence sheet now shows the selected persisted source.
+- Added legacy state hydration so an existing local state record receives the fixture records without resetting approval state.
+
+### Verified
+
+- Worker tests, web typecheck, production web build, reset, and recorded E2E passed.
+- A fresh production server returned three source titles and four Map node titles from `/api/workshop` after reset.
+
+### Decisions
+
+- This is a durable fixture query layer, not yet the full source ingestion/graph repository. The next step is replacing the fixture document with persisted normalized chunks, claims, and typed graph operations.
+
+### Open items
+
+- Wire local file/URL ingestion, graph mutations/undo, and output history to the same store; then validate the actual plugin host installation.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-13 23:21 CT — Queued HyperFrames worker execution verified
 
 **Area:** Worker / Rendering / Testing
