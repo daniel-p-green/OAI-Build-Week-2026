@@ -841,3 +841,30 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add editable storyboard persistence, image-batch generation/evaluation, PDF/URL adapters, website style extraction, full provenance UI, and trace outputs directly to persisted chunks/claims.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-13 23:49 CT — Editable, versioned storyboard runtime
+
+**Area:** Deliver / Runtime / Product
+
+### Changed
+
+- Added persisted storyboard panels with title, narration, duration, panel approval, staleness, and version state.
+- Replaced the static Story panel with an editable panel selector/form. Saving a panel creates a new storyboard version, revokes prior storyboard approval, and blocks video until the edited storyboard is approved again.
+- Map mutations now mark storyboard panels stale alongside brief and generated output artifacts.
+
+### Verified
+
+- Worker tests passed 8/8 and worker typecheck passed; web typecheck and optimized production build passed.
+- On a fresh production server, a storyboard was approved, then `panel-2` was changed through the HTTP API; the service returned version 2 with `storyboardApproved: false` and `videoState: blocked`.
+- Reset and recorded `pnpm demo:e2e` passed afterward.
+
+### Decisions
+
+- The storyboard remains a real, lightweight panel editor rather than a second canvas. It preserves the locked approval semantics needed for the local HyperFrames path.
+
+### Open items
+
+- Add coherent image-batch generation/evaluation, PDF/URL adapters, website style extraction, richer graph operations, full provenance UI, and live-provider/host proof.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
