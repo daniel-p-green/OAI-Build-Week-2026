@@ -2163,3 +2163,24 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - A separately authorized live host check is required to pass the native route before the July 14 EOD CT deadline; otherwise the existing fallback becomes the final implemented path.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:39 CT — GPT-5.6 Sol/Terra/Luna routing benchmark prepared
+
+**Area:** Provider evaluation / Cost-performance routing
+
+### Changed
+
+- Replaced the single-prompt GPT-5.6 probe with a spend-gated nine-request benchmark: Sol, Terra, and Luna each run compact grounded-graph, executable-brief, and claim-triage cases.
+- Each result records HTTP status, end-to-end latency, API-reported usage, and a deterministic JSON/evidence-term score. The emitted artifact explicitly avoids inventing dollar costs from usage counts.
+
+### Verified
+
+- AI package lint and routing-policy tests passed, including deterministic scoring of valid and invalid model output.
+- The probe refused to run without `WORKSHOPLM_LIVE_OPENAI=1`; no provider request or paid spend occurred.
+
+### Open items
+
+- Run the benchmark only with explicit paid-call authorization, then compare reported usage with current official pricing and decide operation defaults from measured quality, latency, and cost.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

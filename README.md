@@ -34,6 +34,8 @@ pnpm dev
 
 `pnpm demo:e2e` is recorded-fixture mode: it does not require OpenAI credentials or paid model calls. `pnpm demo:render` runs the approved sanitized fixture through the local HyperFrames worker. The app data is stored under `.workshoplm/`, which is reset by `demo:reset`.
 
+The GPT-5.6 routing benchmark is deliberately spend-gated. Once a paid-call authorization exists, run `WORKSHOPLM_LIVE_OPENAI=1 OPENAI_API_KEY=… pnpm --filter @workshoplm/ai probe:gpt56`; it compares Sol, Terra, and Luna on compact grounded-graph, brief, and claim-triage cases, recording latency, reported token usage, and deterministic JSON/evidence checks. It does not invent dollar costs from token counts.
+
 ## Checks
 
 ```bash
