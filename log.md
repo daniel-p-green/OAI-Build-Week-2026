@@ -1435,3 +1435,27 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add evidence-aware edge controls, AI operation proposals, Excalidraw rendering, and Sketch regeneration.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:28 CT — Safe public URL capture exposed in Sources
+
+**Area:** Capture / GUI / Grounding
+
+### Changed
+
+- Added an explicit safe-public-URL import control to the Sources capture sheet, separate from local text/file ingestion.
+
+### Verified
+
+- Web typecheck and production build passed.
+- Production `ingestUrl` for `https://example.com` persisted a normalized WEB source, one chunk, five grounded claims, and a grounded Map evidence node. The fixture reset and `pnpm demo:e2e` passed.
+
+### Decisions
+
+- The UI delegates only to the existing safe public-URL adapter; unsafe/private targets continue to be rejected server-side.
+
+### Open items
+
+- Add browser-safe PDF upload/normalization and connected-app adapters; verify source permissions in the UI.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
