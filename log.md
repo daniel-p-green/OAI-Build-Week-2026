@@ -1750,3 +1750,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Feed approved Visual DNA rules into the live GPT Image 2 batch when provider spend is authorized.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:04 CT — Style-dependent stale propagation completed
+
+**Area:** Deliver / Dependency integrity
+
+### Changed
+
+- Style Foundation replacements now stale existing output artifacts, image batches, storyboard panels, Visual DNA, storyboard approval, and video state.
+- The first-ever style lock preserves the initial editable storyboard, avoiding a dead-end before the first approval; only actual style replacement invalidates downstream work.
+
+### Verified
+
+- Worker tests passed: 18 tests across 3 files, including Map and Style stale propagation plus the initial-style-flow regression.
+- Worker/web typechecks, web production build, fixture reset, and `pnpm demo:e2e` passed.
+- Production replay approved the brief, locked style v1, generated a deck and image batch, approved the storyboard, then locked style v2. It returned stale deck/image/storyboard state, `storyboardApproved: false`, and `videoState: blocked`.
+
+### Decisions
+
+- Style replacement is treated as an upstream dependency change. The team can always regenerate current outputs from the still-current brief and new style rather than render stale work.
+
+### Open items
+
+- Add user-visible regeneration guidance/history for each stale artifact; current state is correctly blocked but not yet a polished recovery wizard.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

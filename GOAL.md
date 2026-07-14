@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 01:01 CT
+Last updated: 2026-07-14 01:04 CT
 
 ## Status
 
@@ -225,7 +225,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [ ] Generate an editable, panel-level storyboard.
 - [x] Block video enqueueing until the current storyboard approval is persisted; worker execution remains pending.
 - [x] Render the sanitized approved storyboard through the local HyperFrames worker path with disclosed fixture narration and verified MP4 streams.
-- [ ] Propagate upstream changes into accurate downstream stale states.
+- [x] Propagate upstream Map and Style changes into accurate downstream stale states.
 
 ### 10. Meta-demo, provenance, and submission
 
