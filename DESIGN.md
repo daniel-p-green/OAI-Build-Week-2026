@@ -14,9 +14,9 @@ The memorable visual remains **evidence becoming structure**: a native ChatGPT c
 
 ## Simplification rule
 
-The product may be technically deep, but the default viewport must not expose the whole system. WorkshopLM has three user-facing destinations: **Map, Brief, and Outputs**. Sources, Style, Trace, Sketch, Storyboard, jobs, versions, and technical provenance are contextual drawers, sheets, output details, or disclosures—not peer navigation modes.
+The product may be technically deep, but the default viewport must not expose the whole system. WorkshopLM renders **one current object at a time**. It has no persistent tabs or stage selector. Map, Brief, Sketch, Storyboard, and every generated asset remain fully capable Workshop objects reached through Back, direct links, the host conversation, or a transient Library sheet.
 
-This rule supersedes older clauses in this document that prescribe two permanently visible rails, six center tabs, a persistent host strip, or Studio as an always-open production console.
+Sources, Style, Trace, creation controls, jobs, versions, and technical provenance are contextual drawers, sheets, inspectors, or disclosures. This rule supersedes older clauses in this document that prescribe persistent rails, center tabs, output filters, a host strip, or Studio as an always-open production console.
 
 ## Surface model
 
@@ -83,7 +83,7 @@ Design first for the ChatGPT in-app browser at approximately 1200×800, then ver
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────┐
-│ Workshop title   Sources 3    Map · Brief · Outputs       Create    │ 52
+│ ‹  Workshop / current object       Sources 3        primary action  │ 52
 ├──────────────────────────────────────────────────────────────────────┤
 │                                                                      │
 │                     one focused canvas                               │
@@ -95,7 +95,8 @@ Design first for the ChatGPT in-app browser at approximately 1200×800, then ver
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-- Top bar: 52px, flat white surface, one hairline bottom border.
+- Top bar: 52px, flat white surface. It contains Back, the current object title, Sources, and one context-sensitive primary action.
+- The current object title may open a transient visual Workshop Library. It is never rendered as a tab row.
 - Sources: closed by default; a 280–320px drawer opens from a labeled count button.
 - Creation: one `Create` button opens an output-type sheet. There is no permanent Studio rail.
 - Context inspector: closed by default and appears only after selecting a Map node, brief field, or output element.
@@ -145,12 +146,13 @@ Clicking a source opens an adjacent evidence sheet over part of the center, not 
 
 Editing a field previews exactly which outputs would become stale. Style review uses real palette, type, logo, image-treatment, and layout previews—not a JSON form.
 
-### 5. Outputs gallery and Create sheet
+### 5. Workshop Library and Create sheet
 
-Outputs is a visual gallery of finished and in-progress work. Every completed output has a real thumbnail or playable preview above its metadata.
+The Workshop Library is a transient visual sheet of source objects and finished or in-progress work. It is not a destination that remains on screen. Every completed output has a real thumbnail or playable preview above its metadata.
 
 - One `Create` button opens five output types—Deck, Infographic, Images, Storyboard, and Video.
-- The default gallery shows durable outputs grouped by current brief/style version.
+- The Library shows durable objects grouped by current brief/style version and supports search instead of permanent filter tabs.
+- Selecting an object closes the Library and makes that object the single canvas.
 - A compact activity disclosure shows real job stages, cancellation, failures, and partial success.
 - Current, stale, failed, and partial outputs remain visible and honest without exposing internal artifact paths.
 - Output-set selection is a temporary multi-select action, not permanent chrome.
@@ -197,7 +199,7 @@ No looping ambient animation. Standard transitions are 140–220ms; the signatur
 
 ## Responsive behavior
 
-- **Wide desktop (≥1280):** center canvas with optional source drawer or context inspector; both are closed by default.
+- **Wide desktop (≥1280):** one current object with optional source drawer, Library sheet, or context inspector; all are closed by default.
 - **Compact desktop/tablet (800–1279):** only one drawer may be open at a time; center remains primary.
 - **Mobile (<800):** review companion only—Sources, transcript/evidence, approvals, output review, and `Continue in ChatGPT`. Do not render a fake miniature whiteboard or full slide editor.
 

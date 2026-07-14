@@ -2592,3 +2592,31 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Add component-level tests and recapture desktop/mobile proof before judge-facing recording.
 - A Figma connector inspection requires an actual copied design-file key; no external Figma file was created in this audit.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 10:55 CT — Persistent navigation removed from redesign
+
+**Area:** Product design / interaction simplification
+
+### Changed
+
+- Rejected the interim `Map · Brief · Outputs` tab row and output-type filter row after visual review showed that they still made the product feel like a crowded web app.
+- Revised the audit, `DESIGN.md`, and `GOAL.md` around one current Workshop object, a transient visual Library, a Sources drawer, and context-sensitive actions.
+- Tightened the default action budget from seven controls to five and retained exactly one visually dominant action when a gate is ready.
+
+### Decision
+
+- Preserve every implemented and roadmapped object—Map, Brief, Style, Sketch, Deck, Infographic, Image Batch, Storyboard, Video, Sources, jobs, and provenance—without representing them as permanent destinations.
+- Use spatially consistent Back navigation and sheets that originate from their trigger. Keep inspectors closed until selection and keep the current object visually dominant.
+- Apply the Apple design distinction between simplicity and superficial minimalism: show the common path first, place advanced capability one level deeper, and retain enough context for clear wayfinding.
+
+### Verification
+
+- `git diff --check` passed after the revision.
+- The updated design contract explicitly forbids persistent tabs, persistent type filters, a permanent Studio rail, a permanent inspector, and a permanent host strip.
+
+### Open items
+
+- Implement and interactively test the current-object shell and Library sheet against the existing recorded fixture.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

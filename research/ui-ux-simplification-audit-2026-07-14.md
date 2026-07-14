@@ -70,16 +70,32 @@ WorkshopLM should therefore have two deliberately different surfaces:
 1. **Inline Workshop card:** current outcome, source count, readiness, one primary action (`Open workshop`) and one optional secondary action (`Create output`).
 2. **Fullscreen Workshop canvas:** the Map, Brief, or selected Output, with ChatGPT's native composer remaining the conversational control surface.
 
+## Revision: remove destination tabs entirely
+
+The first simplification concept still showed `Map · Brief · Outputs` as three persistent tabs and added output-type filters. That is cleaner than the MVP but still asks the user to manage the product's information architecture.
+
+The stronger design is **one Workshop, one current object, one contextual action**:
+
+- no persistent tabs;
+- no persistent output-type filters;
+- no permanent inspector;
+- no separate Studio mode;
+- no top-level workflow stage selector.
+
+Map, Brief, Sketch, Deck, Infographic, Image Batch, Storyboard, and Video remain fully capable objects. They are reached through a transient Workshop Library, links from the current object, the host conversation, or Back—not through permanent chrome.
+
 ## New product architecture
 
 ### Global shell
 
-- Compact top bar: back/close, Workshop title, `Map · Brief · Outputs`, and one `Create` button.
+- Compact top bar: Back, Workshop title/current object breadcrumb, Sources, and one context-sensitive primary action.
+- The current object name is a title, not a tab. Its chevron opens the Workshop Library as a transient sheet.
 - No permanent Studio rail.
 - Sources collapse into a left drawer and open from one labeled button with a count.
 - The center receives at least 80% of the usable width by default.
 - A contextual right inspector appears only after selecting an object.
 - Host/status information moves into a small Details popover; no permanent bottom strip.
+- Create choices appear only after the brief is ready. Before that moment, the action is `Approve brief`; after it, the same toolbar position becomes `Create`.
 
 ### Map
 
@@ -96,12 +112,13 @@ WorkshopLM should therefore have two deliberately different surfaces:
 - Style is a compact `Style` control with a live visual preview, not a permanent peer destination.
 - Website-derived design review appears as a focused sheet: logo, palette, type, imagery, confidence, and one `Use this style` action.
 
-### Outputs
+### Workshop Library and outputs
 
-- A visual gallery is the default, inspired by NotebookLM's durable output list but optimized for professional assets.
+- A transient visual Library sheet is inspired by NotebookLM's durable output list but optimized for professional assets.
 - Cards show a real thumbnail/player, title, type, current/stale state, and last update.
 - `Create` opens a sheet with Deck, Infographic, Images, Storyboard, and Video.
-- Clicking an output opens it in the center. Editing and provenance controls appear only for that output.
+- The Library opens as an overlay from the current object title or a keyboard shortcut. It has search, not persistent type filters.
+- Clicking an output dismisses the Library and opens that object in the single canvas. Editing and provenance controls appear only for that object.
 - Storyboard approval appears as the second and final sticky gate. Video rendering is a consequence of that approval, not another workflow mode.
 
 ### Grounding and provenance
@@ -122,16 +139,16 @@ WorkshopLM should therefore have two deliberately different surfaces:
 
 ## Three concept screens
 
-1. **Map / thinking canvas** — Sources collapsed, Map selected, evidence-backed clusters centered, contextual inspector closed, sticky `Approve brief` action.
-2. **Outputs gallery** — real thumbnails for deck, infographic, image batch, storyboard, and video, with a single Create sheet entry point.
-3. **Storyboard detail** — large selected frame, compact filmstrip, narration/source details in a contextual inspector, and `Approve & render video` as the only primary action.
+1. **Map / thinking canvas** — no tabs, Sources collapsed, evidence-backed clusters centered, inspector closed, and `Approve brief` as the only primary action.
+2. **Workshop Library sheet** — a transient visual overlay with real thumbnails for the Map, Brief, deck, infographic, image batch, storyboard, and video; no filter tabs.
+3. **Storyboard detail** — the Library is gone, the storyboard is the single object, narration/source details appear only after selection, and `Approve & render video` is the only primary action.
 
 ## Acceptance bar for “100x better”
 
 The redesign is successful when:
 
-- a first-time user can describe the product's three destinations after five seconds;
-- the default viewport exposes no more than seven actionable controls;
+- a first-time user can state what object is open and what to do next after five seconds;
+- the default viewport exposes no more than five actionable controls;
 - every screen has one visually dominant next action or none;
 - the Map owns at least 80% of default workspace width;
 - no raw filesystem path, internal asset ID, gate flag, or absent provenance stage appears in normal UI;
@@ -139,16 +156,16 @@ The redesign is successful when:
 - citations open the exact source location in one interaction;
 - the complete recorded-fixture flow still works without changing the domain model;
 - desktop works at 1200×800, compact desktop opens one drawer at a time, and mobile is a deliberate review surface;
-- the public demo can show the entire product promise through three visual states: Map, Outputs, Storyboard.
+- the public demo can show the entire product promise through three visual states: Map, transient Library, Storyboard.
 
 ## Recommended implementation sequence
 
-1. Replace the six-tab route with Map, Brief, and Outputs.
-2. Convert Sources and Studio into closed-by-default drawers/sheets; remove the permanent host strip.
-3. Build real output cards and a center output preview using existing artifact data.
-4. Move Style, Trace, Sketch, and Storyboard to contextual flows under Brief/Outputs.
-5. Replace internal terminology and paths with human labels; retain technical details in a disclosure panel.
-6. Apply the ChatGPT-aligned token and typography system without rewriting component primitives.
-7. Add component tests for progressive disclosure, the two approval gates, and empty-state suppression.
-8. Re-record desktop/mobile evidence and rerun `pnpm demo:e2e` before resuming judge-facing capture.
-
+1. Remove the six-tab route without replacing it with another persistent tab row; render one current Workshop object at a time.
+2. Add a title/breadcrumb-triggered Workshop Library sheet for object switching and search.
+3. Convert Sources and creation/history into closed-by-default drawers/sheets; remove the permanent host strip.
+4. Build real output cards and a center output preview using existing artifact data.
+5. Move Style, Trace, Sketch, and Storyboard to contextual flows attached to their relevant objects.
+6. Replace internal terminology and paths with human labels; retain technical details in a disclosure panel.
+7. Apply the ChatGPT-aligned token and typography system without rewriting component primitives.
+8. Add component tests for progressive disclosure, the two approval gates, and empty-state suppression.
+9. Re-record desktop/mobile evidence and rerun `pnpm demo:e2e` before resuming judge-facing capture.
