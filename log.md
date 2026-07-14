@@ -1459,3 +1459,18 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Add browser-safe PDF upload/normalization and connected-app adapters; verify source permissions in the UI.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:29 CT — Broader workspace integration recheck passed
+
+**Area:** Integration / Testing
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and tests across all 13 workspace packages after the capture fallback, source URL, Map operations, website style, image-batch, plugin runtime, and GPT-5.6 routing-policy changes.
+
+### Open items
+
+- This is deterministic/local verification; paid provider probes, native host synchronization, full Excalidraw/Sketch, and the final public demo remain separate proof obligations.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
