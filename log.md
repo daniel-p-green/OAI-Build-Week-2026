@@ -1957,3 +1957,28 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Live GPT Image 2 execution remains pending paid-provider authorization and evaluation evidence.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:28 CT — Approved-input storyboard generation added
+
+**Area:** Deliver / Storyboard / Provenance
+
+### Changed
+
+- Added storyboard generation from the current approved-input asset plan. It creates five editable panels for the plan’s deck, infographic, image batch, storyboard, and video outputs.
+- Panel narration carries the plan prompt and its evidence locator; existing panel-level editing and final storyboard approval remain required before video enqueueing.
+
+### Verified
+
+- Worker tests passed: 24 tests across 3 files, including generated panel count, inherited evidence locator, and approval reset.
+- Web typecheck, fixture reset, and `pnpm demo:e2e` passed.
+
+### Decisions
+
+- Storyboard generation is deterministic from the approved production plan until a paid reasoning path is benchmarked. This preserves exact provenance and keeps the no-credential fixture repeatable.
+
+### Open items
+
+- Live GPT Image 2 execution/evaluation remains pending paid-provider authorization.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
