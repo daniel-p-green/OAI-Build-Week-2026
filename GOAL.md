@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-13 22:45 CT
+Last updated: 2026-07-13 23:27 CT
 
 ## Status
 
@@ -251,6 +251,7 @@ The primary integrator selects and justifies these without separate founder appr
 
 ## Current evidence
 
+- [Public GitHub repository](https://github.com/daniel-p-green/OAI-Build-Week-2026)
 - [WorkshopLM interface design system](DESIGN.md)
 - [Product opportunity](research/product-opportunity.md)
 - [Workflow map](research/workflow-map.md)

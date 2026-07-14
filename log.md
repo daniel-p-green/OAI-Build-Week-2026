@@ -37,6 +37,30 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-13 23:27 CT — Public source repository established
+
+**Area:** Submission / Repository
+
+### Changed
+
+- Created the public repository at `https://github.com/daniel-p-green/OAI-Build-Week-2026` and pushed the existing `main` history.
+
+### Verified
+
+- GitHub CLI confirmed the repository exists, is `PUBLIC`, has `main` as its default branch, and the local `main` branch tracks `origin/main`.
+- A tracked-file credential-pattern scan found only `.env.example` and intentional redaction-test strings; no token-shaped credential was found in tracked content.
+
+### Decisions
+
+- The repository is public now so dated commits and the evolving implementation are inspectable throughout Build Week. Judge-facing completion claims remain gated on the evidence in this log and `GOAL.md`.
+
+### Open items
+
+- Add the public-facing README/install and sanitized-fixture instructions only after the live product path they describe is verified.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-13 — Hackathon reference established
 
 **Area:** Research / Submission
