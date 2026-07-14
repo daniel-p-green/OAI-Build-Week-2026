@@ -164,10 +164,10 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Implement the simplified OpenAI-aligned shell: system tokens/type, one current-object canvas, Sources drawer, Library/Create sheets, contextual inspector, and no persistent tabs or host strip.
 - [ ] Move Style into Brief settings; move Sketch and Storyboard into Outputs; move Trace into citation/Details drawers.
 - [ ] Replace metadata-only Studio rows with a visual Outputs gallery and real deck, infographic, image-batch, storyboard, and video previews.
-- [ ] Remove raw artifact paths, internal IDs, absent trace stages, and gate implementation language from normal UI while preserving them under Details.
-- [ ] Make each screen expose no more than five immediate actions and exactly one visually dominant next action when a gate is ready.
+- [x] Remove raw artifact paths, internal IDs, absent trace stages, and gate implementation language from normal UI while preserving them under Details.
+- [x] Make each screen expose no more than five immediate actions and exactly one visually dominant next action when a gate is ready.
 - [ ] Add frontend tests for progressive disclosure, contextual citations, two approval bars, visual output previews, and suppression of incomplete provenance rows.
-- [ ] Re-verify the simplified UI at 1200×800, 1024×768, and mobile review width; capture fresh screenshots for the demo storyboard.
+- [x] Re-verify the simplified UI at 1200×800, 1024×768, and mobile review width; capture fresh screenshots for the demo storyboard.
 
 ### 3. Specification and implementation plan
 
@@ -181,6 +181,7 @@ The primary integrator selects and justifies these without separate founder appr
 ### 4. Integration spikes
 
 - [ ] Capture and timestamp the original raw voice brainstorm before product code exists.
+  - This can no longer be backfilled. Capture a dated contemporaneous founder-brainstorm recording for the demo reveal, label it honestly, and keep the original pre-code requirement open.
 - [x] Verify API-key authentication and list access for the required OpenAI model IDs without spending generation credits; record any entitlement or spend-cap uncertainty.
 - [ ] Spike A: Codex app-server account/login read, ChatGPT task linking, native text/voice-turn persistence, and `gpt-realtime-2.1` fallback decision.
 - [x] Spike B: deterministic normalized local sources, standard plugin `search`/`fetch`, FTS5/exact retrieval, and durable Source/Claim citations; live GPT-5.6 expansion remains entitlement-gated.

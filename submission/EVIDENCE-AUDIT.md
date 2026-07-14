@@ -15,7 +15,7 @@ Audit date: 2026-07-14 CT. This is a current-state audit, not a completion claim
 | GPT Image 2 coherent batch | Direct spike runner/manifest exists; no authorized live generation/evaluation. | Open |
 | GPT-4o mini TTS narration | Local placeholder tones are disclosed; no provider TTS artifact/provenance. | Open |
 | Fresh ChatGPT Work-surface plugin proof | No fresh-task skill invocation or Work-surface evidence. | Open |
-| Original pre-code brainstorm | No authentic pre-code artifact found in the checkout. | Open; cannot backfill |
+| Original pre-code brainstorm | No authentic pre-code artifact found in the checkout. A new dated founder-brainstorm recording may serve as a truthful demo source, but cannot be described as pre-code evidence. | Open; cannot backfill |
 | Public video and YouTube | Timed recording script and local render/thumbnail exist; no public recording/upload. | Open |
 | Devpost form and `/feedback` Session ID | Draft copy exists; external form and session ID unavailable on this surface. | Open |
 | Repository license | Root `LICENSE` contains MIT; public `main` was verified with GitHub CLI. | Proven |

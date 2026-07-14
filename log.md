@@ -2656,3 +2656,64 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - This is a major usability increment, not final product-polish sign-off. Continue testing the real capture-to-output path and refine any workflow friction found in the demo recording.
 - Native host sync, paid-provider evidence, public video, and Devpost submission remain separate open requirements.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 13:52 CT — Final demo proof gates and recording branches locked
+
+**Area:** Submission / Demo planning
+
+### Changed
+
+- Revised `submission/DEMO-SCRIPT.md` to target 2:40–2:45, cap exports at 2:55, and include the required Codex-side WorkshopLM widget doorway.
+- Split the source-to-Map and closing narration into provider-backed and recorded-fixture branches. A live GPT-5.6 result may be claimed only if it is captured, logged, and shown on screen.
+- Added the timestamped raw founder-brainstorm → finished submission reveal while preserving the evidence boundary that a current recording cannot replace the missing original pre-code artifact.
+- Expanded the submission checklist with Session ID designation/escalation, public-not-unlisted YouTube visibility, Google-mark restrictions, a tagged judge release, and stable access through the winner announcement.
+
+### Decision
+
+- Sequence recording work as spend authorization → optional logged GPT-5.6 result and image batch → primary `/feedback` Session ID → dated founder brainstorm → fixture reset/rehearsal → first full recording.
+- If no authorized provider run occurs, use only the truthful two-layer disclosure that Codex, running on GPT-5.6, built and verified the product; do not imply a separate WorkshopLM provider-runtime result.
+- Preserve the absence of an authentic pre-code brainstorm as an open historical gap. The new recording is a contemporaneous source for the demo, not backfilled history.
+- Keep judge access stable through August 12 rather than August 5. The live Devpost key-dates feed fetched July 14 reports judging through August 10 at 00:00 UTC and winners announced August 12 at 21:00 UTC.
+
+### Verification
+
+- Refreshed the live OpenAI Build Week key dates through the Devpost Hackathons plugin; submissions remain open and the date payload was complete.
+- `git diff --check` passed after the documentation changes.
+
+### Open items
+
+- Paid GPT-5.6 and image generation remain blocked pending explicit spend authorization.
+- Capture the primary `/feedback` Session ID from the most representative implementation session or contact organizers immediately if the eligible surface cannot produce one.
+- Record the dated founder brainstorm, widget doorway, full demo seam, public YouTube video, and tagged judge release.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 14:00 CT — Simplified UI verified in the intended in-app surface
+
+**Area:** Flagship browser GUI / responsive acceptance
+
+### Changed
+
+- Reconciled the concurrent focused-shell work without replacing teammate changes.
+- Kept the Map as the single current object, with Sources, Library/Create, Details, and capture controls behind transient sheets.
+- Clamped spatial Map-card positions to the usable canvas width so source cards cannot clip at the 1024px breakpoint.
+- Disabled the already-completed brief action so the header retains one honest dominant next action without inviting a duplicate approval.
+
+### Verification
+
+- `WORKSHOPLM_NEXT_DIST=.codex-review2 pnpm --filter @workshoplm/web build` passed compilation, lint/type validation, static generation, and route optimization.
+- `pnpm --filter @workshoplm/web typecheck` and `pnpm --filter @workshoplm/web lint` passed after the responsive fix.
+- `pnpm demo:reset && pnpm demo:e2e` passed the full recorded seam with all six gates true, five planned assets, five storyboard panels, and a rendered video artifact.
+- The Codex in-app browser loaded the real local route and API fixture. Map, Sources, Library, and Storyboard states were exercised; the console contained no product warnings or errors.
+- Responsive checks passed at desktop, 1024×768, and 390×844 review widths. The 1024px check first exposed a clipped card; the clamp fix was rebuilt and rechecked before acceptance.
+- Compared the implementation with the accepted generated concept and fresh Map, Library, Storyboard, and mobile captures. The shared contract is now: no persistent tabs or rails, one current-object canvas, restrained system typography, transient supporting surfaces, and one contextual approval action.
+
+### Open items
+
+- The Library uses coherent visual preview states, but real provider-generated deck, image-batch, and video thumbnails remain open work.
+- Style placement, Trace placement, and automated frontend coverage remain unchecked in `GOAL.md`; this entry does not promote them to complete.
+- Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
+- Codex Session ID: unavailable on this surface; not inferred.
