@@ -78,3 +78,11 @@ The default fixture is sanitized and local. No account system, hosted storage, o
 ## Build evidence
 
 The project is built in dated commits during Build Week. Product decisions and verification results are recorded append-only in [log.md](log.md). The implementation plan is [PLAN-2026-07-13.md](PLAN-2026-07-13.md), and the UI contract is [DESIGN.md](DESIGN.md).
+
+## How we built it
+
+Codex accelerated the implementation and verification of the monorepo, local SQLite state, MCP doorway, typed Map operations, browser workspace, deterministic fixture, and HyperFrames render path. The dated commits and `log.md` record that work and its command-level evidence.
+
+Human decisions locked the product boundary: professional work rather than education, one ChatGPT/Codex conversation surface plus one visual browser workspace, exactly two approval gates, local-first judging, privacy-safe sample data, and proportional public claims.
+
+GPT-5.6 contributes through Codex during implementation and is also represented in WorkshopLM's operation-level runtime routing policy: Sol for quality-critical graph work, Terra for structured synthesis, and Luna for repeatable triage. The live API benchmark remains spend-gated; this repository does not claim that its recorded fixture used paid GPT-5.6 runtime calls.

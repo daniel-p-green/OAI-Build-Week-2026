@@ -2374,3 +2374,22 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Provider-backed image generation/TTS/GPT-5.6 evaluation, native host sync, public demo/video, and final submission evidence remain open.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:59 CT — Public README collaboration disclosure added
+
+**Area:** Repository / Judge materials
+
+### Changed
+
+- Added a concise README disclosure of Codex implementation/verification work, the human product decisions that shaped scope, and the GPT-5.6 operation-level routing policy.
+
+### Decisions
+
+- The README explicitly separates GPT-5.6 contribution through Codex from unproven paid runtime API use. It does not claim that the deterministic fixture used GPT-5.6 responses.
+
+### Open items
+
+- License choice, final Devpost copy, public video, and paid-provider benchmark evidence still require their own proof or authority.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
