@@ -1886,3 +1886,27 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Produce a separately approved, versioned Sketch projection of the approved graph.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:24 CT — Approved-graph Sketch lifecycle added
+
+**Area:** Shape / Versioning / GUI
+
+### Changed
+
+- Added a versioned Sketch record derived only from a current approved Map, with graph revision, deterministic node projection, explicit approval, and stale state.
+- Added Sketch create/approve controls in the workspace and stale propagation from all Map mutations.
+
+### Verified
+
+- Worker tests passed: 21 tests across 3 files, including Sketch creation, approval, and Map-change staleness.
+- Web production build passed. Fixture reset and `pnpm demo:e2e` passed.
+
+### Decisions
+
+- Sketch remains a non-editor projection of the canonical graph; any Map change invalidates its approval until it is regenerated.
+
+### Open items
+
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

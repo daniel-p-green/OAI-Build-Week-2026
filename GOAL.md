@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 01:21 CT
+Last updated: 2026-07-14 01:24 CT
 
 ## Status
 
@@ -205,7 +205,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Generate the typed semantic graph from transcript/source ingestion with durable source metadata.
 - [x] Render and synchronize Excalidraw Map view.
 - [x] Support typed, undoable user and AI graph operations.
-- [ ] Generate Sketch view from an approved graph version.
+- [x] Generate Sketch view from an approved graph version.
 - [x] Produce and approve `FRAME.md` plus its executable representation.
 
 ### 8. Style
