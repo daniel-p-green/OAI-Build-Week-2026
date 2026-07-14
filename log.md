@@ -1085,3 +1085,27 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Prove host sync or activate/show the capture-only fallback, then record its supported scope in the UI and demo.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:01 CT — Native host sync fallback activated
+
+**Area:** Capture / Host Integration
+
+### Changed
+
+- Corrected root `pnpm spike:host-sync` to call the package's actual `verify` command rather than a nonexistent `run` command.
+
+### Verified
+
+- The corrected command produced a sanitized report at `artifacts/spikes/host-sync-2026-07-14T05-01-12-803Z.json` with `credential_blocked` status and the explicit capture-only `gpt-realtime-2.1` fallback decision.
+- Host-sync durable task-turn tests passed 3/3.
+
+### Decisions
+
+- Native durable task/voice sync remains unproven because no disposable task ID and explicit live opt-in were supplied. The designed capture-only fallback is active; it does not imply native task linkage.
+
+### Open items
+
+- Implement and record the bounded capture-only fallback UI/API path or provide a disposable task ID to run the live host probe.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
