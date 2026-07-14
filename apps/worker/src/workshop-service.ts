@@ -20,6 +20,7 @@ export type WorkshopCandidate = { id: string; category: "goal" | "audience" | "c
 export type WorkshopMapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
 export type WorkshopTranscriptSegment = { id: string; origin: "manual_import" | "realtime_fallback"; text: string; capturedAt: string };
 export type WorkshopMapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number };
+export type CanvasNodePatch = { id: string; title: string; x: number; y: number };
 export type WorkshopFrame = { version: number; markdown: string; markdownPath: string; executablePath: string; stale: boolean; approvedAt: string };
 export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop"; referenceUrl?: string; lockedAt: string; stale: boolean };
 export type WorkshopDesignArtifact = { version: number; styleVersion: number; markdownPath: string; tokensPath: string; stale: boolean; createdAt: string };
@@ -61,7 +62,7 @@ function graphFor(state: WorkshopState): ReturnType<typeof parseGraphState> {
   return { schemaVersion: 1, graph, history: { graphVersionId: graph.id, records: [] } };
 }
 function mapNodesFor(graph: SemanticGraphType, existing: WorkshopMapNode[]): WorkshopMapNode[] {
-  return graph.nodes.map((node, index) => { const prior = existing.find((item) => `node-${item.id}` === node.id); const metadata = node.metadata as { body?: unknown; locator?: unknown; sourceId?: unknown }; return { id: node.id.replace(/^node-/, ""), title: node.label, body: typeof metadata.body === "string" ? metadata.body : prior?.body ?? node.label, kind: node.evidenceState === "verified" ? "grounded" : node.evidenceState === "unverified" ? "derived" : node.evidenceState, locator: typeof metadata.locator === "string" ? metadata.locator : prior?.locator ?? "Map operation", sourceId: typeof metadata.sourceId === "string" ? metadata.sourceId : prior?.sourceId, x: prior?.x ?? 16 + (index * 15) % 65, y: prior?.y ?? 18 + (index * 19) % 58 }; });
+  return graph.nodes.map((node, index) => { const prior = existing.find((item) => `node-${item.id}` === node.id); const metadata = node.metadata as { body?: unknown; locator?: unknown; sourceId?: unknown; x?: unknown; y?: unknown }; return { id: node.id.replace(/^node-/, ""), title: node.label, body: typeof metadata.body === "string" ? metadata.body : prior?.body ?? node.label, kind: node.evidenceState === "verified" ? "grounded" : node.evidenceState === "unverified" ? "derived" : node.evidenceState, locator: typeof metadata.locator === "string" ? metadata.locator : prior?.locator ?? "Map operation", sourceId: typeof metadata.sourceId === "string" ? metadata.sourceId : prior?.sourceId, x: typeof metadata.x === "number" ? metadata.x : prior?.x ?? 16 + (index * 15) % 65, y: typeof metadata.y === "number" ? metadata.y : prior?.y ?? 18 + (index * 19) % 58 }; });
 }
 function mapEdgesFor(graph: SemanticGraphType): WorkshopMapEdge[] { return graph.edges.map((edge) => ({ ...edge, from: edge.from.replace(/^node-/, ""), to: edge.to.replace(/^node-/, "") })); }
 function frameFor(state: WorkshopState, approvedAt: string, root?: string): WorkshopFrame {
@@ -79,6 +80,18 @@ export function applyMapOperation(operation: unknown, root?: string): WorkshopSt
 export function undoMapOperation(root?: string): WorkshopState {
   const current = readWorkshopState(root); const snapshot = graphFor(current); const undone = undoLatestGraphOperation(snapshot.graph, snapshot.history);
   return write({ ...current, graphState: serializeGraphState(undone.graph, undone.history), mapNodes: mapNodesFor(undone.graph, current.mapNodes), mapEdges: mapEdgesFor(undone.graph), frame: current.frame ? { ...current.frame, stale: true } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, outputs: current.outputs.map((output) => ({ ...output, stale: true })), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
+}
+export function syncMapCanvas(rawPatches: CanvasNodePatch[], root?: string): WorkshopState {
+  const current = readWorkshopState(root); const snapshot = graphFor(current); let graph = snapshot.graph; let history = snapshot.history; let changed = false;
+  for (const rawPatch of rawPatches) {
+    const patch = { id: rawPatch.id.replace(/^node-/, ""), title: rawPatch.title.trim(), x: Math.round(rawPatch.x * 10) / 10, y: Math.round(rawPatch.y * 10) / 10 };
+    if (!patch.id || !patch.title || !Number.isFinite(patch.x) || !Number.isFinite(patch.y)) continue;
+    const node = graph.nodes.find((item) => item.id === `node-${patch.id}`); if (!node || node.locked) continue;
+    const previous = node.metadata as { x?: unknown; y?: unknown }; if (node.label === patch.title && previous.x === patch.x && previous.y === patch.y) continue;
+    const applied = appendGraphOperation(graph, history, GraphOperation.parse({ type: "update_node", nodeId: node.id, patch: { label: patch.title, metadata: { ...node.metadata, x: patch.x, y: patch.y } } }), { id: `operation-canvas-${Date.now()}-${patch.id}`, actor: "user", createdAt: new Date().toISOString() }); graph = applied.graph; history = applied.history; changed = true;
+  }
+  if (!changed) return current;
+  return write({ ...current, graphState: serializeGraphState(graph, history), mapNodes: mapNodesFor(graph, current.mapNodes), mapEdges: mapEdgesFor(graph), frame: current.frame ? { ...current.frame, stale: true } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, outputs: current.outputs.map((output) => ({ ...output, stale: true })), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
 function normalizeSourceText(text: string) { return text.replace(/\r\n?/g, "\n").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim(); }
 function sourceClaimCount(text: string) { return Math.max(1, text.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean).length); }

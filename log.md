@@ -1858,3 +1858,31 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Map approval still needs a fully synchronized direct Excalidraw editing surface and an approved-version Sketch, tracked separately in Shape.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:21 CT — Direct Excalidraw Map synchronization added
+
+**Area:** Shape / Map / GUI
+
+### Changed
+
+- Added an explicit **Edit canvas** mode that exposes the actual Excalidraw Map surface rather than the evidence-card overlay.
+- Canvas title and position changes are debounced into typed `update_node` operations; position is stored in canonical graph-node metadata, so the graph remains the sole source of truth.
+- Added `syncMapCanvas` API handling and a worker test covering canvas mutation, typed history, stale propagation, and undo.
+
+### Verified
+
+- Worker tests passed: 20 tests across 3 files. Worker/web typechecks and the web production build passed.
+- Live local API replay sent a canvas-originated `promise` patch. It persisted title `Canvas-synced proof` with x `31.2` / y `44.8` and invalidated the brief as required.
+- Local browser UI displayed the **Edit canvas** mode; its current console check returned zero errors. The Codex in-app Browser plugin was unavailable, so this UI replay used the configured standalone Playwright fallback.
+- Fixture reset and `pnpm demo:e2e` passed after the synchronization change.
+
+### Decisions
+
+- Excalidraw is an editable projection of the typed graph, not a competing persisted drawing document. The bounded sync deliberately covers canonical node label and layout; relationship edits continue through typed Map controls to preserve edge semantics and provenance.
+
+### Open items
+
+- Produce a separately approved, versioned Sketch projection of the approved graph.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
