@@ -1109,3 +1109,28 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Implement and record the bounded capture-only fallback UI/API path or provide a disposable task ID to run the live host probe.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:04 CT — Durable capture-only Realtime fallback
+
+**Area:** Capture / Runtime
+
+### Changed
+
+- Added the bounded `captureFallbackTranscript` API/service path. It stores a transcript segment marked `realtime_fallback` and normalizes the same text into durable source, chunk, verified claim, and Map evidence records.
+- The fallback is API-only and intentionally does not add a duplicate browser chat/composer.
+
+### Verified
+
+- Worker tests passed 12/12, including fallback provenance/evidence persistence; worker and web typechecks plus production web build passed.
+- Reset and recorded `pnpm demo:e2e` passed.
+
+### Decisions
+
+- This preserves the deadline fallback's capture boundary without falsely claiming a live Realtime session or native ChatGPT task synchronization. Live Realtime transport remains separately unverified.
+
+### Open items
+
+- Invoke this path from an authorized Realtime session or plugin capture control, record a live fallback sample, and complete host installation proof.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
