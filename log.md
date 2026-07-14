@@ -2336,3 +2336,25 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Fresh-task skill invocation and actual ChatGPT Work-surface support remain unproven; do not mark Spike E complete from CLI/MCP evidence alone.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:56 CT — Worker now renders the current approved storyboard
+
+**Area:** Deliver / HyperFrames renderer
+
+### Changed
+
+- Replaced the worker's fixed Spike D MP4 copy with a HyperFrames staging composition generated from the actual current approved storyboard, including panel title, narration, style colors, panel timing, and per-panel local audio files.
+- The deterministic no-spend audio fallback is visibly labeled **Audio: deterministic local placeholder tone**. It does not claim live TTS or AI voice.
+
+### Verified
+
+- `pnpm demo:e2e` passed with a current five-panel asset-plan storyboard and a new hash-addressed MP4 artifact.
+- `ffprobe` verified video and audio streams and a `22.037333`-second duration, matching the five approved panels rather than the prior six-second Spike D fixture.
+- Worker tests (27) and worker typecheck passed. The composition test proves approved storyboard content and the disclosure reach the generated HyperFrames HTML.
+
+### Open items
+
+- Replace the honest placeholder tones with provider-backed, disclosed `gpt-4o-mini-tts` panel narration only after authorized live-provider verification.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
