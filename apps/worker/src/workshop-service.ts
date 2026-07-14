@@ -98,7 +98,10 @@ export async function ingestSource(input: SourceIngestion, root?: string): Promi
   const source: WorkshopSource = { id: sourceId, type: input.type ?? "TXT", title, origin, claimCount, excerpt: text.slice(0, 240), locator: `${origin} · normalized:${hash.slice(0, 12)}` };
   const chunks = chunksFor(text, sourceId, hash, origin); const claims = claimsFor(chunks, hash);
   const node: WorkshopMapNode = { id: `evidence-${hash.slice(0, 12)}`, title, body: source.excerpt, kind: "grounded", locator: source.locator, sourceId, x: 18 + (current.mapNodes.length * 13) % 64, y: 24 + (current.mapNodes.length * 17) % 54 };
-  return write({ ...current, sources: current.sources + 1, groundedClaims: current.groundedClaims + claims.length, sourceItems: [...current.sourceItems, source], sourceChunks: [...current.sourceChunks, ...chunks], claims: [...current.claims, ...claims], mapNodes: [...current.mapNodes, node], updatedAt: new Date().toISOString() }, root);
+  const createdAt = new Date().toISOString(); const snapshot = graphFor(current);
+  const operation = GraphOperation.parse({ type: "add_node", node: { id: `node-${node.id}`, kind: "claim", label: node.title, claimId: claims[0]?.id, evidenceState: "verified", metadata: { body: node.body, locator: node.locator, sourceId } } });
+  const applied = appendGraphOperation(snapshot.graph, snapshot.history, operation, { id: `operation-source-${hash.slice(0, 12)}`, actor: "system", createdAt });
+  return write({ ...current, sources: current.sources + 1, groundedClaims: current.groundedClaims + claims.length, sourceItems: [...current.sourceItems, source], sourceChunks: [...current.sourceChunks, ...chunks], claims: [...current.claims, ...claims], mapNodes: mapNodesFor(applied.graph, [...current.mapNodes, node]), mapEdges: mapEdgesFor(applied.graph), graphState: serializeGraphState(applied.graph, applied.history), updatedAt: createdAt }, root);
 }
 export async function captureFallbackTranscript(text: string, root?: string): Promise<WorkshopState> {
   const normalized = normalizeSourceText(text); if (!normalized) throw new Error("Capture text is required."); const capturedAt = new Date().toISOString();

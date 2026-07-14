@@ -1617,3 +1617,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - This is a narrow local browser smoke only. Tablet review, visual screenshot review, and a fresh ChatGPT/Codex in-app-browser session remain unverified.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:43 CT — Source ingestion now records canonical typed graph operations
+
+**Area:** Capture / Shape / Domain integration
+
+### Changed
+
+- Source ingestion now appends a validated, system-authored typed `add_node` operation to the canonical graph snapshot instead of only appending a separate UI Map record.
+- The graph node retains its first claim ID, source ID, body, and locator; the Map projection is derived from that graph state.
+
+### Verified
+
+- Worker tests passed: 14 tests across 3 files, including ingestion assertions for typed graph history.
+- Worker and web typechecks passed; web production build passed; fixture reset and `pnpm demo:e2e` passed.
+- Production API replay ingested a sanitized source and returned a final graph-history record with `actor: system`, `operation: add_node`, and matching `claimId`, `sourceId`, and `Sanitized acceptance fixture` locator metadata.
+
+### Decisions
+
+- This is deterministic source-to-graph construction, not a claim that GPT-5.6 has yet proposed graph operations. AI proposal/review remains separate and open.
+
+### Open items
+
+- Add model-assisted, reviewable graph-operation proposals and direct Excalidraw element synchronization.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

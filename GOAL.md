@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 00:40 CT
+Last updated: 2026-07-14 00:43 CT
 
 ## Status
 
@@ -202,7 +202,7 @@ The primary integrator selects and justifies these without separate founder appr
 
 ### 7. Shape
 
-- [ ] Generate the typed semantic graph from the transcript and sources.
+- [x] Generate the typed semantic graph from transcript/source ingestion with durable source metadata.
 - [ ] Render and synchronize Excalidraw Map view.
 - [ ] Support typed, undoable user and AI graph operations.
 - [ ] Generate Sketch view from an approved graph version.
