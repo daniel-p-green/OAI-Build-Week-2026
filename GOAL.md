@@ -164,6 +164,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Implement the simplified OpenAI-aligned shell: system tokens/type, one current-object canvas, Sources drawer, Library/Create sheets, contextual inspector, and no persistent tabs or host strip.
 - [ ] Move Style into Brief settings; move Sketch and Storyboard into Outputs; move Trace into citation/Details drawers.
 - [ ] Replace metadata-only Studio rows with a visual Outputs gallery and real deck, infographic, image-batch, storyboard, and video previews.
+  - 2026-07-14: persisted deck and infographic HTML now render as real gallery previews and the completed local MP4 is served as a playable preview. Image generation still has only a planned manifest, not provider image bytes; keep this item open.
 - [x] Remove raw artifact paths, internal IDs, absent trace stages, and gate implementation language from normal UI while preserving them under Details.
 - [x] Make each screen expose no more than five immediate actions and exactly one visually dominant next action when a gate is ready.
 - [ ] Add frontend tests for progressive disclosure, contextual citations, two approval bars, visual output previews, and suppression of incomplete provenance rows.

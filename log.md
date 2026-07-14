@@ -2717,3 +2717,43 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Style placement, Trace placement, and automated frontend coverage remain unchecked in `GOAL.md`; this entry does not promote them to complete.
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 15:05 CT — Capture → Shape → Deliver UX and real artifact gallery
+
+**Area:** Flagship browser GUI / source scope / delivery evidence
+
+### Changed
+
+- Adopted the six-part NotebookLM legibility mandate without restoring a duplicate browser chat surface: the header now carries the ambient `Capture → Shape → Deliver` spine; Sources and Workshop Library have stable opposite-edge origins.
+- Made source scope durable rather than cosmetic. Source checkboxes persist `activeSourceIds`; scope governs candidate extraction, asset planning, and generated deck/infographic evidence. A scope change stales dependent brief, outputs, image plan, storyboard, and video approval rather than silently changing grounding.
+- Moved Style into the approved Brief context, removed top-level Trace from normal navigation, and grouped the user-facing Library as Capture, Shape, and Deliver.
+- Repaired the recorded fixture seam: deck and infographic are now created through the worker service and persist into `WorkshopState`, not only as files on disk.
+- Added a state-authorized artifact route and visual Outputs gallery. The gallery previews actual rendered deck and infographic HTML, serves the rendered local MP4 as playable video, shows citation/source controls, and labels image tiles as planned until genuine provider image bytes exist.
+
+### Decision
+
+- Borrow NotebookLM’s calm, stable evidence-to-output geography while preserving WorkshopLM’s differentiated control layer: editable Map, approved brief, versioned style, stale propagation, storyboard approval, and artifact-level grounding.
+- Do not represent image-plan tiles as generated images. The visual placeholder establishes the contact-sheet interaction only; live `gpt-image-2` output remains spend-gated and must supply actual media before the output-preview acceptance item can close.
+
+### Alternatives considered
+
+- Keeping source checkboxes UI-only would look familiar but would break the core provenance claim because outputs would still use deselected evidence.
+- Using arbitrary filesystem paths in the web route would make local preview easy but would expose local-machine data. The route resolves only a current state-authorized output id or the current rendered video.
+- Retaining Style, Sketch, Storyboard, and Trace as peer library objects would preserve implementation completeness but fail the twenty-second orientation test.
+
+### Verification
+
+- `pnpm check` passed: monorepo lint, typecheck, and tests; worker service suite has 28 passing tests including active-source-scope invalidation.
+- `WORKSHOPLM_NEXT_DIST=.codex-ux-build pnpm --filter @workshoplm/web build` passed; the optimized build includes `/api/workshop/artifacts/[id]`.
+- `pnpm demo:e2e` passed with all six gates true, two persisted real HTML outputs, five storyboard panels, and a rendered MP4.
+- Live local route verification against the deterministic fixture returned `200 text/html` for the deck preview and `200 video/mp4` for the approved video preview.
+- A fresh in-app Browser visual pass could not run because the shared Browser profile was locked by another active session. This entry does not claim visual-browser acceptance; rerun it before recording.
+
+### Open items
+
+- Run the intended in-app Browser acceptance pass for source toggling, Map citation drawer, Outputs gallery, and mobile review once the shared browser session releases.
+- Implement real GPT Image 2 media storage/contact sheets after spend authorization; image tiles remain intentionally labeled planned.
+- Sketch remains implemented in the domain/service but is not yet positioned as a Deliver object. Automated frontend tests remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
