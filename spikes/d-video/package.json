@@ -1,0 +1,13 @@
+{
+  "name": "@workshoplm/spike-video",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "build": "tsx src/build-composition.ts",
+    "verify": "tsx src/verify-render.ts"
+  }
+}

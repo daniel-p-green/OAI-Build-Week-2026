@@ -1,0 +1,33 @@
+{
+  "id": "workshoplm-demo-storyboard",
+  "version": 1,
+  "status": "approved",
+  "stale": false,
+  "designVersion": "workshoplm-design-v1",
+  "panels": [
+    {
+      "id": "panel-1",
+      "durationSeconds": 2,
+      "caption": "Capture the source, then keep the evidence visible.",
+      "narration": "WorkshopLM turns a source into grounded working material.",
+      "audioPath": "assets/narration-panel-1.wav",
+      "claimIds": ["claim-capture"]
+    },
+    {
+      "id": "panel-2",
+      "durationSeconds": 2,
+      "caption": "Approve the Map as the executable brief.",
+      "narration": "The approved map drives a clear brief and exact design rules.",
+      "audioPath": "assets/narration-panel-2.wav",
+      "claimIds": ["claim-brief"]
+    },
+    {
+      "id": "panel-3",
+      "durationSeconds": 2,
+      "caption": "Approve the storyboard before local rendering begins.",
+      "narration": "Only a current, approved storyboard can render the final video.",
+      "audioPath": "assets/narration-panel-3.wav",
+      "claimIds": ["claim-render"]
+    }
+  ]
+}
