@@ -1134,3 +1134,19 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Invoke this path from an authorized Realtime session or plugin capture control, record a live fallback sample, and complete host installation proof.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:15 CT — Full deterministic workspace recheck
+
+**Area:** Integration / Testing
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and tests across all 13 workspace packages after capture fallback, stale propagation, safe URL/PDF, storyboard, image-batch, and provenance changes.
+- Reset and recorded `pnpm demo:e2e` passed immediately afterward.
+
+### Open items
+
+- This remains deterministic/local verification. It does not prove provider-media outputs, installed host/plugin surface, native voice synchronization, or the public demo recording.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
