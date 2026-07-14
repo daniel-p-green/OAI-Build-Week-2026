@@ -2757,3 +2757,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Implement real GPT Image 2 media storage/contact sheets after spend authorization; image tiles remain intentionally labeled planned.
 - Sketch remains implemented in the domain/service but is not yet positioned as a Deliver object. Automated frontend tests remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 15:34 CT — Current UI evidence, plugin strategy, and comprehensive project deck
+
+**Area:** Product communication / interface evidence / ChatGPT app ecosystem research
+
+### Changed
+
+- Captured a twenty-screen gallery of the real current WorkshopLM application across reset and complete recorded fixtures, including Map, source scope, citations, brief/style approvals, Outputs, storyboard, and mobile states.
+- Converted the NotebookLM comparison into six implementation-level experience acceptance criteria: immediate Capture → Shape → Deliver orientation, stable Sources/Library geography, tangible source scope, visual outputs with provenance, calm first run, and one-click citation inspection.
+- Researched the installed ChatGPT/Codex plugin landscape and locked a focused adoption map: OpenAI Developers, Browser, Presentations, HyperFrames, and Record & Replay now; Granola, Google Drive, and Slack as optional source adapters; Figma, Product Design, Canva, and Creative Production as design references; Remotion as fallback; ChatCut, Sites, Documents, and Spreadsheets only when their seams earn inclusion.
+- Created a twenty-one-slide project overview for a reader with no prior context using the official OpenAI Simple Light Mode presentation template. It covers the problem, product model, control moat, real interface, local architecture, deterministic proof, honest evidence boundary, meta-demo, plugin strategy, next 48 hours, and founder-only actions.
+- Added the current screenshot gallery, experience criteria, plugin map, and project deck to `GOAL.md` evidence. Logged the duplicate deck/infographic cards visible in the completed Outputs gallery as an explicit pre-recording fix rather than hiding the defect.
+
+### Decision
+
+- Treat WorkshopLM as one focused ChatGPT App plus a local MCP-backed visual workspace. Optional apps contribute source context; they do not become required dependencies or justify unsupported app-to-app orchestration claims.
+- Borrow NotebookLM's legibility and evidence geography, not its center-chat layout or one-shot output model. WorkshopLM keeps its editable Map, approved brief, locked style, stale propagation, storyboard gate, and artifact-level provenance.
+- Use the final video as the primary judge experience while keeping screenshots and the deck as inspectable project evidence.
+
+### Verification
+
+- `pnpm demo:e2e` passed in recorded-fixture mode with all six gates true, two persisted HTML outputs, five planned assets, five storyboard panels, and a rendered video artifact.
+- The real local application was inspected and captured in the browser across desktop and 390px mobile states; the gallery README records which fixture produced each screen and preserves the planned-versus-generated image boundary.
+- Presentation overflow testing passed with no overflow detected.
+- Template fidelity validation passed with zero issues against the requested Simple Light Mode reference deck.
+- Final visual QA covered all twenty-one slides; corrected workflow copy, architecture title placement, proof metrics, meta-demo order, dated execution sequence, and founder-action count were re-rendered and re-inspected.
+
+### Open items
+
+- Deduplicate repeated deck and infographic cards before recording the demo.
+- Replace planned image tiles with genuine GPT Image 2 media only after bounded provider spend is explicitly authorized.
+- Provider-backed GPT-5.6, image, and final narration evidence remains unproved; this milestone does not promote deterministic fixture evidence to live-provider proof.
+- Codex Session ID: unavailable on this surface; not inferred.

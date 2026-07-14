@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 13:45 CT
+Last updated: 2026-07-14 15:21 CT
 
 ## Status
 
@@ -143,6 +143,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Select WorkshopLM as the working public name.
 - [x] Map source-to-output workflows and evaluate ChatGPT Sites and Pipecat boundaries.
 - [x] Inspect the live NotebookLM library, Sources, Chat, citation, Studio, and output-viewer flows in Chrome with privacy-safe screenshots.
+- [x] Research the installed ChatGPT/Codex plugin landscape and lock the use-now, source-adapter, reference, fallback, and stretch boundaries in `research/plugins/README.md`.
 
 ### 2. Product design
 
@@ -169,6 +170,9 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Make each screen expose no more than five immediate actions and exactly one visually dominant next action when a gate is ready.
 - [ ] Add frontend tests for progressive disclosure, contextual citations, two approval bars, visual output previews, and suppression of incomplete provenance rows.
 - [x] Re-verify the simplified UI at 1200×800, 1024×768, and mobile review width; capture fresh screenshots for the demo storyboard.
+- [x] Adopt the six NotebookLM legibility gains as implementation acceptance criteria: instant explanation, stable geography, tangible source scope, real output previews, calm first run, and one-click citations.
+- [x] Capture a privacy-safe live UI gallery covering the reset and complete recorded fixtures, including Map, Sources, citation, Library, Brief, Style, Outputs, Storyboard, and mobile states.
+- [ ] Deduplicate the deck and infographic cards in the complete-fixture Outputs gallery so each artifact appears exactly once before demo recording.
 
 ### 3. Specification and implementation plan
 
@@ -266,6 +270,10 @@ The primary integrator selects and justifies these without separate founder appr
 - [Public GitHub repository](https://github.com/daniel-p-green/OAI-Build-Week-2026)
 - [WorkshopLM interface design system](DESIGN.md)
 - [UI/UX simplification audit](research/ui-ux-simplification-audit-2026-07-14.md)
+- [Experience acceptance criteria](research/ui-experience-acceptance-criteria-2026-07-14.md)
+- [Plugin research and adoption map](research/plugins/README.md)
+- [Current UI screenshot gallery](outputs/workshoplm-current-ui/README.md)
+- [Comprehensive WorkshopLM project overview deck](outputs/workshoplm-project-overview.pptx)
 - [Product opportunity](research/product-opportunity.md)
 - [Workflow map](research/workflow-map.md)
 - [NotebookLM live user-flow map](research/notebooklm-user-flow.md)
