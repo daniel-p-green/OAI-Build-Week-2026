@@ -1,1 +1,15 @@
-{ "name": "@workshoplm/domain", "private": true, "type": "module", "scripts": { "build": "node -e \"\"", "lint": "node -e \"\"", "typecheck": "node -e \"\"", "test": "node -e \"\"" } }
+{
+  "name": "@workshoplm/domain",
+  "private": true,
+  "type": "module",
+  "exports": "./src/index.ts",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^3.24.4"
+  }
+}
