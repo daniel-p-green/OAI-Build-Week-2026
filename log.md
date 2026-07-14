@@ -1363,3 +1363,27 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - With paid-call authorization, run the three-model routing baseline and a representative graph-extraction quality comparison; use its artifact to choose final defaults.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:25 CT — Website-derived style path exposed in Studio
+
+**Area:** Style / Runtime / GUI
+
+### Changed
+
+- Added a public-website URL capture control to the Design surface, beside the existing manual style lock.
+
+### Verified
+
+- Web typecheck and production build passed.
+- A production-server `lockWebsiteStyle` request for `https://example.com` persisted `Example Domain foundation`, versioned tokens, source `website`, and the normalized reference URL. The fixture was reset afterward and `pnpm demo:e2e` passed.
+
+### Decisions
+
+- Website capture remains bounded to the safe public-URL adapter. This is a real style-source path, not yet a claim that automatic logo/manual asset extraction or the full Visual DNA evaluator is complete.
+
+### Open items
+
+- Add manual logo/font/image asset handling and visual-DNA evaluation/versioning.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
