@@ -1,6 +1,6 @@
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 const object = (properties, required = []) => ({ type: "object", properties, ...(required.length ? { required } : {}) });
 const schema = `CREATE TABLE IF NOT EXISTS workshop (id TEXT PRIMARY KEY, title TEXT NOT NULL, created_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS job (id TEXT PRIMARY KEY, workshop_id TEXT NOT NULL, kind TEXT NOT NULL, input_key TEXT NOT NULL UNIQUE, state TEXT NOT NULL, lease_until TEXT, attempts INTEGER NOT NULL DEFAULT 0, payload_json TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL);
@@ -31,6 +31,8 @@ function db(write = false) {
     const path = databasePath();
     if (!write && !existsSync(path))
         return null;
+    if (write)
+        mkdirSync(dirname(path), { recursive: true });
     const database = new DatabaseSync(path);
     if (write)
         database.exec(schema);

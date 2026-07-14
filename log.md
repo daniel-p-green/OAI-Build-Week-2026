@@ -1221,3 +1221,28 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Reinstall from the public GitHub snapshot and invoke the packaged MCP process from its installed cache. A desktop fresh-task invocation and configured data-root handoff remain separate host checks.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:19 CT — Installed MCP write path repaired
+
+**Area:** Plugin / Runtime Integrity
+
+### Changed
+
+- The MCP persistence helper now creates the configured SQLite data directory before a write connection is opened.
+- The stdio server now reports malformed JSON separately from unexpected request-processing failures.
+- Added an empty-data-root create/list regression test and rebuilt the versioned plugin runtime artifact.
+
+### Verified
+
+- Plugin build and typecheck passed; the stdio test suite passed 6/6, including a workshop create/list round trip from an empty data root.
+
+### Decisions
+
+- A valid installed `workshop_create` request previously surfaced as a `Parse error` because the broad server catch hid a missing SQLite directory. This was treated as a runtime defect, not a transient smoke-test failure.
+
+### Open items
+
+- Refresh the public GitHub plugin snapshot and repeat the installed-cache write/read smoke test; then exercise it from a fresh Codex desktop task.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

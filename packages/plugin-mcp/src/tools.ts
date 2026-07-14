@@ -1,6 +1,6 @@
-import { existsSync } from "node:fs";
+import { existsSync, mkdirSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
-import { join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 
 export type ToolKind = "read" | "write";
 export type ToolDefinition = { name: string; kind: ToolKind; description: string; inputSchema: { type: "object"; properties: Record<string, unknown>; required?: string[] } };
@@ -39,6 +39,7 @@ function databasePath(): string { return join(dataRoot(), "data", "workshoplm.sq
 function db(write = false): DatabaseSync | null {
   const path = databasePath();
   if (!write && !existsSync(path)) return null;
+  if (write) mkdirSync(dirname(path), { recursive: true });
   const database = new DatabaseSync(path);
   if (write) database.exec(schema);
   return database;

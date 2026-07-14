@@ -16,8 +16,15 @@ export function handleRequest(request) {
 if (process.argv[1]?.endsWith("server.ts") || process.argv[1]?.endsWith("server.js")) {
     const input = createInterface({ input: process.stdin, crlfDelay: Infinity });
     input.on("line", (line) => {
+        let request;
         try {
-            const request = JSON.parse(line);
+            request = JSON.parse(line);
+        }
+        catch {
+            process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", error: { code: -32700, message: "Parse error" } })}\n`);
+            return;
+        }
+        try {
             const result = handleRequest(request);
             if ("error" in result)
                 process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", id: request.id, ...result })}\n`);
@@ -25,7 +32,7 @@ if (process.argv[1]?.endsWith("server.ts") || process.argv[1]?.endsWith("server.
                 response(request.id, result);
         }
         catch {
-            process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", error: { code: -32700, message: "Parse error" } })}\n`);
+            process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", id: request.id, error: { code: -32603, message: "Internal error" } })}\n`);
         }
     });
 }

@@ -70,4 +70,14 @@ describe("WorkshopLM stdio MCP server", () => {
     expect(results[2]!.result.structuredContent.workshop.storyboardApproved).toBe(true);
     expect(results[3]!.result.structuredContent.workshop.videoState).toBe("queued");
   });
+
+  it("creates a workshop when the configured data root is empty", async () => {
+    const root = await mkdtemp(join(tmpdir(), "workshoplm-plugin-empty-")); temporaryRoots.push(root);
+    const results = await request(root, [
+      { jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "workshop_create", arguments: { title: "Installed Plugin Smoke Test" } } },
+      { jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "workshop_list", arguments: {} } },
+    ]);
+    expect(results[0]!.result).toMatchObject({ isError: false, structuredContent: { workshop: { id: "workshop-installed-plugin-smoke-test" } } });
+    expect(results[1]!.result.structuredContent.workshops).toHaveLength(1);
+  });
 });
