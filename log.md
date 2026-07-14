@@ -61,6 +61,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-13 23:28 CT — Public repository entry point
+
+**Area:** Submission / Documentation
+
+### Changed
+
+- Added a root README with local recorded-fixture commands, architecture routing, privacy/judge context, and links to the evidence records.
+
+### Verified
+
+- The documented commands match root package scripts: `demo:reset`, `demo:e2e`, `demo:render`, `dev`, and `check`.
+
+### Decisions
+
+- The README explicitly separates the verified deterministic slice from unfinished locked scope so the newly public repository does not overstate readiness.
+
+### Open items
+
+- Replace the in-progress wording with captured product proof only as each public-facing path is actually verified.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-13 — Hackathon reference established
 
 **Area:** Research / Submission
