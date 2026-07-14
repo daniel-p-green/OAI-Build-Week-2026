@@ -1017,3 +1017,27 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Resolve the entitled GPT-5.6 alias/project, run an inspectable text-PDF fixture, and record explicitly authorized live media generation before any claim of those provider outputs.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:03 CT — Stale-propagation red-team test
+
+**Area:** Red Team / Runtime / Testing
+
+### Changed
+
+- Added a focused regression test for upstream Map changes after generation and storyboard approval.
+
+### Verified
+
+- The test proves a typed Map edit marks persisted deck output and storyboard stale, clears storyboard approval, and makes `renderVideo` reject the now-invalid state.
+- Worker tests passed 11/11, worker typecheck passed, and reset/recorded `pnpm demo:e2e` passed.
+
+### Decisions
+
+- Stale rejection remains a runtime contract rather than an advisory UI indicator; the UI state follows the same service document.
+
+### Open items
+
+- Extend stale red-team coverage to every artifact type and job interruption/retry paths; resolve the entitled GPT-5.6 alias/project and run an inspectable PDF fixture.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
