@@ -1,0 +1,20 @@
+[
+  {
+    "taskId": "task_fixture_1",
+    "turnId": "turn_001",
+    "itemId": "item_001",
+    "role": "user",
+    "origin": "typed",
+    "content": "Turn our workshop notes into a launch brief.",
+    "createdAt": "2026-07-13T20:00:00.000Z"
+  },
+  {
+    "taskId": "task_fixture_1",
+    "turnId": "turn_002",
+    "itemId": "item_002",
+    "role": "assistant",
+    "origin": "native_voice",
+    "content": "I will map the evidence before producing the deliverables.",
+    "createdAt": "2026-07-13T20:00:01.000Z"
+  }
+]
