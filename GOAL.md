@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 00:22 CT
+Last updated: 2026-07-14 00:23 CT
 
 ## Status
 
@@ -177,7 +177,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Spike C: six-image batch manifest, locked reference, and selective regeneration contract; live image generation remains opt-in and unrun.
 - [x] Spike D: local HyperFrames CLI health check, validated three-scene composition, disclosed narration fixture, and rendered MP4.
 - [ ] Spike E: locally install the unified plugin, invoke its skill, call its stdio MCP tools, and record actual Work/Codex surface support.
-- [ ] Activate and verify a designed fallback for any failed primary spike before the domain contract freeze.
+- [x] Activate and verify the designed capture-only fallback for the unproven native task/voice synchronization spike; live Realtime transport remains separately unverified.
 
 ### 5. Repository and platform foundation
 

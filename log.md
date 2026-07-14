@@ -1314,3 +1314,27 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Capture the fresh-task Codex desktop invocation and its available `/feedback` Session ID if the surface exposes one.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:23 CT — Capture-only fallback made visible and verified
+
+**Area:** Capture / Host Integration
+
+### Changed
+
+- Added a distinct `Capture fallback` host-strip control and bounded transcript-segment sheet. Its copy explicitly says it is not a chat composer and is only for the absence of native ChatGPT voice sync.
+
+### Verified
+
+- Web typecheck and production build passed.
+- A production-server `captureFallbackTranscript` request persisted one `realtime_fallback` transcript segment, one new local source, and one new Map node. The fixture was reset afterward; `pnpm demo:e2e` passed.
+
+### Decisions
+
+- The designed fallback is now both visible and durable. This does not imply native task linkage, a live Realtime session, or any completed voice transport.
+
+### Open items
+
+- Resolve native host sync or run a separately authorized live Realtime transport capture.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

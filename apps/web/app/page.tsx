@@ -19,6 +19,9 @@ export default function WorkshopPage() {
   const [sourceTitle, setSourceTitle] = useState("");
   const [sourceOrigin, setSourceOrigin] = useState("Local note");
   const [sourceText, setSourceText] = useState("");
+  const [fallbackCaptureOpen, setFallbackCaptureOpen] = useState(false);
+  const [fallbackCaptureText, setFallbackCaptureText] = useState("");
+  const [fallbackCaptureStatus, setFallbackCaptureStatus] = useState<string | null>(null);
   const [nodeLabel, setNodeLabel] = useState("");
   const [persisted, setPersisted] = useState<PersistedWorkshop | null>(null);
   const activeNodes = persisted?.mapNodes ?? [];
@@ -44,6 +47,15 @@ export default function WorkshopPage() {
     setSelected(state.mapNodes.at(-1)?.id ?? "promise");
     setSourceInputOpen(false);
     setSourceTitle(""); setSourceText("");
+  }
+  async function captureFallbackTranscript() {
+    const text = fallbackCaptureText.trim();
+    if (!text) return;
+    setFallbackCaptureStatus("Saving capture…");
+    const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "captureFallbackTranscript", text }) });
+    const state = await response.json() as PersistedWorkshop & { error?: string };
+    if (!response.ok) { setFallbackCaptureStatus(state.error ?? "Capture failed"); return; }
+    setPersisted(state); setFallbackCaptureText(""); setFallbackCaptureStatus("Captured as grounded local evidence.");
   }
   async function editSelectedNode() {
     if (!selectedNode || !nodeLabel.trim()) return;
@@ -107,10 +119,11 @@ export default function WorkshopPage() {
         <section className="queue"><h3>Production queue</h3><article><span className="job-icon">▤</span><div><strong>Build Week deck</strong><small>Current · brief v1</small></div><span className="done">Ready</span></article><article><span className="job-icon">◫</span><div><strong>Visual contact sheet</strong><small>Current · 6 assets</small></div><span className="done">Ready</span></article><article className={!(persisted?.storyboardApproved ?? storyApproved) ? "blocked" : ""}><span className="job-icon">▷</span><div><strong>Meta-demo video</strong><small>{rendering ? "Rendering locally…" : (persisted?.videoState ?? "blocked") === "queued" ? "Queued in local worker" : (persisted?.storyboardApproved ?? storyApproved) ? "Storyboard approved" : "Needs storyboard approval"}</small></div><span>{rendering ? "…" : (persisted?.videoState ?? "blocked") === "queued" ? "Queued" : (persisted?.storyboardApproved ?? storyApproved) ? "Ready" : "Blocked"}</span></article></section>
         <section className="history"><h3>Output history</h3><button>FRAME.md <small>{persisted?.frame?.stale ? "stale" : persisted?.frame ? `v${persisted.frame.version} current` : "awaiting map approval"}</small></button><button>DESIGN.md <small>{persisted?.style ? `v${persisted.style.version} locked` : "awaiting lock"}</small></button>{persisted?.imageBatch && <button>Image batch <small>{persisted.imageBatch.stale ? "stale" : `${persisted.imageBatch.panels.length} planned panels`}</small></button>}{(persisted?.outputs ?? []).map((output) => <button key={output.id}>{output.type} <small>{output.stale ? "stale" : output.artifactPath}</small></button>)}</section>
       </aside>
-      <footer className="host-strip"><span><i />Sanitized local fixture · sources and outputs persist locally</span><button>Open Trace ↗</button></footer>
+      <footer className="host-strip"><span><i />Sanitized local fixture · sources and outputs persist locally</span><div><button className="capture-control" onClick={() => { setFallbackCaptureOpen(true); setFallbackCaptureStatus(null); }}>Capture fallback</button><button>Open Trace ↗</button></div></footer>
 
       {sourceOpen && selectedSource && <div className="evidence-sheet" role="dialog" aria-label="Evidence source"><div className="sheet-head"><div><span className="eyebrow">SOURCE EVIDENCE</span><h2>{selectedSource.title}</h2></div><button className="icon-button" onClick={() => setSourceOpen(false)}>×</button></div><p>“{selectedSource.excerpt}”</p><div className="locator-line">{selectedSource.locator}</div><button className="approve" onClick={() => { setSelected("promise"); setSourceOpen(false); }}>Show on Map</button></div>}
       {sourceInputOpen && <form className="evidence-sheet source-form" aria-label="Add source" onSubmit={(event) => { event.preventDefault(); void addSource(); }}><div className="sheet-head"><div><span className="eyebrow">CAPTURE</span><h2>Add local source</h2></div><button type="button" className="icon-button" onClick={() => setSourceInputOpen(false)}>×</button></div><label>Text file<input type="file" accept="text/plain,text/markdown,.txt,.md,.csv" onChange={(event) => { const file = event.target.files?.[0]; if (!file) return; void file.text().then((text) => { setSourceTitle(file.name); setSourceOrigin(`Local file · ${file.name}`); setSourceText(text); }); }} /></label><label>Title<input required value={sourceTitle} onChange={(event) => setSourceTitle(event.target.value)} placeholder="Sanitized meeting notes" /></label><label>Origin<input required value={sourceOrigin} onChange={(event) => setSourceOrigin(event.target.value)} placeholder="Local file or URL" /></label><label>Source text<textarea required value={sourceText} onChange={(event) => setSourceText(event.target.value)} placeholder="Paste sanitized text from a local file, URL capture, or meeting." /></label><button className="approve" type="submit">Normalize & add to Map</button></form>}
+      {fallbackCaptureOpen && <form className="evidence-sheet source-form fallback-capture" aria-label="Capture-only Realtime fallback" onSubmit={(event) => { event.preventDefault(); void captureFallbackTranscript(); }}><div className="sheet-head"><div><span className="eyebrow">CAPTURE-ONLY FALLBACK</span><h2>Save a transcript segment</h2></div><button type="button" className="icon-button" onClick={() => setFallbackCaptureOpen(false)}>×</button></div><p className="capture-note">Use only when native ChatGPT voice sync is unavailable. This is not a chat composer: it stores a bounded transcript segment as local source evidence.</p><label>Transcript segment<textarea required value={fallbackCaptureText} onChange={(event) => setFallbackCaptureText(event.target.value)} placeholder="Paste or dictate the captured segment here." /></label>{fallbackCaptureStatus && <small className="capture-status">{fallbackCaptureStatus}</small>}<button className="approve" type="submit">Capture to Workshop</button></form>}
     </main>
   );
 }
