@@ -1338,3 +1338,28 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Resolve native host sync or run a separately authorized live Realtime transport capture.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:24 CT — GPT-5.6 operation routing and benchmark gate added
+
+**Area:** Provider / Performance
+
+### Changed
+
+- Replaced blanket `gpt-5.6-sol` wording with a testable operation policy: Sol for quality-critical graph reasoning, Terra for balanced structured work, and Luna for repeatable high-volume work.
+- Added a live-gated three-model Responses probe that records status, response model, latency, token usage, output, and errors in a dated local spike artifact.
+
+### Verified
+
+- Official OpenAI guidance assigns Sol to frontier capability, Terra to the intelligence/cost balance, and Luna to efficient high-volume workloads; it directs benchmarking task success, latency, and cost rather than optimizing for a single metric.
+- AI-package syntax checks and routing-policy tests passed. Its live probe refused to run without explicit `WORKSHOPLM_LIVE_OPENAI=1`, so no paid request was made.
+
+### Decisions
+
+- `sol` is a quality default for grounded graph work, not a universal runtime choice. Defaults may move only when the same representative task passes quality checks with recorded latency and usage.
+
+### Open items
+
+- With paid-call authorization, run the three-model routing baseline and a representative graph-extraction quality comparison; use its artifact to choose final defaults.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

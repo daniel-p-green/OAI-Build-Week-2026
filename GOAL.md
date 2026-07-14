@@ -1,13 +1,13 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 00:23 CT
+Last updated: 2026-07-14 00:24 CT
 
 ## Status
 
 **Active phase:** Full implementation — integration spikes and platform foundation in parallel
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
 **Current gate:** No founder approval gate. Execute the plan autonomously and escalate only for credentials/spend, material privacy/security/licensing decisions, irreversible external actions, or an objective-changing breaking decision.
-**Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the project-specific GPT-5.6 aliases `gpt-5.6-luna`, `gpt-5.6-sol`, and `gpt-5.6-terra`. The bare `gpt-5.6` endpoint returns `404 model_not_found`; the locked runtime uses official frontier alias `gpt-5.6-sol`. A paid Responses call remains required before claiming live GPT-5.6 product use.
+**Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found`. The locked runtime uses an operation-level GPT-5.6 routing policy; paid Responses benchmarks must validate cost, latency, and quality before claiming live product use or changing per-operation defaults.
 
 **Hard schedule gates:**
 
@@ -92,7 +92,7 @@ The NotebookLM association is intentional category shorthand for hackathon judgi
 - Deliver is a Studio of output types over one shared grounded Workshop core, not a mandatory fixed package.
 - `Production Kit` is rejected as the output label.
 - Pipecat is deferred from the MVP; retain an adapter seam and revisit only for telephony, provider switching, or server-side audio pipelines.
-- OpenAI project reasoning and structured operations use the Responses API with `gpt-5.6-sol` (the official frontier GPT-5.6 alias for this project).
+- OpenAI project reasoning and structured operations use the Responses API with the GPT-5.6 routing policy: `gpt-5.6-sol` for quality-critical reasoning, `gpt-5.6-terra` for balanced structured work, and `gpt-5.6-luna` for repeatable high-volume work. Per-operation defaults may change only with recorded quality, latency, and cost evidence.
 - Project grounding uses local parsing, deterministic chunks/locators, SQLite FTS5/BM25, exact text search, and standard plugin `search`/`fetch` tools. GPT-5.6 receives retrieved evidence bundles and may not mark a factual claim `verified` without durable claim→chunk→source edges. Hosted OpenAI `file_search` is an optional adapter/comparison, not a requirement.
 - Native ChatGPT voice is the primary capture path. A live spike must prove durable thread/voice-turn synchronization into WorkshopLM. If the host cannot expose the needed durable capture, fall back to a narrow `gpt-realtime-2.1` WebRTC capture surface; standard API keys remain server-only.
 - Spike A has a hard decision deadline of July 14 end of day CT. If native voice-turn synchronization is not proven by then, activate the Realtime fallback automatically as a capture-only control in the host strip or top bar. It is visually distinct from a composer and does not duplicate ChatGPT conversation.

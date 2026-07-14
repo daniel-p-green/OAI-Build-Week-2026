@@ -1,1 +1,1 @@
-{ "name": "@workshoplm/ai", "private": true, "type": "module", "scripts": { "build": "node -e \"\"", "lint": "node -e \"\"", "typecheck": "node -e \"\"", "test": "node -e \"\"" } }
+{ "name": "@workshoplm/ai", "private": true, "type": "module", "scripts": { "build": "node -e \"\"", "lint": "node --check src/model-policy.mjs && node --check src/probe-gpt56.mjs", "typecheck": "node -e \"\"", "test": "node src/model-policy.test.mjs", "probe:gpt56": "node src/probe-gpt56.mjs" } }
