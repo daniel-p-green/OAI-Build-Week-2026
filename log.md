@@ -1982,3 +1982,24 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Live GPT Image 2 execution/evaluation remains pending paid-provider authorization.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:29 CT — Grounded MCP search and fetch verified
+
+**Area:** Capture / Plugin / Grounding
+
+### Verified
+
+- Plugin MCP tests passed: 6 tests across 3 files; typecheck passed.
+- The compact plugin tool surface exposes `search` over normalized evidence chunks and `fetch` by source/chunk identifier, returning grounded claims and locators without requiring a connected app.
+- Fixture reset and `pnpm demo:e2e` passed.
+
+### Decisions
+
+- The core local source path is the authoritative retrieval baseline. Connected applications remain optional adapters; their absence does not weaken local grounding.
+
+### Open items
+
+- Native ChatGPT task/voice linkage is still unproven; the capture-only fallback remains the designed operating path.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
