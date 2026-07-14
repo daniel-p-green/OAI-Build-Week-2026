@@ -1521,3 +1521,30 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Version approved Sketch output and add direct Excalidraw edit synchronization.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:34 CT — Grounded candidate extraction added
+
+**Area:** Capture / GUI / Grounding
+
+### Changed
+
+- Added durable candidate records derived from normalized grounded claims, with deterministic categories for goals, audience, claims, constraints, and unresolved questions.
+- Exposed the extraction control and source-locator-backed candidate list in Sources, plus the production API action.
+
+### Verified
+
+- Worker tests passed: 13 tests across 3 files, including candidate category and locator coverage.
+- Worker and web typechecks passed; the web production build passed.
+- Production API replay after a fixture reset ingested sanitized planning text and persisted all four targeted categories (`goal`, `audience`, `constraint`, `question`) with `Sanitized acceptance fixture · chunk 01` locators.
+- Fixture reset and `pnpm demo:e2e` passed in recorded-fixture mode.
+
+### Decisions
+
+- This initial extraction is deterministic and source-preserving, so it works without provider credentials or paid calls. Model-assisted clustering can be layered on later, but does not replace the durable evidence records.
+
+### Open items
+
+- Add PDF browser upload and connected-app adapters; improve candidate grouping/ranking when a live reasoning provider is authorized.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

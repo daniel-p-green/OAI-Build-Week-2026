@@ -7,7 +7,7 @@ type View = "Map" | "Sketch" | "Brief" | "Design" | "Story" | "Trace";
 type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string };
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number };
 const ExcalidrawMap = dynamic<{ nodes: MapNode[] }>(() => import("./excalidraw-map.js").then((module) => module.ExcalidrawMap), { ssr: false });
-type PersistedWorkshop = { briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sourceItems: SourceItem[]; sourceChunks?: { id: string; sourceId: string; text: string; locator: string }[]; claims?: { id: string; sourceId: string; chunkId: string; text: string; locator: string }[]; mapNodes: MapNode[]; storyboard: { version: number; stale: boolean; panels: { id: string; title: string; narration: string; durationSeconds: number; approved: boolean; stale: boolean }[] }; imageBatch?: { id: string; stale: boolean; referenceId: string; panels: { id: string; version: number; prompt: string; state: "planned" | "selected_for_regeneration" }[] }; outputs: { id: string; type: "deck" | "infographic"; stale: boolean; artifactPath: string }[]; frame?: { version: number; markdown: string; stale: boolean }; style?: { version: number; name: string; accent: string; ink: string; paper: string; stale: boolean } };
+type PersistedWorkshop = { briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sourceItems: SourceItem[]; sourceChunks?: { id: string; sourceId: string; text: string; locator: string }[]; claims?: { id: string; sourceId: string; chunkId: string; text: string; locator: string }[]; candidates?: { id: string; category: "goal" | "audience" | "claim" | "constraint" | "question"; text: string; locator: string }[]; mapNodes: MapNode[]; storyboard: { version: number; stale: boolean; panels: { id: string; title: string; narration: string; durationSeconds: number; approved: boolean; stale: boolean }[] }; imageBatch?: { id: string; stale: boolean; referenceId: string; panels: { id: string; version: number; prompt: string; state: "planned" | "selected_for_regeneration" }[] }; outputs: { id: string; type: "deck" | "infographic"; stale: boolean; artifactPath: string }[]; frame?: { version: number; markdown: string; stale: boolean }; style?: { version: number; name: string; accent: string; ink: string; paper: string; stale: boolean } };
 
 export default function WorkshopPage() {
   const [view, setView] = useState<View>("Map");
@@ -104,6 +104,7 @@ export default function WorkshopPage() {
   async function createImageBatch() { const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "createImageBatch" }) }); const state = await response.json() as PersistedWorkshop & { error?: string }; if (!response.ok) throw new Error(state.error ?? "Image batch creation failed"); setPersisted(state); }
   async function regenerateImagePanel(panelId: string) { const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "regenerateImagePanel", panelId }) }); const state = await response.json() as PersistedWorkshop & { error?: string }; if (!response.ok) throw new Error(state.error ?? "Image panel selection failed"); setPersisted(state); }
   async function lockWebsiteStyle(url: string) { const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "lockWebsiteStyle", url }) }); const state = await response.json() as PersistedWorkshop & { error?: string }; if (!response.ok) throw new Error(state.error ?? "Website style capture failed"); setPersisted(state); }
+  async function extractCandidates() { const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "extractCandidates" }) }); const state = await response.json() as PersistedWorkshop & { error?: string }; if (!response.ok) throw new Error(state.error ?? "Candidate extraction failed"); setPersisted(state); }
 
   return (
     <main className="workspace">
@@ -120,6 +121,11 @@ export default function WorkshopPage() {
             <span className="file-type">{source.type}</span><span className="source-copy"><strong>{source.title}</strong><small>{source.origin} · indexed</small></span><span className="claim-count">{source.claimCount} claims</span>
           </button>)}
         </div>
+        <section className="candidate-list" aria-label="Grounded candidates">
+          <div><span className="eyebrow">CANDIDATES</span><button onClick={() => { void extractCandidates(); }}>Extract</button></div>
+          {(persisted?.candidates ?? []).slice(0, 5).map((candidate) => <article key={candidate.id}><span>{candidate.category}</span><p title={candidate.locator}>{candidate.text}</p></article>)}
+          {!persisted?.candidates?.length && <p className="candidate-empty">Extract grounded goals, audience, claims, constraints, and open questions.</p>}
+        </section>
         <div className="source-footer"><span className="ground-dot" />All selected sources are indexed</div>
       </aside>
 
