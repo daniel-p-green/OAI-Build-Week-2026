@@ -2082,3 +2082,26 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Partial-success recovery remains open; cancellation does not claim to salvage a partially rendered artifact.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:34 CT — In-app build provenance surface added
+
+**Area:** Provenance / GUI
+
+### Changed
+
+- Extended the Evidence Trace view with a **How this was built** section tied to the local-first runtime, versioned FRAME/DESIGN artifacts, dated build log, Codex implementation/verification work, and the entitlement-gated GPT-5.6 routing policy.
+
+### Verified
+
+- Web typecheck and production build passed.
+
+### Decisions
+
+- The surface explicitly does not claim paid GPT-5.6 runtime execution; it reports the documented operation-level routing policy and separates it from pending provider evidence.
+
+### Open items
+
+- Final demo/video and paid-provider evidence remain unproven.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

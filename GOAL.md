@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 01:30 CT
+Last updated: 2026-07-14 01:34 CT
 
 ## Status
 
@@ -229,7 +229,7 @@ The primary integrator selects and justifies these without separate founder appr
 
 ### 10. Meta-demo, provenance, and submission
 
-- [ ] Build the “How this was built” provenance surface from dated build evidence.
+- [x] Build the “How this was built” provenance surface from dated build evidence.
 - [x] Instrument and display time from first transcript segment to first rendered output.
 - [ ] Produce the Devpost description, README narrative, deck, thumbnails, storyboard, narration, and video as one traced WorkshopLM Output set.
 - [ ] Include real UI evidence and the raw-transcript reveal.
