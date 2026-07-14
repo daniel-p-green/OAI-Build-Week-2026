@@ -43,7 +43,11 @@ importers:
         specifier: ^19.1.0
         version: 19.2.3(@types/react@19.2.17)
 
-  apps/worker: {}
+  apps/worker:
+    dependencies:
+      '@workshoplm/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
 
   packages/ai: {}
 
@@ -68,6 +72,8 @@ importers:
   spikes/b-grounding: {}
 
   spikes/c-images: {}
+
+  spikes/d-video: {}
 
 packages:
 

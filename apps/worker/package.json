@@ -1,1 +1,1 @@
-{ "name": "@workshoplm/worker", "private": true, "type": "module", "scripts": { "build": "tsc --noEmit", "lint": "tsc --noEmit", "typecheck": "tsc --noEmit", "test": "vitest run" } }
+{ "name": "@workshoplm/worker", "private": true, "type": "module", "scripts": { "build": "tsc --noEmit", "lint": "tsc --noEmit", "typecheck": "tsc --noEmit", "test": "vitest run" }, "dependencies": { "@workshoplm/domain": "workspace:*" } }

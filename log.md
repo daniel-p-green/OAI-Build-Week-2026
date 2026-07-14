@@ -717,3 +717,31 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Connect domain/runtime commands to the web and MCP surface, persist the sanitized fixture into SQLite, implement source/graph/style/output commands, and prove plugin installation plus live provider behavior.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-13 23:37 CT — Typed, durable Map edit and undo
+
+**Area:** Shape / Runtime / Product
+
+### Changed
+
+- Wired the domain graph-operation history into the local Workshop service. A Map operation is validated, persisted with its inverse and actor metadata, and reflected into the browser's Map nodes.
+- Added an inline Map-card title editor and Undo control. A semantic Map edit clears brief/storyboard approvals and blocks video again, preventing an outdated downstream render.
+- Repaired the strict domain undo contract: an inverse `update_node` now omits the immutable node ID from its patch.
+
+### Verified
+
+- Domain tests passed 11/11; worker tests passed 6/6; both packages typechecked.
+- Web typecheck and optimized production build passed.
+- A production HTTP sequence changed `node-promise`, returned `briefApproved: false`, `storyboardApproved: false`, and `videoState: blocked`, then restored the original title through `undoMapOperation`.
+- `pnpm demo:reset` and `pnpm demo:e2e` passed afterward.
+
+### Decisions
+
+- Map edits use the canonical typed graph history rather than an untyped UI-only patch. The current browser control edits node titles; additive/remove/edge operation affordances remain the next UI increment.
+
+### Open items
+
+- Connect full graph-operation controls, durable source chunks/claims, real frame/style versions, output history, and complete stale propagation to the same document.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

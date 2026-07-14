@@ -184,7 +184,8 @@ export function applyGraphOperation(input: SemanticGraph, rawOperation: GraphOpe
       if (nodes[index].locked) throw new DomainError("LOCKED", `node ${operation.nodeId} is locked`);
       const previous = nodes[index]; const next = GraphNode.parse({ ...previous, ...operation.patch, id: previous.id });
       nodes[index] = next;
-      inverse = [{ type: "update_node", nodeId: previous.id, patch: previous }]; break;
+      const { id: _nodeId, ...previousPatch } = previous;
+      inverse = [{ type: "update_node", nodeId: previous.id, patch: previousPatch }]; break;
     }
     case "add_edge": {
       if (edges.some((edge) => edge.id === operation.edge.id)) throw new DomainError("CONFLICT", `edge ${operation.edge.id} already exists`);

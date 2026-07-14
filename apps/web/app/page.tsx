@@ -19,6 +19,7 @@ export default function WorkshopPage() {
   const [sourceTitle, setSourceTitle] = useState("");
   const [sourceOrigin, setSourceOrigin] = useState("Local note");
   const [sourceText, setSourceText] = useState("");
+  const [nodeLabel, setNodeLabel] = useState("");
   const [persisted, setPersisted] = useState<PersistedWorkshop | null>(null);
   const activeNodes = persisted?.mapNodes ?? [];
   const selectedNode = useMemo(() => activeNodes.find((node) => node.id === selected) ?? activeNodes[0], [activeNodes, selected]);
@@ -43,6 +44,19 @@ export default function WorkshopPage() {
     setSelected(state.mapNodes.at(-1)?.id ?? "promise");
     setSourceInputOpen(false);
     setSourceTitle(""); setSourceText("");
+  }
+  async function editSelectedNode() {
+    if (!selectedNode || !nodeLabel.trim()) return;
+    const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "mapOperation", operation: { type: "update_node", nodeId: `node-${selectedNode.id}`, patch: { label: nodeLabel.trim() } } }) });
+    const state = await response.json() as PersistedWorkshop & { error?: string };
+    if (!response.ok) throw new Error(state.error ?? "Map edit failed");
+    setPersisted(state);
+  }
+  async function undoMapEdit() {
+    const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "undoMapOperation" }) });
+    const state = await response.json() as PersistedWorkshop & { error?: string };
+    if (!response.ok) throw new Error(state.error ?? "Map undo failed");
+    setPersisted(state); setNodeLabel("");
   }
 
   return (
@@ -72,11 +86,11 @@ export default function WorkshopPage() {
         {view === "Map" ? <section className="map" aria-label="Semantic Map">
           <div className="map-label">Evidence becoming structure</div>
           <svg className="threads" viewBox="0 0 900 620" aria-hidden="true"><path d="M210 180 C340 110 430 135 510 180" /><path d="M240 225 C335 340 430 380 475 410" /><path d="M580 220 C665 305 690 390 700 435" /></svg>
-          {activeNodes.map((node) => <button key={node.id} className={`claim-card ${node.kind} ${selected === node.id ? "focus" : ""}`} style={{ left: `${node.x}%`, top: `${node.y}%` }} onClick={() => setSelected(node.id)}>
+          {activeNodes.map((node) => <button key={node.id} className={`claim-card ${node.kind} ${selected === node.id ? "focus" : ""}`} style={{ left: `${node.x}%`, top: `${node.y}%` }} onClick={() => { setSelected(node.id); setNodeLabel(node.title); }}>
             <span className="claim-kind">{node.kind === "grounded" ? "Grounded" : node.kind === "derived" ? "Derived" : "Creative"}</span><strong>{node.title}</strong><span>{node.body}</span><small>{node.locator}</small>
           </button>)}
           <div className="cluster cluster-one">Narrative</div><div className="cluster cluster-two">Delivery proof</div>
-          {selectedNode && <section className="map-inspector"><span className={`state-dot ${selectedNode.kind}`} /><div><strong>{selectedNode.title}</strong><p>{selectedNode.locator}</p></div><button onClick={() => { setSelectedSource(persisted?.sourceItems[0] ?? null); setSourceOpen(true); }}>Open evidence ↗</button></section>}
+          {selectedNode && <section className="map-inspector"><span className={`state-dot ${selectedNode.kind}`} /><div><input aria-label="Map node title" value={nodeLabel || selectedNode.title} onChange={(event) => setNodeLabel(event.target.value)} /><p>{selectedNode.locator}</p></div><button onClick={() => { void editSelectedNode(); }}>Save edit</button><button onClick={() => { void undoMapEdit(); }}>Undo</button><button onClick={() => { setSelectedSource(persisted?.sourceItems[0] ?? null); setSourceOpen(true); }}>Open evidence ↗</button></section>}
         </section> : view === "Brief" ? <Brief approved={persisted?.briefApproved ?? briefApproved} /> : view === "Story" ? <Storyboard approved={persisted?.storyboardApproved ?? storyApproved} onApprove={() => { void mutate("approveStoryboard").then(() => setStoryApproved(true)); }} /> : view === "Design" ? <DesignReview /> : <Trace />}
       </section>
 

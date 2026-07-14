@@ -11,6 +11,10 @@ describe("domain contracts", () => {
     const result = applyGraphOperation(graph(), GraphOperation.parse({ type: "add_node", node: { id: ids.nodeB, kind: "idea", label: "Narrative", evidenceState: "derived" } }));
     expect(result.graph.nodes).toHaveLength(2); expect(undoGraphOperation(result.graph, result.inverse).nodes).toHaveLength(1);
   });
+  it("undos a node update without writing its immutable ID into the patch", () => {
+    const result = applyGraphOperation(graph(), GraphOperation.parse({ type: "update_node", nodeId: ids.nodeA, patch: { label: "Edited" } }));
+    expect(undoGraphOperation(result.graph, result.inverse).nodes[0].label).toBe("Grounded value");
+  });
   it("persists typed graph operations, hydrates safely, and undoes the latest operation", () => {
     const history = { graphVersionId: ids.graphId as never, records: [] };
     const appended = appendGraphOperation(graph(), history, GraphOperation.parse({ type: "add_node", node: { id: ids.nodeB, kind: "idea", label: "Narrative", evidenceState: "derived" } }), { id: "operation-1", actor: "assistant", createdAt: now });
