@@ -996,3 +996,24 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Run an inspectable text-PDF fixture through the adapter, add live GPT Image 2 generation/evaluation when authorized, richer graph operations, multi-claim provenance browsing, and live-provider/host proof.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 00:01 CT — Read-only OpenAI model entitlement recheck
+
+**Area:** Provider / Verification
+
+### Verified
+
+- A credentialed, read-only `GET /v1/models/{model}` probe returned `200` for `gpt-image-2`, `gpt-4o-mini-tts`, and `gpt-realtime-2.1`.
+- The exact `gpt-5.6` ID still returns `404 model_not_found` for this key/project.
+
+### Decisions
+
+- No image, TTS, Realtime, or reasoning generation was invoked, so this establishes endpoint visibility only and incurs no generation spend.
+- Continue using deterministic image/voice fallbacks and do not claim live GPT-5.6 product use until an entitled alias/project is established.
+
+### Open items
+
+- Resolve the entitled GPT-5.6 alias/project, run an inspectable text-PDF fixture, and record explicitly authorized live media generation before any claim of those provider outputs.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
