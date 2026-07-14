@@ -2358,3 +2358,19 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Replace the honest placeholder tones with provider-backed, disclosed `gpt-4o-mini-tts` panel narration only after authorized live-provider verification.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:58 CT — Full workspace baseline passed after dynamic renderer repair
+
+**Area:** Integration / Verification
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and tests across all 13 workspace packages.
+- `pnpm demo:reset && pnpm demo:e2e` passed immediately afterward with all six gates true, five asset-plan items, five storyboard panels, source-traceable deck/infographic artifacts, and the newly rendered current-storyboard MP4 artifact.
+
+### Open items
+
+- Provider-backed image generation/TTS/GPT-5.6 evaluation, native host sync, public demo/video, and final submission evidence remain open.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
