@@ -2792,3 +2792,44 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Replace planned image tiles with genuine GPT Image 2 media only after bounded provider spend is explicitly authorized.
 - Provider-backed GPT-5.6, image, and final narration evidence remains unproved; this milestone does not promote deterministic fixture evidence to live-provider proof.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 17:10 CT — Judge-path interaction rebuild
+
+**Area:** ChatGPT-native product UI / Map / trace / approvals / output package / storyboard
+
+### Changed
+
+- Adopted the decisive product rule `borrow the chrome; invent the interaction`. The Apps in ChatGPT kit now governs the shell-level direction; WorkshopLM differentiation is concentrated in the relational Map, synchronized evidence trace, and coherent package/storyboard.
+- Removed the persistent Capture → Shape → Deliver spine, generic Library, generic Details, browser capture composer, Outputs shortcut, `Continue in ChatGPT` chrome, and the visibly broken Excalidraw editor from the judged path.
+- Rebuilt the Map with a constrained spatial grammar: source anchors on the left, grounded claims in the center, implications on the right, labeled cluster regions, curved provenance edges, and synchronized path highlighting.
+- Replaced fragmented evidence overlays with one adjacent Claim/Evidence inspector that supports claim editing, exact excerpt and locator review, and one Open source action.
+- Rebuilt the Brief as an approved strategic object with coverage, version, and downstream consequence. Rebuilt Style as a live visual contract with palette, typography, miniature output previews, locked version, and propagation semantics.
+- Removed the duplicated artifact grid at its source. Replaced four equal output buttons with one Generate/Refresh package action and distinct presentation, infographic, image-set, storyboard, and video objects.
+- Strengthened Storyboard with visual thumbnails, timing and citation states, selected-panel context, narration editing, and a persistent approval summary showing panel count, runtime, grounding coverage, and current dependencies.
+- Renamed the narrow-screen Map state to `Evidence outline`; mobile review no longer claims to preserve a spatial editor.
+- Revised `DESIGN.md`, `GOAL.md`, and the recorded web fixture vocabulary to match the rebuilt interaction model. Added the detailed rebuild record under `research/judge-path-interaction-rebuild-2026-07-14.md`.
+
+### Figma evidence boundary
+
+- Inspected the authenticated Community page for `Apps in ChatGPT · OpenAI Official`. Its visible page menu lists foundation pages, Inline Card, Inline Carousel, Full screen, Inspector, PiP, and platform component pages.
+- The Community source did not grant connector edit access, so internal layers, variables, and component names were not inspected or inferred. No editable copy was created in the user's account.
+
+### Verification
+
+- `pnpm --filter @workshoplm/web build` passed after the rebuild.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages; the worker service retains twenty-eight passing tests.
+- `pnpm demo:e2e` passed with all six gates true, two persisted HTML outputs, five planned assets, five storyboard panels, and a rendered video artifact.
+- Live in-app browser review covered the rebuilt Map, claim-to-source trace, approved Brief, locked Style contract, deduplicated package, and approved Storyboard.
+- The first Map review exposed overlapping grounded claims. Their constrained layout was corrected, rebuilt, reloaded, and visually rechecked before acceptance.
+- A 390×844 responsive session confirmed the document remains 390px wide and switches to the mobile Evidence outline; the browser screenshot compositor displayed the overridden viewport inside a larger capture surface, so a fresh device screenshot remains an explicit follow-up rather than a completed evidence claim.
+
+### Open items
+
+- Capture a fresh final screenshot set for the rebuilt six states and mobile Evidence outline.
+- Add automated frontend regression tests for duplicate outputs, progressive disclosure, approval summaries, and one-dominant-action behavior.
+- Verify keyboard focus order, WCAG AA contrast, reduced motion, and 200% zoom.
+- Replace planned image tiles with genuine GPT Image 2 media only after bounded provider spend is explicitly authorized.
+- Provider-backed GPT-5.6, image, and final narration evidence remains unproved.
+- Codex Session ID: unavailable on this surface; not inferred.

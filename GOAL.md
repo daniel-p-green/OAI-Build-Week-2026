@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 15:21 CT
+Last updated: 2026-07-14 17:10 CT
 
 ## Status
 
@@ -172,7 +172,14 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Re-verify the simplified UI at 1200×800, 1024×768, and mobile review width; capture fresh screenshots for the demo storyboard.
 - [x] Adopt the six NotebookLM legibility gains as implementation acceptance criteria: instant explanation, stable geography, tangible source scope, real output previews, calm first run, and one-click citations.
 - [x] Capture a privacy-safe live UI gallery covering the reset and complete recorded fixtures, including Map, Sources, citation, Library, Brief, Style, Outputs, Storyboard, and mobile states.
-- [ ] Deduplicate the deck and infographic cards in the complete-fixture Outputs gallery so each artifact appears exactly once before demo recording.
+- [x] Rebuild the judge path around the official Apps in ChatGPT boundary: ChatGPT owns conversation; the fullscreen Workshop owns only Map/trace, Brief/Style, package, and Storyboard interactions.
+- [x] Replace the broken Excalidraw judge path with a constrained relational Map: source anchors, grounded claims, implications, labeled clusters, visible edges, path highlighting, and one adjacent claim/evidence inspector.
+- [x] Replace trivial approval states with a Brief coverage receipt, live Style contract, Storyboard coverage/runtime summary, and visibly named approved versions.
+- [x] Replace four equal output actions with one coherent package action and deduplicate deck/infographic cards so each artifact appears exactly once.
+- [x] Remove the persistent stage spine, generic Library, generic Details, browser capture composer, and other shell chrome that competed with ChatGPT.
+- [ ] Capture a fresh final screenshot set for the rebuilt Map, trace, Brief/Style, package, Storyboard, and mobile Evidence outline.
+- [ ] Add frontend regression coverage for the six rebuilt states, including a duplicate-artifact assertion and one-dominant-action checks.
+- [ ] Verify keyboard focus order, WCAG AA contrast, reduced motion, and 200% zoom on the rebuilt judge path.
 
 ### 3. Specification and implementation plan
 
@@ -270,6 +277,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [Public GitHub repository](https://github.com/daniel-p-green/OAI-Build-Week-2026)
 - [WorkshopLM interface design system](DESIGN.md)
 - [UI/UX simplification audit](research/ui-ux-simplification-audit-2026-07-14.md)
+- [Judge-path interaction rebuild](research/judge-path-interaction-rebuild-2026-07-14.md)
 - [Experience acceptance criteria](research/ui-experience-acceptance-criteria-2026-07-14.md)
 - [Plugin research and adoption map](research/plugins/README.md)
 - [Current UI screenshot gallery](outputs/workshoplm-current-ui/README.md)
