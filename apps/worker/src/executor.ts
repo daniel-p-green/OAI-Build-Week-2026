@@ -24,5 +24,5 @@ export async function executeOne(root: string, run: RunCommand = defaultRun) : P
     const output = join(root, "generated", "workshoplm-demo.mp4"); await mkdir(resolve(output, ".."), { recursive: true }); await copyFile(source, output);
     const artifact = await storeArtifact(root, "workshoplm-demo", await import("node:fs/promises").then(({ readFile }) => readFile(output)), "video/mp4");
     finishJob(db, job.id, "succeeded"); setVideoState("rendered", root); return { jobId: job.id, state: "succeeded", artifact };
-  } catch (caught) { const error = caught instanceof Error ? caught.message : "Unknown render failure"; finishJob(db, job.id, "failed", error); setVideoState("queued", root); return { jobId: job.id, state: "failed", error }; }
+  } catch (caught) { const error = caught instanceof Error ? caught.message : "Unknown render failure"; const retrying = job.attempts < 2; finishJob(db, job.id, retrying ? "retrying" : "failed", error); setVideoState(retrying ? "queued" : "blocked", root); return { jobId: job.id, state: "failed", error }; }
 }

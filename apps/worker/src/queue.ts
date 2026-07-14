@@ -15,6 +15,6 @@ export function leaseNext(db: DatabaseSync, leaseMs = 30_000): Job | null {
   db.prepare("UPDATE job SET state='running', attempts=attempts+1, lease_until=?, updated_at=? WHERE id=?").run(leaseUntil, now(), String(row.id));
   return { id: String(row.id), workshopId: String(row.workshop_id), kind: String(row.kind), inputKey: String(row.input_key), state: "running", attempts: Number(row.attempts) + 1, payload: JSON.parse(String(row.payload_json)) };
 }
-export function finishJob(db: DatabaseSync, id: string, state: "succeeded" | "failed", error?: string) {
+export function finishJob(db: DatabaseSync, id: string, state: "succeeded" | "failed" | "retrying", error?: string) {
   db.prepare("UPDATE job SET state=?, error=?, lease_until=NULL, updated_at=? WHERE id=?").run(state, error ?? null, now(), id);
 }

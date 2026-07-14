@@ -2024,3 +2024,22 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Native ChatGPT task/voice linkage and live GPT Image 2 execution still require their respective external evidence.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:31 CT — Bounded video-render retry repair
+
+**Area:** Worker / Failure recovery
+
+### Changed
+
+- A failed local video render now transitions its job to `retrying` for one additional leased attempt while retaining the error; the second failure becomes terminal and visibly blocks the video.
+
+### Verified
+
+- Worker tests passed: 24 tests across 3 files. The executor test proves first-failure requeue and retry-budget exhaustion behavior; worker typecheck passed.
+
+### Open items
+
+- Explicit user cancellation and multi-artifact partial-success recovery still need their own user-visible flow and evidence; the broad reliability checkbox remains open.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
