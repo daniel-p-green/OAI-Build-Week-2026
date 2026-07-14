@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 01:34 CT
+Last updated: 2026-07-14 01:35 CT
 
 ## Status
 
@@ -244,7 +244,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [ ] Maintain and log the end-to-end acceptance path daily once the first vertical slice exists.
 - [ ] Verify the full Capture → Shape → Deliver flow in the live application.
 - [x] Verify realistic desktop, tablet, and mobile behavior.
-- [ ] Verify schema, gate, graph, grounding, rendering, and integration tests.
+- [x] Verify schema, gate, graph, grounding, rendering, and integration tests.
 - [ ] Verify failure recovery and partial-package behavior.
 - [ ] Verify all submitted links, the repeatable recording setup, and the optional inspection instructions in a fresh ChatGPT/Codex in-app browser session.
 - [ ] Audit every objective requirement against direct evidence before marking the goal complete.

@@ -2105,3 +2105,20 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Final demo/video and paid-provider evidence remain unproven.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 01:35 CT — Full deterministic workspace baseline passed
+
+**Area:** Integration / Verification
+
+### Verified
+
+- `pnpm test` passed all 13 workspace package tasks, covering domain schema/gates, plugin MCP, worker, production renderer, AI routing policy, and integration spikes.
+- `pnpm typecheck` passed all 13 workspace package tasks.
+- Fixture reset and `pnpm demo:e2e` passed the recorded Capture → Shape → Deliver seam with grounded evidence, approved gates, deck/infographic artifacts, storyboard approval, and deterministic timing.
+
+### Open items
+
+- The recorded fixture does not prove native ChatGPT task sync, paid provider generation, final demo video, or external submission links.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
