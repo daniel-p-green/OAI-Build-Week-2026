@@ -184,7 +184,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Initialize Git and preserve dated Build Week commits.
 - [x] Scaffold the pnpm/Turborepo monorepo.
 - [ ] Create `apps/web`, `apps/worker`, and focused shared packages.
-- [ ] Create the unified plugin manifest, WorkshopLM skill, local MCP server, and compact status/trace widget.
+- [x] Create the unified plugin manifest, WorkshopLM skill, local MCP server, and compact status/trace widget with tested persisted-fixture tools.
 - [x] Establish linting, type checking, tests, and deterministic local fixture reset; typed environment validation remains next.
 - [ ] Record every participating Codex `/feedback` Session ID, or the explicit reason it is unavailable, and designate the primary integrator session from actual build evidence.
 - [x] Configure local SQLite WAL persistence boundaries, atomic filesystem artifact storage, and idempotent leased local jobs.

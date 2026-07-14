@@ -499,6 +499,29 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-13 23:18 CT — Plugin stdio state and command gates verified
+
+**Area:** Plugin / Integration / Testing
+
+### Changed
+
+- Replaced generic MCP responses with persisted SQLite fixture state. `workshop_list` and `workshop_open` now return local Workshop state; brief/storyboard/render commands apply explicit gates and persist valid transitions.
+
+### Verified
+
+- Plugin build and five tests passed, including a spawned built stdio server receiving JSON-RPC initialize, tool list, and call requests. Domain tests (8) and recorded acceptance E2E also passed.
+
+### Decisions
+
+- Plugin mutations use the same durable state boundary as the browser fixture. Compact widgets remain doorway surfaces rather than duplicate Map/Studio editors.
+
+### Open items
+
+- Execute the queued render job through the local worker and verify actual plugin loading in the supported ChatGPT/Codex desktop path.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-13 23:13 CT — Browser approvals and queue now persist locally
 
 **Area:** Product / Runtime / Testing
