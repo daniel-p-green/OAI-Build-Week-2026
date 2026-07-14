@@ -499,6 +499,31 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-13 23:13 CT — Browser approvals and queue now persist locally
+
+**Area:** Product / Runtime / Testing
+
+### Changed
+
+- Added a server-side local Workshop service and `/api/workshop` route. The browser now reads persisted approval/queue state and sends Map approval, storyboard approval, and render enqueue mutations to the local SQLite runtime.
+- Configured the worker data root from its source location so the web runtime and `pnpm demo:reset` share the repository-owned `.workshoplm` state directory.
+
+### Verified
+
+- Production Next build passed with the dynamic API route.
+- After reset, the live local route on port 3002 returned `blocked`, then persisted brief approval, storyboard approval, and a queued video job in order through real HTTP requests.
+
+### Decisions
+
+- The browser is now a thin client for gate state; it does not itself claim a render has completed. The worker queue remains responsible for execution.
+
+### Open items
+
+- Replace remaining static source/Map/Studio fixture content with repository queries and connect the queued video job to the proven renderer.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-13 23:08 CT — Recorded Capture → Shape → Deliver acceptance seam
 
 **Area:** Integration / Testing

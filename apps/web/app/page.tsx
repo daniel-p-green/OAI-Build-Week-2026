@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 type View = "Map" | "Brief" | "Design" | "Story" | "Trace";
 type Claim = "promise" | "proof" | "visual" | "risk";
@@ -25,11 +25,20 @@ export default function WorkshopPage() {
   const [storyApproved, setStoryApproved] = useState(false);
   const [rendering, setRendering] = useState(false);
   const [sourceOpen, setSourceOpen] = useState(false);
+  const [persisted, setPersisted] = useState<{ briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered" } | null>(null);
   const selectedNode = useMemo(() => nodes.find((node) => node.id === selected)!, [selected]);
+
+  useEffect(() => { fetch("/api/workshop").then((response) => response.ok ? response.json() : null).then(setPersisted).catch(() => setPersisted(null)); }, []);
+  async function mutate(action: "approveBrief" | "approveStoryboard" | "renderVideo") {
+    const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action }) });
+    const state = await response.json() as { error?: string; briefApproved?: boolean; storyboardApproved?: boolean; videoState?: "blocked" | "queued" | "rendering" | "rendered" };
+    if (!response.ok) throw new Error(state.error ?? "Workshop action failed");
+    setPersisted(state as NonNullable<typeof persisted>);
+  }
 
   function renderVideo() {
     setRendering(true);
-    window.setTimeout(() => setRendering(false), 900);
+    void mutate("renderVideo").finally(() => setRendering(false));
   }
 
   return (
@@ -54,7 +63,7 @@ export default function WorkshopPage() {
         <nav className="views" aria-label="Workspace view">
           {(["Map", "Brief", "Design", "Story", "Trace"] as View[]).map((item) => <button key={item} className={view === item ? "selected" : ""} onClick={() => setView(item)}>{item}{item === "Brief" && briefApproved ? <em>approved</em> : null}</button>)}
           <span className="view-spacer" />
-          {view === "Map" && <button className="approve" onClick={() => { setBriefApproved(true); setView("Brief"); }}>Approve map as brief</button>}
+          {view === "Map" && <button className="approve" onClick={() => { void mutate("approveBrief").then(() => { setBriefApproved(true); setView("Brief"); }); }}>Approve map as brief</button>}
         </nav>
         {view === "Map" ? <section className="map" aria-label="Semantic Map">
           <div className="map-label">Evidence becoming structure</div>
@@ -64,13 +73,13 @@ export default function WorkshopPage() {
           </button>)}
           <div className="cluster cluster-one">Narrative</div><div className="cluster cluster-two">Delivery proof</div>
           <section className="map-inspector"><span className={`state-dot ${selectedNode.kind}`} /><div><strong>{selectedNode.title}</strong><p>{selectedNode.locator}</p></div><button onClick={() => setSourceOpen(true)}>Open evidence ↗</button></section>
-        </section> : view === "Brief" ? <Brief approved={briefApproved} /> : view === "Story" ? <Storyboard approved={storyApproved} onApprove={() => setStoryApproved(true)} /> : view === "Design" ? <DesignReview /> : <Trace />}
+        </section> : view === "Brief" ? <Brief approved={persisted?.briefApproved ?? briefApproved} /> : view === "Story" ? <Storyboard approved={persisted?.storyboardApproved ?? storyApproved} onApprove={() => { void mutate("approveStoryboard").then(() => setStoryApproved(true)); }} /> : view === "Design" ? <DesignReview /> : <Trace />}
       </section>
 
       <aside className="studio" aria-label="Studio">
         <div className="rail-heading"><div><span className="eyebrow">DELIVER</span><h2>Studio</h2></div><button className="icon-button" aria-label="Studio options">•••</button></div>
         <section className="output-actions"><span>Output types</span><div><button>Deck</button><button>Infographic</button><button>Images</button><button onClick={() => setView("Story")}>Storyboard</button><button disabled={!storyApproved} onClick={renderVideo}>Video</button></div></section>
-        <section className="queue"><h3>Production queue</h3><article><span className="job-icon">▤</span><div><strong>Build Week deck</strong><small>Current · brief v1</small></div><span className="done">Ready</span></article><article><span className="job-icon">◫</span><div><strong>Visual contact sheet</strong><small>Current · 6 assets</small></div><span className="done">Ready</span></article><article className={!storyApproved ? "blocked" : ""}><span className="job-icon">▷</span><div><strong>Meta-demo video</strong><small>{rendering ? "Rendering locally…" : storyApproved ? "Storyboard approved" : "Needs storyboard approval"}</small></div><span>{rendering ? "…" : storyApproved ? "Queued" : "Blocked"}</span></article></section>
+        <section className="queue"><h3>Production queue</h3><article><span className="job-icon">▤</span><div><strong>Build Week deck</strong><small>Current · brief v1</small></div><span className="done">Ready</span></article><article><span className="job-icon">◫</span><div><strong>Visual contact sheet</strong><small>Current · 6 assets</small></div><span className="done">Ready</span></article><article className={!(persisted?.storyboardApproved ?? storyApproved) ? "blocked" : ""}><span className="job-icon">▷</span><div><strong>Meta-demo video</strong><small>{rendering ? "Rendering locally…" : (persisted?.videoState ?? "blocked") === "queued" ? "Queued in local worker" : (persisted?.storyboardApproved ?? storyApproved) ? "Storyboard approved" : "Needs storyboard approval"}</small></div><span>{rendering ? "…" : (persisted?.videoState ?? "blocked") === "queued" ? "Queued" : (persisted?.storyboardApproved ?? storyApproved) ? "Ready" : "Blocked"}</span></article></section>
         <section className="history"><h3>Output history</h3><button>FRAME.md <small>{briefApproved ? "v1 current" : "awaiting map approval"}</small></button><button>DESIGN.md <small>v1 locked</small></button></section>
       </aside>
       <footer className="host-strip"><span><i />Linked ChatGPT task · last grounded update just now</span><button>Continue in ChatGPT ↗</button></footer>

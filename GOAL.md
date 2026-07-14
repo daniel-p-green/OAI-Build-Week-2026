@@ -223,7 +223,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [ ] Generate a source-traceable infographic.
 - [ ] Generate and evaluate a coherent GPT Image 2 batch.
 - [ ] Generate an editable, panel-level storyboard.
-- [ ] Block video rendering until the storyboard is approved and current.
+- [x] Block video enqueueing until the current storyboard approval is persisted; worker execution remains pending.
 - [ ] Render narrated video through HyperFrames from the approved storyboard.
 - [ ] Propagate upstream changes into accurate downstream stale states.
 
