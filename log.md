@@ -2393,3 +2393,22 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - License choice, final Devpost copy, public video, and paid-provider benchmark evidence still require their own proof or authority.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 02:01 CT — Truthful Devpost draft prepared
+
+**Area:** Submission materials
+
+### Changed
+
+- Added `submission/DEVPOST-DRAFT.md` with judge-facing description, local verification commands, collaboration disclosure, and explicit provider/host scope boundaries.
+
+### Decisions
+
+- The draft contains no unverified paid-provider, native host-sync, final YouTube, or submission-completion claim. Irreversible Devpost/YouTube actions and submission identity fields remain human-controlled.
+
+### Open items
+
+- Produce/verify the public video, choose repository licensing, complete Devpost fields, and capture the `/feedback` Session ID when available.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
