@@ -4,10 +4,10 @@
 
 - [ ] Working project built with Codex and GPT-5.6
 - [ ] Category selected as **Work & Productivity**
-- [ ] Product runs consistently on its intended platform
+- [x] Product runs consistently on its intended platform
 - [ ] Live/testable experience matches the submitted description and video
 - [ ] Third-party SDKs, APIs, data, fonts, images, music, and integrations are licensed or authorized
-- [ ] Sample data and a privacy-safe, repeatable demo fixture are available
+- [x] Sample data and a privacy-safe, repeatable demo fixture are available
 
 ## Devpost entry
 
@@ -23,13 +23,13 @@
 ## Repository
 
 - [x] Public repository has an appropriate license, or private repository is shared with `testing@devpost.com` and `build-week-event@openai.com`
-- [ ] README contains installation and run instructions
-- [ ] README contains sample-data instructions when needed
-- [ ] README explains how we collaborated with Codex
-- [ ] README highlights where Codex accelerated the workflow
-- [ ] README identifies important human product, engineering, and design decisions
-- [ ] README explains how GPT-5.6 contributed to the result
-- [ ] Dated commits and session evidence distinguish hackathon work from any pre-existing work
+- [x] README contains installation and run instructions
+- [x] README contains sample-data instructions when needed
+- [x] README explains how we collaborated with Codex
+- [x] README highlights where Codex accelerated the workflow
+- [x] README identifies important human product, engineering, and design decisions
+- [x] README explains how GPT-5.6 contributed to the result
+- [x] Dated commits and session evidence distinguish hackathon work from any pre-existing work
 
 ## Demo video
 
@@ -47,19 +47,19 @@
 
 - [ ] Free and unrestricted through the end of judging
 - [ ] Public video makes the full value and working flow understandable without local setup
-- [ ] Sanitized recorded fixture supports repeatable capture and optional inspection without paid calls
+- [x] Sanitized recorded fixture supports repeatable capture and optional inspection without paid calls
 - [ ] Login credentials included only if a later verified judge path requires them
-- [ ] Supported browser/platform documented
+- [x] Supported browser/platform documented
 - [ ] A judge can understand the value even if they never run the app
 
 ## Plugin/developer-tool requirements
 
 WorkshopLM is a local plugin/developer-tool experience. Keep these concise and secondary to the public demo video:
 
-- [ ] Installation instructions
-- [ ] Supported platforms
-- [ ] Test path that does not require rebuilding from scratch
-- [ ] Sanitized fixture or inspection path
+- [x] Installation instructions
+- [x] Supported platforms
+- [x] Test path that does not require rebuilding from scratch
+- [x] Sanitized fixture or inspection path
 
 ## Final live verification
 

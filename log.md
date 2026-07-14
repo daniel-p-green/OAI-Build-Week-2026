@@ -2499,3 +2499,32 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Public video publication and Devpost submission remain external actions; paid-provider checks remain deliberately blocked pending spend authorization.
 - Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 02:10 CT — Submission checklist reconciled to repository evidence
+
+**Area:** Public repository / judge inspection path
+
+### Changed
+
+- Marked only the already-evidenced README, fixture, intended-platform, supported-platform, and plugin-inspection-path checklist items complete.
+- Updated the evidence audit to reflect the newly committed MIT license.
+
+### Decision
+
+- Treated a checked checklist item as a repository-evidence statement, not a claim that Devpost, YouTube, native host sync, or paid-provider proof is complete.
+
+### Alternatives considered
+
+- Leaving all checklist items open would hide verified judge-access work and make the audit less useful.
+- Marking broader Project or Devpost items complete would be inaccurate because the public video, external submission form, and live-provider boundaries still lack direct proof.
+
+### Verification
+
+- Read the current `README.md`, `submission/EVIDENCE-AUDIT.md`, and `research/hackathon/SUBMISSION-CHECKLIST.md`; the README contains the matching commands, sanitization details, supported platform, collaboration disclosure, and plugin test path.
+
+### Open items
+
+- External submission, public video, fresh Work surface proof, and paid-provider checks remain unchecked and explicitly open.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.

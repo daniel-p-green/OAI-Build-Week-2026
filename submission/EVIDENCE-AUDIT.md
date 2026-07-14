@@ -18,7 +18,7 @@ Audit date: 2026-07-14 CT. This is a current-state audit, not a completion claim
 | Original pre-code brainstorm | No authentic pre-code artifact found in the checkout. | Open; cannot backfill |
 | Public video and YouTube | Timed recording script and local render/thumbnail exist; no public recording/upload. | Open |
 | Devpost form and `/feedback` Session ID | Draft copy exists; external form and session ID unavailable on this surface. | Open |
-| Repository license | No license decision/artifact is present. | Requires human choice |
+| Repository license | Root `LICENSE` contains MIT; public `main` was verified with GitHub CLI. | Proven |
 
 ## Completion decision
 
