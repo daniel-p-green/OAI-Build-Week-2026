@@ -4,7 +4,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-import type { WorkshopState } from "./workshop-service.js";
+import { workshopGeneratedPath, type WorkshopState } from "./workshop-service.js";
 
 const execFile = promisify(execFileCallback);
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
@@ -104,7 +104,7 @@ export async function writeWorkshopBuildTrace(state: WorkshopState, root: string
   trace.limitations = limitationsFor(state, providerEvidence);
   const data = `${JSON.stringify(trace, null, 2)}\n`;
   const html = traceHtml(trace);
-  const directory = join(root, "generated", "videos");
+  const directory = join(root, workshopGeneratedPath(state.id, "videos"));
   const dataFile = join(directory, `workshoplm-demo-v${video.version}.build-trace.json`);
   const htmlFile = join(directory, `workshoplm-demo-v${video.version}.build-trace.html`);
   await mkdir(directory, { recursive: true });

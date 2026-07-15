@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 
 export type RenderBlock = { id: string; heading: string; body: string; citations: readonly string[] };
 export type RenderBrief = { workshopTitle: string; version: string; style: { accent: string; ink: string; paper: string }; blocks: readonly RenderBlock[] };
@@ -21,7 +21,7 @@ export function renderInfographic(brief: RenderBrief): string {
 
 export async function writeRenderedArtifact(root: string, id: string, type: RenderedArtifact["type"], brief: RenderBrief): Promise<RenderedArtifact> {
   const relativePath = join("generated", `${id}.${type}.html`);
-  await mkdir(join(root, "generated"), { recursive: true });
+  await mkdir(dirname(join(root, relativePath)), { recursive: true });
   await writeFile(join(root, relativePath), type === "deck" ? renderDeck(brief) : renderInfographic(brief), "utf8");
   return { type, relativePath, contentType: "text/html", sourceBlockIds: brief.blocks.map((block) => block.id) };
 }

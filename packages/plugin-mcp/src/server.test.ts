@@ -45,9 +45,17 @@ async function localWorkshopService(root: string) {
   const actions: string[] = [];
   const http = createServer((request_, response_) => {
     let input = ""; request_.setEncoding("utf8"); request_.on("data", (chunk) => { input += chunk; }); request_.on("end", () => {
-      const body = JSON.parse(input) as { action: string }; actions.push(body.action);
+      const body = JSON.parse(input) as { action: string; workshopId?: string; title?: string }; actions.push(body.action);
       const database = new DatabaseSync(join(root, "data", "workshoplm.sqlite"));
-      const row = database.prepare("SELECT state_json FROM workshop_state WHERE workshop_id=?").get("workshop-build-week") as { state_json: string };
+      database.exec("CREATE TABLE IF NOT EXISTS workshop (id TEXT PRIMARY KEY, title TEXT NOT NULL, created_at TEXT NOT NULL); CREATE TABLE IF NOT EXISTS workshop_state (workshop_id TEXT PRIMARY KEY, state_json TEXT NOT NULL, updated_at TEXT NOT NULL);");
+      if (body.action === "createWorkshop") {
+        const title = body.title!.trim(); const id = `workshop-${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")}`; const updatedAt = new Date().toISOString();
+        const state = { id, title, briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: 0, groundedClaims: 0, sourceItems: [], sourceChunks: [], claims: [], mapNodes: [], mapEdges: [], storyboard: { version: 0, stale: false, panels: [] }, outputs: [], videos: [], updatedAt };
+        database.prepare("INSERT INTO workshop VALUES (?, ?, ?)").run(id, title, updatedAt); database.prepare("INSERT INTO workshop_state VALUES (?, ?, ?)").run(id, JSON.stringify(state), updatedAt); database.close();
+        response_.writeHead(200, { "content-type": "application/json" }); response_.end(JSON.stringify(state)); return;
+      }
+      const workshopId = body.workshopId ?? "workshop-build-week";
+      const row = database.prepare("SELECT state_json FROM workshop_state WHERE workshop_id=?").get(workshopId) as { state_json: string };
       const state = JSON.parse(row.state_json) as Record<string, any>;
       const next = body.action === "approveBrief" ? { ...state, briefApproved: true }
         : body.action === "approveStoryboard" ? { ...state, storyboardApproved: true }
@@ -67,6 +75,7 @@ afterEach(async () => { await Promise.all(temporaryRoots.splice(0).map((root) =>
 describe("WorkshopLM stdio MCP server", () => {
   it("initializes, lists tools, and reads the persisted sanitized fixture", async () => {
     const root = await fixture();
+    const service = await localWorkshopService(root);
     const results = await request(root, [
       { jsonrpc: "2.0", id: 1, method: "initialize" },
       { jsonrpc: "2.0", id: 2, method: "tools/list" },
@@ -74,11 +83,12 @@ describe("WorkshopLM stdio MCP server", () => {
       { jsonrpc: "2.0", id: 4, method: "tools/call", params: { name: "workshop_open", arguments: { workshopId: "workshop-build-week" } } },
       { jsonrpc: "2.0", id: 5, method: "tools/call", params: { name: "search", arguments: { query: "evidence judges" } } },
       { jsonrpc: "2.0", id: 6, method: "tools/call", params: { name: "fetch", arguments: { sourceId: "source-brief", chunkId: "chunk-evidence-1" } } },
-    ]);
+    ], service.url);
+    await service.close();
     expect(results[0]!.result.serverInfo.name).toBe("workshoplm");
     expect(results[1]!.result.tools.map((tool: { name: string }) => tool.name)).toContain("workshop_render_video");
     expect(results[2]!.result.structuredContent.workshops[0].title).toBe("Sanitized Build Week");
-    expect(results[3]!.result.structuredContent.url).toBe("http://127.0.0.1:3000/");
+    expect(results[3]!.result.structuredContent.url).toBe(service.url);
     expect(results[4]!.result.structuredContent.results[0]).toMatchObject({ id: "chunk-evidence-1", claims: [{ id: "claim-evidence-1", evidenceState: "verified" }], score: expect.any(Number) });
     expect(results[4]!.result.structuredContent.results[0].score).toBeGreaterThan(0);
     expect(results[5]!.result.structuredContent.result).toMatchObject({ sourceId: "source-brief", id: "chunk-evidence-1", locator: "Sanitized brief · chunk 01" });
@@ -104,10 +114,13 @@ describe("WorkshopLM stdio MCP server", () => {
 
   it("creates a workshop when the configured data root is empty", async () => {
     const root = await mkdtemp(join(tmpdir(), "workshoplm-plugin-empty-")); temporaryRoots.push(root);
+    await mkdir(join(root, "data"));
+    const service = await localWorkshopService(root);
     const results = await request(root, [
       { jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "workshop_create", arguments: { title: "Installed Plugin Smoke Test" } } },
       { jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "workshop_list", arguments: {} } },
-    ]);
+    ], service.url);
+    await service.close();
     expect(results[0]!.result).toMatchObject({ isError: false, structuredContent: { workshop: { id: "workshop-installed-plugin-smoke-test" } } });
     expect(results[1]!.result.structuredContent.workshops).toHaveLength(1);
   });

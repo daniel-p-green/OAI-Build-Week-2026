@@ -53,6 +53,15 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(page).not.toMatch(/>\s*(Current|Stale|Trace)\s*</);
   });
 
+  it("keeps Workshop collection controls outside the active canvas", () => {
+    expect(page).toContain('aria-label="Switch Workshop"');
+    expect(page).toContain('<SideSheet title="Workshops"');
+    expect(page).toContain('label="New Workshop"');
+    expect(page).toContain('action: "selectWorkshop"');
+    expect(page).toContain('action: "createWorkshop"');
+    expect(page).not.toMatch(/role="tab(list)?"|<nav\b/);
+  });
+
   it("keeps the governing design document aligned with the simplified interface", () => {
     for (const retired of ["### 3. Source rail", "### 4. Brief and Design review", "### 5. Coherent output package", "one `Generate package` action", "`Approve storyboard & render`", "`Approve map as brief`", "brief sheet folds into Studio inputs", "small ink pulses enter from the host strip", "Sources, Map, FRAME.md/DESIGN.md review, Studio"]) {
       expect(design).not.toContain(retired);

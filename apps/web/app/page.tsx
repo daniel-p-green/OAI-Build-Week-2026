@@ -28,13 +28,15 @@ import { RealtimeCapture } from "./realtime-capture";
 import { ExcalidrawMap } from "./excalidraw-map";
 
 type ObjectView = "map" | "brief" | "outputs" | "storyboard" | "output";
-type Sheet = "sources" | "evidence" | "add-source" | "style" | "original" | null;
+type Sheet = "workshops" | "sources" | "evidence" | "add-source" | "style" | "original" | null;
+type WorkshopSummary = { id: string; title: string; sources: number; outputs: number; updatedAt: string; active: boolean };
 type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string; permission: "private" | "sanitized" | "shareable" };
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
 type MapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
 type ManualStylePayload = { name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop" };
 type WebsiteStyleSuggestion = Omit<ManualStylePayload, "licensedFonts" | "intentProfile"> & { referenceUrl: string; fontCandidates: string[]; findings: { colors: number; fontCandidates: number; assets: number; stylesheets: number } };
 type PersistedWorkshop = {
+  id: string;
   title: string;
   briefApproved: boolean;
   storyboardApproved: boolean;
@@ -80,6 +82,7 @@ function boundImage(panel: PersistedWorkshop["storyboard"]["panels"][number], im
 
 export default function WorkshopPage() {
   const [state, setState] = useState<PersistedWorkshop | null>(null);
+  const [workshops, setWorkshops] = useState<WorkshopSummary[]>([]);
   const [loadState, setLoadState] = useState<"loading" | "ready" | "error">("loading");
   const [view, setView] = useState<ObjectView>("map");
   const [sheet, setSheet] = useState<Sheet>(null);
@@ -91,7 +94,7 @@ export default function WorkshopPage() {
   const [busy, setBusy] = useState(false);
   const returnFocusRef = useRef<HTMLElement | null>(null);
 
-  useEffect(() => { void reload(); }, []);
+  useEffect(() => { void Promise.all([reload(), reloadWorkshops()]); }, []);
   useEffect(() => {
     if (state?.videoState !== "queued" && state?.videoState !== "rendering") return;
     let stopped = false;
@@ -121,6 +124,16 @@ export default function WorkshopPage() {
     }
   }
 
+  async function reloadWorkshops() {
+    try {
+      const response = await fetch("/api/workshop?view=collection");
+      if (!response.ok) throw new Error("Workshop collection unavailable");
+      setWorkshops((await response.json() as { workshops?: WorkshopSummary[] }).workshops ?? []);
+    } catch {
+      setWorkshops([]);
+    }
+  }
+
   async function post(body: Record<string, unknown>) {
     setBusy(true);
     setNotice(null);
@@ -129,6 +142,10 @@ export default function WorkshopPage() {
       const next = await response.json() as PersistedWorkshop & { error?: string };
       if (!response.ok) throw new Error(next.error ?? "That action did not work");
       setState(next);
+      if (body.action === "createWorkshop" || body.action === "selectWorkshop") {
+        setView("map"); setSelectedNodeId(""); setSelectedSource(null); setSelectedPanelId(""); setSelectedOutputId(""); closeSheet();
+      }
+      void reloadWorkshops();
       return next;
     } catch (error) {
       setNotice({ message: error instanceof Error ? error.message : "That action did not work", tone: "error" });
@@ -202,7 +219,7 @@ export default function WorkshopPage() {
       <NavigationHeader className="workshop-header">
         <div className="header-identity">
           {backTarget && <IconButton label={`Back to ${VIEW_TITLES[backTarget]}`} onClick={() => openView(backTarget)}><ArrowLeftIcon /></IconButton>}
-          <div className="workshop-identity"><strong>{state?.title || "WorkshopLM"}</strong><span aria-hidden="true">/</span><b>{currentTitle}</b></div>
+          <div className="workshop-identity"><ListRowAction className="workshop-picker" aria-label="Switch Workshop" onClick={() => openSheet("workshops")}><strong>{state?.title || "WorkshopLM"}</strong></ListRowAction><span aria-hidden="true">/</span><b>{currentTitle}</b></div>
         </div>
         {loadState === "ready" && <div className="header-actions">
           <Button variant="secondary" size="small" onClick={() => openSheet("sources")}>{visibleSourceCount} sources</Button>
@@ -233,6 +250,7 @@ export default function WorkshopPage() {
         {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} onShowSource={showSource} onShowOriginal={() => openSheet("original")} />}
       </section>
 
+      {sheet === "workshops" && <WorkshopsSheet workshops={workshops} busy={busy} onClose={closeSheet} onSelect={(workshopId) => { void post({ action: "selectWorkshop", workshopId }); }} onCreate={(title) => post({ action: "createWorkshop", title }).then(Boolean)} />}
       {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} onClose={closeSheet} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "evidence" && selectedSource && <EvidenceSheet source={selectedSource} onClose={closeSheet} onShowMap={() => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === selectedSource.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "add-source" && <AddSourceSheet onClose={() => setSheet("sources")} onPost={post} />}
@@ -250,7 +268,7 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
   const source = sources.find((item) => item.id === selectedSourceId);
   const canUndo = Boolean(state?.graphState && !state.graphState.includes('"records":[]'));
 
-  if (!nodes.length) return <div className="state-surface"><StateMessage state="empty" title="Start with a source" action={<Button onClick={onAddSource}>Add source</Button>}>Add a transcript, document, or website to shape your first Map.</StateMessage></div>;
+  if (!nodes.length) return <div className="state-surface"><StateMessage state="empty" title="Start with a source" action={<Button onClick={onAddSource}>Add source</Button>}>From your meetings and documents to a deck you can defend, with every claim traced to its source.</StateMessage></div>;
 
   return <div className="map-canvas" data-domain-ui="map-canvas">
     <div className="map-caption" data-domain-ui="map-caption"><span>{nodes.length} ideas · Drag to organize · Double-click to edit</span>{canUndo && <Button variant="secondary" size="small" disabled={busy} onClick={onUndo}>Undo</Button>}</div>
@@ -427,6 +445,15 @@ function StoryboardView({ storyboard, imageBatch, approved, panel, busy, onSelec
     <CarouselRow className="storyboard-strip">{(storyboard?.panels ?? []).map((item, index) => <button type="button" key={item.id} className={`film-frame ${item.id === panel?.id ? "selected" : ""}`} data-domain-ui="film-frame" style={{ "--panel": index } as CSSProperties} onClick={() => onSelect(item.id)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{item.title}</strong><small>{item.durationSeconds}s</small></button>)}</CarouselRow>
     {panel && <Card className="panel-editor"><div className={`panel-visual ${image ? "has-image" : ""}`} data-domain-ui="panel-visual" style={{ "--panel": Math.max(0, storyboard?.panels.findIndex((item) => item.id === panel.id) ?? 0) } as CSSProperties}>{image && <img alt="" src={`/api/workshop/artifacts/${image.id}`} />}<div className="panel-visual-copy"><small>{image ? "Bound image" : "Style preview"}</small><span>{panel.title}</span><p>{panel.narration}</p></div></div><div className="panel-fields"><Input label="Panel title" value={title} onChange={(event) => setTitle(event.target.value)} /><TextArea label="Narration" value={narration} onChange={(event) => setNarration(event.target.value)} /><div className="button-row">{dirty && <Button variant="secondary" disabled={busy || !title.trim() || !narration.trim()} onClick={() => { void onPost({ action: "updateStoryboardPanel", panel: { id: panel.id, title: title.trim(), narration: narration.trim(), durationSeconds: panel.durationSeconds } }); }}>Save</Button>}<Button variant="secondary" size="small" onClick={() => onShowSource(panel.evidence[0]?.sourceId)}>Show source</Button></div></div></Card>}
   </article>;
+}
+
+function WorkshopsSheet({ workshops, busy, onClose, onSelect, onCreate }: { workshops: WorkshopSummary[]; busy: boolean; onClose: () => void; onSelect: (workshopId: string) => void; onCreate: (title: string) => Promise<boolean> }) {
+  const [title, setTitle] = useState("");
+  return <SideSheet title="Workshops" onClose={onClose}>
+    <p className="sheet-intro">Keep each project, its Sources, and its Outputs together.</p>
+    <ListGroup>{workshops.map((workshop) => <ListRow className={workshop.active ? "workshop-row selected" : "workshop-row"} key={workshop.id}><ListRowAction disabled={busy || workshop.active} onClick={() => onSelect(workshop.id)}><span><strong>{workshop.title}</strong><small>{workshop.sources} {workshop.sources === 1 ? "source" : "sources"} · {workshop.outputs} {workshop.outputs === 1 ? "output" : "outputs"}{workshop.active ? " · Open" : ""}</small></span></ListRowAction></ListRow>)}</ListGroup>
+    <div className="new-workshop"><Input label="New Workshop" placeholder="Project name" value={title} onChange={(event) => setTitle(event.target.value)} /><Button disabled={busy || !title.trim()} onClick={() => { void onCreate(title.trim()).then((created) => { if (created) setTitle(""); }); }}><PlusIcon /> Create</Button></div>
+  </SideSheet>;
 }
 
 function SourcesSheet({ sources, activeIds, selected, onClose, onSelect, onToggle, onAdd, onShowMap }: { sources: SourceItem[]; activeIds: string[]; selected: SourceItem | null; onClose: () => void; onSelect: (source: SourceItem) => void; onToggle: (id: string) => void; onAdd: () => void; onShowMap: (source: SourceItem) => void }) {

@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-15T11:04:00-05:00",
+  "status": "passed",
+  "mode": "isolated-local-no-provider",
+  "scope": {
+    "persistence": "SQLite app_setting plus Workshop-scoped state",
+    "browser": "one official SideSheet opened from the Workshop title",
+    "grounding": "Workshop-scoped FTS5/BM25 search and exact fetch",
+    "jobs": "queued render executes its recorded Workshop without changing the active Workshop",
+    "artifacts": "non-default Workshops use namespaced generated paths",
+    "plugin": "create, open, search, fetch, trace, and writes share the local Workshop service"
+  },
+  "browserProof": {
+    "surface": "Codex in-app browser",
+    "fixture": "isolated local data root",
+    "sequence": [
+      "Opened the seeded Workshop with 3 Sources and its Map",
+      "Opened the Workshop picker without adding persistent navigation",
+      "Created Client launch and observed a clean 0-Source empty state",
+      "Switched back to WorkshopLM Build Week and recovered its 3 Sources and Map",
+      "Observed no browser console errors"
+    ]
+  },
+  "verification": {
+    "demoE2e": "passed all six gates",
+    "repositoryCheck": "13 of 13 packages passed lint, typecheck, and test",
+    "workerTests": 56,
+    "webTests": 12,
+    "pluginTests": 7,
+    "submissionManifest": {
+      "status": "partial",
+      "assets": 15,
+      "valid": true,
+      "stale": false,
+      "tampered": false
+    }
+  },
+  "installedPlugin": {
+    "id": "workshoplm@workshoplm-local",
+    "version": "0.1.2",
+    "worktreeToolsSha256": "19d512634d7ada14b567d20ed9f76e20e47f58abc33e8c09343f6628108e3bf3",
+    "installedToolsSha256": "19d512634d7ada14b567d20ed9f76e20e47f58abc33e8c09343f6628108e3bf3"
+  },
+  "boundaries": [
+    "No provider request, paid call, external write, or main-fixture browser mutation was used for this proof.",
+    "The submission package remains honestly partial because live GPT-5.6, GPT Image 2, provider narration, and provider-backed Realtime evidence are still absent.",
+    "An accidental empty test Workshop created by an older live test was identified and removed; the test now uses an isolated service double and the active main Workshop was restored."
+  ]
+}

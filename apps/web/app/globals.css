@@ -12,6 +12,8 @@ button { -webkit-tap-highlight-color: transparent; }
 .workshop-identity strong { max-width: 240px; overflow: hidden; text-overflow: ellipsis; }
 .workshop-identity span { color: #8f8f8f; }
 .workshop-identity b { font-weight: 400; color: #5d5d5d; }
+.workshop-picker { width: auto; min-width: 0; padding: 2px 4px; margin-left: -4px; border-radius: 6px; }
+.workshop-picker:hover { background: rgba(13,13,13,.06); }
 .header-actions { justify-content: flex-end; }
 .object-canvas { position: relative; min-width: 0; min-height: 0; overflow: hidden; }
 
@@ -47,6 +49,11 @@ button { -webkit-tap-highlight-color: transparent; }
 .sheet-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .sheet-heading p, .sheet-intro { margin: 0; color: #5d5d5d; font-size: 14px; line-height: 20px; }
 .sheet-intro { margin-bottom: 16px; }
+.workshop-row .oai-list-row-action > span { display: grid; min-width: 0; gap: 2px; text-align: left; }
+.workshop-row .oai-list-row-action strong, .workshop-row .oai-list-row-action small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.workshop-row.selected { background: rgba(13,13,13,.045); }
+.new-workshop { display: grid; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(13,13,13,.1); }
+.new-workshop .oai-button { justify-self: start; }
 .realtime-capture { display: grid; gap: 14px; padding: 18px; }
 .realtime-capture-copy { display: grid; gap: 4px; }
 .realtime-capture-copy h3 { margin: 0; font-size: 17px; line-height: 23px; letter-spacing: -.35px; }

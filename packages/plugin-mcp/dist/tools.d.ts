@@ -96,11 +96,13 @@ export declare function mutationGate(tool: string, state: {
     storyboardCurrent?: boolean;
 }): "Map approval blocked: the requested Map version is stale or ineligible." | "Video render blocked: storyboard approval and current version are required." | null;
 export declare function listWorkshops(): WorkshopState[];
-export declare function searchEvidence(query: string): Array<WorkshopChunk & {
+export declare function searchEvidence(query: string, workshopId?: string): Array<WorkshopChunk & {
+    workshopId: string;
     claims: WorkshopClaim[];
     score: number;
 }>;
-export declare function fetchEvidence(sourceId: string, chunkId: string): (WorkshopChunk & {
+export declare function fetchEvidence(sourceId: string, chunkId: string, workshopId?: string): (WorkshopChunk & {
+    workshopId: string;
     claims: WorkshopClaim[];
 }) | null;
 export declare function executeTool(name: string, arguments_?: Record<string, unknown>): ToolResult;

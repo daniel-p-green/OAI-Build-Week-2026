@@ -57,9 +57,13 @@ export type WorkshopBuildTraceRecord = { htmlPath: string; dataPath: string; htm
 export type WorkshopVideo = { id: string; version: number; storyboardVersion: number; styleVersion: number; visualDnaVersion?: number; imageBatchId?: string; relativePath: string; provenancePath: string; artifactPath: string; sha256: string; byteCount: number; claimIds: string[]; buildTrace: WorkshopBuildTraceRecord; stale: boolean; createdAt: string };
 export type RenderedVideoInput = Omit<WorkshopVideo, "id" | "version" | "stale" | "createdAt">;
 export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
+export type WorkshopSummary = { id: string; title: string; sources: number; outputs: number; updatedAt: string; active: boolean };
 export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string; permission?: WorkshopSource["permission"] };
 const execFile = promisify(execFileCallback);
-const id = "workshop-build-week";
+const defaultWorkshopId = "workshop-build-week";
+const defaultWorkshopTitle = "WorkshopLM Build Week";
+const activeWorkshopSetting = "active_workshop_id";
+export function workshopGeneratedPath(workshopId: string, ...parts: string[]) { return join("generated", ...(workshopId === defaultWorkshopId ? [] : [workshopId]), ...parts); }
 const seedChunks: WorkshopChunk[] = [
   { id: "chunk-seed-raw", sourceId: "source-raw", text: "The judge should see the messy original thought become a cited Map, a real Brief, and finished work without losing the trail back to source material.", locator: "ChatGPT task · 12:41 · chunk 04", ordinal: 1 },
   { id: "chunk-seed-brief", sourceId: "source-brief", text: "One visible chain links capture, the editable Map, approved work, Storyboard review, and finished delivery.", locator: "Build notes · §2", ordinal: 1 },
@@ -72,20 +76,21 @@ const seedClaims: WorkshopClaim[] = [
   { id: "claim-seed-brief-review", sourceId: "source-brief", chunkId: "chunk-seed-brief", text: "The Map and Storyboard remain reviewable before delivery.", evidenceState: "verified", locator: "Build notes · §2" },
   { id: "claim-seed-design-system", sourceId: "source-design", chunkId: "chunk-seed-design", text: "Evidence becomes an editable production system.", evidenceState: "verified", locator: "Design · Map" },
 ];
-const defaultState = (): WorkshopState => ({ id, title: "WorkshopLM Build Week", briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: 3, groundedClaims: 5, sourceItems: [
+const emptyStoryboard = (): WorkshopStoryboard => ({ version: 0, stale: false, panels: [] });
+const defaultState = (id = defaultWorkshopId, title = defaultWorkshopTitle, seeded = true): WorkshopState => ({ id, title, briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: seeded ? 3 : 0, groundedClaims: seeded ? 5 : 0, sourceItems: seeded ? [
   { id: "source-raw", type: "TXT", title: "Raw voice brainstorm", origin: "ChatGPT task", claimCount: 5, excerpt: "The judge should be able to see the messy original thought become a cited map, a real brief, and a finished piece of work.", locator: "ChatGPT task · 12:41 · chunk 04", permission: "sanitized" },
   { id: "source-brief", type: "PDF", title: "Build Week brief", origin: "Local", claimCount: 3, excerpt: "One visible chain links capture, approved work, and finished delivery.", locator: "Build notes · §2", permission: "sanitized" },
   { id: "source-design", type: "WEB", title: "WorkshopLM direction", origin: "Local", claimCount: 2, excerpt: "Evidence first becomes an editable production system, not a static report.", locator: "Design · Map", permission: "sanitized" },
-], activeSourceIds: ["source-raw", "source-brief", "source-design"], transcriptSegments: [], sourceChunks: seedChunks, claims: seedClaims, candidates: [], mapEdges: [
+] : [], activeSourceIds: seeded ? ["source-raw", "source-brief", "source-design"] : [], transcriptSegments: [], sourceChunks: seeded ? seedChunks : [], claims: seeded ? seedClaims : [], candidates: [], mapEdges: seeded ? [
   { id: "edge-promise-proof", from: "promise", to: "proof", kind: "supports" },
   { id: "edge-proof-visual", from: "proof", to: "visual", kind: "depends_on" },
   { id: "edge-proof-risk", from: "proof", to: "risk", kind: "depends_on" },
-], storyboard: { version: 1, stale: false, panels: [{ id: "panel-1", title: "Raw thought", narration: "Start with the messy original thinking.", durationSeconds: 3, claimIds: [], evidence: [{ sourceId: "source-raw", locator: "ChatGPT task · 12:41 · chunk 04" }], approved: true, stale: false }, { id: "panel-2", title: "Cited Map", narration: "Show the editable Map and evidence locators.", durationSeconds: 5, claimIds: [], evidence: [{ sourceId: "source-brief", locator: "Build notes · §2" }], approved: true, stale: false }, { id: "panel-3", title: "Finished work", narration: "End with traceable production output.", durationSeconds: 4, claimIds: [], evidence: [{ sourceId: "source-design", locator: "Design · Map" }], approved: true, stale: false }] }, aiRuns: [], outputs: [], videos: [], mapNodes: [
+] : [], storyboard: seeded ? { version: 1, stale: false, panels: [{ id: "panel-1", title: "Raw thought", narration: "Start with the messy original thinking.", durationSeconds: 3, claimIds: [], evidence: [{ sourceId: "source-raw", locator: "ChatGPT task · 12:41 · chunk 04" }], approved: true, stale: false }, { id: "panel-2", title: "Cited Map", narration: "Show the editable Map and evidence locators.", durationSeconds: 5, claimIds: [], evidence: [{ sourceId: "source-brief", locator: "Build notes · §2" }], approved: true, stale: false }, { id: "panel-3", title: "Finished work", narration: "End with traceable production output.", durationSeconds: 4, claimIds: [], evidence: [{ sourceId: "source-design", locator: "Design · Map" }], approved: true, stale: false }] } : emptyStoryboard(), aiRuns: [], outputs: [], videos: [], mapNodes: seeded ? [
   { id: "promise", title: "The product promise", body: "Turn raw thinking into finished work without losing the trail back to source material.", kind: "grounded", locator: "Meeting · 12:41", sourceId: "source-raw", x: 11, y: 12, width: 24, height: 18 },
   { id: "proof", title: "Judge proof", body: "Show one continuous capture → map → brief → storyboard → rendered video seam.", kind: "grounded", locator: "Build notes · §2", sourceId: "source-brief", x: 48, y: 36, width: 24, height: 18 },
   { id: "visual", title: "Visual behavior", body: "Evidence first becomes an editable production system, not a static report.", kind: "creative", locator: "Design · Map", sourceId: "source-design", x: 39, y: 58, width: 24, height: 18 },
   { id: "risk", title: "Voice capture fallback", body: "Use a capture-only control when durable native voice linkage is not proven.", kind: "derived", locator: "Goal · capture", x: 74, y: 58, width: 24, height: 18 },
-], updatedAt: new Date().toISOString() });
+] : [], updatedAt: new Date().toISOString() });
 const repositoryDataRoot = () => resolve(process.env.WORKSHOPLM_DATA_ROOT ?? join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", ".workshoplm"));
 function dbFor(root = repositoryDataRoot()) { const db = openLocalDatabase(join(root, "data", "workshoplm.sqlite")); migrate(db); return db; }
 function normalizeStoryboard(storyboard: WorkshopStoryboard | undefined, fallback: WorkshopStoryboard): WorkshopStoryboard {
@@ -97,25 +102,75 @@ function withSeedEvidence(state: WorkshopState): WorkshopState {
   if (!hasSeedSources || state.sourceChunks.length || state.claims.length) return state;
   return { ...state, sourceChunks: seedChunks, claims: seedClaims, groundedClaims: seedClaims.length };
 }
-export function readWorkshopState(root?: string): WorkshopState {
-  const db = dbFor(root); const createdAt = new Date().toISOString();
-  db.prepare("INSERT OR IGNORE INTO workshop VALUES (?, ?, ?)").run(id, "WorkshopLM Build Week", createdAt);
-  const row = db.prepare("SELECT state_json FROM workshop_state WHERE workshop_id=?").get(id) as { state_json: string } | undefined;
+function slugifyWorkshop(title: string) { return title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "") || "untitled"; }
+function ensureDefaultWorkshop(db: ReturnType<typeof dbFor>) {
+  const createdAt = new Date().toISOString();
+  db.prepare("INSERT OR IGNORE INTO workshop VALUES (?, ?, ?)").run(defaultWorkshopId, defaultWorkshopTitle, createdAt);
+  const row = db.prepare("SELECT 1 AS found FROM workshop_state WHERE workshop_id=?").get(defaultWorkshopId) as { found: number } | undefined;
+  if (!row) {
+    const state = defaultState();
+    db.prepare("INSERT INTO workshop_state VALUES (?, ?, ?)").run(state.id, JSON.stringify(state), state.updatedAt);
+    syncEvidenceIndex(db, state);
+  }
+  db.prepare("INSERT OR IGNORE INTO app_setting (key, value) VALUES (?, ?)").run(activeWorkshopSetting, defaultWorkshopId);
+}
+function activeWorkshopId(db: ReturnType<typeof dbFor>) {
+  ensureDefaultWorkshop(db);
+  const row = db.prepare("SELECT value FROM app_setting WHERE key=?").get(activeWorkshopSetting) as { value: string } | undefined;
+  const found = row && db.prepare("SELECT 1 AS found FROM workshop_state WHERE workshop_id=?").get(row.value);
+  if (row && found) return row.value;
+  db.prepare("INSERT INTO app_setting (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").run(activeWorkshopSetting, defaultWorkshopId);
+  return defaultWorkshopId;
+}
+export function listWorkshopSummaries(root?: string): WorkshopSummary[] {
+  const db = dbFor(root); const activeId = activeWorkshopId(db);
+  return (db.prepare("SELECT state_json FROM workshop_state ORDER BY updated_at DESC, workshop_id ASC").all() as Array<{ state_json: string }>).map(({ state_json }) => {
+    const state = JSON.parse(state_json) as WorkshopState;
+    return { id: state.id, title: state.title, sources: state.sources ?? state.sourceItems?.length ?? 0, outputs: (state.outputs?.length ?? 0) + (state.videos?.length ?? 0) + (state.imageBatch ? 1 : 0), updatedAt: state.updatedAt, active: state.id === activeId };
+  });
+}
+export function createWorkshop(title: string, root?: string): WorkshopState {
+  const cleanTitle = title.trim();
+  if (!cleanTitle) throw new Error("Workshop creation requires a name.");
+  const db = dbFor(root); ensureDefaultWorkshop(db);
+  const base = `workshop-${slugifyWorkshop(cleanTitle)}`;
+  let workshopId = base; let suffix = 2;
+  while (db.prepare("SELECT 1 AS found FROM workshop WHERE id=?").get(workshopId)) workshopId = `${base}-${suffix++}`;
+  const state = defaultState(workshopId, cleanTitle, false);
+  db.prepare("INSERT INTO workshop VALUES (?, ?, ?)").run(state.id, state.title, state.updatedAt);
+  db.prepare("INSERT INTO workshop_state VALUES (?, ?, ?)").run(state.id, JSON.stringify(state), state.updatedAt);
+  db.prepare("INSERT INTO app_setting (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").run(activeWorkshopSetting, state.id);
+  syncEvidenceIndex(db, state);
+  return state;
+}
+export function selectWorkshop(workshopId: string, root?: string): WorkshopState {
+  const db = dbFor(root); ensureDefaultWorkshop(db);
+  if (!db.prepare("SELECT 1 AS found FROM workshop_state WHERE workshop_id=?").get(workshopId)) throw new Error(`Workshop not found: ${workshopId}.`);
+  db.prepare("INSERT INTO app_setting (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").run(activeWorkshopSetting, workshopId);
+  return readWorkshopState(root, workshopId);
+}
+export function readWorkshopState(root?: string, requestedWorkshopId?: string): WorkshopState {
+  const db = dbFor(root);
+  ensureDefaultWorkshop(db);
+  const workshopId = requestedWorkshopId ?? activeWorkshopId(db);
+  const row = db.prepare("SELECT state_json FROM workshop_state WHERE workshop_id=?").get(workshopId) as { state_json: string } | undefined;
+  if (!row) throw new Error(`Workshop not found: ${workshopId}.`);
   if (row) {
     const state = JSON.parse(row.state_json) as Partial<WorkshopState>;
+    const fallback = defaultState(workshopId, state.title ?? (workshopId === defaultWorkshopId ? defaultWorkshopTitle : "Untitled Workshop"), workshopId === defaultWorkshopId);
     if (state.sourceItems && state.mapNodes && state.sourceChunks && state.claims) {
-      const normalized = withSeedEvidence({ ...state, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), style: state.style ? { ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" } : undefined, storyboard: normalizeStoryboard(state.storyboard, defaultState().storyboard), aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
+      const normalized = withSeedEvidence({ ...fallback, ...state, id: workshopId, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), style: state.style ? { ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" } : undefined, storyboard: normalizeStoryboard(state.storyboard, fallback.storyboard), aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
       if (normalized.sourceChunks !== state.sourceChunks) return write(normalized, root);
       ensureEvidenceIndex(db, normalized);
       return normalized;
     }
-    if (state.sourceItems && state.mapNodes) return write(withSeedEvidence({ ...state, activeSourceIds: state.sourceItems.map((source) => source.id), transcriptSegments: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), storyboard: defaultState().storyboard, aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [] } as WorkshopState), root);
-    return write({ ...defaultState(), ...state, sourceItems: defaultState().sourceItems, activeSourceIds: defaultState().sourceItems.map((source) => source.id), transcriptSegments: [], sourceChunks: seedChunks, claims: seedClaims, candidates: [], mapEdges: [], storyboard: defaultState().storyboard, aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [], mapNodes: defaultState().mapNodes } as WorkshopState, root);
+    if (state.sourceItems && state.mapNodes) return write(withSeedEvidence({ ...fallback, ...state, id: workshopId, activeSourceIds: state.sourceItems.map((source) => source.id), transcriptSegments: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), storyboard: fallback.storyboard, aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [] } as WorkshopState), root);
+    return write({ ...fallback, ...state, id: workshopId } as WorkshopState, root);
   }
-  const state = defaultState(); db.prepare("INSERT INTO workshop_state VALUES (?, ?, ?)").run(id, JSON.stringify(state), state.updatedAt); syncEvidenceIndex(db, state); return state;
+  throw new Error(`Workshop not found: ${workshopId}.`);
 }
-export function resolveWorkshopArtifact(id: string, root?: string): { path: string; contentType: string } | undefined {
-  const state = readWorkshopState(root); const dataRoot = root ?? repositoryDataRoot();
+export function resolveWorkshopArtifact(id: string, root?: string, workshopId?: string): { path: string; contentType: string } | undefined {
+  const state = readWorkshopState(root, workshopId); const dataRoot = root ?? repositoryDataRoot();
   if (id === "video" || id.startsWith("video-v")) {
     const video = id === "video"
       ? [...state.videos].reverse().find((candidate) => !candidate.stale)
@@ -166,7 +221,7 @@ function ensureEvidenceIndex(db: ReturnType<typeof dbFor>, state: WorkshopState)
   const row = db.prepare("SELECT count(*) AS count FROM evidence_fts WHERE workshop_id=?").get(state.id) as { count: number };
   if (row.count !== state.sourceChunks.length) syncEvidenceIndex(db, state);
 }
-function write(next: WorkshopState, root?: string) { const db = dbFor(root); db.prepare("UPDATE workshop_state SET state_json=?, updated_at=? WHERE workshop_id=?").run(JSON.stringify(next), next.updatedAt, id); syncEvidenceIndex(db, next); return next; }
+function write(next: WorkshopState, root?: string) { const db = dbFor(root); const result = db.prepare("UPDATE workshop_state SET state_json=?, updated_at=? WHERE workshop_id=?").run(JSON.stringify(next), next.updatedAt, next.id); if (!result.changes) throw new Error(`Workshop not found: ${next.id}.`); db.prepare("UPDATE workshop SET title=? WHERE id=?").run(next.title, next.id); syncEvidenceIndex(db, next); return next; }
 function staleVideos(state: WorkshopState): WorkshopVideo[] { return state.videos.map((video) => video.stale ? video : { ...video, stale: true }); }
 function activeClaimsFor(state: WorkshopState) { return state.claims.filter((claim) => state.activeSourceIds.includes(claim.sourceId)); }
 export function assertStoryboardGrounding(state: WorkshopState): void {
@@ -198,7 +253,7 @@ export function setActiveSourceScope(sourceIds: string[], root?: string): Worksh
 }
 function graphFor(state: WorkshopState): ReturnType<typeof parseGraphState> {
   if (state.graphState) return parseGraphState(state.graphState);
-  const graph = SemanticGraph.parse({ id: "graph-workshop-build-week", workshopId: id, revision: 0, staleState: "current", nodes: state.mapNodes.map((node) => ({ id: `node-${node.id}`, kind: "claim", label: node.title, evidenceState: node.kind === "grounded" ? "verified" : node.kind, metadata: { body: node.body, locator: node.locator, sourceId: node.sourceId, x: node.x, y: node.y, width: node.width, height: node.height } })), edges: state.mapEdges.map((edge) => ({ ...edge, from: `node-${edge.from}`, to: `node-${edge.to}` })) });
+  const graph = SemanticGraph.parse({ id: `graph-${state.id}`, workshopId: state.id, revision: 0, staleState: "current", nodes: state.mapNodes.map((node) => ({ id: `node-${node.id}`, kind: "claim", label: node.title, evidenceState: node.kind === "grounded" ? "verified" : node.kind, metadata: { body: node.body, locator: node.locator, sourceId: node.sourceId, x: node.x, y: node.y, width: node.width, height: node.height } })), edges: state.mapEdges.map((edge) => ({ ...edge, from: `node-${edge.from}`, to: `node-${edge.to}` })) });
   return { schemaVersion: 1, graph, history: { graphVersionId: graph.id, records: [] } };
 }
 function mapNodesFor(graph: SemanticGraphType, existing: WorkshopMapNode[]): WorkshopMapNode[] {
@@ -208,7 +263,7 @@ function mapEdgesFor(graph: SemanticGraphType): WorkshopMapEdge[] { return graph
 function frameFor(state: WorkshopState, approvedAt: string, root?: string): WorkshopFrame {
   const core = state.mapNodes.filter((node) => node.kind !== "creative").slice(0, 3);
   const evidence = core.map((node) => `- ${node.title}: ${node.body} (${node.locator})`).join("\n");
-  const version = (state.frame?.version ?? 0) + 1; const markdown = `# FRAME.md\n\n## Outcome\n${core[0]?.body ?? "Turn raw thinking into finished work."}\n\n## Evidence\n${evidence}\n\n## Production proof\nShow the approved Map, source locators, and a finished output in one continuous path.\n`; const dataRoot = root ?? repositoryDataRoot(); const generated = join(dataRoot, "generated"); const markdownPath = `generated/FRAME-v${version}.md`; const executablePath = `generated/FRAME-v${version}.json`;
+  const version = (state.frame?.version ?? 0) + 1; const markdown = `# FRAME.md\n\n## Outcome\n${core[0]?.body ?? "Turn raw thinking into finished work."}\n\n## Evidence\n${evidence}\n\n## Production proof\nShow the approved Map, source locators, and a finished output in one continuous path.\n`; const dataRoot = root ?? repositoryDataRoot(); const markdownPath = workshopGeneratedPath(state.id, `FRAME-v${version}.md`); const executablePath = workshopGeneratedPath(state.id, `FRAME-v${version}.json`); const generated = join(dataRoot, dirname(markdownPath));
   mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, executablePath), `${JSON.stringify({ schemaVersion: 1, frameVersion: version, graphRevision: graphFor(state).graph.revision, outcome: core[0]?.body ?? "Turn raw thinking into finished work.", evidence: core.map((node) => ({ nodeId: node.id, title: node.title, body: node.body, locator: node.locator, sourceId: node.sourceId })), productionProof: "Show the approved Map, source locators, and a finished output in one continuous path.", approvedAt }, null, 2)}\n`, "utf8");
   return { version, approvedAt, stale: false, markdown, markdownPath, executablePath };
 }
@@ -254,7 +309,7 @@ export function applyGroundedMapProposal(proposal: GroundedMapProposal, run: Omi
   }
 
   const previous = graphFor(current).graph;
-  let graph = SemanticGraph.parse({ id: previous.id, workshopId: id, revision: previous.revision + 1, staleState: "current", nodes: [], edges: [] });
+  let graph = SemanticGraph.parse({ id: previous.id, workshopId: current.id, revision: previous.revision + 1, staleState: "current", nodes: [], edges: [] });
   let history: ReturnType<typeof parseGraphState>["history"] = { graphVersionId: graph.id, records: [] };
   const createdAt = new Date().toISOString();
   for (const node of proposal.nodes) {
@@ -375,13 +430,13 @@ export async function analyzeWebsiteStyle(rawUrl: string, fetchImpl: typeof fetc
 function reviewedWebsiteUrl(rawUrl: string) { let url: URL; try { url = new URL(rawUrl); } catch { throw new Error("A valid HTTP(S) website is required."); } if (!/^https?:$/.test(url.protocol) || url.username || url.password) throw new Error("Only credential-free HTTP(S) websites are allowed."); return url.toString(); }
 export async function lockWebsiteStyle(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch, requestedIntent?: WorkshopStyle["intentProfile"], reviewed?: ManualStyleInput): Promise<WorkshopState> {
   const suggestion = reviewed ? { ...reviewed, referenceUrl: reviewedWebsiteUrl(rawUrl) } : await analyzeWebsiteStyle(rawUrl, fetchImpl); const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "website", name: suggestion.name?.trim() || "Website foundation", accent: color(suggestion.accent, "#1668E3"), ink: color(suggestion.ink, "#171816"), paper: color(suggestion.paper, "#F4F2EC"), logos: cleanStyleList(suggestion.logos), licensedFonts: cleanStyleList("fontCandidates" in suggestion ? suggestion.fontCandidates : suggestion.licensedFonts), references: cleanStyleList(suggestion.references), negativeRules: cleanStyleList(suggestion.negativeRules), intentProfile: intentProfile(reviewed?.intentProfile ?? requestedIntent), referenceUrl: suggestion.referenceUrl, lockedAt: updatedAt, stale: false };
-  return write({ ...current, ...(current.style ? staleStyleDependents(current) : {}), style, designArtifact: materializeDesignArtifact(style, root), updatedAt }, root);
+  return write({ ...current, ...(current.style ? staleStyleDependents(current) : {}), style, designArtifact: materializeDesignArtifact(style, current.id, root), updatedAt }, root);
 }
 function cleanStyleList(values: string[] | undefined) { return [...new Set((values ?? []).map((value) => value.trim()).filter(Boolean))]; }
 function color(value: string | undefined, fallback: string) { const candidate = (value ?? fallback).trim().toUpperCase(); if (!/^#[0-9A-F]{6}$/.test(candidate)) throw new Error("Style colors must use exact six-digit hex values."); return candidate; }
 function intentProfile(value: WorkshopStyle["intentProfile"] | undefined) { const profile = value ?? "client_facing_pitch"; if (!["client_facing_pitch", "board_deck", "internal_workshop"].includes(profile)) throw new Error("Invalid intent profile."); return profile; }
-function materializeDesignArtifact(style: WorkshopStyle, root?: string): WorkshopDesignArtifact {
-  const dataRoot = root ?? repositoryDataRoot(); const generated = join(dataRoot, "generated"); const markdownPath = `generated/DESIGN-v${style.version}.md`; const tokensPath = `generated/DESIGN-v${style.version}.tokens.json`;
+function materializeDesignArtifact(style: WorkshopStyle, workshopId: string, root?: string): WorkshopDesignArtifact {
+  const dataRoot = root ?? repositoryDataRoot(); const markdownPath = workshopGeneratedPath(workshopId, `DESIGN-v${style.version}.md`); const tokensPath = workshopGeneratedPath(workshopId, `DESIGN-v${style.version}.tokens.json`); const generated = join(dataRoot, dirname(markdownPath));
   const markdown = `# DESIGN.md\n\n## Foundation\n- Name: ${style.name}\n- Version: ${style.version}\n- Source: ${style.source}\n- Intent profile: ${style.intentProfile}\n\n## Palette\n- Accent: ${style.accent}\n- Ink: ${style.ink}\n- Paper: ${style.paper}\n\n## Licensed inputs\n${style.licensedFonts.length ? style.licensedFonts.map((font) => `- Font: ${font}`).join("\n") : "- Fonts: none recorded"}\n${style.logos.length ? style.logos.map((logo) => `- Logo / asset: ${logo}`).join("\n") : "- Logos / assets: none recorded"}\n\n## References\n${style.references.length ? style.references.map((reference) => `- ${reference}`).join("\n") : "- No external visual references recorded"}\n\n## Negative rules\n${style.negativeRules.length ? style.negativeRules.map((rule) => `- ${rule}`).join("\n") : "- No negative rules recorded"}\n\n## Provenance\n- Locked: ${style.lockedAt}\n${style.referenceUrl ? `- Website reference: ${style.referenceUrl}\n` : ""}`;
   const tokens = { schemaVersion: 1, styleVersion: style.version, source: style.source, name: style.name, palette: { accent: style.accent, ink: style.ink, paper: style.paper }, logos: style.logos, licensedFonts: style.licensedFonts, references: style.references, negativeRules: style.negativeRules, intentProfile: style.intentProfile, referenceUrl: style.referenceUrl, lockedAt: style.lockedAt };
   mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, tokensPath), `${JSON.stringify(tokens, null, 2)}\n`, "utf8");
@@ -391,7 +446,7 @@ function staleStyleDependents(current: WorkshopState) { return { visualDna: curr
 export function lockManualStyle(input: ManualStyleInput = {}, root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
   const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "manual", name: input.name?.trim() || "Editorial thinking instrument", accent: color(input.accent, "#1668E3"), ink: color(input.ink, "#171816"), paper: color(input.paper, "#F4F2EC"), logos: cleanStyleList(input.logos), licensedFonts: cleanStyleList(input.licensedFonts), references: cleanStyleList(input.references), negativeRules: cleanStyleList(input.negativeRules), intentProfile: intentProfile(input.intentProfile), lockedAt: updatedAt, stale: false };
-  return write({ ...current, ...(current.style ? staleStyleDependents(current) : {}), style, designArtifact: materializeDesignArtifact(style, root), updatedAt }, root);
+  return write({ ...current, ...(current.style ? staleStyleDependents(current) : {}), style, designArtifact: materializeDesignArtifact(style, current.id, root), updatedAt }, root);
 }
 export function createVisualDna(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.style || current.style.stale) throw new Error("Visual DNA requires a current locked Style Foundation."); const createdAt = new Date().toISOString(); const profileRule = current.style.intentProfile === "board_deck" ? "Executive hierarchy with source-visible proof points." : current.style.intentProfile === "internal_workshop" ? "Facilitation-first working canvas with writable space." : "Client-ready narrative sequence with a decisive opening."; return write({ ...current, visualDna: { version: (current.visualDna?.version ?? 0) + 1, styleVersion: current.style.version, palette: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, compositionRules: [profileRule, ...current.style.references], textureRules: ["Subtle paper grain only; preserve legibility."], imageRules: ["Use the locked palette and evidence-aware editorial framing."], negativeRules: current.style.negativeRules, approved: false, stale: false, createdAt }, updatedAt: createdAt }, root); }
 export function createSketch(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.briefApproved || !current.frame || current.frame.stale) throw new Error("Sketch requires an approved current Map."); const createdAt = new Date().toISOString(); return write({ ...current, sketch: { version: (current.sketch?.version ?? 0) + 1, graphRevision: graphFor(current).graph.revision, nodes: current.mapNodes.map(({ id, title, body, kind, locator }) => ({ id, title, body, kind, locator })), stale: false, approved: false, createdAt }, updatedAt: createdAt }, root); }
@@ -441,8 +496,8 @@ export async function generateOutput(type: "deck" | "infographic", root?: string
   const dataRoot = root ?? repositoryDataRoot(); const claims = activeClaimsFor(current).slice(0, 4);
   const blocks = (claims.length ? claims : current.mapNodes.filter((node) => node.kind === "grounded").map((node) => ({ id: node.id, text: node.body, locator: node.locator }))).map((claim) => ({ id: claim.id, heading: outputHeading(claim.text), body: claim.text, citations: [claim.locator] }));
   const outputId = `${type}-v${current.outputs.filter((output) => output.type === type).length + 1}`;
-  const rendered = await writeRenderedArtifact(dataRoot, outputId, type, { workshopTitle: current.title, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, blocks });
-  const stored = await storeArtifact(dataRoot, outputId, Buffer.from(await readFile(join(dataRoot, rendered.relativePath))), "text/html"); const createdAt = new Date().toISOString();
+  const rendered = await writeRenderedArtifact(dataRoot, current.id === defaultWorkshopId ? outputId : `${current.id}/${outputId}`, type, { workshopTitle: current.title, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, blocks });
+  const stored = await storeArtifact(dataRoot, `${current.id}-${outputId}`, Buffer.from(await readFile(join(dataRoot, rendered.relativePath))), "text/html"); const createdAt = new Date().toISOString();
   return write({ ...current, outputs: [...current.outputs, { id: outputId, type, relativePath: rendered.relativePath, artifactPath: stored.relativePath, claimIds: blocks.map((block) => block.id), stale: false, createdAt }], firstRenderedOutputAt: current.firstRenderedOutputAt ?? createdAt, updatedAt: createdAt }, root);
 }
 
@@ -491,7 +546,7 @@ export function createImageBatch(root?: string): WorkshopState {
   const dataRoot = root ?? repositoryDataRoot(); const visualDna = current.visualDna && !current.visualDna.stale ? current.visualDna : undefined;
   const panelIds = Array.from({ length: 6 }, (_, index) => `image-panel-${index + 1}`); const referenceId = `style-v${current.style.version}${visualDna ? `-dna-v${visualDna.version}` : ""}`; const createdAt = new Date().toISOString();
   const coherence: ImageCoherenceContract = { visualDnaVersion: visualDna?.version, palette: visualDna?.palette ?? { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, compositionRules: visualDna?.compositionRules ?? current.style.references, textureRules: visualDna?.textureRules ?? ["Restrained natural texture with clean negative space."], imageRules: visualDna?.imageRules ?? ["Evidence-aware editorial framing with one clear focal object."], negativeRules: visualDna?.negativeRules ?? current.style.negativeRules, siblingPanelIds: panelIds };
-  const referenceBytes = buildStyleReferencePng(coherence.palette); const referencePath = join("generated", "references", `${referenceId}.png`); mkdirSync(join(dataRoot, dirname(referencePath)), { recursive: true }); writeFileSync(join(dataRoot, referencePath), referenceBytes);
+  const referenceBytes = buildStyleReferencePng(coherence.palette); const referencePath = workshopGeneratedPath(current.id, "references", `${referenceId}.png`); mkdirSync(join(dataRoot, dirname(referencePath)), { recursive: true }); writeFileSync(join(dataRoot, referencePath), referenceBytes);
   const prompts = ["Editorial workbench where raw source material begins becoming finished work", "Close evidence detail with source cards and a visible chain of support", "Spatial semantic Map organized as an editable professional thinking surface", "Approved Brief distilled into a decisive production direction", "Storyboard panels forming one continuous visual sequence", "Finished presentation and demo video ready for professional delivery"];
   return write({ ...current, imageBatch: { id: `image-batch-v${(current.imageBatch ? Number(current.imageBatch.id.match(/\d+$/)?.[0]) + 1 : 1)}`, styleVersion: current.style.version, referenceId, referencePath, referenceSha256: createHash("sha256").update(referenceBytes).digest("hex"), coherence, createdAt, stale: false, panels: prompts.map((prompt, index) => ({ id: panelIds[index]!, version: 1, prompt: `${prompt}. Preserve the shared reference composition, palette, lighting, material treatment, and editorial restraint. This is panel ${index + 1} of one continuous six-panel art direction; no readable text, logos, watermarks, UI chrome, or stock-photo cliches.`, state: "planned", referenceId })) }, updatedAt: createdAt }, root);
 }
@@ -538,8 +593,8 @@ export function updateStoryboardPanel(panelId: string, patch: Pick<StoryboardPan
   const panels = [...current.storyboard.panels]; panels[index] = { ...panels[index], ...patch, approved: true, stale: false };
   return write({ ...current, storyboard: { version: current.storyboard.version + 1, panels, stale: false }, narration: current.narration ? { ...current.narration, stale: true } : undefined, videos: staleVideos(current), storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
-export function recordRenderedVideo(input: RenderedVideoInput, root?: string): WorkshopState {
-  const current = readWorkshopState(root);
+export function recordRenderedVideo(input: RenderedVideoInput, root?: string, workshopId?: string): WorkshopState {
+  const current = readWorkshopState(root, workshopId);
   if (!current.storyboardApproved || current.storyboard.stale || current.storyboard.panels.some((panel) => panel.stale || !panel.approved)) throw new Error("A rendered Video requires an approved current Storyboard.");
   if (!current.style || current.style.stale) throw new Error("A rendered Video requires a current Style.");
   if (input.storyboardVersion !== current.storyboard.version || input.styleVersion !== current.style.version) throw new Error("Rendered Video inputs do not match the current Storyboard and Style versions.");
@@ -552,8 +607,8 @@ export function recordRenderedVideo(input: RenderedVideoInput, root?: string): W
   const video: WorkshopVideo = { ...input, id: `video-v${version}`, version, stale: false, createdAt };
   return write({ ...current, videos: [...staleVideos(current), video], videoState: "rendered", firstRenderedOutputAt: current.firstRenderedOutputAt ?? createdAt, updatedAt: createdAt }, root);
 }
-export function setVideoState(videoState: Exclude<WorkshopState["videoState"], "rendered">, root?: string) { const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); return write({ ...current, videoState, updatedAt }, root); }
-export function cancelVideoRender(root?: string): WorkshopState { const current = readWorkshopState(root); const db = dbFor(root); const job = db.prepare("SELECT id FROM job WHERE workshop_id=? AND kind='render_video' AND state IN ('queued','retrying') ORDER BY created_at DESC LIMIT 1").get(id) as { id: string } | undefined; if (!job || !cancelJob(db, job.id)) throw new Error("No queued video render is available to cancel."); return write({ ...current, videoState: "blocked", updatedAt: new Date().toISOString() }, root); }
+export function setVideoState(videoState: Exclude<WorkshopState["videoState"], "rendered">, root?: string, workshopId?: string) { const current = readWorkshopState(root, workshopId); const updatedAt = new Date().toISOString(); return write({ ...current, videoState, updatedAt }, root); }
+export function cancelVideoRender(root?: string): WorkshopState { const current = readWorkshopState(root); const db = dbFor(root); const job = db.prepare("SELECT id FROM job WHERE workshop_id=? AND kind='render_video' AND state IN ('queued','retrying') ORDER BY created_at DESC LIMIT 1").get(current.id) as { id: string } | undefined; if (!job || !cancelJob(db, job.id)) throw new Error("No queued video render is available to cancel."); return write({ ...current, videoState: "blocked", updatedAt: new Date().toISOString() }, root); }
 export function applyWorkshopAction(action: "approveBrief" | "lockManualStyle" | "approveStoryboard" | "renderVideo", root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
   if (action === "approveBrief") return write({ ...current, frame: frameFor(current, updatedAt, root), videos: staleVideos(current), briefApproved: true, storyboardApproved: false, videoState: "blocked", updatedAt }, root);
@@ -567,6 +622,6 @@ export function applyWorkshopAction(action: "approveBrief" | "lockManualStyle" |
     return write({ ...current, storyboardApproved: true, updatedAt }, root);
   }
   if (!current.storyboardApproved) throw new Error("Video render requires an approved current storyboard.");
-  const db = dbFor(root); enqueue(db, { id: `job-video-${Date.now()}`, workshopId: id, kind: "render_video", inputKey: `storyboard-approved:${current.updatedAt}`, payload: { workshopId: id } });
+  const db = dbFor(root); enqueue(db, { id: `job-video-${Date.now()}`, workshopId: current.id, kind: "render_video", inputKey: `${current.id}:storyboard-approved:${current.updatedAt}`, payload: { workshopId: current.id } });
   return write({ ...current, videoState: "queued", updatedAt }, root);
 }

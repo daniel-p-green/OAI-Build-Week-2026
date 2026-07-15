@@ -7,6 +7,7 @@ import {
   recordGeneratedImagePanel,
   recordNarration,
   recordNarrationProgress,
+  workshopGeneratedPath,
   type WorkshopState,
   type WorkshopNarrationPanel,
 } from "./workshop-service.js";
@@ -110,7 +111,7 @@ export async function generateOpenAiImageBatch(
   if (!panels.length) throw new Error("No image panels were selected.");
   if (requested && panels.length !== requested.size) throw new Error("The image selection contains an unknown panel.");
 
-  const outputDirectory = join(root, "generated", "images");
+  const outputDirectory = join(root, workshopGeneratedPath(state.id, "images"));
   await mkdir(outputDirectory, { recursive: true });
   const referenceBytes = await readFile(join(root, state.imageBatch.referencePath));
   const sharedDirection = [
@@ -140,7 +141,7 @@ export async function generateOpenAiImageBatch(
     const encoded = payload.data?.[0]?.b64_json;
     if (!encoded) throw new Error("Image API response did not contain base64 image data.");
     const bytes = Buffer.from(encoded, "base64");
-    const relativePath = join("generated", "images", `${panel.id}-v${panel.version}.png`);
+    const relativePath = workshopGeneratedPath(state.id, "images", `${panel.id}-v${panel.version}.png`);
     await writeFile(join(root, relativePath), bytes);
     recordGeneratedImagePanel(panel.id, {
       relativePath,
@@ -185,7 +186,7 @@ export async function generateOpenAiNarration(
   if (requested && panelsToGenerate.length !== requested.size) throw new Error("The narration selection contains an unknown panel.");
   const oversizedPanel = panelsToGenerate.find((panel) => panel.narration.length > maxTtsInputCharacters);
   if (oversizedPanel) throw new Error(`Storyboard panel ${oversizedPanel.id} exceeds the ${maxTtsInputCharacters}-character Speech API input limit.`);
-  const outputDirectory = join(root, "generated", "narration", `storyboard-v${state.storyboard.version}`);
+  const outputDirectory = join(root, workshopGeneratedPath(state.id, "narration", `storyboard-v${state.storyboard.version}`));
   await mkdir(outputDirectory, { recursive: true });
 
   const settled = await Promise.allSettled(panelsToGenerate.map(async (panel): Promise<WorkshopNarrationPanel> => {
@@ -198,7 +199,7 @@ export async function generateOpenAiNarration(
     const bytes = Buffer.from(await response.arrayBuffer());
     if (!bytes.length) throw new Error("Speech API returned an empty audio file.");
     const panelIndex = state.storyboard.panels.findIndex((item) => item.id === panel.id);
-    const relativePath = join("generated", "narration", `storyboard-v${state.storyboard.version}`, `panel-${panelIndex + 1}.wav`);
+    const relativePath = workshopGeneratedPath(state.id, "narration", `storyboard-v${state.storyboard.version}`, `panel-${panelIndex + 1}.wav`);
     await writeFile(join(root, relativePath), bytes);
     return { panelId: panel.id, relativePath, sha256: sha256(bytes), model: config.ttsModel, voice: config.voice, instructions: config.voiceInstructions, requestId: response.headers.get("x-request-id") ?? undefined, generatedAt: new Date().toISOString() };
   }));

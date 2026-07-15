@@ -4401,3 +4401,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Revisit this sequence after the current implementation audit, update it from then-current evidence, assign ownership, and promote only the reconciled version into the active goal.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 11:04 CT — Workshops become a real durable product boundary
+
+**Area:** Product / Local runtime / Plugin / Testing
+
+### Changed
+
+- Replaced the hardcoded single-Workshop runtime with durable create, list, select, and active-Workshop state in SQLite. New Workshops start empty; the sanitized Build Week fixture remains the default teaching Workshop.
+- Scoped source ingestion, FTS5/BM25 grounding, graph state, approvals, outputs, image plans, Storyboards, Videos, build traces, generated paths, and queued jobs to the owning Workshop. A background render now completes the Workshop recorded on the job without changing the Workshop open in the browser.
+- Added one minimal Workshop picker using the official `ListRowAction` and `SideSheet` primitives. It opens from the Workshop name and does not add tabs, a dashboard, or persistent navigation.
+- Routed plugin `workshop_create`, `workshop_open`, search, fetch, trace, and all mutations through the same local Workshop service. Search and fetch default to the active Workshop and return its ID, preventing cross-Workshop source collisions.
+- Promoted the product strategy into `GOAL.md`: the primary user is a consultant, strategist, or enablement lead; the wedge is a grounded, branded, source-defensible deck; and the next implementation gate is professional send-it quality rather than more output breadth.
+
+### Verified
+
+- In the Codex in-app browser, an isolated run opened the seeded Workshop with three Sources, created `Client launch`, showed its honest zero-Source state, switched back to the original Workshop, and restored its three Sources and Map. The browser console had no errors.
+- `pnpm demo:e2e` passed the complete recorded Source → Map → Brief → Style → Storyboard → Video seam and all six acceptance gates.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages: worker 56/56, web 12/12, and plugin 7/7 among the package suites.
+- `pnpm submission:build` produced the honest 15-asset `partial` package; `pnpm submission:verify` reported `valid: true`, `stale: false`, and `tampered: false`.
+- Installed and worktree plugin `dist/tools.js` both have SHA-256 `19d512634d7ada14b567d20ed9f76e20e47f58abc33e8c09343f6628108e3bf3`. Evidence is recorded in `artifacts/spikes/multi-workshop-2026-07-15.json`.
+
+### Decisions
+
+- Multiple Workshops are a collection boundary, not a new product mode. The active Workshop still has one current object and one dominant action.
+- The browser, plugin, worker, and grounding layer share one Workshop identity contract; no surface keeps a parallel copy of business state.
+- The professional wedge now controls sequencing. Deck layout quality, unobtrusive citations, exact Style use, and editable PowerPoint-world handoff outrank adding another pipeline feature.
+
+### Open items
+
+- Raise the deck to the documented professional send-it bar and inspect it against real external content. The current deterministic HTML deck proves traceability and rendering, not yet executive-grade design or editable PowerPoint handoff.
+- Live GPT-5.6, GPT Image 2, provider narration, and one provider-backed Realtime microphone turn remain unproved and spend-gated. The submission package remains correctly labeled `partial`.
+- Founder footage, primary `/feedback` Session ID, final edit, public upload, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
