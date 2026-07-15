@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 11:04 CT
+Last updated: 2026-07-15 11:31 CT
 
 ## Status
 
@@ -65,6 +65,18 @@ The seam **voice/source capture → grounded Map → approved brief → branded 
 - **Track:** Work & Productivity
 
 The NotebookLM association is intentional category shorthand for hackathon judging. WorkshopLM must not imply affiliation with Google or present itself as an official OpenAI product. Keep Google's marks out of the project title, video title, thumbnails, and product UI; use the comparison only in explanatory copy or narration.
+
+## Product quality operating order
+
+The hackathon is a deadline and distribution event, not the product definition. Sequence work by the professional replacement test:
+
+1. **Wedge:** make the grounded, branded deck the hero workflow. A cold professional should understand the promise in 20 seconds, see their Sources become an organized Map within two minutes on the live path, and reach a shippable first deck from their own material within 15 minutes.
+2. **Send-it bar:** grade every Output with `Would I send this?`, beginning with the deck. Supporting Images should belong in that deck; Storyboard and Video should be leadership- or LinkedIn-ready; every Output needs a credible last-10-percent editing path.
+3. **Trust:** one consistent gesture traces any factual claim to its exact source sentence. Staleness is visible and actionable, the two approvals have clear consequence, unverified material stays labeled, and AI voice stays disclosed.
+4. **Return visit:** adding a Source refreshes the Map and honestly stales dependent work; a second Workshop starts without friction; Style Libraries carry across Workshops; the weekly meeting → refreshed Brief → regenerated deck rhythm retains brand and trace.
+5. **Reality ladder:** the Build Week submission is dogfood zero. Dogfood one is a real external professional deliverable; then three to five uncoached representative professionals use empty Workshops; graduation requires one person outside the project to return and use WorkshopLM twice.
+
+Provider proof and the final video remain deadline-critical, but additional output breadth never outranks a failing send-it, trust, or return-visit test.
 
 ## Locked interface contract
 
@@ -371,6 +383,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Generate a source-traceable presentation.
 - [ ] Raise the presentation from a deterministic proof artifact to the professional send-it bar: varied layouts chosen by content type, strong typographic hierarchy, exact Style tokens, unobtrusive citations, and an editable PowerPoint-world export. Verify it against real external content and a cold visual review; passing generation tests alone is insufficient.
   - 2026-07-15: the first production-quality renderer pass is implemented. HTML previews now use cover, statement, split, evidence, and recommendation layouts; every slide carries a quiet source line; exact palette and licensed-font tokens flow from Style; and each deck also produces an editable `.pptx` with claim/source notes. The in-app browser preview and a LibreOffice round-trip of the five-slide acceptance deck were visually inspected without overflow, archive errors, or console errors. Keep this item open until a genuinely external professional deliverable is produced and cold-reviewed at the full send-it bar.
+  - 2026-07-15 dogfood zero: three real WorkshopLM strategy and research documents initially produced source-order headings, raw Markdown, and file paths. The deck planner now rejects metadata/table fragments, selects statement → risk → proof → recommendation evidence, derives concise headings, and uses professional source labels on-slide while retaining exact locators in HTML data and PowerPoint notes. The repaired five-slide `.pptx` passed archive, LibreOffice, and visual inspection. This is internal dogfood, not the required external audience or cold send-or-revise review.
 - [x] Generate a source-traceable infographic.
 - [ ] Generate and evaluate a coherent GPT Image 2 batch.
   - 2026-07-15: the production batch now creates a 512×512 style-derived reference board, hashes and versions it with the approved Visual DNA, sends the same bytes and locked direction through `/v1/images/edits` for all six panels and selective retries, and refuses provider dispatch if the reference or sibling contract drifts. Keep this open until the six real images are generated and visually inspected as one set.

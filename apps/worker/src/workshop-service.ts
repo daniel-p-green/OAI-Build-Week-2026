@@ -493,12 +493,76 @@ export function generateStoryboard(root?: string): WorkshopState {
 }
 function outputHeading(text: string) { if (text.length <= 64) return text; const clipped = text.slice(0, 64).trimEnd(); return `${clipped.slice(0, clipped.lastIndexOf(" ")).trim()}…`; }
 function outputBody(text: string) { if (text.length <= 240) return text; const clipped = text.slice(0, 240).trimEnd(); return `${clipped.slice(0, clipped.lastIndexOf(" ")).trim()}…`; }
+type DeckRole = "statement" | "split" | "proof" | "recommendation";
+const deckRoles: readonly DeckRole[] = ["statement", "split", "proof", "recommendation"];
+const roleSignals: Record<DeckRole, RegExp> = {
+  statement: /\b(turns?|becomes?|helps?|delivers?|enables?|creates?|outcome|promise|from\b.+\bto)\b/i,
+  split: /\b(problem|cost|friction|weakness|fails?|failure|dies?|gap|bottleneck|disconnected|slow)\b/i,
+  proof: /\b(evidence|source|trace|trust|verified|data|measure|claim|citation|grounded|defend)\b/i,
+  recommendation: /\b(should|must|recommend|start|make|prioriti[sz]e|focus|ship|use|adopt|next)\b/i,
+};
+function prose(text: string) {
+  return text
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/^\s{0,3}#{1,6}\s+/gm, "")
+    .replace(/^\s*[-*+]\s+(?:\[[ xX]\]\s*)?/gm, "")
+    .replace(/[*_`~]/g, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+function deckCandidateScore(text: string, role: DeckRole, raw: string, sourcePriority: number) {
+  const words = text.split(/\s+/).filter(Boolean).length;
+  if (/^\s*(?:\||#{1,6}\s)/.test(raw) || words < 4 || text.length < 24 || /^(?:md|json|tsx?|html)\b|^(?:date|status|last (updated|refreshed)|at a glance|hackathon|track|deadline|source|version)\b\s*:?/i.test(text)) return Number.NEGATIVE_INFINITY;
+  let score = roleSignals[role].test(text) ? 12 : 0;
+  if (words >= 8 && words <= 34) score += 6;
+  else if (words <= 48) score += 2;
+  if (/\b(is|are|lives?|turns?|becomes?|helps?|keeps?|makes?|needs?|requires?|produces?|preserves?|reduces?|improves?|remains?|links?|traces?)\b/i.test(text)) score += 3;
+  if (/\b(because|so that|without|faster|rather than|instead|only if|while)\b/i.test(text)) score += 2;
+  if (/\b(professional|client|leadership|deliverable|ship|standards|workflow|trust|defend|grounded|brand(?:ed)?)\b/i.test(text)) score += 4;
+  if (role === "proof" && /\bexact\s+source\b/i.test(text)) score += 4;
+  if (role === "recommendation" && /\b(deck|output|deliverable|diagram|image|storyboard|video)\b/i.test(text)) score += 5;
+  score += sourcePriority;
+  if (/https?:\/\/|\.(md|json|tsx?|html)\b|\/Users\//i.test(text)) score -= 8;
+  if ((text.match(/:/g) ?? []).length > 2) score -= 4;
+  return score;
+}
+function selectDeckClaims(state: WorkshopState) {
+  const candidates = activeClaimsFor(state).map((claim, order) => ({ claim, order, raw: claim.text, text: prose(claim.text), sourcePriority: Math.max(0, state.activeSourceIds.length - state.activeSourceIds.indexOf(claim.sourceId)) }));
+  const used = new Set<string>();
+  return deckRoles.flatMap((role) => {
+    const ranked = candidates
+      .filter((candidate) => !used.has(candidate.claim.id))
+      .map((candidate) => ({ ...candidate, roleMatch: roleSignals[role].test(candidate.text), score: deckCandidateScore(candidate.text, role, candidate.raw, candidate.sourcePriority) }))
+      .filter((candidate) => Number.isFinite(candidate.score))
+      .sort((left, right) => Number(right.roleMatch) - Number(left.roleMatch) || right.score - left.score || left.order - right.order);
+    const selected = ranked[0];
+    if (!selected) return [];
+    used.add(selected.claim.id);
+    return [{ ...selected, role }];
+  });
+}
+function deckHeading(text: string) {
+  const clause = text.split(/\s*[—–]\s*|[;:]\s|,\s+(?=(?:but|because|while|which|with|without|so)\b)|\s+(?=(?:using|through|that)\b)/i)[0]?.trim() ?? text;
+  return outputHeading(clause.length >= 24 ? clause : text);
+}
+function citationLabel(state: WorkshopState, sourceId: string, locator: string) {
+  const source = state.sourceItems.find((candidate) => candidate.id === sourceId);
+  const position = locator.split(" · ").at(-1);
+  return [source?.title ?? "Source", position].filter(Boolean).join(" · ");
+}
 export async function generateOutput(type: "deck" | "infographic", root?: string): Promise<WorkshopState> {
   const current = readWorkshopState(root);
   if (!current.briefApproved || !current.frame || current.frame.stale) throw new Error("Output generation requires an approved current brief.");
   if (!current.style || current.style.stale) throw new Error("Output generation requires a locked current style.");
-  const dataRoot = root ?? repositoryDataRoot(); const claims = activeClaimsFor(current).slice(0, 4);
-  const blocks = (claims.length ? claims.map((claim) => ({ ...claim, body: current.sourceChunks.find((chunk) => chunk.id === claim.chunkId)?.text ?? claim.text })) : current.mapNodes.filter((node) => node.kind === "grounded").map((node) => ({ id: node.id, text: node.title, body: node.body, locator: node.locator }))).map((claim, index, all) => ({ id: claim.id, heading: outputHeading(claim.text), body: outputBody(claim.body), citations: [claim.locator], layout: index === 0 ? "statement" as const : index === all.length - 1 ? "recommendation" as const : index % 2 ? "split" as const : "proof" as const }));
+  const dataRoot = root ?? repositoryDataRoot(); const selectedClaims = selectDeckClaims(current);
+  const blocks = selectedClaims.length ? selectedClaims.map(({ claim, text, role }) => {
+    const chunk = current.sourceChunks.find((candidate) => candidate.id === claim.chunkId);
+    const cleanChunk = prose(chunk?.text ?? "");
+    const heading = deckHeading(text);
+    const body = text !== heading ? text : cleanChunk && cleanChunk !== text ? cleanChunk : text;
+    return { id: claim.id, heading, body: outputBody(body), citations: [claim.locator], citationLabel: citationLabel(current, claim.sourceId, claim.locator), layout: role };
+  }) : current.mapNodes.filter((node) => node.kind === "grounded").slice(0, 4).map((node, index, all) => ({ id: node.id, heading: outputHeading(prose(node.title)), body: outputBody(prose(node.body)), citations: [node.locator], layout: index === 0 ? "statement" as const : index === all.length - 1 ? "recommendation" as const : index % 2 ? "split" as const : "proof" as const }));
   const outputId = `${type}-v${current.outputs.filter((output) => output.type === type).length + 1}`;
   const rendered = await writeRenderedArtifact(dataRoot, current.id === defaultWorkshopId ? outputId : `${current.id}/${outputId}`, type, { workshopTitle: current.title, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper, fonts: current.style.licensedFonts, intent: current.style.intentProfile }, blocks });
   const stored = await storeArtifact(dataRoot, `${current.id}-${outputId}`, Buffer.from(await readFile(join(dataRoot, rendered.relativePath))), "text/html");

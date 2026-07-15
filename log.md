@@ -4471,3 +4471,37 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Live GPT-5.6 Map reasoning, GPT Image 2 media, provider narration, and a provider-backed Realtime microphone turn remain spend-gated and unproved.
 - Founder footage, primary `/feedback` Session ID, final video edit, public upload, and Devpost submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 11:33 CT — Real-source dogfood repairs the deck story, not just its styling
+
+**Area:** Product strategy / Deliver / Dogfood / Testing
+
+### Changed
+
+- Promoted the professional replacement test into `GOAL.md`: deck-first wedge, send-it quality, trust, return-visit behavior, and a reality ladder from submission dogfood through repeat external use. Build Week remains the deadline and distribution event, not the product definition.
+- Ran WorkshopLM against three real project documents in an isolated Workshop. The first deck exposed a concrete product defect: source-order selection elevated Markdown headings, refresh metadata, and hackathon directory facts into the presentation narrative.
+- Replaced first-four-claims selection with deterministic narrative planning across statement, risk, proof, and recommendation roles. The planner rejects headings, tables, metadata, path fragments, and weakly formed claims; strips Markdown; derives concise headings; and retains the selected claim IDs and exact locators.
+- Separated professional visible source labels from exact provenance. Slides now show a readable Source title plus chunk while HTML data and editable PowerPoint speaker notes preserve the full original locator and claim ID.
+
+### Verified
+
+- The repaired real-source deck selects the product north star, output-quality risk, exact-source trust promise, and a concrete recommendation. It no longer exposes raw Markdown or source-file paths on-slide.
+- The final editable `deck-v10.presentation.pptx` passed `unzip -t`, opened through LibreOffice, converted to a five-page 16:9 PDF, and was visually inspected with no observed overflow or corrupted layout. Evidence and hashes are in `artifacts/spikes/deck-dogfood-2026-07-15.json`.
+- `pnpm check` passed across all 13 packages; production passed 3/3 tests, worker passed 57/57 tests, and web remained 12/12.
+- `pnpm demo:e2e` passed the complete recorded seam and all six gates. The 16-asset submission set rebuilt and verified `valid: true`, `stale: false`, and `tampered: false`, while remaining honestly `partial` for provider media.
+
+### Decisions
+
+- Output quality is now an executable gate. A grounded file is not a professional deck merely because it renders, cites sources, and exports to PowerPoint; content selection and narrative order are product behavior.
+- Exact provenance belongs in the artifact, but raw implementation-facing locators do not need to dominate the visible slide. The readable label and full locator remain two representations of the same grounded reference.
+- The deck send-it goal remains open. This run is internal dogfood zero, not a genuinely external deliverable or a cold send-or-revise decision.
+
+### Open items
+
+- Produce one real external professional deck, observe an uncoached reviewer, and record the send-or-revise judgment plus every friction point.
+- Implement the return-visit gaps now made explicit in the goal, especially reusable Style Libraries across Workshops and the weekly add-Source → refresh → regenerate rhythm.
+- Live GPT-5.6 Map reasoning, six GPT Image 2 outputs, provider narration, and one Realtime microphone turn remain spend-gated and unproved.
+- Founder footage, primary `/feedback` Session ID, final edit, public upload, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

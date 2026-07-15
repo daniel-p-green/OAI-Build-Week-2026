@@ -1,0 +1,56 @@
+{
+  "recordedAt": "2026-07-15T11:33:00-05:00",
+  "kind": "internal-product-dogfood",
+  "workshop": "WorkshopLM product strategy",
+  "dataRoot": "/tmp/workshoplm-dogfood",
+  "sources": [
+    "docs/superpowers/plans/2026-07-15-product-north-star-draft.md",
+    "research/ui-ux-simplification-audit-2026-07-14.md",
+    "research/hackathon/README.md"
+  ],
+  "defectBeforeRepair": {
+    "output": "deck-v1",
+    "observedHeadings": [
+      "# OpenAI Build Week Reference",
+      "Last refreshed from the Devpost Hackathons app",
+      "## At a glance",
+      "Hackathon: OpenAI Build Week"
+    ],
+    "assessment": "The deck was editable and grounded but followed source order, exposed Markdown and metadata, and did not clear the professional narrative bar."
+  },
+  "verifiedAfterRepair": {
+    "output": "deck-v10",
+    "selectedClaimIds": [
+      "claim-c510118ce88b-4-1",
+      "claim-c510118ce88b-6-1",
+      "claim-c510118ce88b-36-1",
+      "claim-c510118ce88b-26-1"
+    ],
+    "narrativeRoles": [
+      "statement",
+      "risk",
+      "proof",
+      "recommendation"
+    ],
+    "visibleSourceLabels": [
+      "Product north star · chunk 05",
+      "Product north star · chunk 07",
+      "Product north star · chunk 37",
+      "Product north star · chunk 27"
+    ],
+    "htmlSha256": "139c84b888994aa8e72d10ec44ebe042b20c898a5283e848dfc31a7b83e41c6f",
+    "pptxSha256": "db2efd41f1c1204b732d18ecc2c0846505f92e1953d17a3cc2855a79ed8d0ae4",
+    "libreOfficePdfSha256": "73c5e679dfb2d5dfa2eca59a336cd7a4dc035e2f8991d58ec784584c31cab30b",
+    "pptxArchive": "passed",
+    "pages": 5,
+    "pageSize": "16:9",
+    "visualInspection": "passed-no-observed-overflow-or-raw-file-paths"
+  },
+  "regression": {
+    "workerTests": "57/57 passed",
+    "productionTests": "3/3 passed",
+    "demoE2e": "passed-all-six-gates",
+    "submission": "valid-current-untampered-partial-16-assets"
+  },
+  "boundary": "This proves dogfood zero against real project sources. It is not an external client deliverable, a cold professional review, or evidence that the deck send-it goal is complete."
+}

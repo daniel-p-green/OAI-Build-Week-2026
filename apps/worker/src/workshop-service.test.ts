@@ -58,6 +58,34 @@ it("rejects a website Style redirect into the local network", async () => {
 });
 it("creates, approves, and stales a versioned Visual DNA preview", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-dna-")); lockManualStyle({ references: ["editorial grid"], negativeRules: ["no gradients"] }, root); const preview = createVisualDna(root); expect(preview.visualDna).toMatchObject({ version: 1, styleVersion: 1, approved: false, stale: false, negativeRules: ["no gradients"] }); expect(approveVisualDna(root).visualDna?.approved).toBe(true); const relocked = lockManualStyle({ accent: "#1155AA" }, root); expect(relocked.visualDna).toMatchObject({ approved: false, stale: true }); await rm(root, { recursive: true, force: true }); });
 it("writes a source-traceable output after current brief and style approval", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-output-")); await ingestSource({ title: "Evidence", origin: "Fixture", text: "Turn raw thinking into finished work without losing the trail back to source material." }, root); applyWorkshopAction("approveBrief", root); applyWorkshopAction("lockManualStyle", root); const generated = await generateOutput("deck", root); expect(generated.outputs[0]).toMatchObject({ type: "deck", stale: false, editableRelativePath: expect.stringMatching(/\.pptx$/), editableArtifactPath: expect.stringMatching(/^artifacts\//), claimIds: expect.arrayContaining([expect.stringMatching(/^claim-/)]) }); expect(generated.outputs[0].artifactPath).toMatch(/^artifacts\//); const html = await readFile(join(root, generated.outputs[0]!.relativePath), "utf8"); const pptx = await readFile(join(root, generated.outputs[0]!.editableRelativePath!)); const editable = resolveWorkshopArtifact(generated.outputs[0]!.id, root, undefined, "editable"); expect(html).not.toContain("FRAME"); expect(html).toContain("without losing the trail…"); expect(pptx.subarray(0, 2).toString()).toBe("PK"); expect(editable).toMatchObject({ contentType: "application/vnd.openxmlformats-officedocument.presentationml.presentation", fileName: "deck-v1.pptx" }); await rm(root, { recursive: true, force: true }); });
+it("plans a professional deck from narrative evidence instead of source metadata", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-deck-plan-"));
+  createWorkshop("Leadership strategy", root);
+  await ingestSource({
+    title: "Strategy notes",
+    origin: "Strategy brief",
+    text: [
+      "# Status",
+      "Last refreshed: today.",
+      "## North star",
+      "A working professional turns messy inputs into a deliverable they can defend without lowering their standards.",
+      "The current workflow is slow because evidence becomes disconnected from the finished work.",
+      "Trust compounds when every factual claim remains linked to its exact source sentence.",
+      "Teams should start with one real meeting and ship the grounded deck.",
+    ].join("\n\n"),
+  }, root);
+  applyWorkshopAction("approveBrief", root);
+  lockManualStyle({}, root);
+  const generated = await generateOutput("deck", root);
+  const html = await readFile(join(root, generated.outputs[0]!.relativePath), "utf8");
+  expect(html).toContain("A working professional turns messy inputs");
+  expect(html).toContain("Trust compounds when every factual claim");
+  expect(html).toContain("Teams should start with one real meeting");
+  expect(html).toContain("Source: Strategy notes · chunk");
+  expect(html).toContain("Strategy brief · chunk");
+  expect(html).not.toMatch(/# Status|Last refreshed|## North star|\*\*/);
+  await rm(root, { recursive: true, force: true });
+});
 it("writes a source-traceable infographic with the claim locator embedded", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-infographic-")); await ingestSource({ title: "Evidence", origin: "Fixture locator", text: "An infographic should preserve a source locator." }, root); applyWorkshopAction("approveBrief", root); lockManualStyle({}, root); const generated = await generateOutput("infographic", root); expect(generated.outputs[0]).toMatchObject({ type: "infographic", stale: false, claimIds: expect.arrayContaining([expect.stringMatching(/^claim-/)]) }); expect(await readFile(join(root, generated.outputs[0]!.relativePath), "utf8")).toContain("Fixture locator · chunk 01"); await rm(root, { recursive: true, force: true }); });
 it("builds an asset plan from approved graph, brief, evidence, and Style Foundation versions", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-plan-")); await ingestSource({ title: "Evidence", origin: "Fixture", text: "A plan must name its evidence." }, root); applyWorkshopAction("approveBrief", root); lockManualStyle({ intentProfile: "board_deck" }, root); createVisualDna(root); approveVisualDna(root); const plan = generateAssetPlan(root).assetPlan; expect(plan).toMatchObject({ version: 1, briefVersion: 1, styleVersion: 1, visualDnaVersion: 1, stale: false }); expect(plan?.items.map((item) => item.outputType)).toEqual(["deck", "infographic", "images", "storyboard", "video"]); expect(plan?.items.map((item) => item.title)).toEqual(["Presentation", "Infographic", "Image set", "Storyboard", "Demo video"]); expect(plan?.items.map((item) => item.prompt).join(" ")).not.toMatch(/FRAME|Visual DNA|provenance|render/i); expect(plan?.evidenceClaimIds[0]).toMatch(/^claim-/); expect(plan?.items.every((item) => { const evidence = item.evidence[0]; return Boolean(evidence?.claimId && plan.evidenceClaimIds.includes(evidence.claimId) && evidence.sourceId && evidence.chunkId); })).toBe(true); await rm(root, { recursive: true, force: true }); });
 it("generates editable storyboard panels from the current approved-input asset plan", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-generated-story-")); await ingestSource({ title: "Evidence", origin: "Fixture", text: "The storyboard must inherit plan evidence." }, root); applyWorkshopAction("approveBrief", root); lockManualStyle({}, root); generateAssetPlan(root); const state = generateStoryboard(root); expect(state.storyboard).toMatchObject({ stale: false }); expect(state.storyboard.panels).toHaveLength(5); expect(state.storyboard.panels[0]?.narration).toContain("Fixture · chunk 01"); expect(state.storyboard.panels[0]).toMatchObject({ claimIds: [expect.stringMatching(/^claim-/)], evidence: [{ claimId: expect.stringMatching(/^claim-/), sourceId: expect.stringMatching(/^source-/), chunkId: expect.stringMatching(/^chunk-/), locator: "Fixture · chunk 01" }] }); expect(() => assertStoryboardGrounding({ ...state, storyboard: { ...state.storyboard, panels: state.storyboard.panels.map((panel, index) => index ? panel : { ...panel, claimIds: ["claim-tampered"] }) } })).toThrow(/claim IDs do not match/); expect(state.storyboardApproved).toBe(false); await rm(root, { recursive: true, force: true }); });

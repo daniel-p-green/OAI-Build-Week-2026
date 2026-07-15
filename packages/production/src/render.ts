@@ -18,7 +18,7 @@ type PptxPresentation = {
 const PptxGenJS = createRequire(import.meta.url)("pptxgenjs") as new () => PptxPresentation;
 
 export type SlideLayout = "statement" | "split" | "proof" | "recommendation";
-export type RenderBlock = { id: string; heading: string; body: string; citations: readonly string[]; layout?: SlideLayout };
+export type RenderBlock = { id: string; heading: string; body: string; citations: readonly string[]; citationLabel?: string; layout?: SlideLayout };
 export type RenderBrief = {
   workshopTitle: string;
   version: string;
@@ -55,7 +55,8 @@ function shell(title: string, brief: RenderBrief, body: string) {
   </style></head><body>${body}</body></html>`;
 }
 
-function citationText(block: RenderBlock) { return block.citations.length ? `Source: ${block.citations.join(" · ")}` : "Source: approved Workshop brief"; }
+function citationText(block: RenderBlock) { return block.citations.length ? `Source: ${block.citationLabel ?? block.citations.join(" · ")}` : "Source: approved Workshop brief"; }
+function citationData(block: RenderBlock) { return block.citations.length ? ` data-source="${escapeHtml(block.citations.join(" | "))}"` : ""; }
 
 export function renderDeck(brief: RenderBrief): string {
   const cover = `<section class="slide cover" data-page="01"><div class="eyebrow">${escapeHtml(brief.version)} · Source-defensible presentation</div><h1 class="title">${escapeHtml(brief.workshopTitle)}</h1><p class="subtitle">A grounded narrative built from the approved Brief, with every factual claim kept connected to its source.</p></section>`;
@@ -65,16 +66,16 @@ export function renderDeck(brief: RenderBrief): string {
     const eyebrow = `<div class="eyebrow">${page} · ${escapeHtml(layout === "proof" ? "Evidence" : layout === "recommendation" ? "Recommendation" : "Key point")}</div>`;
     const heading = `<h2>${escapeHtml(block.heading)}</h2>`;
     const body = `<p class="body">${escapeHtml(block.body)}</p>`;
-    const cite = `<p class="cite">${escapeHtml(citationText(block))}</p>`;
+    const cite = `<p class="cite"${citationData(block)}>${escapeHtml(citationText(block))}</p>`;
     if (layout === "split") return `<section class="slide split" data-page="${page}"><div class="number">${String(index + 1).padStart(2, "0")}</div><div>${eyebrow}${heading}${body}</div>${cite}</section>`;
-    if (layout === "proof") return `<section class="slide proof" data-page="${page}"><div>${eyebrow}${heading}${body}</div><aside class="proof-card"><span class="eyebrow">Traceable by design</span><strong>${escapeHtml(block.citations[0] ?? "Approved Brief")}</strong></aside>${cite}</section>`;
+    if (layout === "proof") return `<section class="slide proof" data-page="${page}"><div>${eyebrow}${heading}${body}</div><aside class="proof-card"><span class="eyebrow">Traceable by design</span><strong>${escapeHtml(block.citationLabel ?? block.citations[0] ?? "Approved Brief")}</strong></aside>${cite}</section>`;
     return `<section class="slide ${layout}" data-page="${page}">${eyebrow}${heading}${body}${cite}</section>`;
   }).join("\n");
   return shell(`${brief.workshopTitle} deck`, brief, `<main class="deck">${cover}${slides}</main>`);
 }
 
 export function renderInfographic(brief: RenderBrief): string {
-  const blocks = brief.blocks.map((block, index) => `<article class="block"><div class="block-number">${String(index + 1).padStart(2, "0")}</div><div><h2>${escapeHtml(block.heading)}</h2><p>${escapeHtml(block.body)}</p><p class="cite">${escapeHtml(citationText(block))}</p></div></article>`).join("\n");
+  const blocks = brief.blocks.map((block, index) => `<article class="block"><div class="block-number">${String(index + 1).padStart(2, "0")}</div><div><h2>${escapeHtml(block.heading)}</h2><p>${escapeHtml(block.body)}</p><p class="cite"${citationData(block)}>${escapeHtml(citationText(block))}</p></div></article>`).join("\n");
   return shell(`${brief.workshopTitle} infographic`, brief, `<main class="infographic"><div class="eyebrow">Source-defensible brief</div><h1 class="title">${escapeHtml(brief.workshopTitle)}</h1>${blocks}</main>`);
 }
 
@@ -117,7 +118,7 @@ export async function writeEditableDeck(path: string, brief: RenderBrief): Promi
       slide.addText(block.body, { x: 0.75, y: 3.05, w: 7.0, h: 1.65, fontFace: bodyFont(brief), fontSize: 18, color: ink, margin: 0, breakLine: false, fit: "shrink", valign: "top" });
       slide.addShape(pptx.ShapeType.rect, { x: 8.55, y: 0.72, w: 4.05, h: 5.95, fill: { color: ink }, line: { color: ink }, radius: 0.04 });
       slide.addText("TRACEABLE BY DESIGN", { x: 8.95, y: 4.25, w: 3.15, h: 0.22, fontFace: bodyFont(brief), fontSize: 8, bold: true, color: accent, charSpacing: 1.2, margin: 0 });
-      slide.addText(block.citations[0] ?? "Approved Brief", { x: 8.92, y: 4.72, w: 3.1, h: 1.15, fontFace: headingFont(brief), fontSize: 20, color: paper, margin: 0, breakLine: false, fit: "shrink", valign: "bottom" });
+      slide.addText(block.citationLabel ?? block.citations[0] ?? "Approved Brief", { x: 8.92, y: 4.72, w: 3.1, h: 1.15, fontFace: headingFont(brief), fontSize: 20, color: paper, margin: 0, breakLine: false, fit: "shrink", valign: "bottom" });
     } else {
       slide.addText(label, { x: 0.75, y: layout === "statement" ? 1.18 : 1.02, w: 5.6, h: 0.2, fontFace: bodyFont(brief), fontSize: 9, bold: true, color: layout === "recommendation" ? paper : accent, charSpacing: 1.5, margin: 0 });
       slide.addText(block.heading, { x: 0.72, y: layout === "statement" ? 1.72 : 1.55, w: 11.35, h: 2.15, fontFace: headingFont(brief), fontSize: layout === "recommendation" ? 42 : 38, color: foreground, margin: 0, breakLine: false, fit: "shrink" });
