@@ -195,6 +195,10 @@ test.describe("completed Workshop judge path", () => {
 
       await page.getByRole("button", { name: "Open Build Week presentation" }).click();
       await expect(page.getByRole("heading", { name: "Build Week presentation" })).toBeVisible();
+      await expect(page.getByText("Presentation · Version 1 · 2 sources", { exact: true })).toBeVisible();
+      await expect(page.getByRole("button", { name: "2 sources" })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Show source" })).toHaveClass(/oai-button--primary/);
+      await expect(page.getByRole("link", { name: "Open file" })).toBeVisible();
       await expectScreen(page, `${viewport.name}-output-viewer`);
       await page.getByRole("button", { name: "Back to Outputs" }).click();
 

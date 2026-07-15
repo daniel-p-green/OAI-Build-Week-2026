@@ -171,6 +171,9 @@ export default function WorkshopPage() {
   }
 
   const sourceCount = state?.activeSourceIds.length ?? 0;
+  const visibleSourceCount = view === "output" && selectedOutput
+    ? outputSourceCount(selectedOutput, state)
+    : sourceCount;
   const currentTitle = view === "output" ? (selectedOutput ? outputTitle(selectedOutput.type) : "Demo video") : VIEW_TITLES[view];
   const backTarget: ObjectView | null = view === "map" ? null : view === "brief" ? "map" : view === "outputs" ? "brief" : "outputs";
 
@@ -182,7 +185,7 @@ export default function WorkshopPage() {
           <div className="workshop-identity"><strong>{state?.title || "WorkshopLM"}</strong><span aria-hidden="true">/</span><b>{currentTitle}</b></div>
         </div>
         {loadState === "ready" && <div className="header-actions">
-          <Button variant="secondary" size="small" onClick={() => openSheet("sources")}>{sourceCount} sources</Button>
+          <Button variant="secondary" size="small" onClick={() => openSheet("sources")}>{visibleSourceCount} sources</Button>
           {view === "map" && Boolean(state?.mapNodes.length) && (state?.briefApproved && !state.frame?.stale
             ? <Button variant={sheet ? "secondary" : "primary"} onClick={() => openView("brief")}>View brief</Button>
             : <Button variant={sheet ? "secondary" : "primary"} disabled={busy || !state?.mapNodes.length} onClick={() => { void post({ action: "approveBrief" }).then((next) => next && openView("brief")); }}>Approve brief</Button>)}
@@ -340,10 +343,14 @@ function FocusedOutputView({ state, outputId, onShowSource, onShowOriginal }: { 
   const output = state?.outputs.find((item) => item.id === outputId);
   const isVideo = outputId === "video";
   const title = output ? outputTitle(output.type) : "Demo video";
+  const sourceCount = output ? outputSourceCount(output, state) : state?.activeSourceIds.length ?? 0;
+  const detail = output
+    ? `${outputType(output.type)} · Version ${outputVersion(output, state?.outputs ?? [])} · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`
+    : `Video · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`;
   const sourceId = state?.claims?.find((claim) => output?.claimIds?.includes(claim.id))?.sourceId;
   const href = isVideo ? "/api/workshop/artifacts/video" : `/api/workshop/artifacts/${outputId}`;
   if (!output && !isVideo) return <div className="state-surface"><StateMessage state="error" title="Couldn't open Output">Return to Outputs and try opening it again.</StateMessage></div>;
-  return <article className="focused-output"><h1 className="visually-hidden">{title}</h1><div className="focused-output-heading">{output?.stale && <Status tone="waiting">Needs update</Status>}<div className="button-row">{isVideo ? <Button variant="secondary" size="small" onClick={onShowOriginal}>Show original</Button> : <Button variant="secondary" size="small" onClick={() => onShowSource(sourceId)}>Show source</Button>}<ButtonLink variant="secondary" size="small" href={href} target="_blank" rel="noreferrer">Open</ButtonLink></div></div><div className={`focused-output-preview ${isVideo ? "video-preview" : ""}`} data-domain-ui="artifact-preview">{isVideo ? <video controls src={href} /> : <iframe title={title} sandbox="allow-same-origin" src={href} />}</div></article>;
+  return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail}</p>{output?.stale && <Status tone="waiting">Needs update</Status>}</div><div className="button-row">{isVideo ? <Button size="small" onClick={onShowOriginal}>Show original</Button> : <Button size="small" onClick={() => onShowSource(sourceId)}>Show source</Button>}<ButtonLink variant="secondary" size="small" href={href} target="_blank" rel="noreferrer">{isVideo ? "Open video" : "Open file"}</ButtonLink></div></div><div className={`focused-output-preview ${isVideo ? "video-preview" : ""}`} data-domain-ui="artifact-preview">{isVideo ? <video controls src={href} /> : <iframe title={title} sandbox="allow-same-origin" src={href} />}</div></article>;
 }
 
 function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | null; onClose: () => void }) {

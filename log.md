@@ -3769,3 +3769,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Capture and inspect authorized live GPT-5.6 reasoning, one Realtime microphone turn, and provider narration before upgrading public claims.
 - Capture the dated founder brainstorm, Codex doorway footage, representative `/feedback` Session ID, final public video, stable release, and submitted links.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 02:41 CT — Five-second orientation passed with artifact-specific Output grounding
+
+**Area:** Independent orientation review / focused Output provenance / responsive product UI
+
+### Changed
+
+- Ran five independent cold screenshot reviews against Map, Brief, Outputs, Storyboard, Sources, focused Output, and focused Video at desktop, compact, and mobile widths. Review tasks received no product specification or implementation context before applying the five-second `current object / source scope / next action` rubric.
+- Corrected the one repeated material finding: a presentation that showed `2 sources` in Outputs incorrectly reverted to the Workshop-wide `3 sources` badge when opened. The focused viewer and global source trigger now both preserve the artifact-specific count.
+- Added a visible focused-Output title plus type, version, and source count. `Show source` is now the one dominant action; the secondary external action says `Open file` or `Open video` instead of the ambiguous `Open`.
+- Stacked focused-Output context and actions on mobile so the full title and metadata remain readable without competing for one narrow header row.
+- Added production-route assertions for the exact `Presentation · Version 1 · 2 sources` metadata, matching `2 sources` trigger, dominant source action, and explicit external-file action.
+
+### Verified
+
+- The first review round consistently passed Map, Brief, and the main Outputs flow and exposed the list/detail source-count contradiction. After the correction, five independent post-fix reviews passed every required surface with zero actual critical navigation failures.
+- Two review renderers initially displayed corrupted Storyboard header text. Native PNG OCR returned `WorkshopLM Build Week / Storyboard`, `3 sources`, and `Approve storyboard` at desktop, compact, and mobile widths; the Playwright DOM also exposes the exact approval action. The reviewers amended those failures after inspecting the actual PNG pixels. No product change was made for a review-tool artifact.
+- The Codex in-app Browser plugin was unavailable on this surface, so the documented Playwright fallback was used. The production Next route rebuilt successfully and the full visual suite passed 15/15, including real local video rendering and responsive focused viewers.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; worker tests remained 38/38 and web tests remained 11/11.
+- `pnpm demo:e2e` passed the six recorded gates with two source-traceable rendered Outputs, six planned image panels, five Storyboard panels, and a local MP4.
+- `pnpm submission:build` rebuilt the 12-asset Output set as honestly `partial`; `pnpm submission:verify` returned `valid: true`, `stale: false`, and `tampered: false`.
+- The first snapshot-refresh command passed an extra argument separator and therefore did not update the changed baseline. A direct Playwright refresh then passed. A later refresh started from a stale `.next` server and repeatedly missed generated chunks; rebuilding Next before the final Playwright run repaired the setup failure.
+
+### Decisions
+
+- Workshop scope and Output scope are different facts. The Workshop-wide count remains correct in Map, Brief, and Outputs; a focused artifact must show only the sources that actually support that artifact.
+- A focused Output is an evidence-review surface. `Show source` outranks opening the generated file, while the external action names what it opens.
+- Independent review findings remain evidence only after checking the underlying artifact. A renderer-induced text mask is not promoted into a product defect when native pixels, OCR, and DOM evidence contradict it.
+
+### Open items
+
+- Replace the planned image tiles with inspected GPT Image 2 bytes and complete the visual Outputs-gallery objective.
+- Capture and inspect authorized live GPT-5.6 reasoning, one Realtime microphone turn, and provider narration before upgrading public claims.
+- Capture the dated founder brainstorm, Codex doorway footage, representative `/feedback` Session ID, final public video, stable release, and submitted links.
+- Codex Session ID: unavailable on this surface; not inferred.
