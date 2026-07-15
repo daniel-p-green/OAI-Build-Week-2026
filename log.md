@@ -4740,3 +4740,26 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - The remaining submission blockers are unchanged: cold professional deck validation; provider-backed GPT-5.6, Image, narration, and Realtime evidence; founder/Codex footage; primary `/feedback` Session ID; final video; public upload; and Devpost submission.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 13:00 CT — Visual verification made repeatable
+
+**Area:** Release verification / Browser tests
+
+### Changed
+
+- Added a visual-build preparation script that removes only stale generated `.next/types` declarations before the isolated production visual build. This prevents Next from typechecking duplicate generated route files left by earlier custom-dist builds.
+
+### Verified
+
+- Ran `pnpm --filter @workshoplm/web test:visual` twice consecutively. Both production builds and all 17 browser scenarios passed.
+
+### Decisions
+
+- Keep the cleanup scoped to generated route types. Application output, the visual-test data root, and local developer source files are not removed.
+
+### Open items
+
+- Submission blockers remain unchanged; see the preceding release-parity entry.
+- Codex Session ID: unavailable on this surface; not inferred.
