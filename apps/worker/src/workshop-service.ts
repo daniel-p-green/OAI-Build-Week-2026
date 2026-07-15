@@ -594,6 +594,8 @@ export async function ingestPdfFile(filePath: string, root?: string, permission:
 function htmlAttribute(tag: string, name: string) { const match = tag.match(new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, "i")); return match?.[1] ?? match?.[2] ?? match?.[3]; }
 function normalizeHex(value: string) { const upper = value.toUpperCase(); return upper.length === 4 ? `#${upper[1]}${upper[1]}${upper[2]}${upper[2]}${upper[3]}${upper[3]}` : upper; }
 function luminance(value: string) { const channels = [value.slice(1, 3), value.slice(3, 5), value.slice(5, 7)].map((channel) => Number.parseInt(channel, 16) / 255).map((channel) => channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4); return channels[0]! * 0.2126 + channels[1]! * 0.7152 + channels[2]! * 0.0722; }
+function contrastRatio(left: string, right: string) { const values = [luminance(left), luminance(right)].sort((a, b) => b - a); return (values[0]! + 0.05) / (values[1]! + 0.05); }
+function colorChroma(value: string) { const channels = [value.slice(1, 3), value.slice(3, 5), value.slice(5, 7)].map((channel) => Number.parseInt(channel, 16) / 255); return Math.max(...channels) - Math.min(...channels); }
 function absoluteWebUrl(value: string | undefined, base: URL) { if (!value) return undefined; try { const url = new URL(value, base); return /^https?:$/.test(url.protocol) && !url.username && !url.password ? url.toString() : undefined; } catch { return undefined; } }
 function uniqueMatches(text: string, pattern: RegExp) { return [...new Set([...text.matchAll(pattern)].map((match) => match[1]?.trim()).filter((value): value is string => Boolean(value)))]; }
 
@@ -666,11 +668,16 @@ export async function analyzeWebsiteStyle(rawUrl: string, fetchImpl: typeof fetc
   const themeColor = htmlAttribute(themeTag ?? "", "content")?.match(/^#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?$/)?.[0];
   const colors = [...new Set([...(themeColor ? [normalizeHex(themeColor)] : []), ...[...css.matchAll(/#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?\b/g)].map((match) => normalizeHex(match[0]))])];
   const namedColors = [...css.matchAll(/(?:--([\w-]+)|\b(background-color|color))\s*:\s*(#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?)\b/gi)].map((match) => ({ name: `${match[1] ?? match[2] ?? ""}`.toLowerCase(), value: normalizeHex(match[3]!) }));
-  const byName = (pattern: RegExp) => namedColors.find((item) => pattern.test(item.name))?.value;
   const sortedByLight = [...colors].sort((left, right) => luminance(left) - luminance(right));
-  const ink = byName(/ink|text|foreground/) ?? sortedByLight[0] ?? "#171816";
-  const paper = byName(/paper|background|surface|canvas/) ?? sortedByLight.at(-1) ?? "#F4F2EC";
-  const accent = byName(/accent|primary|brand/) ?? (themeColor ? normalizeHex(themeColor) : undefined) ?? colors.find((candidate) => candidate !== ink && candidate !== paper && luminance(candidate) > 0.05 && luminance(candidate) < 0.85) ?? "#1668E3";
+  const namedValues = (pattern: RegExp) => namedColors.filter((item) => pattern.test(item.name)).map((item) => item.value);
+  const normalizedTheme = themeColor ? normalizeHex(themeColor) : undefined;
+  const paper = namedValues(/(?:^|[-_])(paper|background|surface|canvas)(?:$|[-_])/).filter((candidate) => luminance(candidate) >= 0.55).sort((left, right) => luminance(right) - luminance(left))[0] ?? [...sortedByLight].reverse().find((candidate) => luminance(candidate) >= 0.75) ?? "#F4F2EC";
+  const ink = namedValues(/(?:^|[-_])(ink|text|foreground)(?:$|[-_])/).filter((candidate) => contrastRatio(candidate, paper) >= 4.5).sort((left, right) => contrastRatio(right, paper) - contrastRatio(left, paper))[0] ?? sortedByLight.find((candidate) => candidate !== paper && candidate !== normalizedTheme && contrastRatio(candidate, paper) >= 4.5) ?? "#171816";
+  const namedAccents = new Set(namedValues(/(?:^|[-_])(accent|primary|brand)(?:$|[-_])/));
+  const accent = [...new Set([...namedAccents, ...(normalizedTheme ? [normalizedTheme] : []), ...colors])].filter((candidate) => candidate !== ink && candidate !== paper && luminance(candidate) > 0.02 && luminance(candidate) < 0.92).sort((left, right) => {
+    const score = (candidate: string) => (namedAccents.has(candidate) ? 2 : 0) + (candidate === normalizedTheme ? 0.5 : 0) + colorChroma(candidate) * 3 + Math.min(contrastRatio(candidate, paper), 4) / 4;
+    return score(right) - score(left);
+  })[0] ?? "#1668E3";
   const fontCandidates = uniqueMatches(css, /font-family\s*:\s*([^;}]+)/gi).flatMap((declaration) => declaration.split(",")).map((font) => font.replace(/["']/g, "").trim()).filter((font) => font && !/^(inherit|initial|system-ui|sans-serif|serif|monospace|cursive|fantasy|ui-)/i.test(font) && !font.startsWith("var("));
   const logoTags = [...(html.match(/<img\b[^>]*>/gi) ?? []), ...linkTags.filter((tag) => /icon/i.test(htmlAttribute(tag, "rel") ?? ""))];
   const logos = [...new Set(logoTags.filter((tag) => /logo|brand|icon/i.test(`${htmlAttribute(tag, "alt") ?? ""} ${htmlAttribute(tag, "class") ?? ""} ${htmlAttribute(tag, "id") ?? ""} ${htmlAttribute(tag, "src") ?? ""} ${htmlAttribute(tag, "href") ?? ""}`)).map((tag) => absoluteWebUrl(htmlAttribute(tag, "src") ?? htmlAttribute(tag, "href"), url)).filter((value): value is string => Boolean(value)))].slice(0, 5);
@@ -708,7 +715,7 @@ export async function lockWebsiteStyle(rawUrl: string, root?: string, fetchImpl:
   const headingFont = reviewed?.headingFont?.trim() || candidateFonts[0] || "system-ui";
   const bodyFont = reviewed?.bodyFont?.trim() || candidateFonts[1] || headingFont;
   const fontsConfirmed = reviewed?.fontsConfirmed ?? Boolean(reviewed?.licensedFonts?.length);
-  const accent = color(suggestion.accent, "#1668E3"); const ink = color(suggestion.ink, "#171816"); const paper = color(suggestion.paper, "#F4F2EC");
+  const accent = color(suggestion.accent, "#1668E3"); const ink = color(suggestion.ink, "#171816"); const paper = color(suggestion.paper, "#F4F2EC"); assertReadablePalette(ink, paper);
   const brandAssets = await persistSelectedBrandAssets(reviewed?.selectedAssetUrls, current.id, updatedAt, root, fetchImpl);
   const name = suggestion.name?.trim() || "Website foundation"; const sameFamily = current.style?.name === name ? current.style : undefined;
   const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "website", name, accent, ink, paper, paletteRoles: paletteRoles(accent, ink, paper, "website"), typographyRoles: typographyRoles(headingFont, bodyFont, fontsConfirmed ? "user_confirmed" : "unverified", "website"), brandAssets, logos: brandAssets.map((asset) => asset.localPath), licensedFonts: fontsConfirmed ? cleanStyleList([headingFont, bodyFont]).filter((font) => !isSystemFont(font)) : [], references: cleanStyleList(suggestion.references), negativeRules: cleanStyleList(suggestion.negativeRules), intentProfile: intentProfile(reviewed?.intentProfile ?? requestedIntent ?? current.onboarding.outcome), referenceUrl: suggestion.referenceUrl, libraryId: sameFamily?.libraryId, libraryFamilyId: sameFamily?.libraryFamilyId, libraryRevision: sameFamily?.libraryRevision, lockedAt: updatedAt, stale: false };
@@ -716,6 +723,7 @@ export async function lockWebsiteStyle(rawUrl: string, root?: string, fetchImpl:
 }
 function cleanStyleList(values: string[] | undefined) { return [...new Set((values ?? []).map((value) => value.trim()).filter(Boolean))]; }
 function color(value: string | undefined, fallback: string) { const candidate = (value ?? fallback).trim().toUpperCase(); if (!/^#[0-9A-F]{6}$/.test(candidate)) throw new Error("Style colors must use exact six-digit hex values."); return candidate; }
+function assertReadablePalette(ink: string, paper: string) { if (contrastRatio(ink, paper) < 4.5) throw new Error("Text and Background need at least 4.5:1 contrast for readable Outputs."); }
 function intentProfile(value: WorkshopStyle["intentProfile"] | undefined) { const profile = value ?? "client_facing_pitch"; if (!["client_facing_pitch", "board_deck", "internal_workshop"].includes(profile)) throw new Error("Invalid intent profile."); return profile; }
 function materializeDesignArtifact(style: WorkshopStyle, workshopId: string, root?: string): WorkshopDesignArtifact {
   const dataRoot = root ?? repositoryDataRoot(); const markdownPath = workshopGeneratedPath(workshopId, `DESIGN-v${style.version}.md`); const tokensPath = workshopGeneratedPath(workshopId, `DESIGN-v${style.version}.tokens.json`); const generated = join(dataRoot, dirname(markdownPath));
@@ -727,7 +735,7 @@ function materializeDesignArtifact(style: WorkshopStyle, workshopId: string, roo
 function staleStyleDependents(current: WorkshopState) { return { visualDna: current.visualDna ? { ...current.visualDna, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), storyboardApproved: false, videoState: "blocked" as const }; }
 export function lockManualStyle(input: ManualStyleInput = {}, root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
-  const accent = color(input.accent, "#1668E3"); const ink = color(input.ink, "#171816"); const paper = color(input.paper, "#F4F2EC");
+  const accent = color(input.accent, "#1668E3"); const ink = color(input.ink, "#171816"); const paper = color(input.paper, "#F4F2EC"); assertReadablePalette(ink, paper);
   const suppliedFonts = cleanStyleList(input.licensedFonts); const headingFont = input.headingFont?.trim() || suppliedFonts[0] || "system-ui"; const bodyFont = input.bodyFont?.trim() || suppliedFonts[1] || headingFont;
   const fontsConfirmed = input.fontsConfirmed ?? Boolean(suppliedFonts.length); const evidenceSource: StyleEvidenceSource = Object.keys(input).length ? "manual" : "default";
   const brandAssets = current.style?.source === "manual" ? current.style.brandAssets : [];

@@ -146,6 +146,40 @@ test("dismissed guidance remains quietly available from the Workshop sheet", asy
   }
 });
 
+test("transient sheets contain keyboard focus, close with Escape, and restore the trigger", async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto("/");
+  const trigger = page.getByRole("button", { name: /sources$/ });
+  await trigger.focus();
+  await page.keyboard.press("Enter");
+  const sheet = page.getByRole("dialog", { name: "Sources" });
+  await expect(sheet).toBeVisible();
+  await expect(page.getByRole("button", { name: "Close Sources" })).toBeFocused();
+
+  await page.keyboard.press("Shift+Tab");
+  await expect(sheet.getByRole("button", { name: "Show on map" })).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(page.getByRole("button", { name: "Close Sources" })).toBeFocused();
+
+  await page.keyboard.press("Escape");
+  await expect(sheet).toBeHidden();
+  await expect(trigger).toBeFocused();
+});
+
+test("failed actions announce an error without removing the current work", async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.route("**/api/workshop", async (route) => {
+    if (route.request().method() === "POST") return route.fulfill({ status: 409, json: { error: "The source could not be added. Try again." } });
+    return route.continue();
+  });
+  await page.goto("/");
+  await page.getByRole("button", { name: /sources$/ }).click();
+  await page.getByRole("checkbox").first().click();
+  await expect(page.locator(".notice[role='alert']")).toContainText("The source could not be added. Try again.");
+  await expect(page.getByRole("dialog", { name: "Sources" })).toBeVisible();
+  await expect(page.locator(".object-canvas[aria-label='Map']")).toBeVisible();
+});
+
 test("an empty Workshop reaches an editable deck through one obvious path", async ({ page }) => {
   const original = await (await page.request.get("/api/workshop")).json() as { id: string };
   const styleLibrary = await (await page.request.get("/api/workshop?view=styles")).json() as { styles: Array<{ id: string; name: string }> };

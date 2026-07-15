@@ -243,6 +243,14 @@ it("analyzes a public website and locks only the reviewed Style values", async (
   expect(confirmed.style!.brandAssets).toEqual([]);
   await rm(root, { recursive: true, force: true });
 });
+it("assigns website palette roles for readable professional outputs", async () => {
+  const fetchImpl = async () => new Response('<html><head><title>Role stress test</title><style>:root{--text-highlight:#FF97E2;--text-primary:#0D0D0D;--background:#FFFFFF;--brand-primary:#FF97E2;--surface:#EDEDF0}</style></head></html>', { status: 200, headers: { "content-type": "text/html" } });
+  const suggestion = await analyzeWebsiteStyle("https://example.com", fetchImpl as typeof fetch);
+  expect(suggestion).toMatchObject({ accent: "#FF97E2", ink: "#0D0D0D", paper: "#FFFFFF" });
+  const root = await mkdtemp(join(tmpdir(), "workshop-readable-style-"));
+  expect(() => lockManualStyle({ ink: "#FF97E2", paper: "#FFFFFF" }, root)).toThrow(/4.5:1 contrast/);
+  await rm(root, { recursive: true, force: true });
+});
 it("rejects unsafe or misleading website brand assets before persistence", async () => {
   const unsafeSvg = async () => new Response('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="32"><script>alert(1)</script></svg>', { status: 200, headers: { "content-type": "image/svg+xml" } });
   await expect(fetchWebsiteBrandAsset("https://example.com/logo.svg", unsafeSvg as typeof fetch)).rejects.toThrow(/active content/);

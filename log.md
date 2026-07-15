@@ -5466,3 +5466,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Manual local asset paths retain legacy behavior; selected remote website assets use the stronger verified asset contract.
 - Professional send-it review, own-material live timing, provider-backed voice/Map/Image/Speech evidence, and the final public video remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 15:54 CT — Real website evidence forced a readable professional palette
+
+**Area:** Product / Accessibility / Company Styles / Presentation quality / Live-site verification
+
+### Changed
+
+- The shared official SideSheet primitive now takes initial focus, contains forward and reverse Tab navigation, closes with Escape, and returns focus through the existing Workshop trigger contract.
+- Failed actions remain assertively announced while the current Map and transient sheet stay available.
+- Website palette inference now treats Text, Background, and Accent as semantic roles rather than taking the first vaguely named CSS variable. Text must retain at least 4.5:1 contrast against Background; decorative text colors cannot become body text; sparse theme colors remain Accent candidates; and distinctive brand colors outrank neutral surfaces for Accent.
+- Saving either a website-derived or manual Style now refuses an unreadable Text/Background pair with a concrete contrast message.
+- Preserved before/after evidence from the real Mozilla run in `research/screenshots/workshoplm/real-site-mozilla-before-palette-fix-1200x800.png` and `research/screenshots/workshoplm/real-site-mozilla-after-palette-fix-1200x800.png`.
+
+### Verified
+
+- The first live-site run found 43 colors, eight font candidates, five asset candidates, and four stylesheets on Mozilla's public site, but exposed a failed role assignment: pale gray Accent, pink Text, white Background, and an unsendable pink presentation. The screenshot is retained rather than promoted as success.
+- After the fix, a fresh isolated production-browser run selected `#0060DF` Accent, `#000000` Text, and `#FFFFFF` Background, reached the first grounded Map in 619 ms, and reached an editable PowerPoint-backed deck in 1,644 ms with one Source, two claims, and no horizontal overflow. These are scripted local timings, not uncoached professional validation.
+- The corrected presentation screenshot is visually readable and hashes to `64e1587b6c8d0e4af2d1d88808ed5bb5dfbd1cda32ce6b32be8744a509a8cc7c`; the retained failure hashes to `bce4ce1972304453d07119acd4396d9dc37c2918625bfd5ddc3cbc8f713cbfae`.
+- OpenAI.com returned a blocked-review state in a separate fresh-root run. WorkshopLM kept the Map, offered the safe fallback, and produced an editable deck with the clean default; this proves recovery, not OpenAI website extraction.
+- Worker tests passed all 81 cases across eight files. Web tests passed all 15 cases, and the production browser suite passed all 25 cases, including modal focus containment, Escape/restore behavior, assertive action errors, reduced motion, contrast, logical zoom, and the three target widths.
+- `pnpm check` passed all 13 packages, `pnpm demo:e2e` passed all six recorded-fixture gates, `pnpm submission:build` produced the truthful 17-asset partial package with four provider limitations, `pnpm submission:verify` returned valid/not stale/not tampered, and `git diff --check` passed.
+
+### Decisions
+
+- A technically extracted palette is not a successful Company Style. The first rendered artifact is the quality proof, and a bad deck sends the implementation back to role inference.
+- Website colors remain editable suggestions, but WorkshopLM will not knowingly create professional work with unreadable core text.
+- The production-browser run is valid live-site product evidence because the in-app browser tool is not callable in this task. It is not recorded as Codex in-app-browser proof, and that host-specific check remains open.
+
+### Open items
+
+- The broader professional send-it review of the complete editable deck remains open; this increment fixes its color foundation but does not claim the narrative and layout system is presentation-ready.
+- Repeat the clean-start path in the Codex in-app browser when callable.
+- Manual local asset paths retain legacy behavior; selected remote website assets use the stronger verified asset contract.
+- Own-material uncoached timing, provider-backed voice/Map/Image/Speech evidence, and the final public video remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

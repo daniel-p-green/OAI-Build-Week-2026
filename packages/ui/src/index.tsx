@@ -5,6 +5,7 @@ import {
   type ForwardedRef,
   type HTMLAttributes,
   type InputHTMLAttributes,
+  type KeyboardEvent,
   type ReactNode,
   type TextareaHTMLAttributes,
   useCallback,
@@ -131,8 +132,36 @@ export function CarouselRow({ className, ...props }: HTMLAttributes<HTMLDivEleme
   return <div className={classes("oai-carousel-row", className)} data-oai-component="CarouselRow" {...props} />;
 }
 
-export function SideSheet({ title, onClose, className, children, ...props }: HTMLAttributes<HTMLElement> & { title: string; onClose: () => void }) {
-  return <aside className={classes("oai-side-sheet", className)} role="dialog" aria-modal="true" aria-label={title} data-oai-component="SideSheet" {...props}><header><h2>{title}</h2><IconButton label={`Close ${title}`} onClick={onClose}><CloseIcon /></IconButton></header>{children}</aside>;
+export function SideSheet({ title, onClose, onKeyDown, className, children, ...props }: HTMLAttributes<HTMLElement> & { title: string; onClose: () => void }) {
+  const sheetRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    sheetRef.current?.querySelector<HTMLElement>("button:not(:disabled), a[href], input:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])")?.focus();
+  }, []);
+
+  function handleKeyDown(event: KeyboardEvent<HTMLElement>) {
+    onKeyDown?.(event);
+    if (event.defaultPrevented) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      onClose();
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const focusable = [...(sheetRef.current?.querySelectorAll<HTMLElement>("button:not(:disabled), a[href], input:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])") ?? [])].filter((element) => element.getClientRects().length > 0);
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  return <aside ref={sheetRef} className={classes("oai-side-sheet", className)} role="dialog" aria-modal="true" aria-label={title} data-oai-component="SideSheet" onKeyDown={handleKeyDown} {...props}><header><h2>{title}</h2><IconButton label={`Close ${title}`} onClick={onClose}><CloseIcon /></IconButton></header>{children}</aside>;
 }
 
 export function StateMessage({ title, children, action, state, className, ...props }: HTMLAttributes<HTMLElement> & { title: string; action?: ReactNode; state: "empty" | "loading" | "partial" | "error" | "needs-update" }) {
