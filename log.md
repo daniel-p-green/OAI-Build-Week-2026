@@ -4614,3 +4614,36 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Live GPT-5.6 Map reasoning, six GPT Image 2 outputs, provider narration, and one Realtime microphone turn remain spend-gated and unproved.
 - Founder footage, primary `/feedback` Session ID, final video edit, public upload, submitted links, and Devpost submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 12:38 CT — Product north star now governs the submission and roadmap
+
+**Area:** Product strategy / Professional validation / Demo / Claims / Submission
+
+### Changed
+
+- Converted the professional replacement thesis into explicit `GOAL.md` gates for the first five minutes, send-it quality, trust and return behavior, and the reality ladder. The gates distinguish automated mechanics and screenshot orientation from provider-backed timing, cold professional judgment, uncoached use, and an external return visit.
+- Recut the public demo around the grounded, branded presentation as the wedge. The opening now promises a deck the professional can defend; the Output beat demonstrates layout, quiet citation, exact `Show source`, and editable PowerPoint before briefly revealing the infographic, images, Storyboard, and Video as supporting proof.
+- Reconciled the Devpost draft, claim ledger, evidence audit, and machine-readable film plan with the current product evidence. The public draft now describes the weekly meeting-to-new-presentation behavior, the external-use AI Collective deck candidate, and the verified 16-asset partial submission set without implying external approval or live provider execution.
+- Corrected stale verification language: the current floor is 13 packages, 13 web contract/unit tests, 17 production-route browser tests, six acceptance gates, and submission integrity verification. Five screenshot-orientation reviews are proven; uncoached empty-Workshop use remains open.
+
+### Verified
+
+- `pnpm demo:film:verify` accepted the revised 2:42, ten-shot plan at 302 narration words and correctly remained `finalReady: false` with the same ten missing external/provider/final-export evidence items.
+- `pnpm submission:build` produced an honest 16-asset `partial` set. `pnpm submission:verify` reported `valid: true`, `stale: false`, and `tampered: false`.
+- `submission/demo-film-plan.json` parsed successfully and `git diff --check` passed.
+
+### Decisions
+
+- WorkshopLM is not a horizontal asset generator. The grounded, branded, source-defensible deck is the wedge; infographic, images, Storyboard, and Video demonstrate the system's supporting range.
+- The hackathon is dogfood zero and a distribution deadline. Product completion evidence must come from professionals choosing to send, revise, reuse, and return—not from implementation breadth alone.
+- A deterministic test can prove freshness mechanics or an export contract. It cannot prove two-minute magic, a fifteen-minute shippable deck, a cold `Send` decision, or an uncoached second use.
+
+### Open items
+
+- Obtain a cold `Send` or `Revise` judgment on the packaged AI Collective deck candidate and repair the first named issue.
+- Measure the provider-backed own-material path against the two-minute Map and fifteen-minute first-deck gates after spend authorization.
+- Capture one uncoached weekly return on representative material after the demo-critical provider and recording gates are closed.
+- Live GPT-5.6 Map reasoning, six GPT Image 2 outputs, provider narration, one Realtime microphone turn, founder footage, primary `/feedback` Session ID, final edit, public upload, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

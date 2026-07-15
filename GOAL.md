@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 12:31 CT
+Last updated: 2026-07-15 12:38 CT
 
 ## Status
 
@@ -77,6 +77,37 @@ The hackathon is a deadline and distribution event, not the product definition. 
 5. **Reality ladder:** the Build Week submission is dogfood zero. Dogfood one is a real external professional deliverable; then three to five uncoached representative professionals use empty Workshops; graduation requires one person outside the project to return and use WorkshopLM twice.
 
 Provider proof and the final video remain deadline-critical, but additional output breadth never outranks a failing send-it, trust, or return-visit test.
+
+### Professional product gates
+
+These gates measure replacement value, not implementation breadth. Automated checks may prove mechanics; they do not substitute for the named human or live-path evidence.
+
+#### First five minutes
+
+- [x] A first-time professional can identify the current object, source scope, and next action within five seconds across the required recorded screens. This is screenshot-orientation evidence, not uncoached empty-Workshop use.
+- [ ] On the provider-backed path, a professional can add their own material and see the grounded Map organize it within two minutes.
+- [ ] From an empty Workshop and the professional's own material, the first editable, source-defensible deck is ready within 15 minutes. Record elapsed time and every manual repair.
+
+#### Send-it quality
+
+- [ ] A cold professional returns `Send` on the external-use deck candidate or names the first required revision; apply that revision and repeat until the deck clears the bar.
+- [ ] The first real GPT Image 2 batch contains deck-usable diagrams, concept visuals, or section art—not generic illustration—and passes a six-panel coherence review.
+- [ ] The provider-narrated Video clears a leadership or professional social-post review for pacing, voice, and visual coherence.
+- [ ] Every primary Output has a credible last-10-percent path: editable PowerPoint for the presentation, in-product panel editing for Storyboard, selective image regeneration, and an explicit downstream edit/export path for remaining formats.
+
+#### Trust and return
+
+- [x] Factual presentation, infographic, Storyboard, and Video claims retain an inspectable path to exact source evidence in the recorded fixture.
+- [x] Meaningful Source changes make dependent work `Needs update`, preserve historical versions, and offer one clear regeneration action.
+- [x] Saved Styles carry across Workshops; a new weekly meeting can refresh the Map, Brief, and presentation without rebuilding the brand system.
+- [ ] One representative professional completes the weekly return path on their own material without project-team coaching.
+
+#### Reality ladder
+
+- [x] Dogfood zero: WorkshopLM produces its own traced submission package and exposes defects as product work. The package remains `partial` until provider media and the final public Video exist.
+- [ ] Dogfood one: an external-use deliverable is reviewed by its intended professional audience and either ships or generates a concrete revision.
+- [ ] Three to five uncoached representative professionals start from empty Workshops with their own material; every stall becomes a tracked product defect.
+- [ ] Graduation: one person outside the project uses WorkshopLM twice without being asked to return.
 
 ## Locked interface contract
 
@@ -403,7 +434,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 
 - [x] Build the “How this was built” provenance surface from dated build evidence.
 - [x] Instrument and display time from first transcript segment to first rendered output.
-- [ ] Produce the Devpost description, README narrative, deck, thumbnails, storyboard, narration, and video as one traced WorkshopLM Output set. The recorded fixture now builds and verifies a 15-asset `partial` Output set with source locators, file hashes, an input fingerprint, the rendered Video's per-scene provenance sidecar, and immutable HTML/JSON build trace; close this only after the provider-backed media and final submission video replace the explicitly recorded fallbacks.
+- [ ] Produce the Devpost description, README narrative, deck, thumbnails, storyboard, narration, and video as one traced WorkshopLM Output set. The recorded fixture now builds and verifies a 16-asset `partial` Output set with source locators, file hashes, an input fingerprint, the rendered Video's per-scene provenance sidecar, and immutable HTML/JSON build trace; close this only after the provider-backed media and final submission video replace the explicitly recorded fallbacks.
 - [ ] Include real UI evidence and the raw-transcript reveal. The production UI now implements and captures the responsive `Show original` before/after surface with fixture evidence. On July 15, `pnpm demo:capture-draft` recorded the complete reveal in a reviewable 37.76-second fixture walkthrough; close only after the dated contemporaneous founder brainstorm and final recorded footage replace that fixture.
 - [ ] Make the public video the canonical judge path: show the live seam, one plugin widget moment, both approval gates, editable control, provenance, and the raw brainstorm → finished submission reveal in under three minutes. The repeatable capture now proves the two gates, semantic edit, source trace, local render, and reveal as one 12-beat sequence. The evidence-gated paper edit fixes the final target at 2:42 across ten shots and fail-closes on every missing provider, founder, host, Codex, or final-export input; it intentionally remains a draft until those artifacts exist.
 - [ ] Keep all judge-facing claims proportional to captured evidence. The current Devpost draft, demo script, evidence audit, and `submission/CLAIM-LEDGER.md` are reconciled to the July 15 proof floor; close only after the final video, Devpost entry, screenshots, release tag, and submitted links pass the same gate.

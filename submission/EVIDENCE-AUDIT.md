@@ -7,6 +7,8 @@ Audit date: 2026-07-15 CT. This is a current-state audit, not a completion claim
 | Local Capture → Shape → Deliver seam | `pnpm demo:e2e` records grounded Sources, current planned image set, five-panel Storyboard, six gates, and MP4. | Proven locally |
 | Editable Excalidraw Map | Production-route browser coverage directly edits bound text, moves a semantic node, persists size/position/title through typed history, and proves WorkshopLM Undo; responsive screenshots cover desktop, compact, and mobile review. | Proven locally |
 | Brief, Style, Outputs, Storyboard, and stale state | Worker/domain tests and production-route browser runs are recorded in `log.md`; Outputs retain real previews, version history, freshness, and source coverage. | Proven locally |
+| Weekly professional return visit | An isolated Monday-to-Thursday Workshop added a new meeting, expanded the Map, invalidated dependent work, preserved the saved Style, and generated Presentation Version 2 with exact trace to the new Source while retaining stale Version 1 history. | Proven locally |
+| External-use deck candidate | A five-slide AI Collective organizer brief uses supplied branding, varied layouts, quiet citations, and editable PowerPoint output; archive, LibreOffice round-trip, and visual inspection passed. | Proven candidate; cold `Send` or `Revise` open |
 | Current-storyboard video | HyperFrames worker generates a current five-panel MP4; `ffprobe` verified streams and duration. | Proven locally |
 | Privacy-safe judge fixture | `demo:reset`, `demo:e2e`, `demo:render`, and `demo:thumbnail` need no credentials. | Proven locally |
 | Local source retrieval | SQLite FTS5 indexes normalized chunk and linked claim text; worker and plugin search use BM25 ranking, while exact fetch remains bound to source and chunk IDs. The live fixture and refreshed installed plugin each retain three indexed sanitized chunks. | Proven locally |
@@ -20,11 +22,12 @@ Audit date: 2026-07-15 CT. This is a current-state audit, not a completion claim
 | GPT-4o mini TTS narration | Local placeholder tones are disclosed; no provider TTS artifact/provenance. | Open |
 | Fresh ChatGPT Work-surface plugin proof | Codex desktop skill/tool and local browser proof exists, but no Work-surface invocation or write-confirmation evidence exists. | Open |
 | Original pre-code brainstorm | No authentic pre-code artifact found in the checkout. A new dated founder-brainstorm recording may serve as a truthful demo source, but cannot be described as pre-code evidence. | Open; cannot backfill |
-| Recorded submission Output set | A 15-asset set has source locators, hashes, an input fingerprint, per-scene Video provenance, and immutable HTML/JSON build records; its manifest is explicitly `partial` because provider images, narration, and final public video are absent. | Proven partial |
+| Independent first-time orientation | Five independent screenshot reviews identified the current object, source scope, and next action across required desktop, compact, and mobile surfaces after the focused-Output source-count correction. | Proven for screenshot orientation; uncoached empty-Workshop use remains open |
+| Recorded submission Output set | A 16-asset set has source locators, hashes, an input fingerprint, per-scene Video provenance, and immutable HTML/JSON build records; its manifest is explicitly `partial` because provider images, narration, and final public video are absent. | Proven partial |
 | Public video and YouTube | Timed evidence-gated recording script, local render, and thumbnails exist; no final public recording/upload. | Open |
 | Devpost form and `/feedback` Session ID | Draft copy exists; external form and session ID unavailable on this surface. | Open |
 | Repository license | Root `LICENSE` contains MIT; public `main` was verified with GitHub CLI. | Proven |
 
 ## Completion decision
 
-WorkshopLM is **not complete**. The local deterministic product, editable Map, versioned Outputs, Codex desktop plugin read/browser path, and evidence chain are substantial and verified. Provider-backed GPT-5.6 reasoning, image bytes, narration, one live Realtime microphone turn, ChatGPT Work proof, independent orientation reviews, the final public video, and submitted links remain open under `GOAL.md`.
+WorkshopLM is **not complete**. The local deterministic product, editable Map, versioned Outputs, weekly refresh path, Codex desktop plugin read/browser path, and evidence chain are substantial and verified. A real professional's cold `Send` or `Revise` decision, provider-backed GPT-5.6 reasoning, image bytes, narration, one live Realtime microphone turn, ChatGPT Work proof, uncoached empty-Workshop use, the final public video, and submitted links remain open under `GOAL.md`.

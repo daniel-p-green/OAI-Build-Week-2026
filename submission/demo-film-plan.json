@@ -15,7 +15,7 @@
       "endSeconds": 12,
       "state": "ready",
       "captureBeats": ["map"],
-      "narration": "Most AI notebooks stop at answers. WorkshopLM turns raw professional thinking into finished, source-traceable work without separating the conversation from the production workflow.",
+      "narration": "From your meetings and documents to a deck you can defend, with every claim traced to its source. WorkshopLM turns raw professional thinking into finished work without separating conversation from production.",
       "requiredMoments": [],
       "requiredEvidence": []
     },
@@ -92,18 +92,18 @@
       "endSeconds": 88,
       "state": "ready",
       "captureBeats": ["style"],
-      "narration": "Style is a versioned contract, not a fresh prompt. Palette, typography, layouts, image treatment, and negative rules stay consistent across the entire Output set.",
+      "narration": "Style is set once and stays reviewable. Palette, typography, layouts, image treatment, and negative rules remain consistent across the deck and every supporting asset.",
       "requiredMoments": [],
       "requiredEvidence": []
     },
     {
       "id": "outputs",
-      "title": "A coherent Output set",
+      "title": "A deck you can defend",
       "startSeconds": 88,
       "endSeconds": 107,
       "state": "blocked",
       "captureBeats": ["create-outputs"],
-      "narration": "One approved state now produces a traced presentation and infographic, plus a coherent six-image GPT Image 2 set. The same evidence and visual system continue into the editable Storyboard and Video.",
+      "narration": "The hero output is a branded deck I can edit and defend. Every factual claim keeps exact evidence, while the infographic and coherent GPT Image 2 set support the same story and visual system.",
       "requiredMoments": ["provider-image-set"],
       "requiredEvidence": [
         {

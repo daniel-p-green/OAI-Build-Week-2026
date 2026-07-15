@@ -5,7 +5,7 @@ Status: **draft**
 - Planned runtime: 162s (2:42)
 - Hard ceiling: 175s
 - Shots: 10
-- Narration words: 291 (107.8 words per minute)
+- Narration words: 302 (111.9 words per minute)
 - Source walkthrough: 37.76s, fixture-draft, hash verified
 - Ready shots: 5
 - Blocked shots: 5
@@ -31,7 +31,7 @@ Status: **draft**
 - 045-060 · **Evidence remains inspectable and editable** · ready · fixture beats: source-trace, map-edit
 - 060-075 · **First approval: Brief** · ready · fixture beats: brief-approval
 - 075-088 · **One reviewable visual system** · ready · fixture beats: style
-- 088-107 · **A coherent Output set** · blocked · fixture beats: create-outputs
+- 088-107 · **A deck you can defend** · blocked · fixture beats: create-outputs
 - 107-125 · **Second approval: Storyboard** · ready · fixture beats: storyboard-edit, storyboard-approval
 - 125-143 · **Approved work renders locally** · blocked · fixture beats: video-render, output-evidence
 - 143-162 · **The submission proves the product** · blocked · fixture beats: original-reveal

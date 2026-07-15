@@ -6,13 +6,13 @@ Turn raw thinking into finished, source-traceable work.
 
 ## What it does
 
-WorkshopLM is a local-first professional production workspace for turning captured source material into an editable Map, an approved Brief, branded Outputs, an editable Storyboard, and a locally rendered Video. ChatGPT/Codex remains the conversation surface; WorkshopLM's browser workspace keeps the current work in focus without duplicating chat.
+WorkshopLM is a local-first professional production workspace for turning meetings, documents, and rough thinking into a branded deck you can defend, with every factual claim traced to its source. ChatGPT/Codex remains the conversation surface; WorkshopLM's browser workspace keeps the Map, Brief, presentation, and supporting work in focus without duplicating chat.
 
-The recorded judge path uses sanitized local data and needs no account, private connector, paid API call, or judge-supplied credits. It demonstrates grounded Sources, exact evidence locators, an editable Excalidraw Map, a readable Brief and Style, a source-traceable presentation and infographic, a disclosed planned six-panel image set, an editable five-panel Storyboard, both approval gates, and a local HyperFrames MP4 rendered from the approved current Storyboard.
+The recorded judge path uses sanitized local data and needs no account, private connector, paid API call, or judge-supplied credits. It demonstrates grounded Sources, exact evidence locators, an editable Excalidraw Map, a readable Brief and reusable Style, a source-traceable presentation with editable PowerPoint export, a supporting infographic, a disclosed planned six-panel image set, an editable five-panel Storyboard, both approval gates, and a local HyperFrames MP4 rendered from the approved current Storyboard.
 
 ## Why it matters
 
-Knowledge tools help teams understand material. WorkshopLM focuses on the next step: turning that understanding into reviewable professional work while preserving the path from artifact back to evidence.
+Knowledge tools help teams understand material. WorkshopLM helps professionals ship it. The product is organized around the deliverable they repeatedly present and get judged on—a grounded, branded deck—while preserving the path from every factual claim back to exact evidence.
 
 ## How it was built
 
@@ -24,7 +24,7 @@ WorkshopLM implements an operation-level GPT-5.6 policy: Sol for quality-critica
 
 ## Verification
 
-The current recorded build passes checks across 13 packages, 11 production-route UI tests, all six acceptance gates, and submission integrity verification. `pnpm demo:reset && pnpm demo:e2e` runs the recorded Sources → Map → Brief → Outputs → Storyboard → Video path without credentials. These counts must be refreshed before final publication because the suite may continue to grow. The public repository contains setup, fixture, and plugin inspection instructions.
+The current recorded build passes checks across 13 packages, 13 web contract/unit tests, 17 production-route browser tests, all six acceptance gates, and submission integrity verification. `pnpm demo:reset && pnpm demo:e2e` runs the recorded Sources → Map → Brief → Outputs → Storyboard → Video path without credentials. A separate weekly-return test proves that a new meeting expands the Map, marks dependent work `Needs update`, preserves the saved Style, and generates a new presentation version traced to the added Source. These counts must be refreshed before final publication because the suite may continue to grow. The public repository contains setup, fixture, and plugin inspection instructions.
 
 ## Known scope boundary
 
