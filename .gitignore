@@ -6,12 +6,17 @@ dist/
 !packages/plugin-mcp/dist/**
 .turbo/
 .playwright-mcp/
+.pet-runs/
+apps/web/.next-playwright/
+apps/web/test-results/
 .DS_Store
 workshoplm-desktop.png
 .workshoplm/
 .workshoplm-recording-draft/
 .env
 .env.local
+outputs/workshoplm-current-ui.zip
+outputs/workshoplm-project-overview.pdf
 artifacts/spikes/**/*.json
 artifacts/spikes/**/*.mp4
 artifacts/spikes/**/*.png
