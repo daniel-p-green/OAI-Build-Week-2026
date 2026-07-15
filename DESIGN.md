@@ -171,7 +171,7 @@ The Outputs card uses a compact contact sheet for six visually coherent panels. 
 
 ### 7. Storyboard
 
-Use a horizontal filmstrip above a large selected-panel editor. Every panel displays duration, editable title and narration, source access, and stale status. When an image set exists, each panel binds one exact image-panel ID and version; the filmstrip, selected-panel preview, and local video renderer must resolve those same bytes. Regenerating a bound image to a new version marks the affected Storyboard path `Needs update` and revokes its approval. The second and final blocking action is `Approve storyboard`. Only after approval does the same header position become `Create video`.
+Use a horizontal filmstrip above a large selected-panel editor. Every panel displays duration, editable title and narration, source access, and stale status. `Show source` resolves the selected panel's stored claim, chunk, source, and locator; it may not fall back to an unrelated first source. When an image set exists, each panel binds one exact image-panel ID and version; the filmstrip, selected-panel preview, and local video renderer must resolve those same bytes. Regenerating a bound image to a new version marks the affected Storyboard path `Needs update` and revokes its approval. The second and final blocking action is `Approve storyboard`. Only after approval does the same header position become `Create video`.
 
 ### 8. Source evidence and original reveal
 
@@ -182,6 +182,8 @@ source locator → evidence chunk → claim → Map node → brief block → out
 ```
 
 For the meta-demo, the focused Video replaces `Show source` with one secondary `Show original` action. It opens the `OriginalReveal` composite beside the finished Video so the before/after relationship is visible without adding navigation or another permanent panel. `OriginalReveal` is composed only from the official `SideSheet`, `Card`, body/caption text, `ListGroup`, `ListRow`, and `FileIcon` primitives. It shows the first durable transcript when present, otherwise an explicitly labeled sanitized source excerpt; it never upgrades fixture text into live voice evidence. Its After list names the presentation, infographic, image set, Storyboard, and Video with honest current states. Technical build evidence remains separate from this product-facing reveal.
+
+Every rendered Video writes a machine-readable provenance sidecar beside the MP4. For each timed scene it records the approved Storyboard panel, durable claim/source/chunk edge, exact locator and excerpt, bound image ID/version/hash, and narration hash/provider when present. The sidecar also records the final MP4 artifact hash and travels with the traced submission Output set; it stays under technical evidence rather than becoming another primary Video control.
 
 ## Components and geometry
 

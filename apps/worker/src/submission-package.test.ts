@@ -1,9 +1,11 @@
+import { createHash } from "node:crypto";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { buildSubmissionOutputSet, verifySubmissionOutputSet } from "./submission-package.js";
-import { applyWorkshopAction, createImageBatch, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, lockManualStyle, setVideoState } from "./workshop-service.js";
+import { buildWorkshopVideoProvenance } from "./executor.js";
+import { applyWorkshopAction, createImageBatch, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, setVideoState } from "./workshop-service.js";
 
 const roots: string[] = [];
 afterEach(async () => { await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true }))); });
@@ -20,7 +22,10 @@ async function buildableWorkshop() {
   generateStoryboard(root);
   createImageBatch(root);
   applyWorkshopAction("approveStoryboard", root);
-  await writeFile(join(root, "generated", "workshoplm-demo.mp4"), "deterministic-video");
+  const videoBytes = Buffer.from("deterministic-video");
+  await writeFile(join(root, "generated", "workshoplm-demo.mp4"), videoBytes);
+  const videoArtifact = { relativePath: "artifacts/test/workshoplm-demo", sha256: createHash("sha256").update(videoBytes).digest("hex"), byteCount: videoBytes.byteLength, mimeType: "video/mp4" };
+  await writeFile(join(root, "generated", "workshoplm-demo.provenance.json"), `${JSON.stringify(buildWorkshopVideoProvenance(readWorkshopState(root), videoArtifact), null, 2)}\n`);
   setVideoState("rendered", root);
   return root;
 }
@@ -41,7 +46,9 @@ describe("submission Output set", () => {
     expect(built.outputSet.limitations).toEqual(expect.arrayContaining([expect.stringContaining("no live GPT-5.6"), expect.stringContaining("0 of 6"), expect.stringContaining("placeholder tones")]));
     expect(built.outputSet.assets.filter((asset) => asset.type === "thumbnail")).toHaveLength(3);
     expect(built.outputSet.assets.map((asset) => asset.type)).toEqual(expect.arrayContaining(["devpost_description", "readme_narrative", "deck", "infographic", "image_manifest", "storyboard", "narration", "video", "evidence"]));
+    expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "VIDEO-PROVENANCE.json", mimeType: "application/json", provenance: "video_render" }));
     await expect(readFile(join(built.manifestPath, "..", "DEVPOST.md"), "utf8")).resolves.toContain("No live GPT-5.6 run is claimed");
+    await expect(readFile(join(built.manifestPath, "..", "STORYBOARD.md"), "utf8")).resolves.toContain("Sanitized fixture · chunk 01");
     await expect(verifySubmissionOutputSet(root, built.manifestPath)).resolves.toEqual({ valid: true, stale: false, tampered: false, issues: [] });
   });
 

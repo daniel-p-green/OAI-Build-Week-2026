@@ -4163,3 +4163,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Generate and inspect the authorized six-image GPT Image 2 set, then verify the live Storyboard and narrated HyperFrames output use those exact hashes before closing the provider image/video gates.
 - Realtime microphone evidence, founder recording, host footage, primary Session ID, final edit, public upload, and Devpost submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 04:48 CT — Grounding now survives every Storyboard scene and the rendered Video
+
+**Area:** Citation integrity / Storyboard / video provenance / submission evidence
+
+### Changed
+
+- Replaced copied Storyboard locator text as the only evidence with durable per-panel references containing claim ID, source ID, chunk ID, and locator. The asset plan distributes those references into every generated panel and keeps its aggregate claim set exact.
+- Made Storyboard approval fail closed when a panel has no source reference, names an inactive or missing source, mismatches a chunk or claim to its source, or lets its `claimIds` drift from its evidence references.
+- Routed Storyboard `Show source` through the selected panel's stored source ID instead of the generic first Source.
+- Added a render-time `workshoplm-demo.provenance.json` sidecar. Every timed scene records its approved panel, claim IDs, exact source locator and excerpt, bound image ID/version/hash when present, and narration hash/model/voice when present; the Video entry records the content-addressed MP4 hash and byte count.
+- Added the unchanged sidecar to the traced submission Output set as `VIDEO-PROVENANCE.json`, included source locators in `STORYBOARD.md`, and raised the honest recorded package from 12 to 13 assets.
+
+### Verified
+
+- Domain tests passed 13/13. Worker tests passed 52/52, including grounding-integrity rejection, render-sidecar contents, sidecar packaging, and manifest verification.
+- The production browser suite passed 16/16. At desktop, compact, and mobile widths, selecting Storyboard panel 2 and `Show source` opened `Build Week brief` at `Build notes · §2`, proving panel-specific routing.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. `pnpm demo:e2e` passed the six recorded gates and wrote the provenance sidecar beside the local MP4.
+- The acceptance sidecar records claim `claim-c8c19f7b70c2-0-1` → chunk `chunk-c8c19f7b70c2-1` → source `source-c8c19f7b70c2` → `Sanitized fixture · chunk 01` for every scene. Its SHA-256 is `312873dd7b02c889ca3e2de97c25ded50073283151a6d87fb617a1b24ff0a53a`.
+- `pnpm submission:build` produced a 13-asset honestly `partial` Output set; `pnpm submission:verify` reported `valid: true`, `stale: false`, `tampered: false`. The copied Video provenance file retained the exact same SHA-256.
+- `pnpm demo:film:verify` remained honestly `draft` with five ready shots, five blocked shots, and ten missing live/final evidence inputs. `git diff --check` passed. No paid provider request was made.
+
+### Decisions
+
+- Citation text is a view, not the provenance contract. Approval and rendering now depend on durable IDs that can be resolved back to the exact active Source.
+- Compatible domain-contract correction: `StoryboardPanel` now requires at least one evidence reference and exact agreement between `claimIds` and evidence claim IDs. Blast radius was limited to the domain fixture, recorded E2E fixture, persisted-state hydration, asset-plan/Storyboard generation, approval validation, and renderer/submission consumers; all dependent tests landed together.
+- The focused Video keeps its simple `Show original` meta-demo action. Detailed per-scene evidence travels in the technical sidecar and submission manifest, avoiding another primary control while preserving the full audit path.
+- Fixture evidence proves referential integrity and packaging, not live GPT-5.6, GPT Image 2, Realtime, or TTS use.
+
+### Open items
+
+- Run the authorized live provider path and verify the same sidecar contains real image and narration hashes before closing the provider-backed Video evidence gate.
+- Founder recording, Realtime microphone proof, host footage, primary Session ID, final edit, public upload, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

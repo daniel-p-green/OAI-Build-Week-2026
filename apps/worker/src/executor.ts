@@ -1,12 +1,12 @@
 import { execFile as rawExecFile } from "node:child_process";
-import { copyFile, mkdir, stat, writeFile } from "node:fs/promises";
+import { copyFile, mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { promisify } from "node:util";
 import { storeArtifact, type StoredArtifact } from "./artifacts/local-artifact-store.js";
 import { openLocalDatabase } from "./db/client.js";
 import { migrate } from "./db/migrate.js";
 import { finishJob, leaseNext } from "./queue.js";
-import { readWorkshopState, setVideoState, type StoryboardPanel, type WorkshopState } from "./workshop-service.js";
+import { assertStoryboardGrounding, readWorkshopState, setVideoState, type StoryboardPanel, type WorkshopState } from "./workshop-service.js";
 
 const execFile = promisify(rawExecFile);
 export type ExecuteResult = { jobId?: string; state: "idle" | "succeeded" | "failed"; artifact?: StoredArtifact; error?: string };
@@ -19,6 +19,53 @@ function hasCurrentNarration(state: WorkshopState): boolean {
 function currentImageForPanel(state: WorkshopState, panel: StoryboardPanel) {
   if (!panel.imagePanelId || !panel.imagePanelVersion || state.imageBatch?.stale) return undefined;
   return state.imageBatch?.panels.find((image) => image.id === panel.imagePanelId && image.version === panel.imagePanelVersion && image.state === "generated" && image.relativePath);
+}
+export type WorkshopVideoProvenance = {
+  schemaVersion: 1;
+  workshopId: string;
+  storyboardVersion: number;
+  styleVersion?: number;
+  visualDnaVersion?: number;
+  imageBatchId?: string;
+  video: StoredArtifact & { relativePath: string };
+  panels: Array<{
+    panelId: string;
+    title: string;
+    startSeconds: number;
+    durationSeconds: number;
+    claimIds: string[];
+    evidence: Array<{ claimId?: string; sourceId: string; sourceTitle: string; chunkId?: string; locator: string; snippet: string }>;
+    image?: { panelId: string; version: number; sha256: string; referenceId: string };
+    narration?: { sha256: string; model: string; voice: string };
+  }>;
+};
+export function buildWorkshopVideoProvenance(state: WorkshopState, video: StoredArtifact): WorkshopVideoProvenance {
+  if (!state.storyboardApproved || state.storyboard.stale || state.storyboard.panels.some((panel) => panel.stale || !panel.approved)) throw new Error("Video provenance requires an approved current storyboard.");
+  assertStoryboardGrounding(state);
+  let startSeconds = 0;
+  const panels = state.storyboard.panels.map((panel) => {
+    const image = currentImageForPanel(state, panel);
+    const narration = state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version ? state.narration.panels.find((candidate) => candidate.panelId === panel.id) : undefined;
+    const evidence = panel.evidence.map((reference) => {
+      const source = state.sourceItems.find((candidate) => candidate.id === reference.sourceId)!;
+      const chunk = reference.chunkId ? state.sourceChunks.find((candidate) => candidate.id === reference.chunkId) : undefined;
+      const claim = reference.claimId ? state.claims.find((candidate) => candidate.id === reference.claimId) : undefined;
+      return { ...reference, sourceTitle: source.title, snippet: chunk?.text ?? claim?.text ?? source.excerpt };
+    });
+    const value = {
+      panelId: panel.id,
+      title: panel.title,
+      startSeconds,
+      durationSeconds: panel.durationSeconds,
+      claimIds: [...panel.claimIds],
+      evidence,
+      image: image?.sha256 ? { panelId: image.id, version: image.version, sha256: image.sha256, referenceId: image.referenceId } : undefined,
+      narration: narration ? { sha256: narration.sha256, model: narration.model, voice: narration.voice } : undefined,
+    };
+    startSeconds += panel.durationSeconds;
+    return value;
+  });
+  return { schemaVersion: 1, workshopId: state.id, storyboardVersion: state.storyboard.version, styleVersion: state.style?.version, visualDnaVersion: state.visualDna?.version, imageBatchId: state.imageBatch?.id, video, panels };
 }
 export function buildWorkshopVideoHtml(state: WorkshopState): string {
   if (!state.storyboardApproved || state.storyboard.stale || state.storyboard.panels.some((panel) => panel.stale || !panel.approved)) throw new Error("Video render requires an approved current storyboard.");
@@ -50,7 +97,8 @@ export async function executeOne(root: string, run: RunCommand = defaultRun) : P
       for (const [index, panel] of state.storyboard.panels.entries()) await run("ffmpeg", ["-y", "-f", "lavfi", "-i", `sine=frequency=${440 + index * 83}:sample_rate=48000:duration=${panel.durationSeconds}`, "-ac", "1", join(staging, `panel-${index + 1}.wav`)]);
     }
     const output = join(root, "generated", "workshoplm-demo.mp4"); await run("npx", ["hyperframes", "render", staging, "--output", output, "--workers", "1", "--quality", "draft"]); await stat(output);
-    const artifact = await storeArtifact(root, "workshoplm-demo", await import("node:fs/promises").then(({ readFile }) => readFile(output)), "video/mp4");
+    const artifact = await storeArtifact(root, "workshoplm-demo", await readFile(output), "video/mp4");
+    await writeFile(join(root, "generated", "workshoplm-demo.provenance.json"), `${JSON.stringify(buildWorkshopVideoProvenance(state, artifact), null, 2)}\n`);
     finishJob(db, job.id, "succeeded"); setVideoState("rendered", root); return { jobId: job.id, state: "succeeded", artifact };
   } catch (caught) { const error = caught instanceof Error ? caught.message : "Unknown render failure"; const retrying = job.attempts < 2; finishJob(db, job.id, retrying ? "retrying" : "failed", error); setVideoState(retrying ? "queued" : "blocked", root); return { jobId: job.id, state: "failed", error }; }
 }

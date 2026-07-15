@@ -106,8 +106,8 @@ function readmeNarrative(state: WorkshopState, limitations: string[]): string {
 }
 
 function storyboardMarkdown(state: WorkshopState): string {
-  const rows = state.storyboard.panels.map((panel, index) => `| ${index + 1} | ${panel.title.replaceAll("|", "\\|")} | ${panel.durationSeconds}s | ${panel.narration.replaceAll("|", "\\|")} |`).join("\n");
-  return `# Storyboard\n\nApproved Storyboard version ${state.storyboard.version}.\n\n| Frame | Purpose | Duration | Narration |\n| ---: | --- | ---: | --- |\n${rows}\n`;
+  const rows = state.storyboard.panels.map((panel, index) => `| ${index + 1} | ${panel.title.replaceAll("|", "\\|")} | ${panel.durationSeconds}s | ${panel.narration.replaceAll("|", "\\|")} | ${panel.evidence.map((reference) => reference.locator).join("; ").replaceAll("|", "\\|")} |`).join("\n");
+  return `# Storyboard\n\nApproved Storyboard version ${state.storyboard.version}.\n\n| Frame | Purpose | Duration | Narration | Sources |\n| ---: | --- | ---: | --- | --- |\n${rows}\n`;
 }
 
 function narrationMarkdown(state: WorkshopState): string {
@@ -142,7 +142,9 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   const inputs = assertBuildable(state, dataRoot);
   const imageBatch = state.imageBatch!;
   const videoPath = join(dataRoot, "generated", "workshoplm-demo.mp4");
+  const videoProvenancePath = join(dataRoot, "generated", "workshoplm-demo.provenance.json");
   await stat(videoPath);
+  await stat(videoProvenancePath);
   const packageRoot = resolve(options.outputDirectory ?? join(dataRoot, "generated", "submission-output-set-v1"));
   if (!inside(dataRoot, packageRoot)) throw new Error("Submission package must stay inside the Workshop data root.");
   await rm(packageRoot, { recursive: true, force: true });
@@ -172,6 +174,7 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
     await copyFile(source, join(packageRoot, name));
   }
   await copyFile(videoPath, join(packageRoot, "workshoplm-demo.mp4"));
+  await copyFile(videoProvenancePath, join(packageRoot, "VIDEO-PROVENANCE.json"));
 
   const thumbnail = options.renderThumbnail ?? renderThumbnail;
   const duration = state.storyboard.panels.reduce((total, panel) => total + panel.durationSeconds, 0);
@@ -204,6 +207,7 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   assets.push(await assetFor(packageRoot, "storyboard", "STORYBOARD.md", "text/markdown", claimIds, sourceLocators, "source_trace"));
   assets.push(await assetFor(packageRoot, "narration", "NARRATION.md", "text/markdown", claimIds, sourceLocators, "narration"));
   assets.push(await assetFor(packageRoot, "video", "workshoplm-demo.mp4", "video/mp4", claimIds, sourceLocators, "video_render"));
+  assets.push(await assetFor(packageRoot, "evidence", "VIDEO-PROVENANCE.json", "application/json", claimIds, sourceLocators, "video_render"));
   assets.push(await assetFor(packageRoot, "evidence", "EVIDENCE.md", "text/markdown", claimIds, sourceLocators, "source_trace"));
   if (state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version) for (const [index, panel] of state.narration.panels.entries()) assets.push(await assetFor(packageRoot, "narration", `narration/panel-${index + 1}${extname(panel.relativePath) || ".wav"}`, "audio/wav", claimIds, sourceLocators, "narration"));
   for (const [index, panel] of generatedPanels.entries()) assets.push(await assetFor(packageRoot, "image", `images/panel-${index + 1}${extname(panel.relativePath!) || ".png"}`, "image/png", claimIds, sourceLocators, "workshop_output"));

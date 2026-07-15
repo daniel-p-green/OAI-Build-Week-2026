@@ -221,6 +221,12 @@ test.describe("completed Workshop judge path", () => {
       await expectPrimaryActions(page, 1);
       await expect(page.getByRole("button", { name: "Save" })).toHaveCount(0);
       await expectScreen(page, `${viewport.name}-storyboard`);
+      await page.locator(".storyboard-strip button").nth(1).click();
+      await page.getByRole("button", { name: "Show source" }).click();
+      const storyboardSource = page.getByRole("dialog", { name: "Source" });
+      await expect(storyboardSource).toContainText("Build Week brief");
+      await expect(storyboardSource).toContainText("Build notes · §2");
+      await closeDialog(page, "Source");
       const titleField = page.getByRole("textbox", { name: "Panel title" });
       const originalTitle = await titleField.inputValue();
       await titleField.fill(`${originalTitle} revised`);
@@ -359,6 +365,8 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
     title,
     narration,
     durationSeconds,
+    claimIds: readyState.storyboard.panels[index]?.claimIds ?? [],
+    evidence: readyState.storyboard.panels[index]?.evidence ?? [{ sourceId: readyState.sourceItems[index % readyState.sourceItems.length].id, locator: readyState.sourceItems[index % readyState.sourceItems.length].locator }],
     imagePanelId: panels[index].id,
     imagePanelVersion: panels[index].version,
     approved: true,
