@@ -10,7 +10,7 @@ WorkshopLM
 
 ## Tagline (under 200 characters)
 
-Turn raw thinking into finished work. WorkshopLM takes your meetings, documents, and ideas to a branded, source-defensible deck and video, with every claim traced to its source. It built itself.
+Turn raw thinking into finished work. WorkshopLM turns meetings and documents into a branded, source-defensible deck, with every factual claim traced to its source.
 
 ## Category
 
@@ -42,13 +42,16 @@ Two things make this different from every generate-a-deck tool:
 
 It's built for the weekly rhythm, not the one-off demo: add Monday's new meeting to an existing Workshop and the Map expands, dependent work flags itself, your saved Style carries over, and one reapproval produces the next deck version, traced to the new source, with the old version preserved in history.
 
-### The part you won't believe until you open the repo
+### The product proof is its production record
 
-WorkshopLM built itself.
+Codex built WorkshopLM from a goal file. WorkshopLM then used the same provenance model on its own recorded submission fixture.
 
 This project started as two files: a goal document and an operating agreement for autonomous agents. Codex, running on GPT-5.6, implemented the product from that goal file across the submission period, working through an evidence-gated checklist, verifying its own work, and appending every milestone to a public, append-only build log. The log even records the moment the system caught itself: one agent claimed the UI rebuild was complete, a second agent disproved the claim with computed-style evidence, reopened the checklist, and rebuilt it properly. That entry is in the repo, timestamped, unedited.
 
-Then WorkshopLM closes the loop in the recorded fixture. It preserves a traced Output set from sanitized sources through Sources, Map, approved Brief, Style, and rendered outputs, with hashes and per-scene provenance. `Show original` lets a reviewer walk from a finished fixture Output to the transcript excerpt that started it.
+WorkshopLM currently preserves a traced, 17-asset partial Output set from sanitized sources through Sources, Map, approved Brief, Style, editable PowerPoint files, Storyboard, and local Video, with hashes and per-scene provenance. `Show original` lets a reviewer walk from a finished fixture Output to the transcript excerpt that started it.
+
+`[LIVE: The final Devpost copy, deck, thumbnail, Storyboard, narration, and public demo Video were produced and verified as one WorkshopLM Output set.]`
+`[FALLBACK: The current recorded fixture proves the traced production model, but the final public submission was assembled from those verified outputs outside the product.]`
 
 `[LIVE: The measured path from first transcript to first finished output in the recorded live run was {X minutes}.]`
 `[FALLBACK: omit the sentence.]`
@@ -65,7 +68,7 @@ Codex is not a tool we used on this project. Codex is how this project happened.
 
 Two layers, both evidenced.
 
-**GPT-5.6 built the product.** Every Codex session in this build ran on GPT-5.6. Orchestration and hard reasoning ran on Sol; implementation tasks ran on Terra where appropriate to spend credits where they mattered. The dated commits and build log are the record.
+**GPT-5.6 contributed through Codex.** The build used Codex on GPT-5.6 for implementation, orchestration, review, and verification. The dated commits, task history, and build log record the work; this is separate from the still-gated claim that WorkshopLM itself completed a paid GPT-5.6 API call.
 
 `[LIVE: **GPT-5.6 runs the product.** In the recorded live run, gpt-5.6-sol turned the grounded transcript and sources into the semantic Map on screen, with the request, response, and routing captured in the run's provenance record. A nine-request benchmark measured Sol, Terra, and Luna on the product's real graph, brief, and triage operations and set the operation-level routing defaults: Sol for quality-critical graph reasoning, Terra for structured synthesis, Luna for repeatable triage.]`
 `[FALLBACK: **GPT-5.6 in the runtime.** WorkshopLM implements an operation-level GPT-5.6 routing policy (Sol for quality-critical graph reasoning, Terra for structured synthesis, Luna for repeatable triage) behind a spend-gated adapter, with a benchmark harness ready to set defaults from measured quality, latency, and cost.]`
@@ -84,7 +87,7 @@ pnpm demo:reset && pnpm demo:e2e
 pnpm dev
 ```
 
-That runs the complete recorded seam (Sources → Map → Brief → Style → Outputs → Storyboard → rendered MP4) and opens the Workshop in your browser. The README covers the Codex plugin installation from the public marketplace snapshot and the optional live-provider path. The current build passes checks across 13 packages, the production-route browser suite, all six acceptance gates, and submission integrity verification; the repo is pinned to a tagged judge release through the winner announcement.
+That runs the complete recorded seam (Sources → Map → Brief → Style → Outputs → Storyboard → rendered MP4) and opens the Workshop in your browser. The README covers the Codex plugin installation from the public marketplace snapshot and the optional live-provider path. The current build passes checks across 13 packages, the production-route browser suite, all six acceptance gates, and submission integrity verification. The final publication gate will pin a tagged judge release and preserve it through the winner announcement.
 
 ### Scope, honestly
 
@@ -109,7 +112,7 @@ Every public claim in this description is reconciled against the evidence ledger
 
 WorkshopLM is a local-first Codex plugin and browser workspace. You can score it three ways, in increasing depth:
 
-1. **Video (3 min):** the complete live flow, both approval gates, the plugin moment, and the self-built provenance reveal.
+1. **Video (3 min):** the captured product flow, both approval gates, the plugin moment, and the source-to-submission provenance reveal.
 2. **Recorded fixture (5 min, no credentials):** clone the repo at the tagged release, run `pnpm install && pnpm demo:reset && pnpm demo:e2e && pnpm dev`. Sanitized data, no account, no API key, no cost.
 3. **Codex plugin (10 min):** `codex plugin marketplace add daniel-p-green/OAI-Build-Week-2026` then `codex plugin add workshoplm@workshoplm-local`. Activate `$workshoplm` in a fresh task to search and fetch grounded evidence, and open the local Workshop doorway. Verified platform: macOS with Codex desktop/CLI; Chrome-based in-app browser at 1200×800.
 

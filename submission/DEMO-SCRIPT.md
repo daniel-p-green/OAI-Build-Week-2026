@@ -14,6 +14,7 @@ Every answer must point to an inspected artifact in `log.md`. A missing or ambig
 | Live Realtime voice? | A microphone turn is persisted with final provider transcript and item/event IDs. | Otherwise use the sanitized transcript fixture and do not call it live voice. |
 | Codex plugin doorway captured? | Legible footage shows Codex opening the correct local Workshop. | The final take cannot close until this is `Yes`. |
 | Founder brainstorm captured? | A dated recording and transcript exist. | Call it a contemporaneous brainstorm, never pre-code evidence. |
+| Final submission produced in WorkshopLM? | Final Devpost copy, deck, thumbnail, Storyboard, narration, and public Video appear in one verified non-partial Output set. | Otherwise call the reveal a traced recorded fixture, not a self-built final submission. |
 | Primary `/feedback` ID recorded? | The representative eligible Session ID and rationale are in `log.md`. | Required before final submission, but do not show disposable proof-task IDs. |
 
 | Time | Screen action | Narration |
@@ -27,7 +28,7 @@ Every answer must point to an inspected artifact in `log.md`. A missing or ambig
 | 1:28–1:47 | Open the presentation first. Show real layout variety, a quiet citation, `Show source`, and the editable PowerPoint action. Then return to Outputs and briefly reveal the infographic and image set. If a logged live image set exists, show it; otherwise keep `Planned` visible. | “The hero output is a branded deck I can edit and defend. Its factual claims retain exact evidence; the infographic and image set support the same story. In this recorded path, images remain honestly planned rather than passed off as provider pixels.” |
 | 1:47–2:05 | Open Storyboard, edit one panel, save, then choose `Approve storyboard`. | “The Storyboard remains editable. This is the second and final blocking approval before video creation.” |
 | 2:05–2:23 | Choose `Create video`, show the MP4, then return to the presentation's evidence view. | “The local worker renders only the approved current Storyboard. The same trace still follows the finished presentation back through the Brief and Map to exact evidence.” |
-| 2:23–2:42 | Reveal raw brainstorm beside the finished submission package, then show concise Codex and GPT-5.6 evidence. | Provider-backed cut: “You just watched GPT-5.6 shape the source. Codex accelerated the implementation and verification.” Recorded cut: “Codex accelerated the implementation and verification. This take does not claim a separate GPT-5.6 product-runtime result.” |
+| 2:23–2:42 | Reveal the contemporaneous brainstorm beside the traced Output set, then show concise Codex and GPT-5.6 evidence. Call it the final submission only if that evidence gate is `Yes`. | Provider-backed cut: “This trace shows how the source became the work on screen. You watched GPT-5.6 shape it; Codex accelerated the implementation and verification.” Recorded cut: “This traced fixture shows how raw thinking became the work on screen. Codex accelerated the implementation and verification; this take does not claim a separate GPT-5.6 product-runtime result.” |
 
 ## Recording guardrails
 

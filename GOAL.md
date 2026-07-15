@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 13:39 CT
+Last updated: 2026-07-15 13:42 CT
 
 ## Status
 
@@ -439,6 +439,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Build the “How this was built” provenance surface from dated build evidence.
 - [x] Instrument and display time from first transcript segment to first rendered output.
 - [ ] Produce the Devpost description, README narrative, deck, thumbnails, storyboard, narration, and video as one traced WorkshopLM Output set. The recorded fixture now builds and verifies a 17-asset `partial` Output set with editable presentation and infographic files, source locators, file hashes, an input fingerprint, the rendered Video's per-scene provenance sidecar, and immutable HTML/JSON build trace; close this only after the provider-backed media and final submission video replace the explicitly recorded fallbacks.
+  - 2026-07-15 claim reconciliation: removed the unsupported `WorkshopLM built itself` shortcut and separated the two proven layers: Codex built WorkshopLM from the goal file; WorkshopLM produced a traced 17-asset partial fixture. The demo gate now permits `final self-produced submission` only when the final copy, deck, thumbnail, Storyboard, narration, and public Video verify as one non-partial Output set. The current manifest remains honestly `partial`, validates without stale or tampered assets, and records zero provider images, GPT-5.6 product reasoning, live voice, or narration.
 - [ ] Include real UI evidence and the raw-transcript reveal. The production UI now implements and captures the responsive `Show original` before/after surface with fixture evidence. On July 15, `pnpm demo:capture-draft` recorded the complete reveal in a reviewable 37.76-second fixture walkthrough; close only after the dated contemporaneous founder brainstorm and final recorded footage replace that fixture.
 - [ ] Make the public video the canonical judge path: show the live seam, one plugin widget moment, both approval gates, editable control, provenance, and the raw brainstorm → finished submission reveal in under three minutes. The repeatable capture now proves the two gates, semantic edit, source trace, local render, and reveal as one 12-beat sequence. The evidence-gated paper edit fixes the final target at 2:42 across ten shots and fail-closes on every missing provider, founder, host, Codex, or final-export input; it intentionally remains a draft until those artifacts exist.
 - [ ] Keep all judge-facing claims proportional to captured evidence. The current Devpost packet, demo script, evidence audit, and `submission/CLAIM-LEDGER.md` are reconciled to the July 15 proof floor; the packet leads with the professional problem and maintains explicit live/fallback publication slots. Close only after the final video, Devpost entry, screenshots, release tag, and submitted links pass the same gate.

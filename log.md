@@ -4954,3 +4954,35 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Final provider evidence, public YouTube URL, `/feedback` Session ID, final Devpost fields, and a logged-out public-link pass still block the repository/submission completion item.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 13:42 CT — Meta-demo claim corrected before recording
+
+**Area:** Submission / Claim integrity / Meta-demo
+
+### Changed
+
+- Removed `It built itself` from the tagline and replaced the broad `WorkshopLM built itself` passage with two separately provable claims: Codex built WorkshopLM from the goal file; WorkshopLM produced a traced partial submission fixture.
+- Added a gated final-submission slot. The packet may say WorkshopLM produced the public submission only after final Devpost copy, deck, thumbnail, Storyboard, narration, and public Video verify together as a non-partial Output set.
+- Replaced the unsupported present-tense tagged-release claim with a future publication requirement and changed the judge path from `complete live flow` to `captured product flow`.
+- Updated the claim ledger and evidence audit to distinguish Codex desktop grounded-read/doorway proof from the locally tested plugin write-to-service boundary.
+- Added the final self-produced-submission evidence check to the recording script and made the reveal wording safe for both provider-backed and recorded-fixture cuts.
+
+### Verified
+
+- The Devpost tagline is 164 characters, below the 200-character limit.
+- Searched the tracked submission packet for `built itself`, `read-only MCP`, `pinned to`, `Every Codex session`, `complete live flow`, and `self-built`; no stale affirmative claim remains.
+- `pnpm submission:build` produced a 17-asset manifest with status `partial`, input fingerprint `36a648eaf8f43657e7ba2200cfb27269ea92796824544c08bb28384fd44412b3`, and four explicit provider limitations.
+- `pnpm submission:verify` returned `valid: true`, `stale: false`, `tampered: false`, and no issues.
+
+### Decisions
+
+- The meta-demo is stronger when each layer is precise. Codex building the product and WorkshopLM tracing its own fixture are both valuable without collapsing them into an unsupported self-build claim.
+- Finality is an artifact state, not copywriting. The strong final-submission line unlocks only from a non-partial verified manifest.
+
+### Open items
+
+- Provider-backed media, the final public Video, and final Output-set verification still gate the strongest meta-demo line.
+- Founder brainstorm footage, Codex doorway footage, `/feedback` Session ID, public URL, release tag, and logged-out checks remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
