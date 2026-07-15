@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { planOpenAiMediaRetry, type OpenAiMediaRetryPlan } from "./openai-media.js";
-import type { WorkshopState } from "./workshop-service.js";
+import type { RealtimeCaptureEvidence, WorkshopState } from "./workshop-service.js";
 
 export type OperatorRunRecord = {
   mode?: string;
@@ -20,6 +20,14 @@ export function operatorStateFingerprint(state: WorkshopState): string {
     videos: state.videos.map((video) => ({ id: video.id, version: video.version, stale: video.stale, sha256: video.sha256 })),
   };
   return createHash("sha256").update(JSON.stringify(evidence)).digest("hex");
+}
+
+export function verifiedRealtimeCaptures(state: WorkshopState): Array<{ text: string; evidence: RealtimeCaptureEvidence }> {
+  return state.transcriptSegments.flatMap((segment) => {
+    const provider = segment.provider;
+    if (segment.transport !== "webrtc" || !segment.text.trim() || provider?.model !== "gpt-realtime-2.1" || provider.transcriptionModel !== "gpt-realtime-whisper" || !provider.itemIds.length || !provider.eventIds.length || provider.itemIds.length !== provider.eventIds.length) return [];
+    return [{ text: segment.text, evidence: { transport: "webrtc" as const, model: provider.model, transcriptionModel: provider.transcriptionModel, itemIds: [...provider.itemIds], eventIds: [...provider.eventIds] } }];
+  });
 }
 
 export function retryEligibility(record: OperatorRunRecord | undefined, stateFingerprint?: string): { eligible: boolean; reason?: string } {

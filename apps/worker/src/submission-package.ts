@@ -4,6 +4,8 @@ import { copyFile, mkdir, readFile, rm, stat, writeFile } from "node:fs/promises
 import { basename, extname, join, relative, resolve, sep } from "node:path";
 import { promisify } from "node:util";
 import { SubmissionOutputSet, type SubmissionAsset, type SubmissionInputSnapshot, type SubmissionOutputSet as SubmissionOutputSetType } from "@workshoplm/domain";
+import { buildWorkshopVideoProvenance } from "./executor.js";
+import { verifiedRealtimeCaptures } from "./live-operator-evidence.js";
 import { readWorkshopState, type WorkshopState } from "./workshop-service.js";
 
 const execFile = promisify(execFileCallback);
@@ -85,13 +87,15 @@ function assertBuildable(state: WorkshopState, root: string): SubmissionInputSna
 
 export function submissionLimitations(state: WorkshopState): string[] {
   const limitations: string[] = [];
-  const providerVoice = state.transcriptSegments.some((segment) => segment.transport === "webrtc" && segment.provider?.model === "gpt-realtime-2.1" && segment.provider.transcriptionModel === "gpt-realtime-whisper" && segment.provider.itemIds.length > 0 && segment.provider.eventIds.length > 0);
+  const providerVoice = verifiedRealtimeCaptures(state).length > 0;
   if (!providerVoice) limitations.push("No provider-verified WebRTC voice transcript is present; fixture or imported transcript text is not treated as live voice evidence.");
-  if (!state.aiRuns.length) limitations.push("The recorded fixture uses the deterministic grounded Map path; no live GPT-5.6 reasoning run is present.");
-  const generatedImages = state.imageBatch?.panels.filter((panel) => panel.state === "generated" && panel.provenance?.model === "gpt-image-2").length ?? 0;
+  const providerMap = state.aiRuns.some((run) => run.operation === "grounded_graph" && run.model.startsWith("gpt-5.6-") && /^[a-f0-9]{64}$/.test(run.outputSha256));
+  if (!providerMap) limitations.push("The recorded fixture uses the deterministic grounded Map path; no live GPT-5.6 reasoning run is present.");
+  const generatedImages = state.imageBatch?.panels.filter((panel) => panel.state === "generated" && panel.provenance?.model === "gpt-image-2" && panel.provenance.referenceId === state.imageBatch?.referenceId && Boolean(panel.relativePath) && /^[a-f0-9]{64}$/.test(panel.sha256 ?? "")).length ?? 0;
   const imageCount = state.imageBatch?.panels.length ?? 0;
   if (!imageCount || generatedImages !== imageCount) limitations.push(`The image set contains ${generatedImages} of ${imageCount} provider-generated GPT Image 2 panels.`);
-  const providerNarration = Boolean(state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version && state.narration.panels.length === state.storyboard.panels.length);
+  const narrationIds = state.narration?.panels.map((panel) => panel.panelId) ?? [];
+  const providerNarration = Boolean(state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version && narrationIds.length === state.storyboard.panels.length && new Set(narrationIds).size === narrationIds.length && state.storyboard.panels.every((panel) => narrationIds.includes(panel.id)) && state.narration.panels.every((panel) => panel.model === "gpt-4o-mini-tts" && panel.voice === "marin" && Boolean(panel.relativePath) && /^[a-f0-9]{64}$/.test(panel.sha256)));
   if (!providerNarration) limitations.push("The video uses deterministic placeholder tones; provider-generated narration is not present.");
   return limitations;
 }
@@ -136,6 +140,14 @@ async function writeText(path: string, content: string) {
   await writeFile(path, content, "utf8");
 }
 
+async function assertRecordedHash(root: string, relativePath: string, expectedSha256: string, label: string): Promise<Buffer> {
+  const path = resolve(root, relativePath);
+  if (!inside(root, path)) throw new Error(`${label} path escaped the Workshop data root.`);
+  const bytes = await readFile(path);
+  if (sha256(bytes) !== expectedSha256) throw new Error(`${label} does not match its recorded SHA-256.`);
+  return bytes;
+}
+
 async function assetFor(packageRoot: string, type: SubmissionAsset["type"], relativePath: string, mimeType: string, claimIds: string[], sourceLocators: string[], provenance: SubmissionAsset["provenance"]): Promise<SubmissionAsset> {
   const path = resolve(packageRoot, relativePath);
   if (!inside(packageRoot, path)) throw new Error(`Submission asset escaped the package: ${relativePath}`);
@@ -153,10 +165,15 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   const videoProvenancePath = resolve(dataRoot, video.provenancePath);
   const buildTracePath = resolve(dataRoot, video.buildTrace.htmlPath);
   const buildTraceDataPath = resolve(dataRoot, video.buildTrace.dataPath);
-  await stat(videoPath);
+  const videoBytes = await assertRecordedHash(dataRoot, video.relativePath, video.sha256, "Rendered Video");
   await stat(videoProvenancePath);
   await stat(buildTracePath);
   await stat(buildTraceDataPath);
+  let actualVideoProvenance: unknown;
+  try { actualVideoProvenance = JSON.parse(await readFile(videoProvenancePath, "utf8")); }
+  catch { throw new Error("Rendered Video provenance is not valid JSON."); }
+  const expectedVideoProvenance = buildWorkshopVideoProvenance(state, { relativePath: video.artifactPath, sha256: video.sha256, byteCount: video.byteCount, mimeType: "video/mp4" });
+  if (JSON.stringify(actualVideoProvenance) !== JSON.stringify(expectedVideoProvenance)) throw new Error("Rendered Video provenance does not match the current approved inputs and recorded hashes.");
   if (sha256(await readFile(buildTracePath)) !== video.buildTrace.htmlSha256 || sha256(await readFile(buildTraceDataPath)) !== video.buildTrace.dataSha256) throw new Error("Rendered Video build trace does not match its persisted hashes.");
   const packageRoot = resolve(options.outputDirectory ?? join(dataRoot, "generated", "submission-output-set-v1"));
   if (!inside(dataRoot, packageRoot)) throw new Error("Submission package must stay inside the Workshop data root.");
@@ -198,7 +215,7 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
     if (!inside(dataRoot, source)) throw new Error(`Editable output path escaped the Workshop data root: ${infographic.id}`);
     await copyFile(source, join(packageRoot, editableInfographicName));
   }
-  await copyFile(videoPath, join(packageRoot, "workshoplm-demo.mp4"));
+  await writeFile(join(packageRoot, "workshoplm-demo.mp4"), videoBytes);
   await copyFile(videoProvenancePath, join(packageRoot, "VIDEO-PROVENANCE.json"));
   await copyFile(buildTracePath, join(packageRoot, "BUILD-TRACE.html"));
   await copyFile(buildTraceDataPath, join(packageRoot, "BUILD-TRACE.json"));
@@ -211,17 +228,15 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   if (state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version) {
     await mkdir(join(packageRoot, "narration"), { recursive: true });
     for (const [index, panel] of state.narration.panels.entries()) {
-      const source = resolve(dataRoot, panel.relativePath);
-      if (!inside(dataRoot, source)) throw new Error(`Narration path escaped the Workshop data root: ${panel.panelId}`);
-      await copyFile(source, join(packageRoot, "narration", `panel-${index + 1}${extname(panel.relativePath) || ".wav"}`));
+      const bytes = await assertRecordedHash(dataRoot, panel.relativePath, panel.sha256, `Narration panel ${panel.panelId}`);
+      await writeFile(join(packageRoot, "narration", `panel-${index + 1}${extname(panel.relativePath) || ".wav"}`), bytes);
     }
   }
   const generatedPanels = imageBatch.panels.filter((panel) => panel.state === "generated" && panel.relativePath);
   if (generatedPanels.length) await mkdir(join(packageRoot, "images"), { recursive: true });
   for (const [index, panel] of generatedPanels.entries()) {
-    const source = resolve(dataRoot, panel.relativePath!);
-    if (!inside(dataRoot, source)) throw new Error(`Image path escaped the Workshop data root: ${panel.id}`);
-    await copyFile(source, join(packageRoot, "images", `panel-${index + 1}${extname(panel.relativePath!) || ".png"}`));
+    const bytes = await assertRecordedHash(dataRoot, panel.relativePath!, panel.sha256!, `Image panel ${panel.id}`);
+    await writeFile(join(packageRoot, "images", `panel-${index + 1}${extname(panel.relativePath!) || ".png"}`), bytes);
   }
 
   const assets: SubmissionAsset[] = [];

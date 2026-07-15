@@ -48,6 +48,10 @@ Before authorization, run the zero-spend plan:
 pnpm demo:live
 ```
 
+The first preflight intentionally reports `providerVoiceReady: false` and no executable `nextCommand`. Start the printed `viewCommand`, open **Add source**, use **Record voice**, and choose **Add transcript** after the provider transcript appears. Then rerun `pnpm demo:live`. The operator preserves that exact verified WebRTC transcript and provider item/event IDs while rebuilding the clean Workshop. Only then does preflight report `providerVoiceReady: true` and print the twelve-request command.
+
+Live execution refuses before any paid GPT-5.6, Image, or Speech request when verified voice evidence is absent. This prevents a successful media run from remaining permanently `partial` at submission packaging time.
+
 ## Inspection gate
 
 Do not upgrade any public claim until a person inspects:

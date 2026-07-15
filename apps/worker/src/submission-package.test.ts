@@ -3,7 +3,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { buildSubmissionOutputSet, verifySubmissionOutputSet } from "./submission-package.js";
+import { buildSubmissionOutputSet, submissionLimitations, verifySubmissionOutputSet } from "./submission-package.js";
 import { buildWorkshopVideoProvenance } from "./executor.js";
 import { applyWorkshopAction, createImageBatch, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, recordRenderedVideo } from "./workshop-service.js";
 
@@ -76,5 +76,25 @@ describe("submission Output set", () => {
     const rebuilt = await buildSubmissionOutputSet(root, { renderThumbnail: fakeThumbnail });
     lockManualStyle({ accent: "#1155AA" }, root);
     await expect(verifySubmissionOutputSet(root, rebuilt.manifestPath)).resolves.toMatchObject({ valid: false, stale: true, tampered: false, issues: [expect.stringContaining("inputs changed")] });
+  });
+
+  it("refuses a submission when the rendered Video provenance was changed after approval", async () => {
+    const root = await buildableWorkshop(); const state = readWorkshopState(root); const video = state.videos[0]!;
+    await writeFile(join(root, video.provenancePath), '{"schemaVersion":1,"tampered":true}\n');
+    await expect(buildSubmissionOutputSet(root, { renderThumbnail: fakeThumbnail })).rejects.toThrow("Video provenance does not match");
+  });
+
+  it("reaches ready only when every provider evidence family is complete", async () => {
+    const root = await buildableWorkshop(); const state = readWorkshopState(root); const generatedAt = new Date().toISOString();
+    const readyState = {
+      ...state,
+      transcriptSegments: [...state.transcriptSegments, { id: "realtime-1", origin: "realtime_fallback" as const, transport: "webrtc" as const, text: "Verified voice", capturedAt: generatedAt, provider: { model: "gpt-realtime-2.1" as const, transcriptionModel: "gpt-realtime-whisper" as const, itemIds: ["item-1"], eventIds: ["event-1"] } }],
+      aiRuns: [{ id: "ai-run-1", operation: "grounded_graph" as const, model: "gpt-5.6-sol" as const, inputClaimIds: state.claims.map((claim) => claim.id), outputSha256: "a".repeat(64), requestId: "response-1", createdAt: generatedAt }],
+      imageBatch: { ...state.imageBatch!, panels: state.imageBatch!.panels.map((panel) => ({ ...panel, state: "generated" as const, relativePath: `generated/${panel.id}.png`, sha256: "b".repeat(64), provenance: { model: "gpt-image-2" as const, size: "1024x1024", quality: "medium" as const, referenceId: state.imageBatch!.referenceId, requestId: `image-${panel.id}`, generatedAt } })) },
+      narration: { storyboardVersion: state.storyboard.version, disclosure: "AI-generated voice" as const, stale: false, failures: [], createdAt: generatedAt, panels: state.storyboard.panels.map((panel, index) => ({ panelId: panel.id, relativePath: `generated/panel-${index + 1}.wav`, sha256: "c".repeat(64), model: "gpt-4o-mini-tts" as const, voice: "marin" as const, instructions: "Clear narration", requestId: `speech-${index + 1}`, generatedAt })) },
+    };
+    expect(submissionLimitations(readyState)).toEqual([]);
+    expect(submissionLimitations({ ...readyState, aiRuns: [] })).toContain("The recorded fixture uses the deterministic grounded Map path; no live GPT-5.6 reasoning run is present.");
+    expect(submissionLimitations({ ...readyState, narration: { ...readyState.narration, panels: readyState.narration.panels.slice(1) } })).toContain("The video uses deterministic placeholder tones; provider-generated narration is not present.");
   });
 });

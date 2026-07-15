@@ -2,8 +2,8 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { classifyFailedRun, operatorRunEvidence, operatorStateFingerprint, protectsPaidOperatorState, retryCommandFor, retryEligibility, safeOperatorError } from "./live-operator-evidence.js";
-import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDna, generateAssetPlan, generateStoryboard, lockManualStyle, markImagePanelFailed, readWorkshopState, recordGeneratedImagePanel, recordNarrationProgress } from "./workshop-service.js";
+import { classifyFailedRun, operatorRunEvidence, operatorStateFingerprint, protectsPaidOperatorState, retryCommandFor, retryEligibility, safeOperatorError, verifiedRealtimeCaptures } from "./live-operator-evidence.js";
+import { applyWorkshopAction, approveVisualDna, captureFallbackTranscript, createImageBatch, createVisualDna, generateAssetPlan, generateStoryboard, lockManualStyle, markImagePanelFailed, readWorkshopState, recordGeneratedImagePanel, recordNarrationProgress } from "./workshop-service.js";
 
 const roots: string[] = [];
 
@@ -100,5 +100,12 @@ describe("live operator evidence", () => {
     expect(first).toMatch(/^[a-f0-9]{64}$/);
     expect(after).toMatch(/^[a-f0-9]{64}$/);
     expect(after).not.toBe(first);
+  });
+
+  it("extracts only complete provider-verified WebRTC captures for preservation", async () => {
+    const root = await mkdtemp(join(tmpdir(), "workshop-operator-voice-")); roots.push(root);
+    await captureFallbackTranscript("Fixture thought", root);
+    await captureFallbackTranscript("Verified microphone thought", root, { transport: "webrtc", model: "gpt-realtime-2.1", transcriptionModel: "gpt-realtime-whisper", itemIds: ["item-1"], eventIds: ["event-1"] });
+    expect(verifiedRealtimeCaptures(readWorkshopState(root))).toEqual([{ text: "Verified microphone thought", evidence: { transport: "webrtc", model: "gpt-realtime-2.1", transcriptionModel: "gpt-realtime-whisper", itemIds: ["item-1"], eventIds: ["event-1"] } }]);
   });
 });

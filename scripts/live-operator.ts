@@ -2,7 +2,7 @@ import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { executeOne } from "../apps/worker/src/executor.ts";
 import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, planOpenAiMediaRetry, type OpenAiMediaConfig } from "../apps/worker/src/openai-media.ts";
-import { classifyFailedRun, operatorRunEvidence, operatorStateFingerprint, protectsPaidOperatorState, retryCommandFor, retryEligibility, safeOperatorError, type OperatorRunRecord } from "../apps/worker/src/live-operator-evidence.ts";
+import { classifyFailedRun, operatorRunEvidence, operatorStateFingerprint, protectsPaidOperatorState, retryCommandFor, retryEligibility, safeOperatorError, verifiedRealtimeCaptures, type OperatorRunRecord } from "../apps/worker/src/live-operator-evidence.ts";
 import { generateGroundedMapWithGpt56 } from "../apps/worker/src/openai-reasoning.ts";
 import { createProviderRequestBudget, type ProviderRequestBudget } from "../apps/worker/src/provider-budget.ts";
 import {
@@ -57,11 +57,14 @@ function liveConfig(requiredRequests: number): { media: OpenAiMediaConfig; budge
   };
 }
 
-async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: ProviderRequestBudget }, onRootReady?: () => Promise<void>): Promise<void> {
+async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: ProviderRequestBudget }, onRootReady?: () => Promise<void>, preserveVoice = true): Promise<void> {
+  const preservedCaptures = preserveVoice && await operatorStateExists() ? verifiedRealtimeCaptures(readWorkshopState(root)) : [];
+  if (config && !preservedCaptures.length) throw new Error('Refusing paid provider calls without a verified Realtime voice turn. Run the preflight, open its viewCommand, use "Record voice" and "Add transcript", then rerun the live command.');
   await rm(root, { recursive: true, force: true });
   await mkdir(root, { recursive: true });
   await onRootReady?.();
-  await captureFallbackTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved brief, coherent visuals, an editable storyboard, and the final Build Week demo video.", root);
+  if (preservedCaptures.length) for (const capture of preservedCaptures) await captureFallbackTranscript(capture.text, root, capture.evidence);
+  else await captureFallbackTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved brief, coherent visuals, an editable storyboard, and the final Build Week demo video.", root);
   await ingestSource({
     title: "Build Week judge path",
     origin: "Sanitized operator fixture",
@@ -125,9 +128,10 @@ async function main(): Promise<void> {
       runStarted = true;
     };
     failedStage = "grounded-map-and-preparation";
-    if (!retryFailed) await prepareWorkshop(config, executeLive ? startRun : undefined);
+    if (!retryFailed) await prepareWorkshop(config, executeLive ? startRun : undefined, !resetPaidState);
     else if (executeLive) await startRun();
     const prepared = readWorkshopState(root);
+    const providerVoiceTurns = verifiedRealtimeCaptures(prepared).length;
     const plan = {
       mode,
       status: executeLive ? "running" : "ready",
@@ -138,14 +142,19 @@ async function main(): Promise<void> {
         : { liveOperator: liveOperatorPaidRequestCount, gpt56GroundedMap: 1, gptImage2: prepared.imageBatch?.panels.length ?? 0, gpt4oMiniTts: prepared.storyboard.panels.length, separateGpt56Benchmark: 9 },
       retrySelection: retryPlan ?? null,
       requestCeiling: config?.budget.maxRequests ?? null,
+      providerVoiceReady: providerVoiceTurns > 0,
+      providerVoiceTurns,
       approvals: { brief: prepared.briefApproved, storyboard: prepared.storyboardApproved },
       sources: prepared.sourceItems.filter((source) => source.origin === "Sanitized operator fixture" || source.origin.includes("capture-only fallback")).map((source) => ({ title: source.title, permission: source.permission })),
       outputs: prepared.outputs.map((output) => ({ type: output.type, relativePath: output.relativePath, claims: output.claimIds.length })),
-      nextCommand: retryFailed
+      nextCommand: !retryFailed && providerVoiceTurns === 0
+        ? null
+        : retryFailed
         ? (requiredRequests > 0
             ? `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${requiredRequests} OPENAI_API_KEY=... pnpm demo:live -- --execute --retry-failed`
             : "pnpm demo:live -- --execute --retry-failed")
         : `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${liveOperatorPaidRequestCount} OPENAI_API_KEY=... pnpm demo:live -- --execute`,
+      nextAction: !retryFailed && providerVoiceTurns === 0 ? 'Open the viewCommand, choose "Add source", record a Realtime voice turn, add its transcript, then rerun this preflight.' : "Run nextCommand after explicit spend authorization.",
       viewCommand: 'WORKSHOPLM_DATA_ROOT="$PWD/.workshoplm/live-operator" pnpm dev',
     };
     await writeFile(resolve(root, "live-operator-plan.json"), `${JSON.stringify(plan, null, 2)}\n`);
