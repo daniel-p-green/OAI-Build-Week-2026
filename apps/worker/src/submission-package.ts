@@ -37,6 +37,7 @@ function fingerprintMaterial(state: WorkshopState) {
     narration: state.narration ?? null,
     aiRuns: state.aiRuns,
     outputs: state.outputs,
+    videos: state.videos,
     videoState: state.videoState,
   };
 }
@@ -51,6 +52,10 @@ function graphRevision(state: WorkshopState): number {
   catch { return 0; }
 }
 
+function currentVideo(state: WorkshopState) {
+  return [...state.videos].reverse().find((video) => !video.stale);
+}
+
 function assertBuildable(state: WorkshopState, root: string): SubmissionInputSnapshot {
   if (!state.briefApproved || !state.frame || state.frame.stale) throw new Error("Submission packaging requires an approved current brief.");
   if (!state.style || state.style.stale) throw new Error("Submission packaging requires a current Style.");
@@ -58,9 +63,10 @@ function assertBuildable(state: WorkshopState, root: string): SubmissionInputSna
   if (!state.storyboardApproved || state.storyboard.stale || state.storyboard.panels.some((panel) => panel.stale || !panel.approved)) throw new Error("Submission packaging requires an approved current Storyboard.");
   if (!state.imageBatch || state.imageBatch.stale) throw new Error("Submission packaging requires a current image set.");
   if (state.videoState !== "rendered") throw new Error("Submission packaging requires a rendered Video.");
+  const video = currentVideo(state);
+  if (!video || video.storyboardVersion !== state.storyboard.version || video.styleVersion !== state.style.version || video.imageBatchId !== state.imageBatch.id) throw new Error("Submission packaging requires a Video rendered from the current approved inputs.");
   if (!state.outputs.some((output) => output.type === "deck" && !output.stale) || !state.outputs.some((output) => output.type === "infographic" && !output.stale)) throw new Error("Submission packaging requires current presentation and infographic Outputs.");
-  const video = join(root, "generated", "workshoplm-demo.mp4");
-  if (!inside(root, video)) throw new Error("Video path escaped the Workshop data root.");
+  if (!inside(root, resolve(root, video.relativePath)) || !inside(root, resolve(root, video.provenancePath))) throw new Error("Video path escaped the Workshop data root.");
   return {
     graphRevision: graphRevision(state),
     briefVersion: state.frame.version,
@@ -71,7 +77,7 @@ function assertBuildable(state: WorkshopState, root: string): SubmissionInputSna
     narrationStoryboardVersion: state.narration && !state.narration.stale ? state.narration.storyboardVersion : undefined,
     activeSourceIds: [...state.activeSourceIds].sort(),
     claimIds: unique(state.claims.filter((claim) => state.activeSourceIds.includes(claim.sourceId)).map((claim) => claim.id)),
-    outputIds: unique(state.outputs.filter((output) => !output.stale).map((output) => output.id)),
+    outputIds: unique([...state.outputs.filter((output) => !output.stale).map((output) => output.id), video.id]),
     videoState: "rendered",
   };
 }
@@ -141,8 +147,9 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   const state = readWorkshopState(dataRoot);
   const inputs = assertBuildable(state, dataRoot);
   const imageBatch = state.imageBatch!;
-  const videoPath = join(dataRoot, "generated", "workshoplm-demo.mp4");
-  const videoProvenancePath = join(dataRoot, "generated", "workshoplm-demo.provenance.json");
+  const video = currentVideo(state)!;
+  const videoPath = resolve(dataRoot, video.relativePath);
+  const videoProvenancePath = resolve(dataRoot, video.provenancePath);
   await stat(videoPath);
   await stat(videoProvenancePath);
   const packageRoot = resolve(options.outputDirectory ?? join(dataRoot, "generated", "submission-output-set-v1"));

@@ -1,12 +1,12 @@
 import { execFile as rawExecFile } from "node:child_process";
 import { copyFile, mkdir, readFile, stat, writeFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
 import { storeArtifact, type StoredArtifact } from "./artifacts/local-artifact-store.js";
 import { openLocalDatabase } from "./db/client.js";
 import { migrate } from "./db/migrate.js";
 import { finishJob, leaseNext } from "./queue.js";
-import { assertStoryboardGrounding, readWorkshopState, setVideoState, type StoryboardPanel, type WorkshopState } from "./workshop-service.js";
+import { assertStoryboardGrounding, readWorkshopState, recordRenderedVideo, setVideoState, type StoryboardPanel, type WorkshopState } from "./workshop-service.js";
 
 const execFile = promisify(rawExecFile);
 export type ExecuteResult = { jobId?: string; state: "idle" | "succeeded" | "failed"; artifact?: StoredArtifact; error?: string };
@@ -96,9 +96,16 @@ export async function executeOne(root: string, run: RunCommand = defaultRun) : P
     } else {
       for (const [index, panel] of state.storyboard.panels.entries()) await run("ffmpeg", ["-y", "-f", "lavfi", "-i", `sine=frequency=${440 + index * 83}:sample_rate=48000:duration=${panel.durationSeconds}`, "-ac", "1", join(staging, `panel-${index + 1}.wav`)]);
     }
-    const output = join(root, "generated", "workshoplm-demo.mp4"); await run("npx", ["hyperframes", "render", staging, "--output", output, "--workers", "1", "--quality", "draft"]); await stat(output);
-    const artifact = await storeArtifact(root, "workshoplm-demo", await readFile(output), "video/mp4");
-    await writeFile(join(root, "generated", "workshoplm-demo.provenance.json"), `${JSON.stringify(buildWorkshopVideoProvenance(state, artifact), null, 2)}\n`);
-    finishJob(db, job.id, "succeeded"); setVideoState("rendered", root); return { jobId: job.id, state: "succeeded", artifact };
+    const nextVersion = state.videos.reduce((highest, video) => Math.max(highest, video.version), 0) + 1;
+    const versionName = `workshoplm-demo-v${nextVersion}`;
+    const videoDirectory = join(root, "generated", "videos"); await mkdir(videoDirectory, { recursive: true });
+    const output = join(videoDirectory, `${versionName}.mp4`); await run("npx", ["hyperframes", "render", staging, "--output", output, "--workers", "1", "--quality", "draft"]); await stat(output);
+    const artifact = await storeArtifact(root, versionName, await readFile(output), "video/mp4");
+    const provenancePath = join(videoDirectory, `${versionName}.provenance.json`);
+    await writeFile(provenancePath, `${JSON.stringify(buildWorkshopVideoProvenance(state, artifact), null, 2)}\n`);
+    await copyFile(output, join(root, "generated", "workshoplm-demo.mp4"));
+    await copyFile(provenancePath, join(root, "generated", "workshoplm-demo.provenance.json"));
+    recordRenderedVideo({ storyboardVersion: state.storyboard.version, styleVersion: state.style!.version, visualDnaVersion: state.visualDna?.version, imageBatchId: state.imageBatch?.id, relativePath: relative(root, output), provenancePath: relative(root, provenancePath), artifactPath: artifact.relativePath, sha256: artifact.sha256, byteCount: artifact.byteCount, claimIds: [...new Set(state.storyboard.panels.flatMap((panel) => panel.claimIds))] }, root);
+    finishJob(db, job.id, "succeeded"); return { jobId: job.id, state: "succeeded", artifact };
   } catch (caught) { const error = caught instanceof Error ? caught.message : "Unknown render failure"; const retrying = job.attempts < 2; finishJob(db, job.id, retrying ? "retrying" : "failed", error); setVideoState(retrying ? "queued" : "blocked", root); return { jobId: job.id, state: "failed", error }; }
 }

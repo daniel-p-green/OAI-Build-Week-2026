@@ -153,7 +153,11 @@ async function main(): Promise<void> {
     failedStage = "video";
     const beforeRender = readWorkshopState(root);
     let video: Awaited<ReturnType<typeof executeOne>> | { state: "succeeded"; artifact: { relativePath: string } };
-    if (beforeRender.videoState === "rendered") video = { state: "succeeded", artifact: { relativePath: "generated/workshoplm-demo.mp4" } };
+    if (beforeRender.videoState === "rendered") {
+      const currentVideo = [...beforeRender.videos].reverse().find((candidate) => !candidate.stale);
+      if (!currentVideo) throw new Error("Video state is rendered but no current immutable Video version exists.");
+      video = { state: "succeeded", artifact: { relativePath: currentVideo.relativePath } };
+    }
     else {
       applyWorkshopAction("renderVideo", root);
       video = await executeOne(root);

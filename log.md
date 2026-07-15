@@ -4199,3 +4199,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Run the authorized live provider path and verify the same sidecar contains real image and narration hashes before closing the provider-backed Video evidence gate.
 - Founder recording, Realtime microphone proof, host footage, primary Session ID, final edit, public upload, and Devpost submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 05:07 CT — Video history is immutable and dependency-aware
+
+**Area:** Video persistence / stale propagation / Outputs UX / submission trace
+
+### Changed
+
+- Replaced the fixed-file-only Video state with append-only persisted `video-vN` records. Each successful local render now owns an immutable MP4, provenance sidecar, Storyboard and Style versions, optional Visual DNA and image-batch inputs, claim set, content-addressed artifact path, SHA-256, byte count, and creation time.
+- Kept `generated/workshoplm-demo.mp4` and its provenance sidecar as compatibility copies while making the version-specific files authoritative. The canonical `video` artifact route resolves only the latest current version; historical `video-vN` routes continue to resolve their original bytes after upstream changes.
+- Made source-scope, Map, Style, Storyboard, bound-image, and narration invalidation mark every prior Video version `Needs update` without deleting it. A new render stales the previous current version and appends the next version.
+- Added Video version cards to the existing Outputs grid and selected-version detail to the existing focused player. A first render still appears as one normal peer Output; history adds no tab, rail, or permanent navigation.
+- Made submission packaging select the current immutable Video record, include its ID in the input snapshot, fingerprint Video history, and refuse a Video whose Storyboard, Style, or image-batch inputs do not match the current approved Workshop.
+- Captured the founder-supplied six-phase closeout sequence at `research/2026-07-15-proposed-six-phase-closeout.md` as an explicitly unratified planning reference. It does not replace `GOAL.md` or the active execution runbook.
+
+### Verified
+
+- Worker tests passed 53/53, including a two-render regression proving `video-v1` remains byte-identical and addressable after `video-v2` becomes current.
+- The production browser suite passed all 17 tests with no failed visual baselines. A dedicated history test proves Version 2 is current, Version 1 remains visible as `Needs update`, and the historical focused player requests `/api/workshop/artifacts/video-v1`.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. `pnpm demo:e2e` passed all six recorded gates and persisted one current immutable Video record.
+- `pnpm submission:build` produced the 13-asset honestly `partial` package from the version-specific Video and provenance paths; `pnpm submission:verify` reported `valid: true`, `stale: false`, `tampered: false`.
+- `pnpm demo:film:verify` remained honestly `draft`: five ready shots, five blocked shots, and the same ten missing live/final evidence inputs. `git diff --check` passed. No paid provider request was made.
+
+### Decisions
+
+- Compatibility aliases are conveniences, not identity. A Video version is the immutable persisted record plus its version-specific media and provenance files.
+- Historical Video versions remain user-visible only after history exists. This preserves the one-object, no-tabs interface while satisfying the product promise that approved work is never silently overwritten.
+- Compatible domain-contract addition: `WorkshopState` now includes `videos`; older persisted states hydrate it as an empty array. Blast radius was limited to worker persistence/rendering, artifact resolution, submission packaging, live/recorded operators, the Outputs/focused Video views, and their tests. Existing plugin doorway state remains unchanged.
+- The proposed six-phase closeout plan remains a reference because its Phase 1 assumes founder-authorized provider spend and strictly sequential gates that have not been ratified.
+
+### Open items
+
+- Generate and inspect the authorized provider-backed images, narration, Realtime turn, and GPT-5.6 Map; then render the next immutable Video version and verify its persisted record and per-scene sidecar contain the live hashes.
+- Founder recording, host footage, primary Session ID, final edit, public upload, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -48,6 +48,7 @@ const video = await executeOne(root);
 if (video.state !== "succeeded" || !(await stat(resolve(root, "generated", "workshoplm-demo.mp4"))).isFile()) throw new Error("approved storyboard did not produce a local video");
 const finalState = readWorkshopState(root);
 if (!finalState.imageBatch || finalState.imageBatch.panels.length !== 6) throw new Error("recorded fixture did not preserve the planned coherent image set");
+if (finalState.videos.length !== 1 || finalState.videos[0]?.stale || !(await stat(resolve(root, finalState.videos[0].relativePath))).isFile()) throw new Error("recorded fixture did not preserve one current immutable Video version");
 const finalGates = deriveGates({ transcriptSegments: 2, boardApprovedCurrent: true, briefCurrent: finalState.briefApproved, styleLockedCurrent: Boolean(finalState.style && !finalState.style.stale), storyboardApprovedCurrent: finalState.storyboardApproved, videoRenderedCurrent: finalState.videoState === "rendered" });
 if (!finalGates.video_rendered) throw new Error("video-rendered gate was not recorded");
 

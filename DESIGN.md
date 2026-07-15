@@ -159,6 +159,7 @@ After Brief approval and Style selection, Outputs becomes the durable history of
 
 - `Create outputs` creates the selected types from the same Brief, Style, and source scope.
 - Presentation and infographic versions remain visible newest-first with a real preview, type, version, freshness, source coverage, and one card-level open action.
+- Video follows the same rule: the first render remains one ordinary peer card; after a re-render, immutable versions appear newest-first as `Video · Version N`, with older versions labeled `Needs update` and still openable at their original bytes.
 - Presentation, infographic, image set, Storyboard, and Video are peers in one responsive card grid. None is demoted into a secondary rail or carousel.
 - Image set and Storyboard cards use compact domain previews inside the official media-card boundary; each opens its one focused review surface.
 - `Needs update` and partial messages appear only when they change the next action; current, stale, failed, and partial work remains visible without internal paths.
@@ -183,7 +184,7 @@ source locator → evidence chunk → claim → Map node → brief block → out
 
 For the meta-demo, the focused Video replaces `Show source` with one secondary `Show original` action. It opens the `OriginalReveal` composite beside the finished Video so the before/after relationship is visible without adding navigation or another permanent panel. `OriginalReveal` is composed only from the official `SideSheet`, `Card`, body/caption text, `ListGroup`, `ListRow`, and `FileIcon` primitives. It shows the first durable transcript when present, otherwise an explicitly labeled sanitized source excerpt; it never upgrades fixture text into live voice evidence. Its After list names the presentation, infographic, image set, Storyboard, and Video with honest current states. Technical build evidence remains separate from this product-facing reveal.
 
-Every rendered Video writes a machine-readable provenance sidecar beside the MP4. For each timed scene it records the approved Storyboard panel, durable claim/source/chunk edge, exact locator and excerpt, bound image ID/version/hash, and narration hash/provider when present. The sidecar also records the final MP4 artifact hash and travels with the traced submission Output set; it stays under technical evidence rather than becoming another primary Video control.
+Every rendered Video writes an immutable, version-specific MP4 and machine-readable provenance sidecar. Its persisted record pins the Storyboard, Style, Visual DNA, image batch, claims, content-addressed artifact, byte count, and creation time. For each timed scene the sidecar records the approved Storyboard panel, durable claim/source/chunk edge, exact locator and excerpt, bound image ID/version/hash, and narration hash/provider when present. Upstream edits mark prior records stale without deleting or redirecting them; the latest current version alone backs the canonical Video alias and submission package. The sidecar travels with the traced submission Output set and stays under technical evidence rather than becoming another primary Video control.
 
 ## Components and geometry
 

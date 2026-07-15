@@ -10,7 +10,7 @@ async function main() {
   if (!state.outputs.some((output) => output.type === "infographic" && !output.stale)) state = await generateOutput("infographic", root);
   if (!state.imageBatch || state.imageBatch.stale) state = createImageBatch(root);
   if (!state.assetPlan || state.assetPlan.stale) state = generateAssetPlan(root);
-  if (!state.storyboard.panels.length || state.storyboard.stale) generateStoryboard(root);
+  if (!state.storyboard.panels.length || state.storyboard.stale || state.storyboard.panels.length !== state.assetPlan?.items.length || state.storyboard.panels.some((panel) => !panel.id.startsWith("storyboard-v"))) generateStoryboard(root);
 }
 
 main().catch((error: unknown) => {

@@ -54,6 +54,7 @@ type PersistedWorkshop = {
   storyboard: { version: number; stale: boolean; panels: { id: string; title: string; narration: string; durationSeconds: number; claimIds: string[]; evidence: { claimId?: string; sourceId: string; chunkId?: string; locator: string }[]; imagePanelId?: string; imagePanelVersion?: number; approved: boolean; stale: boolean }[] };
   imageBatch?: { id: string; stale: boolean; panels: { id: string; version: number; prompt: string; state: "planned" | "selected_for_regeneration" | "generated" | "failed"; relativePath?: string }[] };
   outputs: { id: string; type: "deck" | "infographic"; stale: boolean; artifactPath: string; claimIds?: string[]; createdAt: string }[];
+  videos: { id: string; version: number; storyboardVersion: number; styleVersion: number; relativePath: string; provenancePath: string; artifactPath: string; claimIds: string[]; stale: boolean; createdAt: string }[];
 };
 
 const VIEW_TITLES: Record<ObjectView, string> = { map: "Map", brief: "Brief", outputs: "Outputs", storyboard: "Storyboard", output: "Output" };
@@ -106,7 +107,7 @@ export default function WorkshopPage() {
   const selectedPanel = useMemo(() => state?.storyboard.panels.find((panel) => panel.id === selectedPanelId) ?? state?.storyboard.panels[0], [state, selectedPanelId]);
   const selectedOutput = useMemo(() => state?.outputs.find((output) => output.id === selectedOutputId), [state, selectedOutputId]);
   const canDeliver = Boolean(state?.briefApproved && state.style && !state.style.stale);
-  const outputsNeedUpdate = Boolean(state?.outputs.some((output) => output.stale) || state?.assetPlan?.stale || state?.imageBatch?.stale || state?.imageBatch?.panels.some((panel) => panel.state === "failed" || panel.state === "selected_for_regeneration") || state?.storyboard.stale);
+  const outputsNeedUpdate = Boolean(state?.outputs.some((output) => output.stale) || state?.assetPlan?.stale || state?.imageBatch?.stale || state?.imageBatch?.panels.some((panel) => panel.state === "failed" || panel.state === "selected_for_regeneration") || state?.storyboard.stale || (state?.videos?.length && !state.videos.some((video) => !video.stale)));
 
   async function reload() {
     setLoadState("loading");
@@ -215,7 +216,7 @@ export default function WorkshopPage() {
           {view === "storyboard" && (!state?.storyboardApproved
             ? <Button disabled={busy || state?.storyboard.stale || !state?.storyboard.panels.length} onClick={() => { void post({ action: "approveStoryboard" }); }}>Approve storyboard</Button>
             : state?.videoState === "rendered"
-              ? <Button onClick={() => openOutput("video")}>View video</Button>
+              ? <Button onClick={() => openOutput([...state.videos].reverse().find((video) => !video.stale)?.id ?? "video")}>View video</Button>
               : <Button disabled={busy || state?.videoState === "queued" || state?.videoState === "rendering"} onClick={() => { void post({ action: "renderVideo" }); }}>{state?.videoState === "queued" || state?.videoState === "rendering" ? "Creating…" : "Create video"}</Button>)}
         </div>}
       </NavigationHeader>
@@ -339,11 +340,12 @@ function OutputsView({ state, onOpenOutput, onOpenStoryboard }: { state: Persist
   const outputs = [...(state?.outputs ?? [])].sort((left, right) => left.type === right.type
     ? right.createdAt.localeCompare(left.createdAt)
     : left.type === "deck" ? -1 : 1);
+  const videos = [...(state?.videos ?? [])].sort((left, right) => right.version - left.version);
   const generatedImages = state?.imageBatch?.panels.filter((panel) => panel.state === "generated").length ?? 0;
   const failedImages = state?.imageBatch?.panels.filter((panel) => panel.state === "failed").length ?? 0;
   const ready = Boolean(state?.briefApproved && state.style && !state.style.stale);
   const partial = Boolean(state?.outputs.length === 1 || failedImages);
-  const needsUpdate = Boolean(state?.outputs.some((output) => output.stale) || state?.assetPlan?.stale || state?.imageBatch?.stale || state?.storyboard.stale);
+  const needsUpdate = Boolean(state?.outputs.some((output) => output.stale) || state?.assetPlan?.stale || state?.imageBatch?.stale || state?.storyboard.stale || (videos.length && !videos.some((video) => !video.stale)));
   return <article className="outputs-view">
     <h1 className="visually-hidden">Outputs</h1>
     {!ready ? <StateMessage state="empty" title="Choose a Style">Your Brief is ready. Add a Style to create Outputs.</StateMessage> : <>
@@ -359,28 +361,29 @@ function OutputsView({ state, onOpenOutput, onOpenStoryboard }: { state: Persist
       })}
       {state?.imageBatch && <EntityCardAction className={`output-card ${state.imageBatch.stale ? "needs-update" : ""}`} aria-label="Open Image set" onClick={() => onOpenOutput("images")}><div className="artifact-preview image-contact-sheet" data-domain-ui="artifact-preview">{state.imageBatch.panels.map((panel, index) => <div className={`image-tile ${panel.state === "generated" ? "generated" : ""}`} data-domain-ui="image-tile" key={panel.id} style={{ "--tile": index } as CSSProperties}>{panel.state === "generated" && <img alt="" src={`/api/workshop/artifacts/${panel.id}`} />}<span>{String(index + 1).padStart(2, "0")}</span></div>)}</div><div className="output-card-body"><h2>Image set</h2><div className="output-meta"><span>{state.imageBatch.panels.length} images</span><Status tone={state.imageBatch.stale || failedImages ? "waiting" : generatedImages === state.imageBatch.panels.length ? "current" : "waiting"}>{state.imageBatch.stale ? "Needs update" : failedImages ? "Incomplete" : generatedImages === state.imageBatch.panels.length ? "Up to date" : "Planned"}</Status><span>{state?.activeSourceIds.length ?? 0} sources</span></div></div></EntityCardAction>}
       {(state?.storyboard.panels.length ?? 0) > 0 && <EntityCardAction className={`output-card ${state?.storyboard.stale ? "needs-update" : ""}`} aria-label="Open Storyboard" onClick={onOpenStoryboard}><div className="artifact-preview storyboard-card-preview" data-domain-ui="artifact-preview">{state?.storyboard.panels.slice(0, 6).map((panel, index) => { const image = boundImage(panel, state?.imageBatch); return <div className={`storyboard-card-frame ${image ? "has-image" : ""}`} key={panel.id} style={{ "--panel": index } as CSSProperties}>{image && <img alt="" src={`/api/workshop/artifacts/${image.id}`} />}<span>{String(index + 1).padStart(2, "0")}</span><strong>{panel.title}</strong></div>; })}</div><div className="output-card-body"><h2>Storyboard</h2><div className="output-meta"><span>{state?.storyboard.panels.length ?? 0} panels</span><Status tone={state?.storyboard.stale ? "waiting" : "current"}>{state?.storyboard.stale ? "Needs update" : state?.storyboardApproved ? "Approved" : "Ready for review"}</Status><span>{state?.activeSourceIds.length ?? 0} sources</span></div></div></EntityCardAction>}
-      {state?.videoState === "rendered" && <EntityCardAction className="output-card" aria-label="Open Demo video" onClick={() => onOpenOutput("video")}><div className="artifact-preview" data-domain-ui="artifact-preview"><video muted src="/api/workshop/artifacts/video" /></div><div className="output-card-body"><h2>Demo video</h2><div className="output-meta"><span>Video</span><Status>Up to date</Status><span>{state?.activeSourceIds.length ?? 0} sources · Approved Storyboard</span></div></div></EntityCardAction>}</section>
+      {videos.map((video) => <EntityCardAction className={`output-card ${video.stale ? "needs-update" : ""}`} key={video.id} aria-label={`Open Demo video, version ${video.version}`} onClick={() => onOpenOutput(video.id)}><div className="artifact-preview" data-domain-ui="artifact-preview"><video muted src={`/api/workshop/artifacts/${video.id}`} /></div><div className="output-card-body"><h2>Demo video</h2><div className="output-meta"><span>Video · Version {video.version}</span><Status tone={video.stale ? "waiting" : "current"}>{video.stale ? "Needs update" : "Up to date"}</Status><span>{state?.activeSourceIds.length ?? 0} sources · Storyboard {video.storyboardVersion}</span></div></div></EntityCardAction>)}</section>
     </>}
   </article>;
 }
 
 function FocusedOutputView({ state, outputId, onShowSource, onShowOriginal }: { state: PersistedWorkshop | null; outputId: string; onShowSource: (sourceId?: string) => void; onShowOriginal: () => void }) {
   const output = state?.outputs.find((item) => item.id === outputId);
-  const isVideo = outputId === "video";
+  const isVideo = outputId === "video" || outputId.startsWith("video-v");
+  const video = isVideo ? (outputId === "video" ? state?.videos?.find((item) => !item.stale) : state?.videos?.find((item) => item.id === outputId)) : undefined;
   const isImages = outputId === "images";
   const title = output ? outputTitle(output.type) : isImages ? "Image set" : "Demo video";
   const sourceCount = output ? outputSourceCount(output, state) : state?.activeSourceIds.length ?? 0;
   const detail = output
     ? `${outputType(output.type)} · Version ${outputVersion(output, state?.outputs ?? [])} · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`
-    : isImages ? `${state?.imageBatch?.panels.length ?? 0} images · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}` : `Video · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`;
+    : isImages ? `${state?.imageBatch?.panels.length ?? 0} images · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}` : `Video · Version ${video?.version ?? 1} · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`;
   const sourceId = state?.claims?.find((claim) => output?.claimIds?.includes(claim.id))?.sourceId;
-  const href = isVideo ? "/api/workshop/artifacts/video" : `/api/workshop/artifacts/${outputId}`;
-  if (!output && !isVideo && !isImages) return <div className="state-surface"><StateMessage state="error" title="Couldn't open Output">Return to Outputs and try opening it again.</StateMessage></div>;
+  const href = `/api/workshop/artifacts/${outputId}`;
+  if (!output && (!isVideo || !video) && !isImages) return <div className="state-surface"><StateMessage state="error" title="Couldn't open Output">Return to Outputs and try opening it again.</StateMessage></div>;
   if (isImages) return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail}</p>{state?.imageBatch?.stale && <Status tone="waiting">Needs update</Status>}</div><Button size="small" onClick={() => onShowSource()}>Show source</Button></div><div className="focused-image-grid" data-domain-ui="image-review-grid">{state?.imageBatch?.panels.map((panel, index) => {
     const content = <><div className={`focused-image-preview ${panel.state}`} data-domain-ui="image-tile">{panel.state === "generated" ? <img alt={`Image ${index + 1}: ${panel.prompt}`} src={`/api/workshop/artifacts/${panel.id}`} /> : <span>{String(index + 1).padStart(2, "0")}</span>}</div><div className="focused-image-caption"><strong>Image {index + 1}</strong><Status tone={panel.state === "generated" ? "current" : "waiting"}>{panel.state === "generated" ? "Ready" : panel.state === "failed" ? "Couldn't create" : panel.state === "selected_for_regeneration" ? "Needs update" : "Planned"}</Status></div></>;
     return panel.state === "generated" ? <a className="focused-image-card" href={`/api/workshop/artifacts/${panel.id}`} target="_blank" rel="noreferrer" key={panel.id} aria-label={`Open image ${index + 1}`}>{content}</a> : <div className="focused-image-card" key={panel.id}>{content}</div>;
   })}</div></article>;
-  return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail}</p>{output?.stale && <Status tone="waiting">Needs update</Status>}</div><div className="button-row">{isVideo ? <Button size="small" onClick={onShowOriginal}>Show original</Button> : <Button size="small" onClick={() => onShowSource(sourceId)}>Show source</Button>}<ButtonLink variant="secondary" size="small" href={href} target="_blank" rel="noreferrer">{isVideo ? "Open video" : "Open file"}</ButtonLink></div></div><div className={`focused-output-preview ${isVideo ? "video-preview" : ""}`} data-domain-ui="artifact-preview">{isVideo ? <video controls src={href} /> : <iframe title={title} sandbox="allow-same-origin" src={href} />}</div></article>;
+  return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail}</p>{(output?.stale || video?.stale) && <Status tone="waiting">Needs update</Status>}</div><div className="button-row">{isVideo ? <Button size="small" onClick={onShowOriginal}>Show original</Button> : <Button size="small" onClick={() => onShowSource(sourceId)}>Show source</Button>}<ButtonLink variant="secondary" size="small" href={href} target="_blank" rel="noreferrer">{isVideo ? "Open video" : "Open file"}</ButtonLink></div></div><div className={`focused-output-preview ${isVideo ? "video-preview" : ""}`} data-domain-ui="artifact-preview">{isVideo ? <video controls src={href} /> : <iframe title={title} sandbox="allow-same-origin" src={href} />}</div></article>;
 }
 
 function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | null; onClose: () => void }) {
@@ -397,7 +400,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
     { title: "Infographic", detail: `${state?.outputs.filter((output) => output.type === "infographic").length ?? 0} version${state?.outputs.filter((output) => output.type === "infographic").length === 1 ? "" : "s"}` },
     { title: "Image set", detail: `${state?.imageBatch?.panels.length ?? 0} ${state?.imageBatch?.panels.every((panel) => panel.state === "generated") ? "ready" : "planned"} images` },
     { title: "Storyboard", detail: `${state?.storyboard.panels.length ?? 0} editable panels` },
-    { title: "Demo video", detail: state?.videoState === "rendered" ? "Local MP4 ready" : "Not created yet" },
+    { title: "Demo video", detail: state?.videos?.some((video) => !video.stale) ? `Version ${state.videos.find((video) => !video.stale)!.version} ready` : state?.videos?.length ? `${state.videos.length} saved · Needs update` : "Not created yet" },
   ];
 
   return <SideSheet title="Original brainstorm" className="original-reveal" onClose={onClose}>

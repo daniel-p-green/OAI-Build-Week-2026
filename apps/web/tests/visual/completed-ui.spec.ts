@@ -388,10 +388,13 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
 });
 
 test("finished Video reveals the original brainstorm without adding navigation", async ({ page }) => {
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
   const readyState = await (await page.request.get("/api/workshop")).json();
   const revealState = {
     ...readyState,
     videoState: "rendered",
+    videos: [{ id: "video-v1", version: 1, storyboardVersion: readyState.storyboard.version, styleVersion: readyState.style.version, relativePath: "generated/videos/workshoplm-demo-v1.mp4", provenancePath: "generated/videos/workshoplm-demo-v1.provenance.json", artifactPath: "artifacts/video-v1", claimIds: readyState.storyboard.panels.flatMap((panel: { claimIds: string[] }) => panel.claimIds), stale: false, createdAt: "2026-07-15T06:31:42.000Z" }],
     transcriptSegments: [{ id: "fixture-brainstorm", origin: "realtime_fallback", transport: "fixture", text: "Okay, this is rough, but I want the judge to see a messy idea turn into the actual finished submission without losing where anything came from.", capturedAt: "2026-07-15T06:30:00.000Z" }],
     firstTranscriptAt: "2026-07-15T06:30:00.000Z",
     firstRenderedOutputAt: "2026-07-15T06:31:42.000Z",
@@ -419,6 +422,28 @@ test("finished Video reveals the original brainstorm without adding navigation",
     await closeDialog(page, "Original brainstorm");
     await expect(reveal).toBeFocused();
   }
+});
+
+test("Video history preserves prior versions without adding another navigation surface", async ({ page }) => {
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+  const readyState = await (await page.request.get("/api/workshop")).json();
+  const video = { storyboardVersion: readyState.storyboard.version, styleVersion: readyState.style.version, provenancePath: "generated/videos/video.provenance.json", artifactPath: "artifacts/video", claimIds: readyState.storyboard.panels.flatMap((panel: { claimIds: string[] }) => panel.claimIds) };
+  const historyState = { ...readyState, videoState: "rendered", videos: [
+    { ...video, id: "video-v1", version: 1, relativePath: "generated/videos/workshoplm-demo-v1.mp4", stale: true, createdAt: "2026-07-15T06:31:42.000Z" },
+    { ...video, id: "video-v2", version: 2, relativePath: "generated/videos/workshoplm-demo-v2.mp4", stale: false, createdAt: "2026-07-15T06:41:42.000Z" },
+  ] };
+  await page.route("**/api/workshop", async (route) => route.request().method() === "GET" ? route.fulfill({ json: historyState }) : route.continue());
+  await page.route("**/api/workshop/artifacts/video-v*", async (route) => route.fulfill({ contentType: "video/mp4", body: "video" }));
+  await page.goto("/");
+  await page.getByRole("button", { name: "View brief" }).click();
+  await page.getByRole("button", { name: "View outputs" }).click();
+  await expect(page.getByRole("button", { name: "Open Demo video, version 2" })).toContainText("Up to date");
+  await expect(page.getByRole("button", { name: "Open Demo video, version 1" })).toContainText("Needs update");
+  await page.getByRole("button", { name: "Open Demo video, version 1" }).click();
+  await expect(page.getByText("Video · Version 1")).toBeVisible();
+  await expect(page.getByText("Needs update", { exact: true })).toBeVisible();
+  await expect(page.locator(".focused-output-preview video")).toHaveAttribute("src", "/api/workshop/artifacts/video-v1");
 });
 
 test("core primitive computed styles and states match the official reference", async ({ page }) => {
@@ -615,7 +640,7 @@ test("queued local video work refreshes into the finished next action", async ({
   const readyState = await (await page.request.get("/api/workshop")).json();
   const approvedState = { ...readyState, storyboardApproved: true, videoState: "blocked" };
   const queuedState = { ...approvedState, videoState: "queued" };
-  const renderedState = { ...approvedState, videoState: "rendered" };
+  const renderedState = { ...approvedState, videoState: "rendered", videos: [{ id: "video-v1", version: 1, storyboardVersion: readyState.storyboard.version, styleVersion: readyState.style.version, relativePath: "generated/videos/workshoplm-demo-v1.mp4", provenancePath: "generated/videos/workshoplm-demo-v1.provenance.json", artifactPath: "artifacts/video-v1", claimIds: [], stale: false, createdAt: "2026-07-15T06:31:42.000Z" }] };
   let queued = false;
   await page.route("**/api/workshop", async (route) => {
     if (route.request().method() === "GET") return route.fulfill({ json: queued ? renderedState : approvedState });
@@ -668,7 +693,7 @@ test("the local render becomes a real Video preview and the next action", async 
     const videoCard = page.getByRole("button", { name: "Open Demo video" });
     await expect(videoCard).toBeVisible();
     const previewVideo = videoCard.locator("video");
-    await expect(previewVideo).toHaveAttribute("src", "/api/workshop/artifacts/video");
+    await expect(previewVideo).toHaveAttribute("src", "/api/workshop/artifacts/video-v1");
     await expect.poll(() => previewVideo.evaluate((node) => (node as HTMLVideoElement).readyState)).toBeGreaterThanOrEqual(1);
     await previewVideo.evaluate(async (node) => {
       const video = node as HTMLVideoElement;

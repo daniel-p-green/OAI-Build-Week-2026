@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { buildSubmissionOutputSet, verifySubmissionOutputSet } from "./submission-package.js";
 import { buildWorkshopVideoProvenance } from "./executor.js";
-import { applyWorkshopAction, createImageBatch, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, setVideoState } from "./workshop-service.js";
+import { applyWorkshopAction, createImageBatch, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, recordRenderedVideo } from "./workshop-service.js";
 
 const roots: string[] = [];
 afterEach(async () => { await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true }))); });
@@ -23,10 +23,13 @@ async function buildableWorkshop() {
   createImageBatch(root);
   applyWorkshopAction("approveStoryboard", root);
   const videoBytes = Buffer.from("deterministic-video");
-  await writeFile(join(root, "generated", "workshoplm-demo.mp4"), videoBytes);
+  const videoPath = join("generated", "workshoplm-demo-v1.mp4");
+  const provenancePath = join("generated", "workshoplm-demo-v1.provenance.json");
+  await writeFile(join(root, videoPath), videoBytes);
   const videoArtifact = { relativePath: "artifacts/test/workshoplm-demo", sha256: createHash("sha256").update(videoBytes).digest("hex"), byteCount: videoBytes.byteLength, mimeType: "video/mp4" };
-  await writeFile(join(root, "generated", "workshoplm-demo.provenance.json"), `${JSON.stringify(buildWorkshopVideoProvenance(readWorkshopState(root), videoArtifact), null, 2)}\n`);
-  setVideoState("rendered", root);
+  await writeFile(join(root, provenancePath), `${JSON.stringify(buildWorkshopVideoProvenance(readWorkshopState(root), videoArtifact), null, 2)}\n`);
+  const state = readWorkshopState(root);
+  recordRenderedVideo({ storyboardVersion: state.storyboard.version, styleVersion: state.style!.version, visualDnaVersion: state.visualDna?.version, imageBatchId: state.imageBatch?.id, relativePath: videoPath, provenancePath, artifactPath: videoArtifact.relativePath, sha256: videoArtifact.sha256, byteCount: videoArtifact.byteCount, claimIds: [...new Set(state.storyboard.panels.flatMap((panel) => panel.claimIds))] }, root);
   return root;
 }
 
