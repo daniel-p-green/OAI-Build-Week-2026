@@ -56,6 +56,9 @@ button { -webkit-tap-highlight-color: transparent; }
 .map-orientation { position: absolute; z-index: 9; top: 70px; left: 20px; width: min(420px, calc(100vw - 40px)); display: flex; align-items: flex-start; gap: 16px; padding: 16px; }
 .map-orientation > div { min-width: 0; flex: 1; display: grid; gap: 4px; }
 .map-orientation p { margin: 0; color: #5d5d5d; font-size: 13px; line-height: 19px; }
+.style-analysis-status { position: absolute; z-index: 9; top: 70px; right: 20px; width: min(400px, calc(100vw - 40px)); display: grid; gap: 12px; padding: 16px; }
+.style-analysis-status > div:first-child { display: grid; gap: 4px; }
+.style-analysis-status p { margin: 0; color: #5d5d5d; font-size: 13px; line-height: 19px; }
 
 /* WorkshopLM's only custom visual surface: the editable evidence Map. */
 .map-canvas { position: relative; width: 100%; height: 100%; overflow: hidden; background: #fff; }
@@ -259,6 +262,7 @@ button { -webkit-tap-highlight-color: transparent; }
   .website-style-start, .website-style-review { grid-template-columns: 1fr; }
   .website-style-review > .oai-button { grid-column: auto; }
   .map-orientation { position: relative; top: auto; right: auto; left: auto; width: auto; margin: 12px; }
+  .style-analysis-status { position: relative; top: auto; right: auto; width: auto; margin: 12px; }
   .workshop-header { gap: 8px; }
   .header-actions { gap: 4px; }
   .header-identity { gap: 4px; }

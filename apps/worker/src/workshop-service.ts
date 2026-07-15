@@ -28,11 +28,20 @@ export type WorkshopSketch = { version: number; graphRevision: number; nodes: Pi
 export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop"; referenceUrl?: string; libraryId?: string; lockedAt: string; stale: boolean };
 export type WorkshopStyleLibraryEntry = Omit<WorkshopStyle, "version" | "libraryId" | "lockedAt" | "stale"> & { id: string; createdAt: string; updatedAt: string };
 export type WorkshopOutcome = "client_facing_pitch" | "board_deck" | "internal_workshop";
+export type WebsiteStyleAnalysis = {
+  status: "reviewing" | "ready" | "error";
+  url: string;
+  startedAt: string;
+  completedAt?: string;
+  suggestion?: WebsiteStyleSuggestion;
+  error?: string;
+};
 export type WorkshopOnboarding = {
   step: "welcome" | "style" | "sources" | "complete";
   outcome?: WorkshopOutcome;
   mapOrientationDismissed: boolean;
   outputsOrientationDismissed: boolean;
+  styleAnalysis?: WebsiteStyleAnalysis;
   completedAt?: string;
 };
 export type WorkshopDesignArtifact = { version: number; styleVersion: number; markdownPath: string; tokensPath: string; stale: boolean; createdAt: string };
@@ -164,7 +173,7 @@ export function updateWorkshopOnboarding(input: { title?: string; outcome?: Work
   const step = input.step ?? current.onboarding.step;
   if (!(["welcome", "style", "sources", "complete"] as const).includes(step)) throw new Error("Invalid onboarding step.");
   if (step !== "welcome" && !outcome) throw new Error("Choose what you are making before continuing.");
-  if (step === "sources" && !current.style) throw new Error("Choose, create, or reuse a Company Style before adding material.");
+  if (step === "sources" && !current.style && !current.onboarding.styleAnalysis) throw new Error("Choose, create, reuse, or start reviewing a Company Style before adding material.");
   if (step === "complete" && current.sourceItems.length === 0) throw new Error("Add at least one source before building the Map.");
   const updatedAt = new Date().toISOString();
   return write({
@@ -178,6 +187,30 @@ export function updateWorkshopOnboarding(input: { title?: string; outcome?: Work
     },
     updatedAt,
   }, root);
+}
+export function beginWebsiteStyleAnalysis(rawUrl: string, root?: string): WorkshopState {
+  const current = readWorkshopState(root);
+  const url = reviewedWebsiteUrl(rawUrl);
+  const startedAt = new Date().toISOString();
+  return write({ ...current, onboarding: { ...current.onboarding, styleAnalysis: { status: "reviewing", url, startedAt } }, updatedAt: startedAt }, root);
+}
+function finishWebsiteStyleAnalysis(rawUrl: string, result: { suggestion: WebsiteStyleSuggestion } | { error: string }, root?: string) {
+  const current = readWorkshopState(root);
+  const url = reviewedWebsiteUrl(rawUrl);
+  if (current.onboarding.styleAnalysis?.url !== url) return current;
+  const completedAt = new Date().toISOString();
+  const styleAnalysis: WebsiteStyleAnalysis = "suggestion" in result
+    ? { ...current.onboarding.styleAnalysis, status: "ready", suggestion: result.suggestion, completedAt }
+    : { ...current.onboarding.styleAnalysis, status: "error", error: result.error, completedAt };
+  return write({ ...current, onboarding: { ...current.onboarding, styleAnalysis }, updatedAt: completedAt }, root);
+}
+export async function runWebsiteStyleAnalysis(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch): Promise<WorkshopState> {
+  try {
+    const suggestion = await analyzeWebsiteStyle(rawUrl, fetchImpl);
+    return finishWebsiteStyleAnalysis(rawUrl, { suggestion }, root);
+  } catch (error) {
+    return finishWebsiteStyleAnalysis(rawUrl, { error: error instanceof Error ? error.message : "This website could not be reviewed." }, root);
+  }
 }
 export function dismissWorkshopOrientation(kind: "map" | "outputs", root?: string): WorkshopState {
   const current = readWorkshopState(root);

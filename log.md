@@ -5260,3 +5260,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Mobile first-use screenshots and a real public-website in-app-browser run remain open; the existing completed-Workshop mobile/compact suite remains green.
 - Live microphone, GPT-5.6, GPT Image 2, Speech, and final-video evidence remain unchanged and authorization-gated.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 14:40 CT — Company Style analysis runs beside the work
+
+**Area:** Product / Onboarding / Company Styles / Browser verification
+
+### Changed
+
+- Company-website analysis is now a persisted Workshop task with honest `Reviewing`, `Ready`, and `Couldn't review` states. Starting it returns immediately to Source intake instead of holding the professional in a progress screen.
+- Source ingestion, real Excalidraw Map creation, Map editing, and Brief approval remain available while analysis runs. The website remains brand evidence only and is never added to factual Sources.
+- The Map quietly polls only while analysis is active. A compact status card exposes `Review style` when findings arrive and useful retry, manual, and clean-default fallbacks when analysis fails.
+- Website findings open in the existing Company Style sheet with the analyzed domain, editable name, palette, type, and the current Workshop outcome already populated; saving creates the reusable Company Style.
+- A stale asynchronous result cannot overwrite a newer website request. Worker tests prove persisted reviewing, ready, stale-result, and error transitions.
+
+### Verified
+
+- Focused worker tests passed all 77 cases across eight files; web unit and contract tests passed all 15 cases across four files.
+- The production build passed, and the production browser suite passed all 20 tests. The new test proves a ready website review can open from the editable Map while the Source count, Excalidraw canvas, and `Approve brief` action remain available.
+- Inspected `desktop-map-style-ready.png`: the style-ready card stays compact in the upper-right and does not displace the professional's grounded Map or next action.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages.
+- `pnpm demo:e2e` passed all six recorded-fixture gates. `pnpm submission:build` produced the expected truthful 17-asset partial set with four provider limitations; `pnpm submission:verify` returned valid, not stale, and not tampered.
+
+### Decisions
+
+- Brand analysis is parallel setup, not a modal workflow or third approval gate. Only creating Outputs waits for a reviewed Company Style.
+- The browser polls persisted task state instead of inventing progress percentages or relying on page-local promises, so reload and navigation cannot fabricate completion.
+- The current website-analysis protections and bounded fetch path remain the authority; this increment adds orchestration and visible state without weakening source or network boundaries.
+
+### Open items
+
+- Explicit palette and typography roles, font availability/licensing truth, candidate asset review, and validated local asset copying and hashing remain open.
+- The broader failure matrix, Company Style revision behavior, accessible orientation return entry, mobile first-use proof, and real-public-website in-app-browser run remain open.
+- Live microphone, GPT-5.6, GPT Image 2, Speech, and final-video evidence remain unchanged and authorization-gated.
+- Codex Session ID: unavailable on this surface; not inferred.

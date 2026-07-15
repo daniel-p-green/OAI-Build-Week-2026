@@ -9,7 +9,7 @@ const viewports = [
 ] as const;
 
 async function expectScreen(page: Page, name: string) {
-  const previewRatio = name === "mobile-outputs" || name === "mobile-output-viewer" ? 0.015 : name.startsWith("mobile-") ? 0.004 : 0.001;
+  const previewRatio = name === "mobile-outputs" || name === "mobile-output-viewer" ? 0.015 : name === "desktop-map-style-ready" ? 0.003 : name.startsWith("mobile-") ? 0.004 : 0.001;
   await expect(page).toHaveScreenshot(`${name}.png`, { animations: "disabled", caret: "hide", maxDiffPixelRatio: previewRatio });
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(await page.evaluate(() => innerWidth));
 }
@@ -209,6 +209,34 @@ test("Style can start from a website and apply a professional intent", async ({ 
     await sheet.getByRole("button", { name: "Use this style" }).click();
     await expect.poll(() => posted.at(-1)).toEqual({ action: "lockWebsiteStyle", url: "https://example.com/brand", intentProfile: "board_deck", manualStyle: { name: "Example Studio foundation", accent: "#335577", ink: "#102030", paper: "#FAF8F4", logos: ["https://example.com/logo.svg"], licensedFonts: ["Studio Sans"], references: ["https://example.com/brand"], negativeRules: [], intentProfile: "board_deck" } });
   }
+});
+
+test("a completed website review hands off from the editable Map without blocking it", async ({ page }) => {
+  const current = await (await page.request.get("/api/workshop")).json();
+  const suggestion = { referenceUrl: "https://example.com/brand", name: "Example Studio foundation", accent: "#2457D6", ink: "#102030", paper: "#FAF8F4", logos: ["https://example.com/logo.svg"], fontCandidates: ["Studio Sans"], references: ["https://example.com/brand"], negativeRules: [], findings: { colors: 3, fontCandidates: 1, assets: 1, stylesheets: 1 } };
+  const stylelessState = { ...current, briefApproved: false, frame: current.frame ? { ...current.frame, stale: true } : undefined, style: undefined, onboarding: { ...current.onboarding, step: "complete", outcome: "board_deck", mapOrientationDismissed: true, styleAnalysis: { status: "ready", url: suggestion.referenceUrl, startedAt: "2026-07-15T14:00:00.000Z", completedAt: "2026-07-15T14:00:01.000Z", suggestion } } };
+  const posted: Record<string, unknown>[] = [];
+  await page.route("**/api/workshop", async (route) => {
+    if (route.request().method() === "GET") return route.fulfill({ json: stylelessState });
+    posted.push(route.request().postDataJSON() as Record<string, unknown>);
+    return route.fulfill({ json: current });
+  });
+
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto("/");
+  await expect(page.getByText("Company style ready to review")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
+  await expectMapReady(page, viewports[0]);
+  await expectScreen(page, "desktop-map-style-ready");
+  await page.getByRole("button", { name: "Review style" }).click();
+  const sheet = page.getByRole("dialog", { name: "Style" });
+  await expect(sheet).toContainText("We found this on example.com. Keep what is right.");
+  await expect(sheet.getByRole("textbox", { name: "Accent" })).toHaveValue("#2457D6");
+  await expect(sheet.getByRole("textbox", { name: "Text" })).toHaveValue("#102030");
+  await expect(sheet.getByRole("textbox", { name: "Background" })).toHaveValue("#FAF8F4");
+  await expect(sheet.getByRole("button", { name: /Board presentation/ })).toHaveAttribute("aria-pressed", "true");
+  await sheet.getByRole("button", { name: "Save company style" }).click();
+  await expect.poll(() => posted.at(-1)?.action).toBe("lockWebsiteStyle");
 });
 
 test.describe("completed Workshop judge path", () => {

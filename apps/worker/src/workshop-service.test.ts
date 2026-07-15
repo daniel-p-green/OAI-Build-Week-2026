@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { describe, expect, it } from "vitest";
-import { analyzeWebsiteStyle, applyMapOperation, applyStyleLibrary, applyWorkshopAction, approveSketch, approveVisualDna, assertStoryboardGrounding, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, dismissWorkshopOrientation, extractWorkshopCandidates, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, ingestUrl, listStyleLibrary, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, markImagePanelFailed, normalizePdfLayoutText, readWorkshopState, resolveWorkshopArtifact, searchWorkshopSources, selectImagePanelForRegeneration, selectWorkshop, setActiveSourceScope, syncMapCanvas, undoMapOperation, updateStoryboardPanel, updateWorkshopOnboarding } from "./workshop-service.js";
+import { analyzeWebsiteStyle, applyMapOperation, applyStyleLibrary, applyWorkshopAction, approveSketch, approveVisualDna, assertStoryboardGrounding, beginWebsiteStyleAnalysis, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, dismissWorkshopOrientation, extractWorkshopCandidates, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, ingestUrl, listStyleLibrary, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, markImagePanelFailed, normalizePdfLayoutText, readWorkshopState, resolveWorkshopArtifact, runWebsiteStyleAnalysis, searchWorkshopSources, selectImagePanelForRegeneration, selectWorkshop, setActiveSourceScope, syncMapCanvas, undoMapOperation, updateStoryboardPanel, updateWorkshopOnboarding } from "./workshop-service.js";
 describe("Workshop service", () => { it("persists brief/style/storyboard gates and blocks video until the storyboard is approved", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-service-")); expect(() => applyWorkshopAction("renderVideo", root)).toThrow(/storyboard/); const brief = applyWorkshopAction("approveBrief", root); expect(brief.frame).toMatchObject({ markdownPath: "generated/FRAME-v1.md", executablePath: "generated/FRAME-v1.json" }); expect(await readFile(join(root, brief.frame!.markdownPath), "utf8")).toContain("# FRAME.md"); expect(JSON.parse(await readFile(join(root, brief.frame!.executablePath), "utf8"))).toMatchObject({ frameVersion: 1, schemaVersion: 1, evidence: expect.any(Array) }); applyWorkshopAction("lockManualStyle", root); expect(applyWorkshopAction("approveStoryboard", root).storyboardApproved).toBe(true); expect(applyWorkshopAction("renderVideo", root).videoState).toBe("queued"); expect(readWorkshopState(root).briefApproved).toBe(true); await rm(root, { recursive: true, force: true }); });
 it("opens a genuinely fresh data root in durable onboarding and preserves outcome, name, and orientation state", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-onboarding-"));
@@ -28,6 +28,26 @@ it("opens a genuinely fresh data root in durable onboarding and preserves outcom
     else process.env.WORKSHOPLM_SEEDED_FIXTURE = priorFixtureMode;
     await rm(root, { recursive: true, force: true });
   }
+});
+it("persists website Style analysis while source work proceeds and ignores stale completions", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-style-analysis-"));
+  const started = beginWebsiteStyleAnalysis("https://example.com/brand", root);
+  expect(started.onboarding.styleAnalysis).toMatchObject({ status: "reviewing", url: "https://example.com/brand" });
+  expect(started.sourceItems).toHaveLength(3);
+  expect(updateWorkshopOnboarding({ outcome: "board_deck", step: "sources" }, root).onboarding.step).toBe("sources");
+
+  beginWebsiteStyleAnalysis("https://example.org/brand", root);
+  const ignored = await runWebsiteStyleAnalysis("https://example.com/brand", root, (async () => new Response('<html><head><title>Old brand</title></head><body></body></html>', { status: 200, headers: { "content-type": "text/html" } })) as typeof fetch);
+  expect(ignored.onboarding.styleAnalysis).toMatchObject({ status: "reviewing", url: "https://example.org/brand" });
+
+  const ready = await runWebsiteStyleAnalysis("https://example.org/brand", root, (async () => new Response('<html><head><title>Current brand</title><meta name="theme-color" content="#2457D6"></head><body><img class="brand-logo" src="/logo.svg"></body></html>', { status: 200, headers: { "content-type": "text/html" } })) as typeof fetch);
+  expect(ready.onboarding.styleAnalysis).toMatchObject({ status: "ready", url: "https://example.org/brand", suggestion: { name: "Current brand foundation", accent: "#2457D6", logos: ["https://example.org/logo.svg"] } });
+  expect(ready.sourceItems).toHaveLength(3);
+
+  beginWebsiteStyleAnalysis("https://example.net/brand", root);
+  const failed = await runWebsiteStyleAnalysis("https://example.net/brand", root, async () => { throw new Error("Fixture network failure"); });
+  expect(failed.onboarding.styleAnalysis).toMatchObject({ status: "error", error: "Fixture network failure" });
+  await rm(root, { recursive: true, force: true });
 });
 it("creates, lists, selects, and isolates durable Workshops", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-collection-"));

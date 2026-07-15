@@ -41,7 +41,7 @@ type WebsiteStyleSuggestion = Omit<ManualStylePayload, "licensedFonts" | "intent
 type PersistedWorkshop = {
   id: string;
   title: string;
-  onboarding: { step: "welcome" | "style" | "sources" | "complete"; outcome?: WorkshopOutcome; mapOrientationDismissed: boolean; outputsOrientationDismissed: boolean; completedAt?: string };
+  onboarding: { step: "welcome" | "style" | "sources" | "complete"; outcome?: WorkshopOutcome; mapOrientationDismissed: boolean; outputsOrientationDismissed: boolean; completedAt?: string; styleAnalysis?: { status: "reviewing" | "ready" | "error"; url: string; startedAt: string; completedAt?: string; suggestion?: WebsiteStyleSuggestion; error?: string } };
   briefApproved: boolean;
   storyboardApproved: boolean;
   videoState: "blocked" | "queued" | "rendering" | "rendered";
@@ -131,6 +131,16 @@ export default function WorkshopPage() {
     }, 1000);
     return () => { stopped = true; window.clearInterval(timer); };
   }, [state?.videoState]);
+  useEffect(() => {
+    if (state?.onboarding.styleAnalysis?.status !== "reviewing") return;
+    let stopped = false;
+    const timer = window.setInterval(() => {
+      void fetch("/api/workshop").then(async (response) => {
+        if (!stopped && response.ok) setState(await response.json() as PersistedWorkshop);
+      }).catch(() => undefined);
+    }, 750);
+    return () => { stopped = true; window.clearInterval(timer); };
+  }, [state?.onboarding.styleAnalysis?.status]);
 
   const selectedNode = useMemo(() => state?.mapNodes.find((node) => node.id === selectedNodeId), [state, selectedNodeId]);
   const selectedPanel = useMemo(() => state?.storyboard.panels.find((panel) => panel.id === selectedPanelId) ?? state?.storyboard.panels[0], [state, selectedPanelId]);
@@ -252,7 +262,7 @@ export default function WorkshopPage() {
   const backTarget: ObjectView | null = view === "map" ? null : view === "brief" ? "map" : view === "outputs" ? "brief" : "outputs";
 
   if (loadState === "ready" && state && state.onboarding.step !== "complete") {
-    return <OnboardingFlow state={state} styleLibrary={styleLibrary} busy={busy} notice={notice} onPost={post} onAnalyzeWebsite={analyzeWebsiteStyle} />;
+    return <OnboardingFlow state={state} styleLibrary={styleLibrary} busy={busy} notice={notice} onPost={post} />;
   }
 
   return (
@@ -288,7 +298,7 @@ export default function WorkshopPage() {
       <section className="object-canvas" aria-label={currentTitle}>
         {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
         {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
-        {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onAddSource={() => openSheet("add-source")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "map" }); }} />}
+        {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onAddSource={() => openSheet("add-source")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "map" }); }} onReviewStyle={() => openSheet("style")} onRetryStyle={(url) => { void post({ action: "beginWebsiteStyleAnalysis", url }); }} onUseDefaultStyle={() => { void post({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: state?.onboarding.outcome } }); }} />}
         {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
         {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
         {loadState === "ready" && view === "storyboard" && <StoryboardView storyboard={state?.storyboard} imageBatch={state?.imageBatch} approved={Boolean(state?.storyboardApproved)} panel={selectedPanel} busy={busy} onSelect={setSelectedPanelId} onPost={post} onShowSource={showSource} />}
@@ -299,7 +309,7 @@ export default function WorkshopPage() {
       {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} onClose={closeSheet} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "evidence" && selectedSource && <EvidenceSheet source={selectedSource} onClose={closeSheet} onShowMap={() => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === selectedSource.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "add-source" && <AddSourceSheet onClose={() => setSheet("sources")} onPost={post} />}
-      {sheet === "style" && <StyleSheet style={state?.style} library={styleLibrary} busy={busy} onClose={closeSheet} onPost={post} onAnalyzeWebsite={analyzeWebsiteStyle} />}
+      {sheet === "style" && <StyleSheet style={state?.style} analysisSuggestion={state?.onboarding.styleAnalysis?.status === "ready" ? state.onboarding.styleAnalysis.suggestion : undefined} defaultIntent={state?.onboarding.outcome} library={styleLibrary} busy={busy} onClose={closeSheet} onPost={post} onAnalyzeWebsite={analyzeWebsiteStyle} />}
       {sheet === "original" && <OriginalRevealSheet state={state} onClose={closeSheet} />}
     </FullScreenShell>
   );
@@ -311,11 +321,10 @@ const OUTCOME_OPTIONS: Array<{ id: WorkshopOutcome; title: string; detail: strin
   { id: "internal_workshop", title: "Team workshop", detail: "A practical working session with clear actions.", defaultName: "Team workshop" },
 ];
 
-function OnboardingFlow({ state, styleLibrary, busy, notice, onPost, onAnalyzeWebsite }: { state: PersistedWorkshop; styleLibrary: StyleLibraryEntry[]; busy: boolean; notice: { message: string; tone: "status" | "error" } | null; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onAnalyzeWebsite: (url: string) => Promise<WebsiteStyleSuggestion | null> }) {
+function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: PersistedWorkshop; styleLibrary: StyleLibraryEntry[]; busy: boolean; notice: { message: string; tone: "status" | "error" } | null; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null> }) {
   const [outcome, setOutcome] = useState<WorkshopOutcome | undefined>(state.onboarding.outcome);
   const [title, setTitle] = useState(state.title === "WorkshopLM Build Week" ? "" : state.title);
   const [website, setWebsite] = useState("");
-  const [suggestion, setSuggestion] = useState<WebsiteStyleSuggestion | null>(null);
   const [source, setSource] = useState("");
   const [sourceTitle, setSourceTitle] = useState("");
   const sourceKind = sourceInputKind(source);
@@ -327,28 +336,8 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost, onAnalyzeWe
   }
 
   async function reviewWebsite() {
-    const reviewed = await onAnalyzeWebsite(website.trim());
-    if (reviewed) setSuggestion(reviewed);
-  }
-
-  async function saveWebsiteStyle() {
-    if (!suggestion) return;
-    await chooseStyle({
-      action: "lockWebsiteStyle",
-      url: suggestion.referenceUrl,
-      intentProfile: outcome,
-      manualStyle: {
-        name: suggestion.name,
-        accent: suggestion.accent,
-        ink: suggestion.ink,
-        paper: suggestion.paper,
-        logos: suggestion.logos,
-        licensedFonts: suggestion.fontCandidates,
-        references: suggestion.references,
-        negativeRules: suggestion.negativeRules,
-        intentProfile: outcome,
-      },
-    });
+    const started = await onPost({ action: "beginWebsiteStyleAnalysis", url: website.trim() });
+    if (started) await onPost({ action: "updateOnboarding", onboardingStep: "sources" });
   }
 
   async function addSource() {
@@ -377,8 +366,7 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost, onAnalyzeWe
       {state.onboarding.step === "style" && <Card className="onboarding-card style-start-card">
         <div className="onboarding-copy"><small>Company Style</small><h1>Make every Output feel like yours.</h1><p>We’ll suggest colors, type, and brand assets for review. This website will not be added to Sources.</p></div>
         {styleLibrary.length > 0 && <section className="saved-style-start"><h2>Use your latest saved style</h2><ListGroup>{styleLibrary.slice(0, 1).map((entry) => <ListRow key={entry.id}><ListRowAction disabled={busy} onClick={() => { void chooseStyle({ action: "applyStyleLibrary", styleLibraryId: entry.id, intentProfile: outcome }); }}><div className="saved-style-row"><span><strong>{entry.name}</strong><small>{entry.source === "website" ? "From website" : "Set manually"}</small></span><div className="palette-preview compact" aria-hidden="true"><i style={{ background: entry.accent }} /><i style={{ background: entry.ink }} /><i style={{ background: entry.paper }} /></div></div></ListRowAction></ListRow>)}</ListGroup></section>}
-        <div className="website-style-start"><Input label="Company website" placeholder="https://company.com" value={website} onChange={(event) => { setWebsite(event.target.value); setSuggestion(null); }} /><Button disabled={busy || !website.trim()} onClick={() => { void reviewWebsite(); }}>Find my company style</Button></div>
-        {suggestion && <Card className="website-style-review"><div><small>We found this on {new URL(suggestion.referenceUrl).hostname}. Keep what is right.</small><h2>{suggestion.name}</h2><p>{suggestion.findings.colors} colors · {suggestion.findings.fontCandidates} type candidates · {suggestion.findings.assets} brand assets</p></div><div className="style-review-preview" style={{ color: suggestion.ink, background: suggestion.paper, borderColor: suggestion.accent }}><span style={{ background: suggestion.accent }} /> <strong>Evidence becomes a clear recommendation.</strong><small>{suggestion.fontCandidates[0] ?? "System type"} with a verified source trail</small></div><Button disabled={busy} onClick={() => { void saveWebsiteStyle(); }}>Save company style</Button></Card>}
+        <div className="website-style-start"><Input label="Company website" placeholder="https://company.com" value={website} onChange={(event) => setWebsite(event.target.value)} /><Button disabled={busy || !website.trim()} onClick={() => { void reviewWebsite(); }}>Find my company style</Button></div>
         <div className="onboarding-secondary-actions"><Button variant="secondary" disabled={busy} onClick={() => { void chooseStyle({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: outcome } }); }}>Use a clean default for now</Button>{state.style && <Button variant="secondary" disabled={busy} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "sources" }); }}>Continue with {state.style.name}</Button>}<Button variant="secondary" disabled={busy} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "welcome" }); }}>Back</Button></div>
       </Card>}
 
@@ -396,19 +384,22 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost, onAnalyzeWe
   </FullScreenShell>;
 }
 
-function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShowSource, onAddSource, onDismissOrientation }: { state: PersistedWorkshop | null; selectedNode?: MapNode; busy: boolean; onSelect: (id: string) => void; onSync: (nodes: Pick<MapNode, "id" | "title" | "x" | "y" | "width" | "height">[]) => void; onUndo: () => void; onShowSource: (sourceId?: string) => void; onAddSource: () => void; onDismissOrientation: () => void }) {
+function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShowSource, onAddSource, onDismissOrientation, onReviewStyle, onRetryStyle, onUseDefaultStyle }: { state: PersistedWorkshop | null; selectedNode?: MapNode; busy: boolean; onSelect: (id: string) => void; onSync: (nodes: Pick<MapNode, "id" | "title" | "x" | "y" | "width" | "height">[]) => void; onUndo: () => void; onShowSource: (sourceId?: string) => void; onAddSource: () => void; onDismissOrientation: () => void; onReviewStyle: () => void; onRetryStyle: (url: string) => void; onUseDefaultStyle: () => void }) {
   const sources = (state?.sourceItems ?? []).filter((source) => state?.activeSourceIds.includes(source.id));
   const nodes = (state?.mapNodes ?? []).filter((node) => !node.sourceId || state?.activeSourceIds.includes(node.sourceId));
   const relatedSourceId = (node: MapNode, index: number) => node.sourceId ?? sources[index % Math.max(1, sources.length)]?.id;
   const selectedSourceId = selectedNode ? relatedSourceId(selectedNode, Math.max(0, nodes.indexOf(selectedNode))) : undefined;
   const source = sources.find((item) => item.id === selectedSourceId);
   const canUndo = Boolean(state?.graphState && !state.graphState.includes('"records":[]'));
+  const analysis = state?.onboarding.styleAnalysis;
+  const analysisDomain = analysis ? new URL(analysis.url).hostname : "";
 
   if (!nodes.length) return <div className="state-surface"><StateMessage state="empty" title="Start with a source" action={<Button onClick={onAddSource}>Add source</Button>}>From your meetings and documents to a deck you can defend, with every claim traced to its source.</StateMessage></div>;
 
   return <div className="map-canvas" data-domain-ui="map-canvas">
     <div className="map-caption" data-domain-ui="map-caption"><span>{nodes.length} ideas · Drag to organize · Double-click to edit</span>{canUndo && <Button variant="secondary" size="small" disabled={busy} onClick={onUndo}>Undo</Button>}</div>
     {!state?.onboarding.mapOrientationDismissed && <Card className="map-orientation"><div><strong>Your Map is ready.</strong><p>Shape the ideas, approve the Brief, then create branded Outputs. Use Show source to trace any factual point back to the material behind it.</p></div><Button variant="secondary" size="small" onClick={onDismissOrientation}>Got it</Button></Card>}
+    {!state?.style && analysis && <Card className="style-analysis-status" role="status"><div><strong>{analysis.status === "reviewing" ? `Reviewing ${analysisDomain}…` : analysis.status === "ready" ? "Company style ready to review" : "Couldn't review this website"}</strong><p>{analysis.status === "reviewing" ? "Keep shaping the Map while WorkshopLM checks the public visual foundation." : analysis.status === "ready" ? "Review the suggested colors, type, and brand assets before creating Outputs." : analysis.error ?? "Try again or continue with a clean professional Style."}</p></div><div className="button-row">{analysis.status === "ready" && <Button variant="secondary" size="small" onClick={onReviewStyle}>Review style</Button>}{analysis.status === "error" && <><Button variant="secondary" size="small" disabled={busy} onClick={() => onRetryStyle(analysis.url)}>Try again</Button><Button variant="secondary" size="small" onClick={onReviewStyle}>Set manually</Button><Button variant="secondary" size="small" disabled={busy} onClick={onUseDefaultStyle}>Use a clean default</Button></>}</div></Card>}
     <ExcalidrawMap nodes={nodes} sources={sources} edges={state?.mapEdges ?? []} selectedNodeId={selectedNode?.id} onSelectNode={onSelect} onShowSource={(sourceId) => onShowSource(sourceId)} onSync={onSync} />
     {selectedNode && <ClaimInspector node={selectedNode} source={source} busy={busy} onClose={() => onSelect("")} onSave={(title) => onSync([{ id: selectedNode.id, title, x: selectedNode.x, y: selectedNode.y, width: selectedNode.width, height: selectedNode.height }])} onShowSource={() => onShowSource(selectedSourceId)} />}
   </div>;
@@ -443,25 +434,25 @@ function BriefView({ state, onChooseStyle, onShowSource }: { state: PersistedWor
   </article>;
 }
 
-function StyleSheet({ style, library, busy, onClose, onPost, onAnalyzeWebsite }: { style?: PersistedWorkshop["style"]; library: StyleLibraryEntry[]; busy: boolean; onClose: () => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onAnalyzeWebsite: (url: string) => Promise<WebsiteStyleSuggestion | null> }) {
-  const [mode, setMode] = useState<"website" | "manual">(style?.source ?? "manual");
-  const [website, setWebsite] = useState(style?.referenceUrl ?? "");
-  const [reviewedUrl, setReviewedUrl] = useState(style?.source === "website" ? style.referenceUrl ?? "" : "");
-  const [findings, setFindings] = useState<WebsiteStyleSuggestion["findings"] | null>(null);
-  const [name, setName] = useState(style?.name ?? "WorkshopLM editorial");
-  const [accent, setAccent] = useState(style?.accent ?? "#0285FF");
-  const [ink, setInk] = useState(style?.ink ?? "#0D0D0D");
-  const [paper, setPaper] = useState(style?.paper ?? "#FFFFFF");
-  const [intent, setIntent] = useState<ManualStylePayload["intentProfile"]>(style?.intentProfile ?? "client_facing_pitch");
-  const [logos, setLogos] = useState((style?.logos ?? []).join("\n"));
-  const [fonts, setFonts] = useState((style?.licensedFonts ?? ["SF Pro"]).join("\n"));
-  const [references, setReferences] = useState((style?.references ?? ["calm editorial work surface"]).join("\n"));
-  const [negativeRules, setNegativeRules] = useState((style?.negativeRules ?? ["no decorative gradients"]).join("\n"));
+function StyleSheet({ style, analysisSuggestion, defaultIntent, library, busy, onClose, onPost, onAnalyzeWebsite }: { style?: PersistedWorkshop["style"]; analysisSuggestion?: WebsiteStyleSuggestion; defaultIntent?: WorkshopOutcome; library: StyleLibraryEntry[]; busy: boolean; onClose: () => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onAnalyzeWebsite: (url: string) => Promise<WebsiteStyleSuggestion | null> }) {
+  const [mode, setMode] = useState<"website" | "manual">(style?.source ?? (analysisSuggestion ? "website" : "manual"));
+  const [website, setWebsite] = useState(style?.referenceUrl ?? analysisSuggestion?.referenceUrl ?? "");
+  const [reviewedUrl, setReviewedUrl] = useState(style?.source === "website" ? style.referenceUrl ?? "" : analysisSuggestion?.referenceUrl ?? "");
+  const [findings, setFindings] = useState<WebsiteStyleSuggestion["findings"] | null>(analysisSuggestion?.findings ?? null);
+  const [name, setName] = useState(style?.name ?? analysisSuggestion?.name ?? "WorkshopLM editorial");
+  const [accent, setAccent] = useState(style?.accent ?? analysisSuggestion?.accent ?? "#0285FF");
+  const [ink, setInk] = useState(style?.ink ?? analysisSuggestion?.ink ?? "#0D0D0D");
+  const [paper, setPaper] = useState(style?.paper ?? analysisSuggestion?.paper ?? "#FFFFFF");
+  const [intent, setIntent] = useState<ManualStylePayload["intentProfile"]>(style?.intentProfile ?? defaultIntent ?? "client_facing_pitch");
+  const [logos, setLogos] = useState((style?.logos ?? analysisSuggestion?.logos ?? []).join("\n"));
+  const [fonts, setFonts] = useState((style?.licensedFonts ?? analysisSuggestion?.fontCandidates ?? ["SF Pro"]).join("\n"));
+  const [references, setReferences] = useState((style?.references ?? analysisSuggestion?.references ?? ["calm editorial work surface"]).join("\n"));
+  const [negativeRules, setNegativeRules] = useState((style?.negativeRules ?? analysisSuggestion?.negativeRules ?? ["no decorative gradients"]).join("\n"));
   const [showDetails, setShowDetails] = useState(false);
-  const [showCreator, setShowCreator] = useState(library.length === 0 || Boolean(style));
+  const [showCreator, setShowCreator] = useState(library.length === 0 || Boolean(style) || Boolean(analysisSuggestion));
   useEffect(() => {
-    setMode(style?.source ?? "manual"); setWebsite(style?.referenceUrl ?? ""); setReviewedUrl(style?.source === "website" ? style.referenceUrl ?? "" : ""); setFindings(null); setName(style?.name ?? "WorkshopLM editorial"); setAccent(style?.accent ?? "#0285FF"); setInk(style?.ink ?? "#0D0D0D"); setPaper(style?.paper ?? "#FFFFFF"); setIntent(style?.intentProfile ?? "client_facing_pitch"); setLogos((style?.logos ?? []).join("\n")); setFonts((style?.licensedFonts ?? ["SF Pro"]).join("\n")); setReferences((style?.references ?? ["calm editorial work surface"]).join("\n")); setNegativeRules((style?.negativeRules ?? ["no decorative gradients"]).join("\n")); setShowDetails(false); setShowCreator(library.length === 0 || Boolean(style));
-  }, [style, library.length]);
+    setMode(style?.source ?? (analysisSuggestion ? "website" : "manual")); setWebsite(style?.referenceUrl ?? analysisSuggestion?.referenceUrl ?? ""); setReviewedUrl(style?.source === "website" ? style.referenceUrl ?? "" : analysisSuggestion?.referenceUrl ?? ""); setFindings(analysisSuggestion?.findings ?? null); setName(style?.name ?? analysisSuggestion?.name ?? "WorkshopLM editorial"); setAccent(style?.accent ?? analysisSuggestion?.accent ?? "#0285FF"); setInk(style?.ink ?? analysisSuggestion?.ink ?? "#0D0D0D"); setPaper(style?.paper ?? analysisSuggestion?.paper ?? "#FFFFFF"); setIntent(style?.intentProfile ?? defaultIntent ?? "client_facing_pitch"); setLogos((style?.logos ?? analysisSuggestion?.logos ?? []).join("\n")); setFonts((style?.licensedFonts ?? analysisSuggestion?.fontCandidates ?? ["SF Pro"]).join("\n")); setReferences((style?.references ?? analysisSuggestion?.references ?? ["calm editorial work surface"]).join("\n")); setNegativeRules((style?.negativeRules ?? analysisSuggestion?.negativeRules ?? ["no decorative gradients"]).join("\n")); setShowDetails(false); setShowCreator(library.length === 0 || Boolean(style) || Boolean(analysisSuggestion));
+  }, [style, analysisSuggestion, defaultIntent, library.length]);
   const locked = Boolean(style && !style.stale);
   const splitLines = (value: string) => value.split(/[\n,]/).map((item) => item.trim()).filter(Boolean);
   const dirty = mode !== (style?.source ?? "manual") || website.trim() !== (style?.referenceUrl ?? "") || name.trim() !== (style?.name ?? "WorkshopLM editorial") || accent.trim().toUpperCase() !== (style?.accent ?? "#0285FF").toUpperCase() || ink.trim().toUpperCase() !== (style?.ink ?? "#0D0D0D").toUpperCase() || paper.trim().toUpperCase() !== (style?.paper ?? "#FFFFFF").toUpperCase() || intent !== (style?.intentProfile ?? "client_facing_pitch") || logos.trim() !== (style?.logos ?? []).join("\n") || fonts.trim() !== (style?.licensedFonts ?? []).join("\n") || references.trim() !== (style?.references ?? []).join("\n") || negativeRules.trim() !== (style?.negativeRules ?? []).join("\n");
@@ -484,13 +475,13 @@ function StyleSheet({ style, library, busy, onClose, onPost, onAnalyzeWebsite }:
     { id: "internal_workshop", title: "Team workshop", detail: "Fast to scan and action focused" },
   ];
 
-  return <SideSheet title="Style" onClose={onClose}><p className="sheet-intro">Use one visual system across every Output.</p>
+  return <SideSheet title="Style" onClose={onClose}><p className="sheet-intro">{analysisSuggestion ? `We found this on ${new URL(analysisSuggestion.referenceUrl).hostname}. Keep what is right.` : "Use one visual system across every Output."}</p>
     {library.length > 0 && <fieldset className="style-options"><legend>Saved styles</legend><ListGroup>{library.map((entry) => <ListRow className="style-choice" key={entry.id}><ListRowAction aria-label={`Use saved style ${entry.name}`} disabled={busy || style?.libraryId === entry.id} onClick={() => useSavedStyle(entry)}><div className="palette-preview compact" data-domain-ui="palette-preview"><i style={{ background: entry.accent }} /><i style={{ background: entry.ink }} /><i style={{ background: entry.paper }} /></div><span><strong>{entry.name}</strong><small>{entry.intentProfile === "board_deck" ? "Board presentation" : entry.intentProfile === "internal_workshop" ? "Team workshop" : "Client pitch"}</small></span></ListRowAction></ListRow>)}</ListGroup></fieldset>}
     {!showCreator ? <Button variant="secondary" onClick={() => setShowCreator(true)}>Create another style</Button> : <><fieldset className="style-options"><legend>Start from</legend><ListGroup><ListRow className={`style-choice ${mode === "website" ? "selected" : ""}`}><ListRowAction aria-pressed={mode === "website"} onClick={() => setMode("website")}><span><strong>Website</strong><small>Pull the public visual foundation</small></span></ListRowAction></ListRow><ListRow className={`style-choice ${mode === "manual" ? "selected" : ""}`}><ListRowAction aria-pressed={mode === "manual"} onClick={() => setMode("manual")}><span><strong>Set manually</strong><small>Enter exact brand rules yourself</small></span></ListRowAction></ListRow></ListGroup></fieldset>
     {mode === "website" && <Input label="Website" type="url" placeholder="https://example.com" value={website} onChange={(event) => { setWebsite(event.target.value); setReviewedUrl(""); setFindings(null); }} />}
     {reviewed && <><Input label="Name" value={name} onChange={(event) => setName(event.target.value)} /><div className="style-color-grid"><Input label="Accent" value={accent} onChange={(event) => setAccent(event.target.value)} /><Input label="Text" value={ink} onChange={(event) => setInk(event.target.value)} /><Input label="Background" value={paper} onChange={(event) => setPaper(event.target.value)} /></div>{findings && <p className="style-findings" role="status">Found {findingSummary}. Review it before using this Style.</p>}{showDetails ? <div className="style-details"><TextArea label="Logos or brand assets" hint="One local path or authorized URL per line" value={logos} onChange={(event) => setLogos(event.target.value)} /><TextArea label="Licensed fonts" hint="Confirm you are licensed to use each font" value={fonts} onChange={(event) => setFonts(event.target.value)} /><TextArea label="Visual references" hint="One rule or reference per line" value={references} onChange={(event) => setReferences(event.target.value)} /><TextArea label="Avoid" hint="One negative rule per line" value={negativeRules} onChange={(event) => setNegativeRules(event.target.value)} /></div> : <Button variant="secondary" size="small" onClick={() => setShowDetails(true)}>{style ? "Edit brand details" : mode === "website" ? "Review brand details" : "Add brand details"}</Button>}</>}
     <fieldset className="style-options"><legend>Use it for</legend><ListGroup>{intents.map((profile) => <ListRow className={`style-choice ${intent === profile.id ? "selected" : ""}`} key={profile.id}><ListRowAction aria-pressed={intent === profile.id} onClick={() => setIntent(profile.id)}><span><strong>{profile.title}</strong><small>{profile.detail}</small></span></ListRowAction></ListRow>)}</ListGroup></fieldset>
-    {reviewed && <div className="style-preview"><div className="palette-preview" data-domain-ui="palette-preview"><i style={{ background: accent }} /><i style={{ background: ink }} /><i style={{ background: paper }} /></div><div className="type-preview" data-domain-ui="type-preview"><strong>Aa</strong><span>{splitLines(fonts)[0] ?? "System type"} · clear hierarchy</span></div></div>}{mode === "website" && !reviewed ? <Button disabled={busy || !website.trim()} onClick={reviewWebsite}>Review style</Button> : (!locked || dirty) && <Button disabled={busy || !name.trim() || !accent.trim() || !ink.trim() || !paper.trim()} onClick={saveStyle}>{locked ? "Update style" : "Use this style"}</Button>}</>}
+    {reviewed && <div className="style-preview"><div className="palette-preview" data-domain-ui="palette-preview"><i style={{ background: accent }} /><i style={{ background: ink }} /><i style={{ background: paper }} /></div><div className="type-preview" data-domain-ui="type-preview"><strong>Aa</strong><span>{splitLines(fonts)[0] ?? "System type"} · clear hierarchy</span></div></div>}{mode === "website" && !reviewed ? <Button disabled={busy || !website.trim()} onClick={reviewWebsite}>Review style</Button> : (!locked || dirty) && <Button disabled={busy || !name.trim() || !accent.trim() || !ink.trim() || !paper.trim()} onClick={saveStyle}>{locked ? "Update style" : analysisSuggestion ? "Save company style" : "Use this style"}</Button>}</>}
   </SideSheet>;
 }
 
