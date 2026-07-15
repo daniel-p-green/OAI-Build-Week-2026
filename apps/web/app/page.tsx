@@ -29,7 +29,7 @@ import { ExcalidrawMap } from "./excalidraw-map";
 import { sourceInputKind, sourceTitleFromText } from "./source-input";
 
 type ObjectView = "map" | "brief" | "outputs" | "storyboard" | "output";
-type Sheet = "workshops" | "sources" | "evidence" | "add-source" | "style" | "original" | null;
+type Sheet = "workshops" | "sources" | "evidence" | "add-source" | "style" | "original" | "help" | null;
 type WorkshopSummary = { id: string; title: string; sources: number; outputs: number; updatedAt: string; active: boolean };
 type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string; permission: "private" | "sanitized" | "shareable" };
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
@@ -309,12 +309,13 @@ export default function WorkshopPage() {
         {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} onShowSource={showSource} onShowOriginal={() => openSheet("original")} />}
       </section>
 
-      {sheet === "workshops" && <WorkshopsSheet workshops={workshops} busy={busy} onClose={closeSheet} onSelect={(workshopId) => { void post({ action: "selectWorkshop", workshopId }); }} onCreate={(title) => post({ action: "createWorkshop", title }).then(Boolean)} />}
+      {sheet === "workshops" && <WorkshopsSheet workshops={workshops} busy={busy} onClose={closeSheet} onSelect={(workshopId) => { void post({ action: "selectWorkshop", workshopId }); }} onCreate={(title) => post({ action: "createWorkshop", title }).then(Boolean)} onHelp={() => setSheet("help")} />}
       {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} onClose={closeSheet} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "evidence" && selectedSource && <EvidenceSheet source={selectedSource} onClose={closeSheet} onShowMap={() => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === selectedSource.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "add-source" && <AddSourceSheet onClose={() => setSheet("sources")} onPost={post} />}
       {sheet === "style" && <StyleSheet style={state?.style} analysisSuggestion={state?.onboarding.styleAnalysis?.status === "ready" ? state.onboarding.styleAnalysis.suggestion : undefined} defaultIntent={state?.onboarding.outcome} library={styleLibrary} busy={busy} onClose={closeSheet} onPost={post} onAnalyzeWebsite={analyzeWebsiteStyle} />}
       {sheet === "original" && <OriginalRevealSheet state={state} onClose={closeSheet} />}
+      {sheet === "help" && <HowItWorksSheet onClose={closeSheet} />}
     </FullScreenShell>
   );
 }
@@ -591,12 +592,26 @@ function StoryboardView({ storyboard, imageBatch, approved, panel, busy, onSelec
   </article>;
 }
 
-function WorkshopsSheet({ workshops, busy, onClose, onSelect, onCreate }: { workshops: WorkshopSummary[]; busy: boolean; onClose: () => void; onSelect: (workshopId: string) => void; onCreate: (title: string) => Promise<boolean> }) {
+function WorkshopsSheet({ workshops, busy, onClose, onSelect, onCreate, onHelp }: { workshops: WorkshopSummary[]; busy: boolean; onClose: () => void; onSelect: (workshopId: string) => void; onCreate: (title: string) => Promise<boolean>; onHelp: () => void }) {
   const [title, setTitle] = useState("");
   return <SideSheet title="Workshops" onClose={onClose}>
     <p className="sheet-intro">Keep each project, its Sources, and its Outputs together.</p>
     <ListGroup>{workshops.map((workshop) => <ListRow className={workshop.active ? "workshop-row selected" : "workshop-row"} key={workshop.id}><ListRowAction disabled={busy || workshop.active} onClick={() => onSelect(workshop.id)}><span><strong>{workshop.title}</strong><small>{workshop.sources} {workshop.sources === 1 ? "source" : "sources"} · {workshop.outputs} {workshop.outputs === 1 ? "output" : "outputs"}{workshop.active ? " · Open" : ""}</small></span></ListRowAction></ListRow>)}</ListGroup>
     <div className="new-workshop"><Input label="New Workshop" placeholder="Project name" value={title} onChange={(event) => setTitle(event.target.value)} /><Button disabled={busy || !title.trim()} onClick={() => { void onCreate(title.trim()).then((created) => { if (created) setTitle(""); }); }}><PlusIcon /> Create</Button></div>
+    <Button variant="secondary" size="small" onClick={onHelp}>How WorkshopLM works</Button>
+  </SideSheet>;
+}
+
+function HowItWorksSheet({ onClose }: { onClose: () => void }) {
+  const steps = [
+    { title: "Capture", detail: "Talk, paste meeting notes, add a public page, or use a local PDF." },
+    { title: "Shape", detail: "Organize the grounded Map and approve it as the Brief." },
+    { title: "Deliver", detail: "Create the presentation and supporting Outputs, then approve the Storyboard before Video." },
+  ];
+  return <SideSheet title="How WorkshopLM works" onClose={onClose}>
+    <p className="sheet-intro">From your meetings and documents to a deck you can defend, with every claim traced to its source.</p>
+    <ListGroup>{steps.map((step) => <ListRow key={step.title}><div className="help-step"><strong>{step.title}</strong><small>{step.detail}</small></div></ListRow>)}</ListGroup>
+    <Card className="help-trust"><strong>Stay in control</strong><p><b>Show source</b> traces factual work back to its material. Brief and Storyboard are the only two sign-offs.</p></Card>
   </SideSheet>;
 }
 

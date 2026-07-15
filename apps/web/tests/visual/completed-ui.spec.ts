@@ -128,6 +128,24 @@ test("voice capture is bounded inside Add source and fails closed without live o
   await expect(page.getByRole("textbox", { name: "Source" })).toBeVisible();
 });
 
+test("dismissed guidance remains quietly available from the Workshop sheet", async ({ page }) => {
+  for (const viewport of viewports) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto("/");
+    await page.getByRole("button", { name: "Switch Workshop" }).click();
+    await page.getByRole("button", { name: "How WorkshopLM works" }).click();
+    const help = page.getByRole("dialog", { name: "How WorkshopLM works" });
+    await expect(help).toBeVisible();
+    await expect(help.getByText("Capture", { exact: true })).toBeVisible();
+    await expect(help.getByText("Shape", { exact: true })).toBeVisible();
+    await expect(help.getByText("Deliver", { exact: true })).toBeVisible();
+    await expect(help.getByText(/Brief and Storyboard are the only two sign-offs/)).toBeVisible();
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
+    await closeDialog(page, "How WorkshopLM works");
+    await expect(page.getByRole("button", { name: "Switch Workshop" })).toBeFocused();
+  }
+});
+
 test("an empty Workshop reaches an editable deck through one obvious path", async ({ page }) => {
   const original = await (await page.request.get("/api/workshop")).json() as { id: string };
   const styleLibrary = await (await page.request.get("/api/workshop?view=styles")).json() as { styles: Array<{ id: string; name: string }> };

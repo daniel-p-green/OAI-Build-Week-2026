@@ -93,6 +93,10 @@ button { -webkit-tap-highlight-color: transparent; }
 .workshop-row.selected { background: rgba(13,13,13,.045); }
 .new-workshop { display: grid; gap: 10px; margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(13,13,13,.1); }
 .new-workshop .oai-button { justify-self: start; }
+.help-step { display: grid; gap: 3px; padding: 14px 16px; }
+.help-step small { color: #5d5d5d; font-size: 12px; line-height: 18px; }
+.help-trust { display: grid; gap: 6px; margin-top: 18px; padding: 16px; }
+.help-trust p { margin: 0; color: #5d5d5d; font-size: 13px; line-height: 19px; }
 .realtime-capture { display: grid; gap: 14px; padding: 18px; }
 .realtime-capture-copy { display: grid; gap: 4px; }
 .realtime-capture-copy h3 { margin: 0; font-size: 17px; line-height: 23px; letter-spacing: -.35px; }

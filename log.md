@@ -5435,3 +5435,34 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Manual local asset paths retain legacy behavior; selected remote website assets use the stronger verified asset contract.
 - Professional send-it review, own-material live timing, provider-backed voice/Map/Image/Speech evidence, and the final public video remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 15:36 CT — Dismissed guidance remains quietly available
+
+**Area:** Product / Onboarding / Navigation / Accessibility
+
+### Changed
+
+- The Workshop sheet now includes one secondary `How WorkshopLM works` entry so professionals can recover dismissed orientation without adding a persistent tab, toolbar item, or competing header action.
+- The help sheet explains the product in three plain-language steps—Capture, Shape, Deliver—and names source tracing plus Brief and Storyboard as the only two sign-offs.
+- Closing the help sheet returns keyboard focus to `Switch Workshop`, preserving the existing transient-sheet interaction contract.
+
+### Verified
+
+- Web unit tests passed all 15 cases across four files and the clean production Next.js build succeeded.
+- The production browser suite passed all 23 tests. The new test opens and closes the help sheet at 1200×800, 1024×768, and 390×844, verifies the three steps and trust copy, detects no horizontal overflow, and confirms focus restoration.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. `pnpm demo:e2e` passed all six recorded-fixture gates.
+- `pnpm submission:build` produced the expected truthful 17-asset partial set with four provider limitations; `pnpm submission:verify` returned valid, not stale, and not tampered. `git diff --check` passed.
+
+### Decisions
+
+- Recoverable guidance belongs inside the existing Workshop switcher because it is infrequent reference material, not a primary mode or destination.
+- The help surface teaches the durable workflow and trust contract only. It does not enumerate features or introduce internal vocabulary before the professional needs it.
+
+### Open items
+
+- Accessibility closure and the real-public-website Codex in-app-browser run remain open onboarding work.
+- Manual local asset paths retain legacy behavior; selected remote website assets use the stronger verified asset contract.
+- Professional send-it review, own-material live timing, provider-backed voice/Map/Image/Speech evidence, and the final public video remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
