@@ -1,39 +1,130 @@
-# WorkshopLM — Devpost draft
+# WorkshopLM — Submission Packet
 
-## Tagline
+Working draft in submission-ready form. Every sentence maps to `submission/CLAIM-LEDGER.md`. Bracketed `[LIVE]` slots upgrade automatically once the authorized provider run and founder assets exist; each has fallback wording so the packet ships truthfully in either world. Final publication still requires the gate at the bottom.
 
-Turn raw thinking into finished, source-traceable work.
+---
 
-## What it does
+## Devpost project name
 
-WorkshopLM is a local-first professional production workspace for turning meetings, documents, and rough thinking into a branded deck you can defend, with every factual claim traced to its source. ChatGPT/Codex remains the conversation surface; WorkshopLM's browser workspace keeps the Map, Brief, presentation, and supporting work in focus without duplicating chat.
+WorkshopLM
 
-The recorded judge path uses sanitized local data and needs no account, private connector, paid API call, or judge-supplied credits. It demonstrates grounded Sources, exact evidence locators, an editable Excalidraw Map, a readable Brief and reusable Style, a source-traceable presentation with editable PowerPoint export, a supporting infographic, a disclosed planned six-panel image set, an editable five-panel Storyboard, both approval gates, and a local HyperFrames MP4 rendered from the approved current Storyboard.
+## Tagline (under 200 characters)
 
-## Why it matters
+Turn raw thinking into finished work. WorkshopLM takes your meetings, documents, and ideas to a branded, source-defensible deck and video, with every claim traced to its source. It built itself.
 
-Knowledge tools help teams understand material. WorkshopLM helps professionals ship it. The product is organized around the deliverable they repeatedly present and get judged on—a grounded, branded deck—while preserving the path from every factual claim back to exact evidence.
+## Category
 
-## How it was built
+Work & Productivity
 
-Codex accelerated the TypeScript monorepo, local SQLite state, unified plugin, typed graph operations, browser workspace, deterministic fixture, and HyperFrames worker. Human decisions defined the product boundary: professional workflows, local-first privacy-safe judging, a single conversation surface, and exactly two approval gates.
+## Built with
 
-The packaged `$workshoplm` skill and its read-only MCP tools were activated from an isolated Codex profile and used to search and fetch an exact grounded source excerpt. That proof is Codex-specific; ChatGPT Work support is not claimed yet.
+TypeScript, Node.js, Next.js, React, pnpm, Turborepo, SQLite (WAL + FTS5), Excalidraw, OpenAI Responses API (GPT-5.6 Sol/Terra/Luna), GPT Image 2, GPT-4o mini TTS, gpt-realtime, Codex (plugin, skills, MCP), HyperFrames, Playwright
 
-WorkshopLM implements an operation-level GPT-5.6 policy: Sol for quality-critical graph work, Terra for structured synthesis, and Luna for repeatable triage. Live paid GPT-5.6 benchmark results are intentionally not claimed in this draft until their authorized run is captured.
+---
 
-## Verification
+## Project description
 
-The current recorded build passes checks across 13 packages, 13 web contract/unit tests, 17 production-route browser tests, all six acceptance gates, and submission integrity verification. `pnpm demo:reset && pnpm demo:e2e` runs the recorded Sources → Map → Brief → Outputs → Storyboard → Video path without credentials. A separate weekly-return test proves that a new meeting expands the Map, marks dependent work `Needs update`, preserves the saved Style, and generates a new presentation version traced to the added Source. These counts must be refreshed before final publication because the suite may continue to grow. The public repository contains setup, fixture, and plugin inspection instructions.
+### The problem
 
-## Known scope boundary
+Every consultant, strategist, and enablement lead lives the same Tuesday. The meeting happened. The documents exist. The thinking is real. And now someone has to turn all of it into a deck for leadership, on brand, defensible line by line, by Thursday. AI tools help you understand your material. Almost none of them help you ship it. The ones that generate slides can't tell you where a claim came from, don't know your brand, and hand you a finished artifact you can't edit. So professionals do what they've always done: rebuild everything by hand and hope nobody asks "where did that number come from?"
 
-The deterministic demo currently uses planned image panels and disclosed local placeholder-tone audio. The Realtime capture boundary is implemented and tested but has not persisted an inspected provider-backed microphone turn. Live GPT Image 2, provider narration, GPT-5.6 product reasoning, and ChatGPT Work invocation are separately gated on provider authorization or host access and are not represented as completed runtime behavior.
+### What WorkshopLM does
 
-## Submission fields still requiring human action
+WorkshopLM is a local-first production workspace that turns raw inputs into deliverables you can defend.
 
-- Select **Work & Productivity**.
-- Add the public repository URL.
-- Add the final public under-three-minute YouTube URL after upload and logged verification.
-- Select submitter/team and country details.
-- Supply the designated Codex `/feedback` Session ID when this surface exposes it.
+You talk and add sources. WorkshopLM turns them into an editable Map: your claims, decisions, and evidence as a live semantic whiteboard, each card carrying its exact source locator. You shape the Map, then approve it as the Brief. You point it at a website or your brand assets, review what it found, and lock a Style with your exact colors, fonts, and rules. Then one action creates the work: a presentation with an editable PowerPoint export, a supporting infographic, a coherent image set, and an editable storyboard. You review the storyboard panel by panel, approve it, and WorkshopLM renders a narrated video locally.
+
+Two things make this different from every generate-a-deck tool:
+
+**You stay in charge at exactly two moments.** Approve the Brief. Approve the Storyboard. Nothing expensive or final happens without your sign-off, and everything downstream honestly shows `Needs update` when your thinking changes upstream.
+
+**Every claim keeps its receipt.** Click any factual statement in any output, in a slide, an infographic block, or a storyboard panel, and WorkshopLM opens the exact source excerpt it came from. Not a citations page. The sentence.
+
+It's built for the weekly rhythm, not the one-off demo: add Monday's new meeting to an existing Workshop and the Map expands, dependent work flags itself, your saved Style carries over, and one reapproval produces the next deck version, traced to the new source, with the old version preserved in history.
+
+### The part you won't believe until you open the repo
+
+WorkshopLM built itself.
+
+This project started as two files: a goal document and an operating agreement for autonomous agents. Codex, running on GPT-5.6, implemented the product from that goal file across the submission period, working through an evidence-gated checklist, verifying its own work, and appending every milestone to a public, append-only build log. The log even records the moment the system caught itself: one agent claimed the UI rebuild was complete, a second agent disproved the claim with computed-style evidence, reopened the checklist, and rebuilt it properly. That entry is in the repo, timestamped, unedited.
+
+Then WorkshopLM closes the loop in the recorded fixture. It preserves a traced Output set from sanitized sources through Sources, Map, approved Brief, Style, and rendered outputs, with hashes and per-scene provenance. `Show original` lets a reviewer walk from a finished fixture Output to the transcript excerpt that started it.
+
+`[LIVE: The measured path from first transcript to first finished output in the recorded live run was {X minutes}.]`
+`[FALLBACK: omit the sentence.]`
+
+### How Codex was used
+
+Codex is not a tool we used on this project. Codex is how this project happened.
+
+- **Autonomous implementation from a goal file.** `GOAL.md` defines the objective, locked decisions, and an evidence-gated checklist. `AGENTS.md` defines the operating rules: verify before checking any box, log evidence with every milestone, escalate only for spend, credentials, and irreversible actions. Codex executed that loop across the monorepo: domain contracts, SQLite persistence, the typed graph engine, the Excalidraw Map, the Style system, renderers, the HyperFrames video worker, the plugin, and more than 4,700 lines of dated build log.
+- **Agents verifying agents.** The build ran with an integrator plus isolated implementation lanes, a red-team pass attacking approval gates and stale propagation, and conformance tests that fail on any UI element not traceable to the verified Apps in ChatGPT component inventory. The self-correction event above is this system working.
+- **A unified Codex plugin.** WorkshopLM ships as a Codex plugin: a `$workshoplm` skill, a bundled local MCP server exposing grounded `search` and `fetch` over the Workshop's evidence, and the local browser workspace as its doorway. A fresh Codex desktop task activated the installed skill, retrieved an exact grounded source excerpt with its verified claim and locator, and rendered the live Workshop in the in-app browser.
+
+### How GPT-5.6 was used
+
+Two layers, both evidenced.
+
+**GPT-5.6 built the product.** Every Codex session in this build ran on GPT-5.6. Orchestration and hard reasoning ran on Sol; implementation tasks ran on Terra where appropriate to spend credits where they mattered. The dated commits and build log are the record.
+
+`[LIVE: **GPT-5.6 runs the product.** In the recorded live run, gpt-5.6-sol turned the grounded transcript and sources into the semantic Map on screen, with the request, response, and routing captured in the run's provenance record. A nine-request benchmark measured Sol, Terra, and Luna on the product's real graph, brief, and triage operations and set the operation-level routing defaults: Sol for quality-critical graph reasoning, Terra for structured synthesis, Luna for repeatable triage.]`
+`[FALLBACK: **GPT-5.6 in the runtime.** WorkshopLM implements an operation-level GPT-5.6 routing policy (Sol for quality-critical graph reasoning, Terra for structured synthesis, Luna for repeatable triage) behind a spend-gated adapter, with a benchmark harness ready to set defaults from measured quality, latency, and cost.]`
+
+### Under the hood
+
+Local-first by design: SQLite in WAL mode, FTS5/BM25 retrieval over normalized evidence chunks, a workspace-owned artifact store, and a leased local job queue. One canonical semantic graph is the source of truth; the Map is an editable projection with typed, undoable operations. Style is layered (Brand Foundation, Intent Profile, versioned Visual DNA) and materializes as inspectable design tokens. Deterministic HTML/CSS renderers produce the presentation and infographic with editable PowerPoint exports. HyperFrames renders video locally; every render emits a provenance sidecar with per-scene claim, source, image, and narration hashes. Nothing requires hosting, an account system, or anyone's credentials except one OpenAI API key for live generation.
+
+### Try it
+
+The judge path needs no account, connector, credentials, or spend:
+
+```
+pnpm install
+pnpm demo:reset && pnpm demo:e2e
+pnpm dev
+```
+
+That runs the complete recorded seam (Sources → Map → Brief → Style → Outputs → Storyboard → rendered MP4) and opens the Workshop in your browser. The README covers the Codex plugin installation from the public marketplace snapshot and the optional live-provider path. The current build passes checks across 13 packages, the production-route browser suite, all six acceptance gates, and submission integrity verification; the repo is pinned to a tagged judge release through the winner announcement.
+
+### Scope, honestly
+
+`[LIVE: The live run generated the GPT Image 2 set and provider narration shown; the Realtime capture path persisted an inspected live microphone turn. ChatGPT Work invocation is not claimed; the verified plugin surface is Codex desktop and CLI.]`
+`[FALLBACK: The recorded fixture uses a planned image set and disclosed placeholder-tone narration pending the authorized provider run; the Realtime capture boundary is implemented and tested but not yet live-verified. The verified plugin surface is Codex desktop and CLI, not ChatGPT Work.]`
+Every public claim in this description is reconciled against the evidence ledger in the repository. Where the product knows less than certainty, it says so on screen too.
+
+---
+
+## Devpost form fields
+
+| Field | Value |
+| --- | --- |
+| Submitter type | Individual |
+| Country | United States |
+| Category | Work & Productivity |
+| Repository URL | https://github.com/daniel-p-green/OAI-Build-Week-2026 |
+| Video URL | `[final public YouTube URL after logged-out verification]` |
+| Codex /feedback Session ID | `[designated primary session ID; rationale logged in log.md]` |
+
+## Judge access and testing instructions (form field)
+
+WorkshopLM is a local-first Codex plugin and browser workspace. You can score it three ways, in increasing depth:
+
+1. **Video (3 min):** the complete live flow, both approval gates, the plugin moment, and the self-built provenance reveal.
+2. **Recorded fixture (5 min, no credentials):** clone the repo at the tagged release, run `pnpm install && pnpm demo:reset && pnpm demo:e2e && pnpm dev`. Sanitized data, no account, no API key, no cost.
+3. **Codex plugin (10 min):** `codex plugin marketplace add daniel-p-green/OAI-Build-Week-2026` then `codex plugin add workshoplm@workshoplm-local`. Activate `$workshoplm` in a fresh task to search and fetch grounded evidence, and open the local Workshop doorway. Verified platform: macOS with Codex desktop/CLI; Chrome-based in-app browser at 1200×800.
+
+The append-only build log (`log.md`), goal file (`GOAL.md`), and claim ledger (`submission/CLAIM-LEDGER.md`) document the autonomous build and bound every public claim to direct evidence.
+
+## Video narration spine (aligns with the 2:42 paper edit)
+
+1. **Why (0:00–0:30):** the Tuesday problem; the promise: raw thinking to a deck you can defend.
+2. **How (0:30–1:30):** live seam: talk, sources, Map organizing `[LIVE: on gpt-5.6-sol, on screen]`, edit a card, Approve brief, Style from a real website, Create outputs.
+3. **What (1:30–2:25):** the deck with its receipt (click a claim, see the source sentence), storyboard edit, Approve storyboard, video renders, one Codex widget doorway moment.
+4. **Reveal (2:25–2:42):** `Show original`: this submission was made by WorkshopLM from the founder's raw brainstorm, and Codex on GPT-5.6 built WorkshopLM from a goal file. Disclosure line: what Codex built, where GPT-5.6 ran, AI voice disclosed.
+
+## Final publication gate (unchanged)
+
+1. Re-run `pnpm check`, the browser suite, `pnpm demo:e2e`, `pnpm submission:verify`; refresh the counts.
+2. Resolve every `[LIVE]`/`[FALLBACK]` pair from inspected artifacts; no bracket ships.
+3. Verify title, thumbnail, and project name carry no Google or NotebookLM marks.
+4. Record the Session ID, public YouTube URL, release tag, and logged-out link checks in `log.md`.

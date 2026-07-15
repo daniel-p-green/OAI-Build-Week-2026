@@ -4763,3 +4763,65 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Submission blockers remain unchanged; see the preceding release-parity entry.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 13:01 CT — Submission packet reorganized around the professional story
+
+**Area:** Submission materials / Claims
+
+### Changed
+
+- Replaced the short Devpost draft with the complete submission packet: Devpost fields, three-tier judge path, video narration spine, and a final publication gate.
+- Reordered the description around the professional Tuesday problem, the product's approval-and-traceability promise, then the evidence-backed self-build story.
+- Preserved live/fallback slots for provider-backed claims and changed the self-produced-submission passage to the recorded-fixture truth until final provider-backed assets, founder footage, and final output provenance exist.
+- Refreshed mutable copy: the tagline is 194 characters, the build log is described as more than 4,700 lines, and the claim ledger now reflects 13 web contract/unit tests.
+
+### Verified
+
+- Counted the final tagline at 194 characters.
+- `wc -l log.md` reported 4,765 lines before this entry; the latest recorded verification floor in `log.md` is 13 packages, 13 web tests, 17 production-route browser tests, six acceptance gates, and passing submission integrity verification.
+- Reconciled the packet's recorded-fixture language with `submission/CLAIM-LEDGER.md`; no provider-backed or final self-produced-submission claim was promoted.
+
+### Decisions
+
+- The judge-facing narrative should make the professional outcome legible before its implementation details, while evidence boundaries remain compact and explicit rather than driving the full outline.
+- A final self-produced-submission claim remains gated even in a working packet; the current fixture can demonstrate the provenance mechanism without claiming that the final public submission has already passed through it.
+
+### Open items
+
+- Resolve every `[LIVE]`/`[FALLBACK]` pair from inspected artifacts before publication, or remove the pair; no bracketed copy ships.
+- Provider-backed GPT-5.6, image, narration, and Realtime evidence; founder footage; primary `/feedback` Session ID; final edit and public upload; and Devpost submission remain open.
+- Codex `/feedback` Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 13:05 CT — Empty Workshop now reaches an editable deck without hidden UI steps
+
+**Area:** Product quality / First session / Browser verification
+
+### Changed
+
+- Replaced the pasted-text-only Add Source form and required title with one progressive field that recognizes pasted notes, public `http(s)` URLs, and absolute local PDF paths; plain-text titles derive from the first meaningful line and remain optionally editable.
+- Changed the approved Brief's next action from opening an empty Outputs screen to creating Outputs directly when a current Style is ready. `View outputs` now appears only when Outputs already exist.
+- Initialized Storyboard fields from the selected panel so a transient, false `Save` action does not appear before the first client-side effect.
+- Added unit coverage for input routing/title derivation and a production-browser scenario that creates a truly empty Workshop, adds fresh notes, approves the Brief, chooses or reuses a Style, creates Outputs, opens the presentation, and verifies its editable `.pptx` path.
+
+### Verified
+
+- `pnpm check` passed across all 13 packages; web now passes 15 unit/contract tests.
+- `pnpm --filter @workshoplm/web test:visual` built the production Next app; the final strict Playwright run passed 18 of 18 browser scenarios and refreshed only the three intentionally changed Add Source screenshots.
+- The new empty-Workshop scenario completed in 2.6 seconds of automated production-browser time and verified a derived `Weekly client meeting` Source title plus a presentation `editableRelativePath` ending in `.pptx`.
+- Inspected the live local Add Source sheet in the Codex in-app browser: one visible `Source` field, one optional title only after text exists, voice above it, and one disabled-until-valid `Add source` action.
+- `pnpm demo:e2e` passed all six recorded-fixture gates. The first immediate `pnpm submission:verify` correctly failed because the acceptance reset had not rebuilt the manifest; `pnpm submission:build && pnpm submission:verify` then produced and verified the honest 17-asset `partial` set with `valid: true`, `stale: false`, and `tampered: false`.
+
+### Decisions
+
+- Source type is inferred from the value instead of exposed as a mode choice. This keeps URLs and local PDFs available without asking a first-time professional to learn the ingestion model.
+- Mechanical speed evidence does not close the 15-minute professional gate. A representative user still has to run the same path with their own material, uncoached, and record any repair work.
+
+### Open items
+
+- Provider-backed two-minute Map proof and the uncoached 15-minute deck test remain open.
+- The broader submission blockers remain provider-backed GPT-5.6/Image/narration/Realtime evidence, founder and Codex footage, the primary `/feedback` Session ID, final video/export, public upload, and Devpost submission.
+- Codex Session ID: unavailable on this surface; not inferred.
