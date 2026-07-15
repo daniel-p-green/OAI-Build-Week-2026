@@ -2,6 +2,7 @@ import { mkdir, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { executeOne } from "../apps/worker/src/executor.ts";
 import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, type OpenAiMediaConfig } from "../apps/worker/src/openai-media.ts";
+import { generateGroundedMapWithGpt56 } from "../apps/worker/src/openai-reasoning.ts";
 import {
   applyWorkshopAction,
   approveVisualDna,
@@ -27,7 +28,7 @@ function liveConfig(): OpenAiMediaConfig {
   return { apiKey: process.env.OPENAI_API_KEY, ...defaultOpenAiMediaConfig };
 }
 
-async function prepareWorkshop(): Promise<void> {
+async function prepareWorkshop(config?: OpenAiMediaConfig): Promise<void> {
   if (!keep) await rm(root, { recursive: true, force: true });
   await mkdir(root, { recursive: true });
   await captureFallbackTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved brief, coherent visuals, an editable storyboard, and the final Build Week demo video.", root);
@@ -44,6 +45,7 @@ async function prepareWorkshop(): Promise<void> {
     text: "Professional teams start with unstructured voice or meeting notes. The approved Map becomes the brief. Brand rules govern the deck, infographic, image batch, storyboard, and narrated video. Only an approved current storyboard may render.",
   }, root);
   extractWorkshopCandidates(root);
+  if (config) await generateGroundedMapWithGpt56(root, { apiKey: config.apiKey, model: "gpt-5.6-sol", reasoningEffort: "medium" });
   applyWorkshopAction("approveBrief", root);
   lockManualStyle({
     name: "WorkshopLM official demo",
@@ -66,14 +68,15 @@ async function prepareWorkshop(): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  await prepareWorkshop();
+  const config = executeLive ? liveConfig() : undefined;
+  await prepareWorkshop(config);
   const prepared = readWorkshopState(root);
   const plan = {
     mode: executeLive ? "live" : "preflight",
     status: executeLive ? "running" : "ready",
     root,
     paidCallsMade: false,
-    plannedPaidRequests: { gptImage2: prepared.imageBatch?.panels.length ?? 0, gpt4oMiniTts: prepared.storyboard.panels.length, gpt56Benchmark: 9 },
+    plannedPaidRequests: { gpt56GroundedMap: 1, gptImage2: prepared.imageBatch?.panels.length ?? 0, gpt4oMiniTts: prepared.storyboard.panels.length, gpt56Benchmark: 9 },
     approvals: { brief: prepared.briefApproved, storyboard: prepared.storyboardApproved },
     sources: prepared.sourceItems.filter((source) => source.origin === "Sanitized operator fixture" || source.origin.includes("capture-only fallback")).map((source) => ({ title: source.title, permission: source.permission })),
     outputs: prepared.outputs.map((output) => ({ type: output.type, relativePath: output.relativePath, claims: output.claimIds.length })),
@@ -86,10 +89,9 @@ async function main(): Promise<void> {
     return;
   }
 
-  const config = liveConfig();
-  const images = await generateOpenAiImageBatch(root, config);
+  const images = await generateOpenAiImageBatch(root, config!);
   if (images.status !== "passed") throw new Error(`Live image batch was partial; failed panels: ${images.failed.join(", ")}`);
-  const narration = await generateOpenAiNarration(root, config);
+  const narration = await generateOpenAiNarration(root, config!);
   if (narration.status !== "passed") throw new Error(`Live narration was partial; failed panels: ${narration.failed.join(", ")}`);
   applyWorkshopAction("renderVideo", root);
   const video = await executeOne(root);
@@ -99,6 +101,7 @@ async function main(): Promise<void> {
     ...plan,
     status: "passed",
     paidCallsMade: true,
+    reasoning: finalState.aiRuns.map((run) => ({ operation: run.operation, model: run.model, requestId: run.requestId, outputSha256: run.outputSha256 })),
     images: finalState.imageBatch?.panels.map((panel) => ({ id: panel.id, state: panel.state, model: panel.provenance?.model, sha256: panel.sha256 })),
     narration: finalState.narration?.panels.map((panel) => ({ panelId: panel.panelId, model: panel.model, voice: panel.voice, sha256: panel.sha256 })),
     video: video.artifact?.relativePath,

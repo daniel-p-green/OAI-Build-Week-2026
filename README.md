@@ -41,14 +41,14 @@ The GPT-5.6 routing benchmark is deliberately spend-gated. Once a paid-call auth
 
 `pnpm demo:live` builds a fresh, isolated operator Workshop under `.workshoplm/live-operator/`. It ingests sanitized sources, captures a transcript through the documented fallback, approves the Brief and Storyboard, locks the official demo style, and creates the traced deck, infographic, image plan, and storyboard. The default command is a no-spend preflight: it prints the exact provider request count and makes no OpenAI call.
 
-After explicit spend authorization, the same command can generate six GPT Image 2 panels concurrently, generate one `gpt-4o-mini-tts` WAV per approved storyboard panel, and render those clips through the local HyperFrames worker:
+After explicit spend authorization and the routing benchmark, the same command uses GPT-5.6 Sol to build a claim-validated grounded Map, generates six GPT Image 2 panels concurrently, generates one `gpt-4o-mini-tts` WAV per approved storyboard panel, and renders those clips through the local HyperFrames worker:
 
 ```bash
 WORKSHOPLM_LIVE_OPENAI=1 OPENAI_API_KEY=… pnpm demo:live -- --execute
 WORKSHOPLM_DATA_ROOT="$PWD/.workshoplm/live-operator" pnpm dev
 ```
 
-The live command fails closed when either opt-in flag or credential is absent. Every image and narration clip is stored locally with model, request, version, and SHA-256 provenance. A partial image batch retains completed panels and marks only failed panels for retry.
+The live command fails closed when either opt-in flag or credential is absent. The GPT-5.6 Map rejects any node that cites a claim outside the active source scope and records the model, request ID, input claim IDs, and output hash. Every image and narration clip is likewise stored locally with model, request, version, and SHA-256 provenance. A partial image batch retains completed panels and marks only failed panels for retry.
 
 ## Checks
 

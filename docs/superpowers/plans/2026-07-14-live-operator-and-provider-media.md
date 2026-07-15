@@ -27,11 +27,12 @@ One isolated command prepares the sanitized WorkshopLM demo package without netw
 5. Generate the traced deck, infographic, image plan, asset plan, and editable storyboard.
 6. Approve the storyboard.
 7. In preflight mode, write and print the request plan without contacting OpenAI.
-8. In live mode, generate six distinct GPT Image 2 panels concurrently from one locked Visual DNA block.
-9. Generate one `gpt-4o-mini-tts` WAV per approved storyboard panel using `marin` and record the required AI-voice disclosure.
-10. Copy current narration into the HyperFrames staging composition; use disclosed placeholder tones only when current provider narration is absent.
-11. Render and store the final local MP4.
-12. Launch the existing production UI against the isolated root with `WORKSHOPLM_DATA_ROOT="$PWD/.workshoplm/live-operator" pnpm dev` for inspection and recording.
+8. In live mode, use GPT-5.6 Sol to propose a structured Map from active claim IDs; reject out-of-scope citations and persist the assistant graph operations plus request/output provenance before Brief approval.
+9. Generate six distinct GPT Image 2 panels concurrently from one locked Visual DNA block.
+10. Generate one `gpt-4o-mini-tts` WAV per approved storyboard panel using `marin` and record the required AI-voice disclosure.
+11. Copy current narration into the HyperFrames staging composition; use disclosed placeholder tones only when current provider narration is absent.
+12. Render and store the final local MP4.
+13. Launch the existing production UI against the isolated root with `WORKSHOPLM_DATA_ROOT="$PWD/.workshoplm/live-operator" pnpm dev` for inspection and recording.
 
 ## Verification
 

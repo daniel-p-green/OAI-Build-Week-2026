@@ -3128,3 +3128,37 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - No paid OpenAI request was made. GPT-5.6 runtime outputs, real GPT Image 2 bytes, real narration, and the narrated provider-backed MP4 remain unproved.
 - Run the nine-request GPT-5.6 benchmark and the live operator only after explicit spend authorization; inspect every image, narration clip, provenance record, and the final MP4 before changing the completion checkboxes.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 23:05 CT — GPT-5.6 grounded Map route integrated behind the spend gate
+
+**Area:** OpenAI reasoning / grounding integrity / model provenance
+
+### Changed
+
+- Added a structured-output Responses adapter for GPT-5.6 grounded-Map generation and wired it into live Operator execution before Brief approval.
+- The request supplies only active claim IDs, text, locators, and source IDs; the output contract allows grounded and derived nodes plus typed relationships on the existing 0–100 canvas.
+- Added a service boundary that rejects duplicate/invalid nodes, invalid edges, out-of-bounds positions, grounded nodes without evidence, and any model citation outside the active source scope.
+- Persisted accepted model output as typed graph operations with `assistant` actor history plus model, request ID, input claim IDs, output SHA-256, and timestamp provenance.
+- Updated the operator request plan to name one GPT-5.6 grounded-Map request in addition to the separate nine-request routing benchmark, six image requests, and five narration requests.
+
+### Verified
+
+- Current official OpenAI model documentation identifies Sol, Terra, and Luna as the GPT-5.6 family, supports the Responses API and Structured Outputs, and recommends Sol for complex professional work.
+- Worker tests passed 34/34 across five files. New cases prove valid assistant graph persistence and reject an out-of-scope claim without recording an AI run.
+- `pnpm demo:live` passed again in no-spend mode and reported the complete request plan with `paidCallsMade: false`.
+- The live command without opt-in failed closed before preparing state or contacting a provider.
+- `pnpm check` passed all 13 packages and `pnpm demo:e2e` preserved the recorded acceptance seam.
+
+### Decisions
+
+- The live grounded-Map route remains `gpt-5.6-sol` until the benchmark supplies contrary evidence; no default was changed from the locked routing policy.
+- Provider output is never its own grounding authority. WorkshopLM accepts only citations to active durable claims and records the raw structured-output hash.
+- The current official model catalog and text-to-speech guide disagree on `gpt-4o-mini-tts` lifecycle status. Keep the implemented route because account access was verified, but treat the first paid TTS response as a gating check and preserve the disclosed local fallback.
+
+### Open items
+
+- No GPT-5.6 request has run. Structured-output compatibility, quality, latency, usage, and the account-specific bare-alias discrepancy remain live-verification items.
+- No TTS request has run; the documentation lifecycle mismatch is unresolved in practice.
+- Codex Session ID: unavailable on this surface; not inferred.

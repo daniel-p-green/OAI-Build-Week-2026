@@ -1,13 +1,13 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 22:58 CT
+Last updated: 2026-07-14 23:05 CT
 
 ## Status
 
 **Active phase:** Live demo proof — provider-backed outputs, operator run, and submission assets
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
 **Current gate:** The official-component rebuild is complete, and the isolated live-operator preflight now builds the approved sanitized package without spend. The next proof bar requires explicit paid-call authorization: run the GPT-5.6 benchmark, generate the real GPT Image 2 batch and approved-storyboard narration, inspect the artifacts, and use them in the judge-facing submission. Do not reopen shell or vocabulary work unless the visual contract catches a regression.
-**Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found`. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. It must run before claiming live product use or changing per-operation defaults.
+**Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found` for this account even though the current public model page describes it as a Sol alias. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. The live operator now has a claim-validated structured-output adapter for the selected grounded-graph route, but no request has run. The current model catalog labels `gpt-4o-mini-tts` deprecated while the current speech guide still recommends it; verify the actual live response before recording. Do not claim live product use or change per-operation defaults before these checks.
 **Known host risk:** The July 14 host-sync verification is credential-blocked, so it does not prove native task or voice-turn persistence. The designed capture-only fallback remains active; Spike A stays open until the end-of-day decision deadline or a separately authorized live host check.
 
 **Hard schedule gates:**
