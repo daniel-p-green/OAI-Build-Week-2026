@@ -6,11 +6,11 @@ async function main() {
   let state = readWorkshopState(root);
   if (!state.briefApproved) state = applyWorkshopAction("approveBrief", root);
   if (!state.style || state.style.stale) state = lockManualStyle({}, root);
-  await generateOutput("deck", root);
-  await generateOutput("infographic", root);
-  createImageBatch(root);
-  generateAssetPlan(root);
-  generateStoryboard(root);
+  if (!state.outputs.some((output) => output.type === "deck" && !output.stale)) state = await generateOutput("deck", root);
+  if (!state.outputs.some((output) => output.type === "infographic" && !output.stale)) state = await generateOutput("infographic", root);
+  if (!state.imageBatch || state.imageBatch.stale) state = createImageBatch(root);
+  if (!state.assetPlan || state.assetPlan.stale) state = generateAssetPlan(root);
+  if (!state.storyboard.panels.length || state.storyboard.stale) generateStoryboard(root);
 }
 
 main().catch((error: unknown) => {

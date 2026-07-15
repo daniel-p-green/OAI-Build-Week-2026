@@ -16,6 +16,8 @@ The authoritative screenshots are captured from the production Next.js route by 
 | Outputs | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-outputs.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-outputs.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-outputs.png) |
 | Focused Output | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-output-viewer.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-output-viewer.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-output-viewer.png) |
 | Storyboard | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-storyboard.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-storyboard.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-storyboard.png) |
+| Rendered Video in Outputs | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-video-output.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-video-output.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-video-output.png) |
+| Focused Video | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-video-viewer.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-video-viewer.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-video-viewer.png) |
 | Original brainstorm reveal | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-original-reveal.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-original-reveal.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-original-reveal.png) |
 
 ## Product states

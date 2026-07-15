@@ -3729,3 +3729,43 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Replace fixture-only image, voice, reasoning, and narration evidence with inspected provider-backed artifacts before upgrading public claims.
 - Capture the dated founder brainstorm, Codex doorway footage, representative `/feedback` Session ID, final public video, stable release, and submitted links.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 02:19 CT — The local render became the finished Video experience
+
+**Area:** Storyboard-to-Video handoff / local worker observation / responsive gallery evidence
+
+### Changed
+
+- Corrected the final Storyboard action. A successfully rendered current Storyboard now offers `View video`; it no longer offers the misleading `Create video` action again.
+- Added bounded one-second state refresh while the local worker reports `queued` or `rendering`. The refresh updates Workshop state without replacing the current screen with a loading state and stops automatically when the job reaches a terminal state.
+- Added an idempotent completed-fixture seed and a separate real-video seed. The video seed approves the current Storyboard, enqueues the normal render job, runs the actual local worker, and requires a persisted `rendered` state.
+- Added six production-route screenshots: rendered Video inside Outputs and the focused Video player at desktop, compact, and mobile widths. The gallery index now links all six.
+- Constrained the focused player to its native 16:9 surface. This removed the tall white letterbox inherited from document-style Outputs on mobile while preserving the official surrounding chrome.
+- Excluded macOS conflict-copy filenames such as `.next/types/**/* 2.ts` and `* 3.ts` from TypeScript. This makes workspace verification immune to repeated duplicate declarations in generated Next cache files without excluding any product source.
+
+### Verified
+
+- Web lint and 11/11 unit tests passed after adding `View video` to the plain-language contract.
+- A focused production-route test proved `Create video` returns a queued state, the browser refreshes it into `rendered`, and `View video` appears without a manual reload.
+- The full production-route suite rebuilt Next and passed 15/15 tests. The final test ran the actual local FFmpeg/HyperFrames worker, required the served MP4 to reach browser media-ready state, sought a deterministic real frame, proved the Video card and focused player, and captured both states at 1200×800, 1024×768, and 390×844.
+- Native-resolution inspection confirmed the real rendered frame is visible in the gallery and focused player; the mobile player now occupies one compact 16:9 surface with `Show original` and `Open` visible above it.
+- The first direct Playwright attempt failed because it started a stale `.next` build without rebuilding. The build-before-Playwright path repaired that setup error. A later full workspace check exposed repeated generated `… 2.ts` declarations; the targeted TypeScript exclusion passed while those duplicate files were still present, proving the fix rather than relying on manual deletion.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; worker tests remained 38/38 and web unit tests remained 11/11.
+- `pnpm demo:e2e` passed all six recorded gates with two rendered source-traceable Outputs, six planned image panels, five Storyboard panels, and a local MP4.
+- `pnpm submission:build` rebuilt the 12-asset Output set as honestly `partial`; `pnpm submission:verify` returned `valid: true`, `stale: false`, and `tampered: false`.
+
+### Decisions
+
+- Completion is a new product state, not a reason to repeat the creation action. The next action after render is to view the finished Video.
+- The browser may observe local worker state, but it must not add a generic job dashboard, permanent progress rail, or manual refresh control to the happy path.
+- The visual Outputs-gallery objective remains open because the image set still contains planned panels rather than GPT Image 2 bytes. This milestone proves the real local Video preview only and does not upgrade provider claims.
+
+### Open items
+
+- Complete five independent first-time orientation reviews and repair any critical finding before final recording.
+- Replace the planned image tiles with inspected GPT Image 2 bytes and complete the gallery objective.
+- Capture and inspect authorized live GPT-5.6 reasoning, one Realtime microphone turn, and provider narration before upgrading public claims.
+- Capture the dated founder brainstorm, Codex doorway footage, representative `/feedback` Session ID, final public video, stable release, and submitted links.
+- Codex Session ID: unavailable on this surface; not inferred.

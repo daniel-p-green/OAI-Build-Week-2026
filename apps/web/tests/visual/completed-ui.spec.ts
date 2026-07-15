@@ -545,6 +545,29 @@ test("visible copy stays plain and stable", async ({ page }) => {
   expect([...labels].sort().join("\n")).toMatchSnapshot("visible-labels.txt");
 });
 
+test("queued local video work refreshes into the finished next action", async ({ page }) => {
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+  const readyState = await (await page.request.get("/api/workshop")).json();
+  const approvedState = { ...readyState, storyboardApproved: true, videoState: "blocked" };
+  const queuedState = { ...approvedState, videoState: "queued" };
+  const renderedState = { ...approvedState, videoState: "rendered" };
+  let queued = false;
+  await page.route("**/api/workshop", async (route) => {
+    if (route.request().method() === "GET") return route.fulfill({ json: queued ? renderedState : approvedState });
+    queued = true;
+    return route.fulfill({ json: queuedState });
+  });
+
+  await page.goto("/");
+  await page.getByRole("button", { name: "View brief" }).click();
+  await page.getByRole("button", { name: "View outputs" }).click();
+  await page.getByRole("button", { name: "View storyboard" }).click();
+  await page.getByRole("button", { name: "Create video" }).click();
+  await expect(page.getByRole("button", { name: "Creating…" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "View video" })).toBeVisible({ timeout: 3500 });
+});
+
 test("reduced motion, contrast, and 200 percent logical zoom remain usable", async ({ page }) => {
   await page.setViewportSize({ width: 600, height: 400 });
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -566,4 +589,45 @@ test("reduced motion, contrast, and 200 percent logical zoom remain usable", asy
   expect(contrast("0D0D0D", "FFFFFF")).toBeGreaterThanOrEqual(4.5);
   expect(contrast("5D5D5D", "FFFFFF")).toBeGreaterThanOrEqual(4.5);
   expect(contrast("008635", "FFFFFF")).toBeGreaterThanOrEqual(4.5);
+});
+
+test("the local render becomes a real Video preview and the next action", async ({ page }) => {
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  const repository = resolve(process.cwd(), "../..");
+  execFileSync("pnpm", ["exec", "tsx", "apps/web/tests/visual/seed-video.ts", root], { cwd: repository, stdio: "pipe" });
+
+  for (const viewport of viewports) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto("/");
+    await page.getByRole("button", { name: "View brief" }).click();
+    await page.getByRole("button", { name: "View outputs" }).click();
+    const videoCard = page.getByRole("button", { name: "Open Demo video" });
+    await expect(videoCard).toBeVisible();
+    const previewVideo = videoCard.locator("video");
+    await expect(previewVideo).toHaveAttribute("src", "/api/workshop/artifacts/video");
+    await expect.poll(() => previewVideo.evaluate((node) => (node as HTMLVideoElement).readyState)).toBeGreaterThanOrEqual(1);
+    await previewVideo.evaluate(async (node) => {
+      const video = node as HTMLVideoElement;
+      const seeked = new Promise<void>((resolveSeek) => video.addEventListener("seeked", () => resolveSeek(), { once: true }));
+      video.currentTime = 0.1;
+      await seeked;
+    });
+    await expectScreen(page, `${viewport.name}-video-output`);
+
+    await page.getByRole("button", { name: "View storyboard" }).click();
+    const viewVideo = page.getByRole("button", { name: "View video" });
+    await expect(viewVideo).toBeVisible();
+    await expect(page.getByRole("button", { name: "Create video" })).toHaveCount(0);
+    await viewVideo.click();
+    const player = page.locator(".focused-output-preview video[controls]");
+    await expect(player).toBeVisible();
+    await expect.poll(() => player.evaluate((node) => (node as HTMLVideoElement).readyState)).toBeGreaterThanOrEqual(1);
+    await player.evaluate(async (node) => {
+      const video = node as HTMLVideoElement;
+      const seeked = new Promise<void>((resolveSeek) => video.addEventListener("seeked", () => resolveSeek(), { once: true }));
+      video.currentTime = 0.1;
+      await seeked;
+    });
+    await expectScreen(page, `${viewport.name}-video-viewer`);
+  }
 });
