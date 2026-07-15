@@ -1,4 +1,5 @@
 import { execFile as rawExecFile } from "node:child_process";
+import { createHash } from "node:crypto";
 import { copyFile, mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
@@ -14,8 +15,16 @@ export type ExecuteResult = { jobId?: string; state: "idle" | "succeeded" | "fai
 type RunCommand = (command: string, args: string[]) => Promise<unknown>;
 const defaultRun: RunCommand = async (command, args) => { await execFile(command, args, { cwd: resolve(process.cwd()), maxBuffer: 5_000_000 }); };
 const escapeHtml = (value: string) => value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+function currentNarrationForPanel(state: WorkshopState, panel: StoryboardPanel) {
+  if (!state.narration || state.narration.stale || state.narration.storyboardVersion !== state.storyboard.version) return undefined;
+  return state.narration.panels.find((candidate) => candidate.panelId === panel.id);
+}
 function hasCurrentNarration(state: WorkshopState): boolean {
-  return Boolean(state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version && state.narration.panels.length === state.storyboard.panels.length);
+  if (!state.narration || state.narration.stale || state.narration.storyboardVersion !== state.storyboard.version) return false;
+  const narrationIds = state.narration.panels.map((panel) => panel.panelId);
+  return narrationIds.length === state.storyboard.panels.length
+    && new Set(narrationIds).size === narrationIds.length
+    && state.storyboard.panels.every((panel) => narrationIds.includes(panel.id));
 }
 function currentImageForPanel(state: WorkshopState, panel: StoryboardPanel) {
   if (!panel.imagePanelId || !panel.imagePanelVersion || state.imageBatch?.stale) return undefined;
@@ -46,7 +55,7 @@ export function buildWorkshopVideoProvenance(state: WorkshopState, video: Stored
   let startSeconds = 0;
   const panels = state.storyboard.panels.map((panel) => {
     const image = currentImageForPanel(state, panel);
-    const narration = state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version ? state.narration.panels.find((candidate) => candidate.panelId === panel.id) : undefined;
+    const narration = currentNarrationForPanel(state, panel);
     const evidence = panel.evidence.map((reference) => {
       const source = state.sourceItems.find((candidate) => candidate.id === reference.sourceId)!;
       const chunk = reference.chunkId ? state.sourceChunks.find((candidate) => candidate.id === reference.chunkId) : undefined;
@@ -86,13 +95,20 @@ export async function executeOne(root: string, run: RunCommand = defaultRun) : P
     for (const [index, panel] of state.storyboard.panels.entries()) {
       const image = currentImageForPanel(state, panel); if (!image?.relativePath) continue;
       const source = resolve(root, image.relativePath); if (!source.startsWith(`${resolve(root)}/`)) throw new Error("Storyboard image escaped the Workshop data root.");
-      await copyFile(source, join(staging, `panel-${index + 1}.png`));
+      const bytes = await readFile(source);
+      const actualSha256 = createHash("sha256").update(bytes).digest("hex");
+      if (actualSha256 !== image.sha256) throw new Error(`Storyboard image hash does not match recorded provenance for panel ${panel.id}.`);
+      await writeFile(join(staging, `panel-${index + 1}.png`), bytes);
     }
     if (hasCurrentNarration(state)) {
-      for (const [index, panel] of state.narration!.panels.entries()) {
+      for (const [index, storyboardPanel] of state.storyboard.panels.entries()) {
+        const panel = currentNarrationForPanel(state, storyboardPanel)!;
         const source = resolve(root, panel.relativePath);
         if (!source.startsWith(`${resolve(root)}/`)) throw new Error("Narration artifact escaped the Workshop data root.");
-        await copyFile(source, join(staging, `panel-${index + 1}.wav`));
+        const bytes = await readFile(source);
+        const actualSha256 = createHash("sha256").update(bytes).digest("hex");
+        if (actualSha256 !== panel.sha256) throw new Error(`Narration artifact hash does not match recorded provenance for panel ${storyboardPanel.id}.`);
+        await writeFile(join(staging, `panel-${index + 1}.wav`), bytes);
       }
     } else {
       for (const [index, panel] of state.storyboard.panels.entries()) await run("ffmpeg", ["-y", "-f", "lavfi", "-i", `sine=frequency=${440 + index * 83}:sample_rate=48000:duration=${panel.durationSeconds}`, "-ac", "1", join(staging, `panel-${index + 1}.wav`)]);

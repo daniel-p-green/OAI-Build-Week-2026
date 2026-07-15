@@ -5019,3 +5019,36 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - The meta-reveal remains blocked on both the eligible `/feedback` Session ID record and a ready, limitation-free final submission manifest.
 - The other film blockers remain Codex doorway footage, founder brainstorm and transcript, Realtime/GPT-5.6 evidence, provider image gallery, provider narration, and final export.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 13:52 CT — Approved media now fails closed at the render boundary
+
+**Area:** Video / Trust / Provenance integrity
+
+### Changed
+
+- Tightened current-narration eligibility from a panel-count check to an exact one-to-one identity check against the approved Storyboard.
+- Staged narration in approved Storyboard order rather than provider-record order, so panel-to-clip identity cannot drift silently.
+- Recomputed and compared SHA-256 for every provider narration clip and approved Storyboard image immediately before HyperFrames staging.
+- A changed image or narration file now fails the render before HyperFrames runs and leaves the job in the existing retryable state.
+- Added explicit tamper tests for narration and image bytes, and corrected success fixtures to use their real content hashes.
+
+### Verified
+
+- `pnpm --filter @workshoplm/worker test` passed 65 tests across eight files, including both new fail-closed cases.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages.
+- `pnpm demo:e2e` passed the complete recorded Capture → Shape → Deliver seam with all six gates true and a rendered hashed MP4 artifact.
+
+### Decisions
+
+- Approval means the exact reviewed bytes, not merely a matching path, panel count, or filename. The video worker therefore treats provenance hashes as an enforcement boundary rather than documentary metadata.
+- Provider narration may replace the disclosed deterministic fallback only as a complete current set. Partial provider audio is never mixed into a supposedly approved final render.
+- The colleague's product-first framing is already reflected in `GOAL.md`: the professional deck is the wedge, the send-it bar is the quality test, and trust plus the weekly return visit outrank additional output breadth. This milestone strengthens that trust promise without reopening scope.
+
+### Open items
+
+- The provider-backed narration and six-image batch still require an explicitly authorized paid run and human visual/listening review before judge-facing use.
+- Audio duration fit against each approved Storyboard panel remains a live-provider review item; no provider audio has run on this account yet.
+- The external AI Collective deck still needs a real professional `Send` or first-revision verdict.
+- Codex Session ID: unavailable on this surface; not inferred.
