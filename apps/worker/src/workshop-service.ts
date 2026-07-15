@@ -202,7 +202,7 @@ export function resolveWorkshopArtifact(id: string, root?: string, workshopId?: 
   }
   const output = state.outputs.find((item) => item.id === id);
   if (!output) return undefined;
-  const editable = format === "editable" && output.type === "deck" && output.editableRelativePath;
+  const editable = format === "editable" && output.editableRelativePath;
   const path = resolve(dataRoot, editable || output.relativePath);
   if (!path.startsWith(`${dataRoot}/`)) return undefined;
   return editable

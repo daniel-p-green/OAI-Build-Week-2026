@@ -138,11 +138,46 @@ export async function writeEditableDeck(path: string, brief: RenderBrief): Promi
   await pptx.writeFile({ fileName: path, compression: true });
 }
 
+export async function writeEditableInfographic(path: string, brief: RenderBrief): Promise<void> {
+  const pptx = new PptxGenJS();
+  pptx.layout = "LAYOUT_WIDE";
+  pptx.author = "WorkshopLM";
+  pptx.subject = "Grounded, source-defensible infographic";
+  pptx.title = `${brief.workshopTitle} infographic`;
+  pptx.company = "WorkshopLM";
+  pptx.lang = "en-US";
+  pptx.theme = { headFontFace: headingFont(brief), bodyFontFace: bodyFont(brief), lang: "en-US" };
+  const paper = pptxColor(brief.style.paper); const ink = pptxColor(brief.style.ink); const accent = pptxColor(brief.style.accent);
+  const slide = pptx.addSlide(); slide.background = { color: paper };
+  slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.22, h: 7.5, fill: { color: accent }, line: { color: accent } });
+  if (brief.style.logoData) slide.addImage({ data: brief.style.logoData, x: 0.68, y: 0.48, w: 0.5, h: 0.6 });
+  slide.addText("SOURCE-DEFENSIBLE BRIEF", { x: 1.35, y: 0.58, w: 4.8, h: 0.2, fontFace: bodyFont(brief), fontSize: 8, bold: true, color: accent, charSpacing: 1.4, margin: 0 });
+  slide.addText(brief.workshopTitle, { x: 0.68, y: 1.05, w: 11.8, h: 0.76, fontFace: headingFont(brief), fontSize: 30, color: ink, margin: 0, breakLine: false, fit: "shrink" });
+  const blocks = brief.blocks.slice(0, 4); const rowHeight = blocks.length > 3 ? 1.12 : 1.42; const startY = 2.05;
+  blocks.forEach((block, index) => {
+    const y = startY + index * rowHeight;
+    const headingPrefix = block.heading.replace(/…$/, "").trim();
+    const bodyRepeatsHeading = Boolean(headingPrefix && block.body.toLowerCase().startsWith(headingPrefix.toLowerCase()));
+    const primaryText = block.heading.endsWith("…") && bodyRepeatsHeading ? block.body : block.heading;
+    const supportingText = block.body.trim() && !bodyRepeatsHeading ? block.body : undefined;
+    slide.addShape(pptx.ShapeType.rect, { x: 0.72, y, w: 11.85, h: 0.01, fill: { color: ink, transparency: 84 }, line: { color: ink, transparency: 100 } });
+    slide.addText(String(index + 1).padStart(2, "0"), { x: 0.72, y: y + 0.25, w: 0.55, h: 0.26, fontFace: bodyFont(brief), fontSize: 11, bold: true, color: accent, margin: 0 });
+    slide.addText(primaryText, { x: 1.42, y: y + 0.19, w: supportingText ? 3.5 : 8.65, h: 0.52, fontFace: headingFont(brief), fontSize: 17, color: ink, margin: 0, breakLine: false, fit: "shrink" });
+    if (supportingText) slide.addText(supportingText, { x: 5.15, y: y + 0.18, w: 5.05, h: 0.52, fontFace: bodyFont(brief), fontSize: 11, color: ink, margin: 0, breakLine: false, fit: "shrink", valign: "mid" });
+    slide.addText(citationText(block), { x: 10.45, y: y + 0.2, w: 2.0, h: 0.45, fontFace: bodyFont(brief), fontSize: 7, color: ink, transparency: 34, margin: 0, breakLine: false, fit: "shrink", valign: "mid" });
+  });
+  slide.addNotes(`WorkshopLM source trace\n${blocks.map((block) => `${block.id}\n${block.citations.join("\n") || "Approved Workshop brief"}`).join("\n\n")}`);
+  slide.addText(`${brief.style.name ?? "Workshop"} · ${brief.version}`, { x: 0.72, y: 7.12, w: 8.5, h: 0.18, fontFace: bodyFont(brief), fontSize: 7, color: ink, transparency: 38, margin: 0 });
+  await mkdir(dirname(path), { recursive: true });
+  await pptx.writeFile({ fileName: path, compression: true });
+}
+
 export async function writeRenderedArtifact(root: string, id: string, type: RenderedArtifact["type"], brief: RenderBrief): Promise<RenderedArtifact> {
   const relativePath = join("generated", `${id}.${type}.html`);
   await mkdir(dirname(join(root, relativePath)), { recursive: true });
   await writeFile(join(root, relativePath), type === "deck" ? renderDeck(brief) : renderInfographic(brief), "utf8");
-  const editableRelativePath = type === "deck" ? join("generated", `${id}.presentation.pptx`) : undefined;
-  if (editableRelativePath) await writeEditableDeck(join(root, editableRelativePath), brief);
+  const editableRelativePath = join("generated", `${id}.${type === "deck" ? "presentation" : "infographic"}.pptx`);
+  if (type === "deck") await writeEditableDeck(join(root, editableRelativePath), brief);
+  else await writeEditableInfographic(join(root, editableRelativePath), brief);
   return { type, relativePath, editableRelativePath, contentType: "text/html", sourceBlockIds: brief.blocks.map((block) => block.id) };
 }

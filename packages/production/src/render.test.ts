@@ -31,6 +31,16 @@ describe("production renderers", () => {
     expect(pptx.byteLength).toBeGreaterThan(10_000);
     await rm(root, { recursive: true, force: true });
   });
+  it("writes an editable one-slide PowerPoint infographic", async () => {
+    const root = await mkdtemp(join(tmpdir(), "workshoplm-infographic-"));
+    const artifact = await writeRenderedArtifact(root, "out-2", "infographic", brief);
+    expect(await readFile(join(root, artifact.relativePath), "utf8")).toContain("Source-defensible brief");
+    expect(artifact.editableRelativePath).toBe("generated/out-2.infographic.pptx");
+    const pptx = await readFile(join(root, artifact.editableRelativePath!));
+    expect(pptx.subarray(0, 2).toString()).toBe("PK");
+    expect(pptx.byteLength).toBeGreaterThan(10_000);
+    await rm(root, { recursive: true, force: true });
+  });
   it("escapes source content before placing it in HTML", () => {
     expect(renderDeck({ ...brief, blocks: [{ id: "unsafe", heading: "<script>", body: "A & B", citations: ["source > line"] }] })).not.toContain("<script>");
   });

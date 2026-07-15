@@ -53,11 +53,14 @@ describe("submission Output set", () => {
     expect(built.outputSet.limitations).toEqual(expect.arrayContaining([expect.stringContaining("no live GPT-5.6"), expect.stringContaining("0 of 6"), expect.stringContaining("placeholder tones")]));
     expect(built.outputSet.assets.filter((asset) => asset.type === "thumbnail")).toHaveLength(3);
     expect(built.outputSet.assets.map((asset) => asset.type)).toEqual(expect.arrayContaining(["devpost_description", "readme_narrative", "deck", "infographic", "image_manifest", "storyboard", "narration", "video", "evidence"]));
+    expect(built.outputSet.assets).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: "deck", relativePath: "presentation.pptx", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation" }),
+      expect.objectContaining({ type: "infographic", relativePath: "infographic.pptx", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation" }),
+    ]));
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "VIDEO-PROVENANCE.json", mimeType: "application/json", provenance: "video_render" }));
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "BUILD-TRACE.html", mimeType: "text/html", provenance: "source_trace" }));
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "BUILD-TRACE.json", mimeType: "application/json", provenance: "source_trace" }));
-    expect(built.outputSet.assets).toHaveLength(16);
-    expect(built.outputSet.assets).toEqual(expect.arrayContaining([expect.objectContaining({ type: "deck", relativePath: "presentation.pptx", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation" })]));
+    expect(built.outputSet.assets).toHaveLength(17);
     await expect(readFile(join(built.manifestPath, "..", "DEVPOST.md"), "utf8")).resolves.toContain("No live GPT-5.6 run is claimed");
     await expect(readFile(join(built.manifestPath, "..", "STORYBOARD.md"), "utf8")).resolves.toContain("Sanitized fixture · chunk 01");
     await expect(verifySubmissionOutputSet(root, built.manifestPath)).resolves.toEqual({ valid: true, stale: false, tampered: false, issues: [] });
