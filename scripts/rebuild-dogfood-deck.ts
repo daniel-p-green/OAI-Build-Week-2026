@@ -36,7 +36,14 @@ async function main() {
     execFileSync("pdftoppm", ["-png", "-r", "110", "-f", String(page), "-l", String(page), "-singlefile", pdfPath, previewStem]);
   }
 
-  const files = [htmlPath, pptxPath, pdfPath];
+  const contactSheetPath = join(outputDir, "contact-sheet.png");
+  await rm(contactSheetPath, { force: true });
+  const previews = Array.from({ length: brief.blocks.length + 1 }, (_, index) => join(outputDir, `preview-${String(index + 1).padStart(2, "0")}.png`));
+  const scaled = previews.map((_, index) => `[${index}:v]scale=960:540:force_original_aspect_ratio=decrease,pad=960:540:(ow-iw)/2:(oh-ih)/2:color=white[s${index}]`).join(";");
+  const layout = previews.map((_, index) => `${(index % 2) * 960}_${Math.floor(index / 2) * 540}`).join("|");
+  execFileSync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", ...previews.flatMap((path) => ["-i", path]), "-filter_complex", `${scaled};${previews.map((_, index) => `[s${index}]`).join("")}xstack=inputs=${previews.length}:layout=${layout}:fill=white[out]`, "-map", "[out]", "-frames:v", "1", contactSheetPath]);
+
+  const files = [htmlPath, pptxPath, pdfPath, contactSheetPath];
   const hashes = Object.fromEntries(await Promise.all(files.map(async (path) => [
     basename(path),
     createHash("sha256").update(await readFile(path)).digest("hex")

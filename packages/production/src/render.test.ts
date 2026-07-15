@@ -27,6 +27,15 @@ describe("production renderers", () => {
     expect(deck).not.toContain('<p class="body"></p>');
     expect(deck).toContain("02 · Core insight");
   });
+  it("turns numeric proof into client-facing metrics while keeping exact trace metadata", () => {
+    const deck = renderDeck({ ...brief, blocks: [{ id: "scale", heading: "180+ chapters across 40+ countries", body: "A global network supported by 400+ volunteer organizers.", citations: ["newsletter · chunk 79"], citationLabel: "AI Collective Newsletter · chunk 79", layout: "proof" }] });
+    expect(deck).toContain('class="slide proof metrics"');
+    expect(deck).toContain("<strong>180+</strong><span>chapters</span>");
+    expect(deck).toContain("<strong>40+</strong><span>countries</span>");
+    expect(deck).toContain("Source: AI Collective Newsletter");
+    expect(deck).not.toContain("Source: AI Collective Newsletter · chunk 79");
+    expect(deck).toContain('data-source="newsletter · chunk 79"');
+  });
   it("chooses readable foreground text for a light brand accent", () => {
     const deck = renderDeck({ ...brief, style: { ...brief.style, accent: "#FF97E2", ink: "#171816", paper: "#FFFFFF" } });
     expect(deck).toContain("--accent-foreground:#000000");

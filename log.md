@@ -5747,3 +5747,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Product evidence gates remain unchanged: provider-backed Map/media, uncoached professional `Send`/`Revise`, ChatGPT Work invocation, founder recording, public links, and `/feedback` Session ID.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 17:31 CT — Hero deck turns traceable proof into professional evidence
+
+**Area:** Deliver / Presentation / Send-it quality / Editable handoff
+
+### Changed
+
+- Audited the current external-use AI Collective PowerPoint against the product's send-it standard. Exact trace data survived, but the exported proof slide spent its dominant visual area on an internal-looking Source box and exposed `chunk 79` in the visible footer instead of making the evidence itself persuasive.
+- Added a deterministic proof-layout path that recognizes up to two numeric facts in a grounded proof heading and renders them as an editorial metric composition in both responsive HTML and editable PowerPoint.
+- Rebuilt the candidate's evidence slide around `180+ chapters` and `40+ countries`, with the grounded `400+ volunteer organizers` supporting statement beneath it.
+- Made visible citations use quiet professional source names while preserving exact chunk locators in HTML `data-source` attributes and exact locator plus claim ID in PowerPoint speaker notes.
+- Extended `pnpm dogfood:deck:build` to recreate and hash the five-slide contact sheet from the current PowerPoint round trip so the cold-review image cannot silently remain stale.
+
+### Verified
+
+- `pnpm dogfood:deck:build` produced fresh HTML, editable PowerPoint, five-page PDF, five slide images, and a 1920×1620 contact sheet. The PowerPoint is a valid archive and the PDF reports five 16:9 pages at 960.009×540 points.
+- Visually inspected the complete contact sheet and the full-size evidence slide after the LibreOffice round trip. The final exported metric labels render completely as `CHAPTERS` and `COUNTRIES`; no internal chunk number appears in the visible slide footer.
+- Inspected the PowerPoint notes XML and confirmed it retains `https://newsletter.aicollective.com/ · chunk 79` plus `claim-60bb5377e97a-78-1` for the evidence slide.
+- Production renderer tests passed 7 cases, worker tests passed 84 cases, and all 27 production browser tests passed. `pnpm check` passed all 13 packages. `pnpm demo:e2e` passed the deterministic seam with all six gates green.
+- The evidence record is `artifacts/spikes/professional-deck-evidence-layout-2026-07-15.json`. No paid provider request occurred.
+
+### Decisions
+
+- A client-facing slide should show evidence as the composition. Source identity stays visible but subordinate; exact retrieval coordinates remain available through the product trace and editable handoff notes.
+- Metric extraction is intentionally bounded to two numeric facts from the already-approved grounded heading. It does not invent statistics or promote unrelated numbers from supporting copy.
+- This is a stronger external-use candidate, not a substitute for the intended professional's cold `Send`/`Revise` judgment.
+
+### Open items
+
+- Put this refreshed candidate in front of its intended professional audience and record `Send` or the first blocking revision.
+- Record one provider-verified Realtime turn, rerun the zero-spend preflight, obtain explicit request authorization, and run the provider-backed Map, image, and narration path.
+- Invoke the installed package from ChatGPT Work and record actual surface support without inferring parity from Codex.
+- Provider-backed media, final founder recording, public links, and the Devpost `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -316,7 +316,8 @@ it("plans a professional deck from narrative evidence instead of source metadata
   expect(html).toContain("A working professional turns messy inputs");
   expect(html).toContain("Trust compounds when every factual claim");
   expect(html).toContain("Teams should start with one real meeting");
-  expect(html).toContain("Source: Strategy notes · chunk");
+  expect(html).toContain("Source: Strategy notes");
+  expect(html).not.toContain("Source: Strategy notes · chunk");
   expect(html).toContain("Strategy brief · chunk");
   expect(html).not.toMatch(/# Status|Last refreshed|## North star|\*\*/);
   await rm(root, { recursive: true, force: true });
@@ -331,7 +332,8 @@ it("keeps a professional deck on the Workshop topic when a broad website contain
   const generated = await generateOutput("deck", root);
   const html = await readFile(join(root, generated.outputs[0]!.relativePath), "utf8");
   expect(html).toContain("Leading a local chapter");
-  expect(html).toContain("180+ chapters across 40+ countries");
+  expect(html).toContain("<strong>180+</strong><span>chapters</span>");
+  expect(html).toContain("<strong>40+</strong><span>countries</span>");
   expect(html).toContain("Start a chapter");
   expect(html).not.toContain("Users trust AI responses 91%");
   await rm(root, { recursive: true, force: true });
