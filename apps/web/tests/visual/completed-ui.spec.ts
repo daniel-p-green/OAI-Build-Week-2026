@@ -103,7 +103,7 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await pressTabUntil(page, "Use this style");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog", { name: "Style" })).toBeHidden();
-  await expect(page.getByRole("button", { name: "View outputs" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Create outputs" })).toBeVisible();
 
 });
 
@@ -115,7 +115,56 @@ test("voice capture is bounded inside Add source and fails closed without live o
   await page.getByRole("button", { name: "Record voice" }).click();
   await expect(page.locator(".capture-error")).toContainText("Live OpenAI capture is disabled");
   await expect(page.getByRole("dialog", { name: "Add source" })).toBeVisible();
-  await expect(page.getByRole("textbox", { name: "Title" })).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Source" })).toBeVisible();
+});
+
+test("an empty Workshop reaches an editable deck through one obvious path", async ({ page }) => {
+  const original = await (await page.request.get("/api/workshop")).json() as { id: string };
+  const styleLibrary = await (await page.request.get("/api/workshop?view=styles")).json() as { styles: Array<{ id: string; name: string }> };
+  const startedAt = Date.now();
+  const created = await page.request.post("/api/workshop", { data: { action: "createWorkshop", title: "First client brief" } });
+  expect(created.ok()).toBeTruthy();
+
+  try {
+    await page.setViewportSize({ width: 1200, height: 800 });
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Start with a source" })).toBeVisible();
+    await page.getByRole("button", { name: "Add source" }).click();
+
+    const sourceSheet = page.getByRole("dialog", { name: "Add source" });
+    await sourceSheet.getByRole("textbox", { name: "Source" }).fill([
+      "Weekly client meeting",
+      "The client approved a two-week pilot for the enablement team.",
+      "Leadership needs a grounded deck that explains the decision, timeline, and success measure.",
+    ].join("\n"));
+    await expect(sourceSheet.getByRole("textbox", { name: "Title (optional)" })).toBeVisible();
+    await sourceSheet.getByRole("button", { name: "Add source", exact: true }).click();
+    await expect(sourceSheet).toBeHidden();
+
+    await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
+    await page.getByRole("button", { name: "Approve brief" }).click();
+    await expect(page.getByRole("button", { name: "Choose style" })).toBeVisible();
+    await page.getByRole("button", { name: "Choose style" }).click();
+
+    const styleSheet = page.getByRole("dialog", { name: "Style" });
+    const savedStyle = styleLibrary.styles[0];
+    if (savedStyle) await styleSheet.getByRole("button", { name: `Use saved style ${savedStyle.name}` }).click();
+    else await styleSheet.getByRole("button", { name: "Use this style" }).click();
+    await expect(styleSheet).toBeHidden();
+    await expect(page.getByRole("button", { name: "Create outputs" })).toBeVisible();
+    await page.getByRole("button", { name: "Create outputs" }).click();
+
+    await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
+    await page.getByRole("button", { name: "Open Presentation" }).click();
+    await expect(page.getByRole("link", { name: "Download PowerPoint" })).toBeVisible();
+    const state = await (await page.request.get("/api/workshop")).json() as { sourceItems: Array<{ title: string }>; outputs: Array<{ type: string; editableRelativePath?: string }> };
+    expect(state.sourceItems[0]?.title).toBe("Weekly client meeting");
+    expect(state.outputs.find((output) => output.type === "deck")?.editableRelativePath).toMatch(/\.pptx$/);
+    expect(Date.now() - startedAt).toBeLessThan(15 * 60 * 1000);
+  } finally {
+    const restored = await page.request.post("/api/workshop", { data: { action: "selectWorkshop", workshopId: original.id } });
+    expect(restored.ok()).toBeTruthy();
+  }
 });
 
 test("Style can start from a website and apply a professional intent", async ({ page }) => {
@@ -633,7 +682,7 @@ test("visible copy stays plain and stable", async ({ page }) => {
     for (const value of await page.getByRole("button").allTextContents()) if (value.trim()) labels.add(value.replace(/\s+/g, " ").trim());
     for (const value of await page.getByRole("heading").allTextContents()) if (value.trim()) labels.add(value.replace(/\s+/g, " ").trim());
   }
-  expect([...labels].sort().join("\n")).toMatchSnapshot("visible-labels.txt");
+  expect(`${[...labels].sort().join("\n")}\n`).toMatchSnapshot("visible-labels.txt");
 });
 
 test("queued local video work refreshes into the finished next action", async ({ page }) => {

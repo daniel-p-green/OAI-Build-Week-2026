@@ -26,6 +26,7 @@ import {
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { RealtimeCapture } from "./realtime-capture";
 import { ExcalidrawMap } from "./excalidraw-map";
+import { sourceInputKind, sourceTitleFromText } from "./source-input";
 
 type ObjectView = "map" | "brief" | "outputs" | "storyboard" | "output";
 type Sheet = "workshops" | "sources" | "evidence" | "add-source" | "style" | "original" | null;
@@ -260,7 +261,11 @@ export default function WorkshopPage() {
           {view === "map" && Boolean(state?.mapNodes.length) && (state?.briefApproved && !state.frame?.stale
             ? <Button variant={sheet ? "secondary" : "primary"} onClick={() => openView("brief")}>View brief</Button>
             : <Button variant={sheet ? "secondary" : "primary"} disabled={busy || !state?.mapNodes.length} onClick={() => { void post({ action: "approveBrief" }).then((next) => next && openView("brief")); }}>Approve brief</Button>)}
-          {view === "brief" && (canDeliver ? <Button onClick={() => openView("outputs")}>View outputs</Button> : <Button disabled={busy} onClick={() => openSheet("style")}>Choose style</Button>)}
+          {view === "brief" && (canDeliver
+            ? (state?.outputs.length || state?.imageBatch
+                ? <Button onClick={() => openView("outputs")}>View outputs</Button>
+                : <Button disabled={busy} onClick={() => { void createOutputs(); }}>Create outputs</Button>)
+            : <Button disabled={busy} onClick={() => openSheet("style")}>Choose style</Button>)}
           {view === "outputs" && ((state?.outputs.length ?? 0) === 0 || outputsNeedUpdate
             ? <Button disabled={busy || !canDeliver} onClick={() => { void createOutputs(); }}>{state?.outputs.length ? "Update outputs" : "Create outputs"}</Button>
             : (state?.storyboard.panels.length ?? 0) > 0 && <Button onClick={() => openView("storyboard")}>View storyboard</Button>)}
@@ -470,8 +475,8 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
 }
 
 function StoryboardView({ storyboard, imageBatch, approved, panel, busy, onSelect, onPost, onShowSource }: { storyboard?: PersistedWorkshop["storyboard"]; imageBatch?: PersistedWorkshop["imageBatch"]; approved: boolean; panel?: PersistedWorkshop["storyboard"]["panels"][number]; busy: boolean; onSelect: (id: string) => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onShowSource: (sourceId?: string) => void }) {
-  const [title, setTitle] = useState("");
-  const [narration, setNarration] = useState("");
+  const [title, setTitle] = useState(panel?.title ?? "");
+  const [narration, setNarration] = useState(panel?.narration ?? "");
   useEffect(() => { if (panel) { setTitle(panel.title); setNarration(panel.narration); } }, [panel]);
   const duration = (storyboard?.panels ?? []).reduce((sum, item) => sum + item.durationSeconds, 0);
   const dirty = Boolean(panel && (title.trim() !== panel.title || narration.trim() !== panel.narration));
@@ -505,8 +510,18 @@ function EvidenceSheet({ source, onClose, onShowMap }: { source: SourceItem; onC
 
 function AddSourceSheet({ onClose, onPost }: { onClose: () => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null> }) {
   const [title, setTitle] = useState("");
-  const [text, setText] = useState("");
-  return <SideSheet title="Add source" onClose={onClose}><RealtimeCapture onSave={async (transcript, capture) => Boolean(await onPost({ action: "captureFallbackTranscript", text: transcript, capture }).then((next) => { if (next) onClose(); return next; }))} /><div className="source-divider"><span>or paste text</span></div><p className="sheet-intro">Paste material you are allowed to use.</p><Input label="Title" value={title} onChange={(event) => setTitle(event.target.value)} /><TextArea label="Text" value={text} onChange={(event) => setText(event.target.value)} /><Button disabled={!title.trim() || !text.trim()} onClick={() => { void onPost({ action: "ingestSource", source: { title, origin: "Local note", text, permission: "sanitized" } }).then((next) => next && onClose()); }}>Add source</Button></SideSheet>;
+  const [source, setSource] = useState("");
+  const kind = sourceInputKind(source);
+  const add = () => {
+    const value = source.trim();
+    const body = kind === "url"
+      ? { action: "ingestUrl", url: value }
+      : kind === "pdf"
+        ? { action: "ingestPdfFile", filePath: value, permission: "private" }
+        : { action: "ingestSource", source: { title: title.trim() || sourceTitleFromText(value), origin: "Pasted notes", text: value, permission: "sanitized" } };
+    void onPost(body).then((next) => next && onClose());
+  };
+  return <SideSheet title="Add source" onClose={onClose}><RealtimeCapture onSave={async (transcript, capture) => Boolean(await onPost({ action: "captureFallbackTranscript", text: transcript, capture }).then((next) => { if (next) onClose(); return next; }))} /><div className="source-divider"><span>or add material</span></div><p className="sheet-intro">Paste notes, a public website, or an absolute local PDF path.</p><TextArea label="Source" hint="Text, https://…, or /path/to/file.pdf" value={source} onChange={(event) => setSource(event.target.value)} />{kind === "text" && source.trim() && <Input label="Title (optional)" value={title} onChange={(event) => setTitle(event.target.value)} />}<Button disabled={!source.trim()} onClick={add}>Add source</Button></SideSheet>;
 }
 
 function Status({ children, tone = "current" }: { children: ReactNode; tone?: "current" | "waiting" }) {
