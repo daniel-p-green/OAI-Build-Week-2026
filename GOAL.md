@@ -1,12 +1,12 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 00:40 CT
+Last updated: 2026-07-15 01:03 CT
 
 ## Status
 
 **Active phase:** P0 interface simplification, then live demo proof
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
-**Current gate:** The P0 screen-composition and language rebuild plus bounded Realtime capture UI are implemented and pass the full repository checks, recorded demo seam, and final three-width visual suite. The remaining interface completion gates are five independent first-time orientation reviews and provider-backed GPT Image 2 gallery media. The Realtime transport is ready for its first provider-backed microphone turn but is not yet live-verified. Provider media may proceed in isolated files; do not record the final demo until the review gate is complete and any critical navigation finding is repaired.
+**Current gate:** The P0 screen-composition and language rebuild, bounded Realtime capture UI, and constrained semantic Excalidraw Map are implemented. The Map now persists direct movement, resizing, and text edits through typed graph history, exposes source trace, and restores each operation through WorkshopLM Undo; its native Excalidraw product chrome is suppressed so the official Apps in ChatGPT shell remains the only surrounding interface system. The remaining interface completion gates are five independent first-time orientation reviews and provider-backed GPT Image 2 gallery media. The Realtime transport is ready for its first provider-backed microphone turn but is not yet live-verified. Provider media may proceed in isolated files; do not record the final demo until the review gate is complete and any critical navigation finding is repaired.
 **Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found` for this account even though the current public model page describes it as a Sol alias. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. The benchmark and live grounded-Map adapter now share a tested parser for both top-level and nested Responses text, but no request has run. The current model catalog labels `gpt-4o-mini-tts` deprecated while the current speech guide still recommends it; verify the actual live response before recording. Do not claim live product use or change per-operation defaults before these checks.
 **Known host risk:** The July 14 host-sync verification is credential-blocked and the decision deadline has passed, so the capture-only `gpt-realtime-2.1` fallback is the final demo voice path. Native task and voice-turn persistence remain unproven and must not be claimed. The server-minted ephemeral session route, browser WebRTC control, final-transcript reducer, durable Source boundary, and provider event provenance are implemented and tested; one provider-backed microphone turn still must be captured and inspected before recording.
 
@@ -194,7 +194,7 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Adopt the six NotebookLM legibility gains as implementation acceptance criteria: instant explanation, stable geography, tangible source scope, real output previews, calm first run, and one-click citations.
 - [x] Capture a privacy-safe live UI gallery covering the reset and complete recorded fixtures, including Map, Sources, citation, Brief, Style, Outputs, Storyboard, focused Output, and mobile states.
 - [x] Rebuild the judge path around the official Apps in ChatGPT boundary: ChatGPT owns Conversation; the full-screen Workshop owns only Map, source trace, Brief, Style, Outputs, and Storyboard interactions.
-- [x] Replace the broken Excalidraw judge path with a constrained relational Map: source anchors, grounded claims, implications, labeled clusters, visible edges, path highlighting, and one adjacent claim/evidence inspector.
+- [x] Restore the judge path as a constrained, toolbar-free Excalidraw Map: fixed source geography, typed semantic nodes, visible evidence and graph edges, direct movement/resize/text editing, contextual claim/source inspection, and a mobile review outline over the same graph.
 - [x] Replace trivial approval states with a Brief coverage receipt, live Style contract, Storyboard coverage/runtime summary, and visibly named approved versions.
 - [x] Replace four equal creation actions with one `Create outputs` action and ensure each Output appears exactly once.
 - [x] Remove the persistent stage spine, generic Library, generic Details, browser capture composer, and other shell chrome that competed with ChatGPT.
@@ -341,7 +341,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 ### 7. Shape
 
 - [x] Generate the typed semantic graph from transcript/source ingestion with durable source metadata.
-- [x] Render and synchronize Excalidraw Map view.
+- [x] Render and synchronize the Excalidraw Map, including persisted title, position, and size changes plus typed Undo.
 - [x] Support typed, undoable user and AI graph operations.
 - [x] Generate Sketch view from an approved graph version.
 - [x] Produce and approve `FRAME.md` plus its executable representation.

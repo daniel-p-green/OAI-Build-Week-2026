@@ -27,11 +27,13 @@ import {
 } from "@workshoplm/ui";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { RealtimeCapture } from "./realtime-capture";
+import { ExcalidrawMap } from "./excalidraw-map";
 
 type ObjectView = "map" | "brief" | "outputs" | "storyboard" | "output";
 type Sheet = "sources" | "evidence" | "add-source" | "style" | null;
 type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string; permission: "private" | "sanitized" | "shareable" };
-type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number };
+type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
+type MapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
 type ManualStylePayload = { name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop" };
 type PersistedWorkshop = {
   title: string;
@@ -42,6 +44,8 @@ type PersistedWorkshop = {
   activeSourceIds: string[];
   claims?: { id: string; sourceId: string; chunkId: string; text: string; locator: string }[];
   mapNodes: MapNode[];
+  mapEdges: MapEdge[];
+  graphState?: string;
   frame?: { version: number; markdown: string; stale: boolean };
   style?: { version: number; name: string; accent: string; ink: string; paper: string; stale: boolean };
   assetPlan?: { version: number; stale: boolean; evidenceClaimIds: string[] };
@@ -170,7 +174,7 @@ export default function WorkshopPage() {
       <section className="object-canvas" aria-label={currentTitle}>
         {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
         {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
-        {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onShowSource={showSource} onAddSource={() => openSheet("add-source")} />}
+        {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onAddSource={() => openSheet("add-source")} />}
         {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
         {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} />}
         {loadState === "ready" && view === "storyboard" && <StoryboardView storyboard={state?.storyboard} approved={Boolean(state?.storyboardApproved)} panel={selectedPanel} busy={busy} onSelect={setSelectedPanelId} onPost={post} onShowSource={showSource} />}
@@ -185,34 +189,20 @@ export default function WorkshopPage() {
   );
 }
 
-function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onShowSource, onAddSource }: { state: PersistedWorkshop | null; selectedNode?: MapNode; busy: boolean; onSelect: (id: string) => void; onSync: (nodes: Pick<MapNode, "id" | "title" | "x" | "y">[]) => void; onShowSource: (sourceId?: string) => void; onAddSource: () => void }) {
+function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShowSource, onAddSource }: { state: PersistedWorkshop | null; selectedNode?: MapNode; busy: boolean; onSelect: (id: string) => void; onSync: (nodes: Pick<MapNode, "id" | "title" | "x" | "y" | "width" | "height">[]) => void; onUndo: () => void; onShowSource: (sourceId?: string) => void; onAddSource: () => void }) {
   const sources = (state?.sourceItems ?? []).filter((source) => state?.activeSourceIds.includes(source.id));
   const nodes = (state?.mapNodes ?? []).filter((node) => !node.sourceId || state?.activeSourceIds.includes(node.sourceId));
-  const grounded = nodes.filter((node) => node.kind === "grounded");
-  const implications = nodes.filter((node) => node.kind !== "grounded");
-  const positioned = new Map<string, { x: number; y: number }>();
-  sources.forEach((source, index) => positioned.set(`source:${source.id}`, { x: 11, y: 25 + index * (50 / Math.max(1, sources.length - 1)) }));
-  grounded.forEach((node, index) => positioned.set(node.id, { x: 43, y: 28 + index * (48 / Math.max(1, grounded.length - 1)) }));
-  implications.forEach((node, index) => positioned.set(node.id, { x: 72, y: 31 + index * (38 / Math.max(1, implications.length - 1)) }));
   const relatedSourceId = (node: MapNode, index: number) => node.sourceId ?? sources[index % Math.max(1, sources.length)]?.id;
   const selectedSourceId = selectedNode ? relatedSourceId(selectedNode, Math.max(0, nodes.indexOf(selectedNode))) : undefined;
   const source = sources.find((item) => item.id === selectedSourceId);
-  const related = (node: MapNode) => !selectedNode || node.id === selectedNode.id || (selectedNode.kind !== "grounded" && node.kind === "grounded") || (selectedNode.kind === "grounded" && node.kind !== "grounded");
+  const canUndo = Boolean(state?.graphState && !state.graphState.includes('"records":[]'));
 
   if (!nodes.length) return <div className="state-surface"><StateMessage state="empty" title="Start with a source" action={<Button onClick={onAddSource}>Add source</Button>}>Add a transcript, document, or website to shape your first Map.</StateMessage></div>;
 
-  return <div className={`map-canvas ${selectedNode ? "tracing" : ""}`} data-domain-ui="map-canvas">
-    <div className="map-caption" data-domain-ui="map-caption"><span>{nodes.length} ideas from {sources.length} sources</span></div>
-    <div className="map-cluster source-cluster" data-domain-ui="map-cluster"><span>Sources</span></div>
-    <div className="map-cluster claim-cluster" data-domain-ui="map-cluster"><span>Claims</span></div>
-    <div className="map-cluster decision-cluster" data-domain-ui="map-cluster"><span>Decisions</span></div>
-    <svg className="relationship-lines" data-domain-ui="relationship-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-      {grounded.map((node, index) => { const from = positioned.get(`source:${relatedSourceId(node, index)}`); const to = positioned.get(node.id); return from && to ? <path key={`source-${node.id}`} className={selectedNode && selectedNode.id !== node.id && selectedSourceId !== relatedSourceId(node, index) ? "dim" : selectedNode ? "active" : ""} d={`M ${from.x + 7} ${from.y} C 27 ${from.y}, 28 ${to.y}, ${to.x - 9} ${to.y}`} /> : null; })}
-      {implications.map((node, index) => { const fromNode = grounded[index % Math.max(1, grounded.length)]; const from = fromNode && positioned.get(fromNode.id); const to = positioned.get(node.id); return from && to ? <path key={`claim-${node.id}`} className={selectedNode && selectedNode.id !== node.id && selectedNode.id !== fromNode.id ? "dim" : selectedNode ? "active" : ""} d={`M ${from.x + 9} ${from.y} C 56 ${from.y}, 57 ${to.y}, ${to.x - 9} ${to.y}`} /> : null; })}
-    </svg>
-    {sources.map((item) => { const point = positioned.get(`source:${item.id}`)!; const active = !selectedNode || item.id === selectedSourceId; return <button key={item.id} type="button" className={`source-anchor ${active ? "path-active" : "path-dim"}`} data-domain-ui="source-anchor" style={{ left: `${point.x}%`, top: `${point.y}%` }} onClick={() => onShowSource(item.id)}><span>{item.type}</span><strong>{item.title}</strong><small>{item.claimCount} claims</small></button>; })}
-    {nodes.map((node) => { const point = positioned.get(node.id)!; return <button key={node.id} type="button" className={`map-note ${node.kind} ${selectedNode?.id === node.id ? "selected-note" : ""} ${related(node) ? "path-active" : "path-dim"}`} data-domain-ui="map-note" style={{ left: `${point.x}%`, top: `${point.y}%` }} onClick={() => onSelect(selectedNode?.id === node.id ? "" : node.id)}><span>{node.kind === "grounded" ? "Verified" : node.kind === "derived" ? "Derived" : "Idea"}</span><strong>{node.title}</strong><p>{node.body}</p><small>{node.locator}</small></button>; })}
-    {selectedNode && <ClaimInspector node={selectedNode} source={source} busy={busy} onClose={() => onSelect("")} onSave={(title) => onSync([{ id: selectedNode.id, title, x: selectedNode.x, y: selectedNode.y }])} onShowSource={() => onShowSource(selectedSourceId)} />}
+  return <div className="map-canvas" data-domain-ui="map-canvas">
+    <div className="map-caption" data-domain-ui="map-caption"><span>{nodes.length} ideas · Drag to organize · Double-click to edit</span>{canUndo && <Button variant="secondary" size="small" disabled={busy} onClick={onUndo}>Undo</Button>}</div>
+    <ExcalidrawMap nodes={nodes} sources={sources} edges={state?.mapEdges ?? []} selectedNodeId={selectedNode?.id} onSelectNode={onSelect} onShowSource={(sourceId) => onShowSource(sourceId)} onSync={onSync} />
+    {selectedNode && <ClaimInspector node={selectedNode} source={source} busy={busy} onClose={() => onSelect("")} onSave={(title) => onSync([{ id: selectedNode.id, title, x: selectedNode.x, y: selectedNode.y, width: selectedNode.width, height: selectedNode.height }])} onShowSource={() => onShowSource(selectedSourceId)} />}
   </div>;
 }
 

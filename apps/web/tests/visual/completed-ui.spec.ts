@@ -22,6 +22,23 @@ async function expectPrimaryActions(page: Page, count: 0 | 1) {
   await expect(page.locator('.oai-button--primary:not(:disabled):visible')).toHaveCount(count);
 }
 
+async function expectMapReady(page: Page, viewport: typeof viewports[number]) {
+  if (viewport.name === "mobile") return;
+  await expect(page.locator(".excalidraw-map .excalidraw")).toBeVisible();
+  await expect(page.locator(".excalidraw-map canvas").first()).toBeVisible();
+  await page.waitForTimeout(250);
+}
+
+async function selectProductPromise(page: Page, viewport: typeof viewports[number]) {
+  if (viewport.name === "mobile") {
+    await page.getByRole("button", { name: /The product promise/ }).click();
+    return;
+  }
+  const map = await page.locator(".excalidraw-map").boundingBox();
+  if (!map) throw new Error("Editable Map did not expose a canvas boundary");
+  await page.mouse.click(map.x + 407, map.y + 136);
+}
+
 async function pressTabUntil(page: Page, label: string, limit = 30) {
   for (let index = 0; index < limit; index += 1) {
     await page.keyboard.press("Tab");
@@ -41,6 +58,7 @@ test("reset fixture is calm and responsive", async ({ page }) => {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/");
     await expect(page.getByRole("button", { name: "Approve brief" }).first()).toBeVisible();
+    await expectMapReady(page, viewport);
     await expectScreen(page, `${viewport.name}-reset-map`);
     await page.getByRole("button", { name: /sources$/ }).click();
     await expectScreen(page, `${viewport.name}-reset-sources`);
@@ -53,6 +71,29 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   }
 
   await expect(page.getByRole("button", { name: /sources$/ })).toBeFocused();
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto("/");
+  await expectMapReady(page, viewports[0]);
+  const map = await page.locator(".excalidraw-map").boundingBox();
+  if (!map) throw new Error("Editable Map did not expose a canvas boundary");
+  await page.mouse.dblclick(map.x + 407, map.y + 136);
+  const mapTextEditor = page.locator('[data-type="wysiwyg"]');
+  await expect(mapTextEditor).toBeVisible();
+  await mapTextEditor.fill("The product promise revised");
+  await page.keyboard.press("Escape");
+  await expect.poll(async () => (await (await page.request.get("/api/workshop")).json()).mapNodes.find((node: { id: string }) => node.id === "promise")?.title).toBe("The product promise revised");
+  await page.getByRole("button", { name: "Undo" }).click();
+  await expect.poll(async () => (await (await page.request.get("/api/workshop")).json()).mapNodes.find((node: { id: string }) => node.id === "promise")?.title).toBe("The product promise");
+  await page.waitForTimeout(500);
+  await page.mouse.move(map.x + 407, map.y + 136);
+  await page.mouse.down();
+  await page.mouse.move(map.x + 457, map.y + 166, { steps: 8 });
+  await page.mouse.up();
+  await expect.poll(async () => (await (await page.request.get("/api/workshop")).json()).mapNodes.find((node: { id: string }) => node.id === "promise")?.x).toBeGreaterThan(11);
+  await page.getByRole("button", { name: "Undo" }).click();
+  await expect.poll(async () => (await (await page.request.get("/api/workshop")).json()).mapNodes.find((node: { id: string }) => node.id === "promise")?.x).toBe(11);
+
+  await page.getByRole("button", { name: /sources$/ }).focus();
   await pressTabUntil(page, "Approve brief");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Turn raw thinking into finished work");
@@ -85,6 +126,7 @@ test.describe("completed Workshop judge path", () => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await page.goto("/");
       await expect(page.getByRole("region", { name: "Map" })).toBeVisible();
+      await expectMapReady(page, viewport);
       await expectPrimaryActions(page, 1);
       await expectScreen(page, `${viewport.name}-map`);
 
@@ -95,7 +137,8 @@ test.describe("completed Workshop judge path", () => {
       await closeDialog(page, "Sources");
       await expect(sourceTrigger).toBeFocused();
 
-      await page.getByRole("button", { name: /The product promise/ }).click();
+      await selectProductPromise(page, viewport);
+      await expect(page.getByRole("button", { name: "Show source" })).toBeVisible();
       await page.getByRole("button", { name: "Show source" }).click();
       await expectPrimaryActions(page, 1);
       await expectScreen(page, `${viewport.name}-evidence`);

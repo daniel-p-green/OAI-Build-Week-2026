@@ -122,16 +122,14 @@ Open the last active Workshop or the sanitized demo Workshop immediately. A comp
 
 The Map is the product's hero screen and opens by default after a task is linked.
 
-- Subtle 24px dot grid at low contrast.
-- Map cards use the verified Card/Map card container: 24px corners, 0.5px 15% ink outline, and the restrained 0 4px 16px 5% shadow. Their custom geometry and evidence-state content remain WorkshopLM domain rendering.
-- A 3px left edge communicates `Grounded`, `Derived`, `Creative`, or `Unverified`.
-- Each claim card shows a short locator chip such as `Meeting · 12:41` or `Brief.pdf · p. 7`.
-- Evidence connections are thin curved lines; selecting a claim highlights its full claim→chunk→source path in action blue and mutes unrelated content.
-- Clusters use labeled background regions rather than giant container cards.
-- Priority appears through scale and placement, not rainbow colors.
-- Source anchors occupy the left region, grounded claims the center, and derived implications/decisions the right. If spatial position does not communicate this meaning, the Map has failed.
-- The demo editor is constrained to moving a node, editing a claim, grouping claims, and tracing a claim. The generic Excalidraw surface is removed from the judge path.
-- The approval action reads `Approve as brief`; an approval summary shows source and evidence coverage before the action and becomes a named approval receipt afterward.
+- A quiet white Excalidraw canvas is the interaction engine. Its menus, toolbar, export controls, context menu, zoom controls, and other native product chrome stay hidden; the Apps in ChatGPT primitives remain the only WorkshopLM chrome.
+- Sources occupy a stable left region. Semantic nodes occupy the open work field, with grounded, derived, and creative states distinguished by restrained green, orange, and blue treatments.
+- Thin arrows expose direct source→node evidence and semantic node→node relationships. The canonical graph and durable locators remain the truth; Excalidraw owns presentation geometry only.
+- Users drag and resize semantic nodes directly and double-click their bound text to edit it. Position, size, and title changes persist through typed graph operations, invalidate approved downstream work, and can be restored through WorkshopLM's `Undo` action.
+- Selecting a node opens one contextual claim inspector. `Show source` opens the exact source excerpt and locator, and closing the sheet returns to the selected Map context.
+- Source nodes are reference anchors rather than freeform content. Selecting one opens its source trace instead of introducing a second inspector or navigation system.
+- Desktop and compact widths render the spatial canvas. Mobile renders a calm review outline over the same semantic graph; it does not pretend to be a miniature whiteboard.
+- The approval action reads `Approve brief`; after approval, the same position becomes `View brief`.
 
 Signature motion: when new ChatGPT turns synchronize, small ink pulses enter from the host strip, pause as candidate notes, then settle into a cluster. The movement lasts under 700ms and respects reduced motion.
 

@@ -1,31 +1,221 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { convertToExcalidrawElements } from "@excalidraw/excalidraw";
 import { useEffect, useMemo, useRef } from "react";
 
 const Excalidraw = dynamic(() => import("@excalidraw/excalidraw").then((module) => module.Excalidraw), { ssr: false });
 
-type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; x: number; y: number };
-type CanvasNodePatch = Pick<MapNode, "id" | "title" | "x" | "y">;
-type SceneElement = { id: string; x: number; y: number; text?: string };
+const SCENE_WIDTH = 1000;
+const SCENE_HEIGHT = 650;
+const NODE_OFFSET_X = 205;
+const NODE_SCALE_X = 7.45;
 
-export function ExcalidrawMap({ nodes, editable, onSync }: { nodes: MapNode[]; editable: boolean; onSync: (nodes: CanvasNodePatch[]) => void }) {
-  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null); const lastSent = useRef(""); useEffect(() => () => { if (timeout.current) clearTimeout(timeout.current); }, []);
-  const elements = useMemo(() => convertToExcalidrawElements(nodes.flatMap((node) => {
-    const backgroundColor = node.kind === "grounded" ? "#e4f2eb" : node.kind === "derived" ? "#f7edd8" : "#eee8fa";
-    return [
-      { type: "rectangle" as const, id: `shape-${node.id}`, x: node.x * 10, y: node.y * 7, width: 210, height: 110, backgroundColor, strokeColor: "#171816", roughness: 1, locked: true },
-      { type: "text" as const, id: `label-${node.id}`, x: node.x * 10 + 14, y: node.y * 7 + 14, text: node.title, fontSize: 18, width: 182, height: 22 },
-      { type: "text" as const, id: `body-${node.id}`, x: node.x * 10 + 14, y: node.y * 7 + 45, text: node.body.slice(0, 96), fontSize: 13, width: 182, height: 48, locked: true },
-    ];
-  })), [nodes]);
+export type ExcalidrawMapNode = {
+  id: string;
+  title: string;
+  body: string;
+  kind: "grounded" | "derived" | "creative";
+  locator: string;
+  sourceId?: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+};
 
-  const key = nodes.map((node) => `${node.id}:${node.title}:${node.x}:${node.y}`).join("|");
-  function onChange(scene: readonly SceneElement[]) {
-    if (!editable) return;
-    const changed = nodes.flatMap((node) => { const shape = scene.find((element) => element.id === `shape-${node.id}`); const label = scene.find((element) => element.id === `label-${node.id}`); const title = label?.text?.trim() || node.title; const x = shape ? shape.x / 10 : node.x; const y = shape ? shape.y / 7 : node.y; return title !== node.title || x !== node.x || y !== node.y ? [{ id: node.id, title, x, y }] : []; }); const signature = JSON.stringify(changed); if (!changed.length || signature === lastSent.current) return;
-    if (timeout.current) clearTimeout(timeout.current); timeout.current = setTimeout(() => { lastSent.current = signature; onSync(changed); }, 600);
+type Source = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; claimCount: number };
+type MapEdge = { id: string; from: string; to: string; kind: string; label?: string };
+type CanvasNodePatch = Pick<ExcalidrawMapNode, "id" | "title" | "x" | "y" | "width" | "height">;
+type SceneElement = {
+  id: string;
+  type: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  text?: string;
+  containerId?: string | null;
+  isDeleted?: boolean;
+  customData?: { nodeId?: string; sourceId?: string };
+};
+type SceneAppState = { selectedElementIds: Record<string, boolean> };
+
+const shapeId = (nodeId: string) => `map-node-${nodeId}`;
+const sourceShapeId = (sourceId: string) => `map-source-${sourceId}`;
+const toSceneX = (value: number) => NODE_OFFSET_X + value * NODE_SCALE_X;
+const toSceneY = (value: number) => value * (SCENE_HEIGHT / 100);
+const fromSceneX = (value: number) => (value - NODE_OFFSET_X) / NODE_SCALE_X;
+const fromSceneY = (value: number) => value / (SCENE_HEIGHT / 100);
+const toSceneWidth = (value: number) => value * (SCENE_WIDTH / 100);
+const fromSceneWidth = (value: number) => value / (SCENE_WIDTH / 100);
+const rounded = (value: number) => Math.round(value * 10) / 10;
+
+function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: MapEdge[]) {
+  const activeSourceIds = new Set(sources.map((source) => source.id));
+  const nodeIds = new Set(nodes.map((node) => node.id));
+  const sourceGeometry = new Map(sources.map((source, index) => [source.id, { x: 24, y: 70 + index * 180, width: 174, height: 108 }]));
+  const nodeGeometry = new Map(nodes.map((node) => [node.id, { x: toSceneX(node.x), y: toSceneY(node.y), width: toSceneWidth(node.width), height: toSceneY(node.height) }]));
+  const sourceShapes = sources.map((source) => {
+    const geometry = sourceGeometry.get(source.id)!;
+    return {
+      type: "rectangle" as const,
+      id: sourceShapeId(source.id),
+      ...geometry,
+      label: { text: `${source.type}  ${source.title}\n${source.claimCount} claims`, fontSize: 12, fontFamily: 2 as const, textAlign: "left" as const },
+      customData: { sourceId: source.id },
+      backgroundColor: "#f3f3f3",
+      strokeColor: "#b4b4b4",
+      strokeWidth: 1,
+      fillStyle: "solid" as const,
+      roughness: 0,
+      roundness: { type: 3 as const },
+    };
+  });
+  const nodeShapes = nodes.map((node) => ({
+    type: "rectangle" as const,
+    id: shapeId(node.id),
+    x: toSceneX(node.x),
+    y: toSceneY(node.y),
+    width: toSceneWidth(node.width),
+    height: toSceneY(node.height),
+    label: { text: node.title, fontSize: 17, fontFamily: 2 as const, textAlign: "left" as const, verticalAlign: "middle" as const },
+    customData: { nodeId: node.id },
+    backgroundColor: node.kind === "grounded" ? "#e8f7ee" : node.kind === "derived" ? "#fff1e8" : "#eaf3ff",
+    strokeColor: node.kind === "grounded" ? "#008635" : node.kind === "derived" ? "#e25507" : "#0285ff",
+    strokeWidth: 1.5,
+    fillStyle: "solid" as const,
+    roughness: 0,
+    roundness: { type: 3 as const },
+  }));
+
+  const sourceLinks = nodes.flatMap((node, index) => {
+    const sourceId = node.sourceId ?? (node.kind === "grounded" ? sources[index % Math.max(1, sources.length)]?.id : undefined);
+    if (!sourceId || !activeSourceIds.has(sourceId)) return [];
+    const start = sourceGeometry.get(sourceId);
+    const end = nodeGeometry.get(node.id);
+    if (!start || !end) return [];
+    const x = start.x + start.width;
+    const y = start.y + start.height / 2;
+    return [{
+      type: "arrow" as const,
+      id: `source-edge-${sourceId}-${node.id}`,
+      x,
+      y,
+      width: end.x - x,
+      height: end.y + end.height / 2 - y,
+      start: { id: sourceShapeId(sourceId) },
+      end: { id: shapeId(node.id) },
+      strokeColor: "#b4b4b4",
+      strokeWidth: 1.2,
+      roughness: 0,
+      endArrowhead: "arrow" as const,
+      locked: true,
+    }];
+  });
+  const graphLinks = edges.flatMap((edge) => {
+    if (!nodeIds.has(edge.from) || !nodeIds.has(edge.to)) return [];
+    const start = nodeGeometry.get(edge.from);
+    const end = nodeGeometry.get(edge.to);
+    if (!start || !end) return [];
+    const x = start.x + start.width / 2;
+    const y = start.y + start.height / 2;
+    return [{
+      type: "arrow" as const,
+      id: `graph-edge-${edge.id}`,
+      x,
+      y,
+      width: end.x + end.width / 2 - x,
+      height: end.y + end.height / 2 - y,
+      start: { id: shapeId(edge.from) },
+      end: { id: shapeId(edge.to) },
+      label: edge.label ? { text: edge.label, fontSize: 12, fontFamily: 2 as const } : undefined,
+      strokeColor: edge.kind === "contradicts" ? "#e02e2a" : "#8f8f8f",
+      strokeWidth: 1.5,
+      roughness: 0,
+      endArrowhead: "arrow" as const,
+      locked: true,
+    }];
+  });
+
+  return [...sourceShapes, ...nodeShapes, ...sourceLinks, ...graphLinks];
+}
+
+function patchesFromScene(nodes: ExcalidrawMapNode[], scene: readonly SceneElement[]): CanvasNodePatch[] {
+  return nodes.flatMap((node) => {
+    const shape = scene.find((element) => element.id === shapeId(node.id) && !element.isDeleted);
+    if (!shape) return [];
+    const label = scene.find((element) => element.containerId === shape.id && element.type === "text" && !element.isDeleted);
+    const patch = {
+      id: node.id,
+      title: label?.text?.trim() || node.title,
+      x: rounded(fromSceneX(shape.x)),
+      y: rounded(fromSceneY(shape.y)),
+      width: rounded(fromSceneWidth(shape.width)),
+      height: rounded(fromSceneY(shape.height)),
+    };
+    const changed = patch.title !== node.title || patch.x !== node.x || patch.y !== node.y || patch.width !== node.width || patch.height !== node.height;
+    return changed ? [patch] : [];
+  });
+}
+
+export function ExcalidrawMap({ nodes, sources, edges, selectedNodeId, onSelectNode, onShowSource, onSync }: {
+  nodes: ExcalidrawMapNode[];
+  sources: Source[];
+  edges: MapEdge[];
+  selectedNodeId?: string;
+  onSelectNode: (id: string) => void;
+  onShowSource: (id: string) => void;
+  onSync: (nodes: CanvasNodePatch[]) => void;
+}) {
+  const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastSent = useRef("");
+  const lastSelection = useRef("");
+  const skeleton = useMemo(() => sceneSkeleton(nodes, sources, edges), [nodes, sources, edges]);
+  const sceneKey = nodes.map((node) => `${node.id}:${node.title}:${node.x}:${node.y}:${node.width}:${node.height}`).join("|");
+  const initialData = useMemo(() => async () => {
+    const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
+    return { elements: convertToExcalidrawElements(skeleton, { regenerateIds: false }), appState: { viewBackgroundColor: "#ffffff", selectedElementIds: selectedNodeId ? { [shapeId(selectedNodeId)]: true } : {} } };
+  }, [skeleton, selectedNodeId]);
+
+  useEffect(() => () => { if (timeout.current) clearTimeout(timeout.current); }, []);
+  useEffect(() => { lastSent.current = ""; }, [sceneKey]);
+
+  function onChange(scene: readonly SceneElement[], appState: SceneAppState) {
+    const selectedIds = Object.keys(appState.selectedElementIds).filter((id) => appState.selectedElementIds[id]);
+    const selected = selectedIds.map((id) => scene.find((element) => element.id === id)).find(Boolean);
+    const container = selected?.containerId ? scene.find((element) => element.id === selected.containerId) : selected;
+    const nextNodeId = container?.customData?.nodeId ?? "";
+    const nextSourceId = container?.customData?.sourceId ?? "";
+    const selectionSignature = `${nextNodeId}:${nextSourceId}`;
+    if (selectionSignature !== lastSelection.current) {
+      lastSelection.current = selectionSignature;
+      if (nextSourceId) onShowSource(nextSourceId);
+      else onSelectNode(nextNodeId);
+    }
+
+    const changed = patchesFromScene(nodes, scene);
+    const signature = JSON.stringify(changed);
+    if (!changed.length || signature === lastSent.current) return;
+    if (timeout.current) clearTimeout(timeout.current);
+    timeout.current = setTimeout(() => {
+      lastSent.current = signature;
+      onSync(changed);
+    }, 500);
   }
-  return <div className="excalidraw-map" aria-label="Excalidraw Map"><Excalidraw key={key} initialData={{ elements, appState: { viewBackgroundColor: "#f4f2ec" } }} viewModeEnabled={!editable} onChange={onChange} /></div>;
+
+  return <div className="semantic-map" data-domain-ui="excalidraw-map">
+    <div className="excalidraw-map" aria-label="Editable semantic Map" onContextMenu={(event) => event.preventDefault()}>
+      <Excalidraw
+        key={sceneKey}
+        initialData={initialData}
+        onChange={onChange}
+        autoFocus={false}
+        handleKeyboardGlobally={false}
+        UIOptions={{ canvasActions: { changeViewBackgroundColor: false, clearCanvas: false, export: false, loadScene: false, saveToActiveFile: false, toggleTheme: false, saveAsImage: false }, tools: { image: false } }}
+      />
+    </div>
+    <div className="map-mobile-outline" aria-label="Map ideas">
+      {nodes.map((node) => <button type="button" key={node.id} className={`map-outline-node ${selectedNodeId === node.id ? "selected" : ""}`} onClick={() => onSelectNode(selectedNodeId === node.id ? "" : node.id)}><span>{node.kind === "grounded" ? "Verified" : node.kind === "derived" ? "Derived" : "Idea"}</span><strong>{node.title}</strong><small>{node.locator}</small></button>)}
+    </div>
+  </div>;
 }

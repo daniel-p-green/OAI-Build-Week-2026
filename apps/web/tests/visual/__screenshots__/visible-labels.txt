@@ -10,24 +10,18 @@ Back to Outputs
 Build Week presentation
 Build Week presentation2 cited claims
 Create video
-DerivedVoice capture fallbackUse a capture-only control when durable native voice linkage is not proven.Goal · capture
 Edit
 Evidence
 Evidence infographic
 Evidence infographic2 cited claims
-IdeaVisual behaviorEvidence first becomes an editable production system, not a static report.Design · Map
 Image set
 Outputs
-PDFBuild Week brief3 claims
 Save
 Show source
 Storyboard
 Success looks like
-TXTRaw voice brainstorm5 claims
 Turn raw thinking into finished work without losing the trail back to source material.
-VerifiedJudge proofShow one continuous capture → map → brief → storyboard → rendered video seam.Build notes · §2
-VerifiedThe product promiseTurn raw thinking into finished work without losing the trail back to source material.Meeting · 12:41
+Undo
 View brief
 View outputs
 View storyboard
-WEBWorkshopLM direction2 claims

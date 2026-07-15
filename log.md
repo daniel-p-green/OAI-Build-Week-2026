@@ -3468,3 +3468,47 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Activate WorkshopLM from the desktop Skills surface or a clean plugin-only profile and record that result.
 - Test the available ChatGPT Work surface explicitly; do not infer parity from Codex CLI.
 - Run one interactive, intentionally bounded write confirmation without changing the sanitized fixture, or keep the current read-only demo doorway if write-tool proof adds no judge value.
+
+---
+
+## 2026-07-15 01:08 CT — Judge path restored as a real editable semantic Excalidraw Map
+
+**Area:** Shape / semantic whiteboard / source trace / responsive product UI
+
+### Changed
+
+- Corrected an evidence contradiction: `GOAL.md` called the Map an editable Excalidraw surface, but the current judge path had replaced it with static HTML cards and SVG lines. Restored Excalidraw as the actual desktop/compact interaction engine without restoring its menus, toolbar, export controls, or other competing product chrome.
+- Projected active Sources, semantic nodes, direct source evidence, and graph relationships into one constrained canvas. Sources keep stable left-side geography; grounded, derived, and creative semantic nodes use restrained evidence-state treatments.
+- Persisted direct node movement, resize, and bound-text edits through the existing typed semantic graph history. WorkshopLM `Undo` now restores those canvas operations and downstream Brief/Output staleness remains enforced.
+- Kept exact source trace contextual: selecting a semantic node opens one claim inspector; `Show source` opens the excerpt and locator in the official side sheet. Mobile uses a review outline over the same graph instead of a fake miniature canvas.
+- Reconciled `DESIGN.md` and `GOAL.md` with the implemented boundary and refreshed the affected three-width screenshot baselines once.
+
+### Contract change
+
+- **Affected contract:** `WorkshopMapNode` and `CanvasNodePatch` in `apps/worker/src/workshop-service.ts`.
+- **Exact change:** Added required numeric `width` and `height` fields, with durable backfill defaults of `24 × 18` for persisted v1 state. `syncMapCanvas` now validates, rounds, stores, and undoes size alongside title and position.
+- **Reason:** Excalidraw resize would otherwise appear editable but silently revert after the next state refresh, violating the locked semantic-whiteboard promise.
+- **Blast radius:** Local persisted Workshop JSON, the web API request shape, Map projection, worker synchronization, and worker/browser tests. No public plugin tool schema, source format, artifact format, or provider adapter changed.
+
+### Verified
+
+- Worker tests passed 38/38. The canvas test proves title, normalized position, and normalized size persist through typed history; Undo restores the original semantic node and dimensions.
+- The production Next build passed. The page remains prerenderable because Excalidraw and its converter load only in the browser.
+- The full production-route visual suite passed 10/10 unchanged after the one-time expected baseline refresh. It covers reset and completed Workshops at 1200×800, 1024×768, and 390×844; source and evidence sheets; official component computed states; plain-language stability; contrast; reduced motion; and 200% logical zoom.
+- The browser interaction test directly double-clicked bound Excalidraw text, persisted `The product promise revised`, and restored the original title through WorkshopLM Undo. It then dragged the same node, proved the persisted normalized x-position changed, and restored `x: 11` through Undo.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages after removing three duplicate generated `.next/types/* 2.ts` cache files and rerunning from clean generated state. The initial failure and cache correction are retained here rather than hidden.
+- `pnpm demo:e2e` passed the recorded Capture → Map → Brief → Outputs → Storyboard → Video seam with all six gates true, two traced rendered outputs, six image-panel plans, five storyboard panels, and a rendered MP4 artifact.
+- `pnpm demo:live` passed no-spend preflight with `paidCallsMade: false`; no provider call or credit spend occurred in this increment.
+- The first `pnpm submission:verify` correctly failed because the acceptance reset had removed its derived manifest. `pnpm submission:build` rebuilt 12 current assets with explicit provider limitations, and the subsequent verification returned `valid: true`, `stale: false`, and `tampered: false`.
+
+### Decisions
+
+- Excalidraw is the Map interaction engine, not a second product shell. WorkshopLM owns approval, Undo, source trace, and persistence; Apps in ChatGPT primitives own all surrounding chrome.
+- A mobile outline is the honest responsive boundary for review and approval. Spatial editing remains desktop/compact work.
+- The editable Excalidraw and typed-Undo claims are now supported. Live GPT-5.6 generation, provider image bytes, provider narration, and provider-backed voice remain open and are not upgraded by this work.
+
+### Open items
+
+- Complete the five independent first-time orientation reviews and repair any critical finding before final recording.
+- Run and inspect the spend-gated live GPT-5.6, GPT Image 2, Realtime microphone, and TTS paths before changing provider claims.
+- Codex Session ID: unavailable on this surface; not inferred.

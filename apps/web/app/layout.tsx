@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import "@excalidraw/excalidraw/index.css";
 import "@workshoplm/ui/styles.css";
 import "./globals.css";
 
