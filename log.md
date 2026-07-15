@@ -5503,3 +5503,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Manual local asset paths retain legacy behavior; selected remote website assets use the stronger verified asset contract.
 - Own-material uncoached timing, provider-backed voice/Map/Image/Speech evidence, and the final public video remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 16:10 CT — Meta-demo deck becomes a real professional narrative
+
+**Area:** Product / Deck planner / Presentation rendering / Dogfood zero
+
+### Changed
+
+- Rejected the recorded acceptance deck even though it passed generation tests: its source contained one sentence, so the output was only a cover and a repeated claim rather than a credible professional story.
+- Rebuilt the sanitized raw-brainstorm fixture around six grounded paragraphs and made the daily acceptance gate require four distinct narrative beats and all four content layouts: outcome, problem, traceable proof, and recommendation.
+- Made claim selection role-first when role-matched evidence exists, with explicit editorial priority for the professional outcome and exact-source proof. Build Week title overlap can no longer replace the customer promise with event metadata.
+- Preserved useful supporting clauses when a long source sentence becomes a clipped slide headline, removed leftover leading punctuation, and sentence-cased copy after a true sentence break.
+- Made recommendation-slide foregrounds contrast-aware in both HTML and editable PowerPoint so light Accent colors use dark text and dark Accents use light text.
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. Worker tests passed 81 cases and production-renderer tests passed six cases.
+- `pnpm demo:e2e` passed all six recorded-fixture gates and now fails unless the deck contains four distinct grounded claims, the statement/split/proof/recommendation sequence, and the exact professional narrative beats.
+- The generated PowerPoint contains five slide XML files. LibreOffice converted it to a five-page 960×540 PDF; the contact sheet showed no clipping or overflow and retained the four quiet source footers plus the proof card.
+- The HTML contact sheet is preserved at `research/screenshots/workshoplm/meta-demo-deck-send-it-pass-1280x3611.png` with SHA-256 `e28c137e38b2eb90e099c177c30db65a6f88aea5f75b50a8886dbdbbee07349f`. The independent LibreOffice/PDF render is preserved at `research/screenshots/workshoplm/meta-demo-pptx-libreoffice-pass-1280x4500.png` with SHA-256 `8fe1a3e7438faf5de570be548e62d537f2d10256c444cbe0fddc541faea2860f`.
+- The fixture-content change intentionally altered Output previews. After visual review, the baselines were refreshed; a clean production-browser run then passed all 25 tests across desktop, compact, mobile, focus, contrast, reduced-motion, state, and real-video paths.
+- `pnpm submission:build` produced the truthful 17-asset `partial` set with the same four provider limitations; `pnpm submission:verify` returned valid, not stale, and not tampered. `git diff --check` passed.
+
+### Decisions
+
+- Passing a renderer test is not evidence that a deck tells a useful story. Dogfood fixtures must contain enough real narrative pressure to expose editorial failures.
+- Claim-role fit outranks incidental title overlap. The professional outcome leads; event or submission context is supporting evidence, never the product promise.
+- This is an internal send-it quality milestone, not a human `Send` decision. The external cold-review gate remains open.
+
+### Open items
+
+- Run the first provider-backed Map and six-panel GPT Image 2 batch, then grade each panel against whether it belongs in the deck.
+- Put the reproducible external-use deck in front of its intended professional audience and record `Send` or the first required revision.
+- Repeat the clean-start path in the Codex in-app browser when callable.
+- Own-material uncoached timing, provider-backed voice/Speech evidence, final founder recording, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -1,4 +1,4 @@
-import { mkdir, rm, stat } from "node:fs/promises";
+import { mkdir, readFile, rm, stat } from "node:fs/promises";
 import { resolve } from "node:path";
 import { deriveGates, assertEligible, Storyboard } from "../packages/domain/src/index.ts";
 import { normalizeSource } from "../spikes/b-grounding/src/normalize.ts";
@@ -31,13 +31,30 @@ if (!renderDeck(brief).includes("Judges see") || !renderInfographic(brief).inclu
 const db = openLocalDatabase(resolve(root, "workshoplm.sqlite")); migrate(db);
 db.prepare("INSERT INTO workshop VALUES (?, ?, ?)").run("workshop-build-week", "WorkshopLM Build Week", new Date().toISOString());
 
-await ingestSource({ title: "Recorded fixture brainstorm", origin: "Sanitized fixture", text: "Judges need a traced deck, infographic, image batch, storyboard, and narrated video." }, root);
+await ingestSource({ title: "Recorded fixture brainstorm", origin: "Sanitized fixture", text: [
+  "WorkshopLM turns messy meetings into a deck professionals can defend, with grounded source documents and brand rules preserving their standards.",
+  "Producing a client-ready deliverable is slow and fragmented, because understanding, design, and production live in disconnected tools.",
+  "Every factual claim retains an exact source locator, so evidence stays inspectable from the editable Map through the final presentation and Storyboard.",
+  "Teams should use two deliberate sign-offs: approve the grounded Brief before creating Outputs, then approve the Storyboard before rendering Video.",
+  "The OpenAI Build Week submission uses WorkshopLM to create its own presentation, image set, Storyboard, and demo Video from this raw brainstorm.",
+  "The product promise is faster delivery without weaker work: one source-traceable package that remains editable in the tools teams already use.",
+].join("\n\n") }, root);
 applyWorkshopAction("approveBrief", root);
 lockManualStyle({}, root);
 createImageBatch(root);
 const deckState = await generateOutput("deck", root);
 const infographicState = await generateOutput("infographic", root);
 if (infographicState.outputs.length !== 2 || deckState.outputs[0]?.type !== "deck" || infographicState.outputs[1]?.type !== "infographic") throw new Error("persisted artifact outputs were not created");
+const deckOutput = deckState.outputs.find((output) => output.type === "deck");
+if (!deckOutput || deckOutput.claimIds.length !== 4) throw new Error("recorded fixture did not produce the four-part professional deck narrative");
+const deckHtml = await readFile(resolve(root, deckOutput.relativePath), "utf8");
+for (const layout of ["statement", "split", "proof", "recommendation"]) if (!deckHtml.includes(`class="slide ${layout}`)) throw new Error(`recorded fixture deck is missing the ${layout} layout`);
+for (const narrativeBeat of [
+  "WorkshopLM turns messy meetings into a deck professionals can defend",
+  "Producing a client-ready deliverable is slow and fragmented",
+  "Every factual claim retains an exact source locator",
+  "Teams should use two deliberate sign-offs",
+]) if (!deckHtml.includes(narrativeBeat)) throw new Error(`recorded fixture deck is missing its narrative beat: ${narrativeBeat}`);
 const assetPlan = generateAssetPlan(root).assetPlan;
 if (!assetPlan || assetPlan.stale) throw new Error("approved inputs did not produce a current asset plan");
 const generatedStoryboard = generateStoryboard(root).storyboard;

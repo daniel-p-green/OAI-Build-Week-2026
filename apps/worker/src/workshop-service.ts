@@ -826,7 +826,8 @@ function deckCandidateScore(text: string, role: DeckRole, raw: string, sourcePri
   const topicOverlap = topicTerms.filter((term) => topicContext.toLowerCase().includes(term)).length;
   score += Math.min(16, topicOverlap * 8);
   if (topicTerms.length && !topicOverlap) score -= 12;
-  if (role === "proof" && /\bexact\s+source\b/i.test(text)) score += 4;
+  if (role === "statement" && /\b(professional|client|leadership|defend|deliverable|outcome|promise)\b/i.test(text)) score += 8;
+  if (role === "proof" && /\bexact\s+source\b/i.test(text)) score += 12;
   if (role === "proof" && /\b\d[\d,+.%]*\b/.test(text)) score += 8;
   if (role === "proof" && sourceType === "WEB") score += 12;
   if (role === "recommendation" && /\b(start|should|must|recommend|next|begin|adopt|prioriti[sz]e)\b/i.test(text)) score += 10;
@@ -845,10 +846,12 @@ function selectDeckClaims(state: WorkshopState) {
   });
   const used = new Set<string>();
   return deckRoles.flatMap((role) => {
-    const ranked = candidates
+    const scored = candidates
       .filter((candidate) => !used.has(candidate.claim.id))
       .map((candidate) => ({ ...candidate, roleMatch: roleSignals[role].test(candidate.text), score: deckCandidateScore(candidate.text, role, candidate.raw, candidate.sourcePriority, topicTerms, candidate.topicContext, candidate.sourceType) }))
-      .filter((candidate) => Number.isFinite(candidate.score))
+      .filter((candidate) => Number.isFinite(candidate.score));
+    const roleMatched = scored.filter((candidate) => candidate.roleMatch);
+    const ranked = (roleMatched.length ? roleMatched : scored)
       .sort((left, right) => right.score - left.score || Number(right.roleMatch) - Number(left.roleMatch) || left.order - right.order);
     const selected = ranked[0];
     if (!selected) return [];
@@ -866,9 +869,12 @@ function deckHeading(text: string, role: DeckRole) {
 }
 function deckBody(text: string, heading: string) {
   const headingPrefix = heading.replace(/…$/, "").trim();
-  if (heading.endsWith("…") && text.toLowerCase().startsWith(headingPrefix.toLowerCase())) return "";
+  if (heading.endsWith("…") && text.toLowerCase().startsWith(headingPrefix.toLowerCase())) return text.slice(headingPrefix.length).replace(/^\s*[,;:—–-]\s*/, "").trim();
   if (!text.toLowerCase().startsWith(heading.toLowerCase())) return text;
-  return text.slice(heading.length).replace(/^\s*[:—–-]\s*/, "").trim();
+  const remainder = text.slice(heading.length);
+  const sentenceBreak = /^\s*[:;—–-]\s*/.test(remainder);
+  const clean = remainder.replace(/^\s*[,;:—–-]\s*/, "").trim();
+  return sentenceBreak ? `${clean.charAt(0).toUpperCase()}${clean.slice(1)}` : clean;
 }
 function displaySourceTitle(title: string) {
   const clean = title.replace(/\.(?:pdf|docx?|pptx?|txt)$/i, "").trim();

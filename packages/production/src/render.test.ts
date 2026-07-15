@@ -27,6 +27,11 @@ describe("production renderers", () => {
     expect(deck).not.toContain('<p class="body"></p>');
     expect(deck).toContain("02 · Core insight");
   });
+  it("chooses readable foreground text for a light brand accent", () => {
+    const deck = renderDeck({ ...brief, style: { ...brief.style, accent: "#FF97E2", ink: "#171816", paper: "#FFFFFF" } });
+    expect(deck).toContain("--accent-foreground:#000000");
+    expect(deck).toContain("color:var(--accent-foreground)");
+  });
   it("writes an inspectable preview and an editable PowerPoint deck", async () => {
     const root = await mkdtemp(join(tmpdir(), "workshoplm-production-"));
     const artifact = await writeRenderedArtifact(root, "out-1", "deck", brief);
