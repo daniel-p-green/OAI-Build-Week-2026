@@ -4374,3 +4374,30 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Capture an actual Codex write invocation only when a safe isolated fixture is active. Do not mutate the main fixture merely to strengthen a claim.
 - Multi-Workshop creation and switching still need completion-audit review; provider media, Realtime proof, founder footage, final video, `/feedback`, and submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 06:07 CT — Finish sequence captured for later reconciliation
+
+**Area:** Planning / submission readiness
+
+### Changed
+
+- Preserved the founder-provided six-phase finish sequence in `docs/superpowers/plans/2026-07-15-submission-sequence-draft.md`.
+- Marked it explicitly as a non-binding reference so it does not silently replace the active objective or execution plan while the implementation audit is still in progress.
+- Retained phase exit conditions and the two standing evidence rules, while separating the future reconciliation questions from the checklist itself.
+
+### Verified
+
+- The captured document includes all six proposed phases: live-provider proof, live-asset integration, recording iterations, the meta-demo submission package, cold submission verification, and post-submission case-study conversion.
+- The draft retains the exact evidence bar: acceptance gates every merge and no checkbox moves without proof of the exact claim.
+
+### Decisions
+
+- Phase 1 needs a later ownership pass because it currently mixes true founder-only inputs—spend authorization, founder footage, and `/feedback` access—with benchmark, integration, and verification work that the primary integrator should execute autonomously once inputs exist.
+- `GOAL.md` and `PLAN-2026-07-13.md` remain authoritative until that reconciliation is performed deliberately.
+
+### Open items
+
+- Revisit this sequence after the current implementation audit, update it from then-current evidence, assign ownership, and promote only the reconciled version into the active goal.
+- Codex Session ID: unavailable on this surface; not inferred.
