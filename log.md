@@ -3327,3 +3327,41 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Generate and inspect the provider-backed GPT Image 2 set before closing the visual Outputs-gallery item.
 - Conduct five independent first-time orientation reviews and repair any critical navigation failure before final recording.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 00:15 CT — Submission became a traced, self-verifying Output set
+
+**Area:** Meta-demo / domain contract / evidence integrity
+
+### Changed
+
+- Added a first-class submission Output-set schema covering Devpost copy, README narrative, presentation, infographic, image manifest, thumbnails, Storyboard, narration, Video, evidence, source locators, file hashes, and the exact approved input versions.
+- Added a deterministic package builder that refuses to run without a current approved Brief and Style, current output plan and image set, approved current Storyboard, current presentation and infographic, and rendered local Video.
+- Added an input fingerprint over active Sources, normalized chunks and claims, transcript, Map, Brief, Style, output plan, Storyboard, image set, narration, model-run provenance, Outputs, and Video state.
+- Added a verifier that independently detects missing or modified files, manifest status inflation, path escape, and later Workshop edits. Added `pnpm submission:build` and `pnpm submission:verify` as the repeatable operator path.
+- Extended the recorded acceptance fixture to retain its six-panel image plan so the submission package contains the complete planned Output surface even before paid media generation.
+
+### Verified
+
+- Domain tests passed 12/12, including required asset coverage, path safety, and the rule that a `ready` package cannot retain limitations.
+- Worker tests passed 37/37, including package gate rejection, a valid traced build, file-tamper detection, and dependency-fingerprint staleness after a Style edit.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages.
+- `pnpm demo:e2e` passed all six gates with two traced rendered Outputs, six planned image panels, five Storyboard panels, and the local Video artifact.
+- `pnpm submission:build` created a 12-asset package at `.workshoplm/acceptance/generated/submission-output-set-v1`; `pnpm submission:verify` returned `valid: true`, `stale: false`, `tampered: false`.
+- Inspected all three FFmpeg-derived 1280px thumbnails. They accurately show the approved Storyboard frames and visibly disclose the deterministic placeholder audio.
+- `ffprobe` verified the copied MP4 at 22.037 seconds and 1,202,306 bytes. The package manifest records the same Video SHA-256 as the accepted worker artifact.
+- `pnpm demo:live` passed the isolated preflight with `paidCallsMade: false`; no provider spend occurred in this increment.
+
+### Decisions
+
+- The Output set is deliberately `partial`, not `ready`: it records an imported brainstorm rather than a durable voice transcript, no live GPT-5.6 Map run, 0/6 provider-generated image panels, and deterministic placeholder tones rather than provider narration.
+- The broad GOAL item remains unchecked until the provider-backed assets and final public submission Video replace those fallbacks. A deterministic, honest package is progress evidence, not permission to claim the final meta-demo is complete.
+- Runtime packages remain inside the Workshop data root and are regenerated from the accepted fixture; the final sanitized package will be promoted to a judge-facing tracked location only after its provider evidence and public Video are final.
+
+### Open items
+
+- Run and inspect the authorized live GPT-5.6, GPT Image 2, and narration path before upgrading package status.
+- Replace the recorded fixture Video with the final under-three-minute meta-demo and rebuild the Output set from that approved state.
+- Complete the five first-time orientation reviews before final recording.
+- Codex Session ID: unavailable on this surface; not inferred.

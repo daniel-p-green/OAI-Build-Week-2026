@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ArtifactJson, Claim, DomainError, GraphOperation, SemanticGraph, appendGraphOperation, applyGraphOperation, applyStalePropagation, assertCommandEligible, assertEligible, collectStaleDependents, deriveGates, parseGraphState, serializeGraphState, undoGraphOperation, undoLatestGraphOperation } from "./index.js";
+import { ArtifactJson, Claim, DomainError, GraphOperation, SemanticGraph, SubmissionOutputSet, appendGraphOperation, applyGraphOperation, applyStalePropagation, assertCommandEligible, assertEligible, collectStaleDependents, deriveGates, parseGraphState, serializeGraphState, undoGraphOperation, undoLatestGraphOperation } from "./index.js";
 
 const now = "2026-07-13T12:00:00.000Z";
 const ids = { workshopId: "workshop-1", graphId: "graph-1", nodeA: "node-a", nodeB: "node-b", edge: "edge-1", claim: "claim-1", source: "source-1", chunk: "chunk-1", artifact: "artifact-1" };
@@ -55,5 +55,13 @@ describe("domain contracts", () => {
   });
   it("validates renderer-safe artifact provenance", () => {
     expect(ArtifactJson.parse({ schemaVersion: 1, artifactId: ids.artifact, versionId: "version-1", workshopId: ids.workshopId, outputType: "deck", title: "Deck", staleState: "current", createdAt: now, inputVersions: { graph: ids.graphId }, claimIds: [ids.claim], evidence: [{ sourceId: ids.source, chunkId: ids.chunk, snippet: "proof", snippetHash: "hash" }], renderer: { name: "html", version: "1", settings: {} }, files: [{ path: "deck.pdf", mimeType: "application/pdf", sha256: "a".repeat(64) }] }).outputType).toBe("deck");
+  });
+  it("requires a complete, path-safe submission Output set", () => {
+    const assets = ["devpost_description", "readme_narrative", "deck", "infographic", "image_manifest", "thumbnail", "storyboard", "narration", "video", "evidence"].map((type) => ({ type, relativePath: `${type}.md`, mimeType: "text/markdown", sha256: "a".repeat(64), byteCount: 12, claimIds: [ids.claim], sourceLocators: ["Fixture · chunk 01"], provenance: "source_trace" }));
+    const outputSet = { schemaVersion: 1, id: "submission-v1", workshopId: ids.workshopId, title: "WorkshopLM submission", version: 1, status: "partial", createdAt: now, inputFingerprint: "b".repeat(64), inputs: { graphRevision: 1, briefVersion: 1, styleVersion: 1, assetPlanVersion: 1, storyboardVersion: 1, imageBatchId: "images-v1", activeSourceIds: [ids.source], claimIds: [ids.claim], outputIds: [ids.artifact], videoState: "rendered" }, claimIds: [ids.claim], sourceLocators: ["Fixture · chunk 01"], limitations: ["Provider media is not present."], assets };
+    expect(SubmissionOutputSet.parse(outputSet).assets).toHaveLength(10);
+    expect(() => SubmissionOutputSet.parse({ ...outputSet, status: "ready" })).toThrow(/cannot retain limitations/);
+    expect(() => SubmissionOutputSet.parse({ ...outputSet, assets: assets.slice(1) })).toThrow(/requires devpost_description/);
+    expect(() => SubmissionOutputSet.parse({ ...outputSet, assets: assets.map((asset, index) => index === 0 ? { ...asset, relativePath: "../outside.md" } : asset) })).toThrow(/inside the package/);
   });
 });

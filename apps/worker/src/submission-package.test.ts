@@ -1,0 +1,59 @@
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, describe, expect, it } from "vitest";
+import { buildSubmissionOutputSet, verifySubmissionOutputSet } from "./submission-package.js";
+import { applyWorkshopAction, createImageBatch, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, lockManualStyle, setVideoState } from "./workshop-service.js";
+
+const roots: string[] = [];
+afterEach(async () => { await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true }))); });
+
+async function buildableWorkshop() {
+  const root = await mkdtemp(join(tmpdir(), "workshop-submission-"));
+  roots.push(root);
+  await ingestSource({ title: "Raw brainstorm", origin: "Sanitized fixture", text: "WorkshopLM turns raw thinking into a source-traceable presentation and approved video." }, root);
+  applyWorkshopAction("approveBrief", root);
+  lockManualStyle({}, root);
+  await generateOutput("deck", root);
+  await generateOutput("infographic", root);
+  generateAssetPlan(root);
+  generateStoryboard(root);
+  createImageBatch(root);
+  applyWorkshopAction("approveStoryboard", root);
+  await writeFile(join(root, "generated", "workshoplm-demo.mp4"), "deterministic-video");
+  setVideoState("rendered", root);
+  return root;
+}
+
+const fakeThumbnail = async (_videoPath: string, outputPath: string, second: number) => { await writeFile(outputPath, `png-at-${second.toFixed(2)}`); };
+
+describe("submission Output set", () => {
+  it("refuses to package work before the approval and render gates", async () => {
+    const root = await mkdtemp(join(tmpdir(), "workshop-submission-gate-"));
+    roots.push(root);
+    await expect(buildSubmissionOutputSet(root, { renderThumbnail: fakeThumbnail })).rejects.toThrow(/approved current brief/);
+  });
+
+  it("builds and verifies one honest traced package from the current Workshop", async () => {
+    const root = await buildableWorkshop();
+    const built = await buildSubmissionOutputSet(root, { renderThumbnail: fakeThumbnail });
+    expect(built.outputSet.status).toBe("partial");
+    expect(built.outputSet.limitations).toEqual(expect.arrayContaining([expect.stringContaining("no live GPT-5.6"), expect.stringContaining("0 of 6"), expect.stringContaining("placeholder tones")]));
+    expect(built.outputSet.assets.filter((asset) => asset.type === "thumbnail")).toHaveLength(3);
+    expect(built.outputSet.assets.map((asset) => asset.type)).toEqual(expect.arrayContaining(["devpost_description", "readme_narrative", "deck", "infographic", "image_manifest", "storyboard", "narration", "video", "evidence"]));
+    await expect(readFile(join(built.manifestPath, "..", "DEVPOST.md"), "utf8")).resolves.toContain("No live GPT-5.6 run is claimed");
+    await expect(verifySubmissionOutputSet(root, built.manifestPath)).resolves.toEqual({ valid: true, stale: false, tampered: false, issues: [] });
+  });
+
+  it("detects changed files and later Workshop edits independently", async () => {
+    const root = await buildableWorkshop();
+    const built = await buildSubmissionOutputSet(root, { renderThumbnail: fakeThumbnail });
+    const deck = built.outputSet.assets.find((asset) => asset.type === "deck")!;
+    await writeFile(join(built.manifestPath, "..", deck.relativePath), "altered");
+    await expect(verifySubmissionOutputSet(root, built.manifestPath)).resolves.toMatchObject({ valid: false, stale: false, tampered: true, issues: [expect.stringContaining("hash or size mismatch")] });
+
+    const rebuilt = await buildSubmissionOutputSet(root, { renderThumbnail: fakeThumbnail });
+    lockManualStyle({ accent: "#1155AA" }, root);
+    await expect(verifySubmissionOutputSet(root, rebuilt.manifestPath)).resolves.toMatchObject({ valid: false, stale: true, tampered: false, issues: [expect.stringContaining("inputs changed")] });
+  });
+});

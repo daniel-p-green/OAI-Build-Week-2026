@@ -329,3 +329,70 @@ export type ArtifactJson = z.infer<typeof ArtifactJson>;
 export const Output = z.object({ id: ArtifactId, workshopId: WorkshopId, type: OutputType, title: z.string().min(1), currentVersionId: VersionId.optional(), status: z.enum(["draft", "queued", "running", "succeeded", "failed", "partial", "cancelled"]), createdAt: z.string().datetime() }).strict();
 export const ArtifactVersion = z.object({ id: VersionId, artifactId: ArtifactId, artifact: ArtifactJson, staleState: StaleState, approvedAt: z.string().datetime().optional() }).strict();
 export const GenerationJob = z.object({ id: JobId, workshopId: WorkshopId, outputType: OutputType, inputVersionKey: z.string().min(1), state: z.enum(["queued", "running", "succeeded", "failed", "cancelled", "retrying"]), attempts: z.number().int().nonnegative(), maxAttempts: z.number().int().positive(), error: z.string().optional(), createdAt: z.string().datetime(), updatedAt: z.string().datetime() }).strict().superRefine((job, context) => { if (job.attempts > job.maxAttempts) context.addIssue({ code: z.ZodIssueCode.custom, message: "attempts cannot exceed maxAttempts" }); });
+
+export const SubmissionAssetType = z.enum([
+  "devpost_description",
+  "readme_narrative",
+  "deck",
+  "infographic",
+  "image_manifest",
+  "image",
+  "thumbnail",
+  "storyboard",
+  "narration",
+  "video",
+  "evidence",
+]);
+export type SubmissionAssetType = z.infer<typeof SubmissionAssetType>;
+export const SubmissionAsset = z.object({
+  type: SubmissionAssetType,
+  relativePath: z.string().min(1).refine((path) => !path.startsWith("/") && !path.split("/").includes(".."), "submission asset paths must stay inside the package"),
+  mimeType: z.string().min(1),
+  sha256: z.string().regex(/^[a-f0-9]{64}$/i),
+  byteCount: z.number().int().nonnegative(),
+  claimIds: z.array(z.string().min(1)),
+  sourceLocators: z.array(z.string().min(1)),
+  provenance: z.enum(["workshop_output", "source_trace", "derived_copy", "generated_preview", "narration", "video_render"]),
+}).strict();
+export type SubmissionAsset = z.infer<typeof SubmissionAsset>;
+export const SubmissionInputSnapshot = z.object({
+  graphRevision: z.number().int().nonnegative(),
+  briefVersion: z.number().int().positive(),
+  styleVersion: z.number().int().positive(),
+  assetPlanVersion: z.number().int().positive(),
+  storyboardVersion: z.number().int().positive(),
+  imageBatchId: z.string().min(1),
+  narrationStoryboardVersion: z.number().int().positive().optional(),
+  activeSourceIds: z.array(z.string().min(1)),
+  claimIds: z.array(z.string().min(1)),
+  outputIds: z.array(z.string().min(1)),
+  videoState: z.literal("rendered"),
+}).strict();
+export type SubmissionInputSnapshot = z.infer<typeof SubmissionInputSnapshot>;
+const requiredSubmissionAssets = new Set<SubmissionAssetType>(["devpost_description", "readme_narrative", "deck", "infographic", "image_manifest", "thumbnail", "storyboard", "narration", "video", "evidence"]);
+export const SubmissionOutputSet = z.object({
+  schemaVersion: z.literal(1),
+  id: z.string().min(1),
+  workshopId: z.string().min(1),
+  title: z.string().min(1),
+  version: z.number().int().positive(),
+  status: z.enum(["ready", "partial"]),
+  createdAt: z.string().datetime(),
+  inputFingerprint: z.string().regex(/^[a-f0-9]{64}$/i),
+  inputs: SubmissionInputSnapshot,
+  claimIds: z.array(z.string().min(1)),
+  sourceLocators: z.array(z.string().min(1)),
+  limitations: z.array(z.string().min(1)),
+  assets: z.array(SubmissionAsset).min(requiredSubmissionAssets.size),
+}).strict().superRefine((outputSet, context) => {
+  const paths = new Set<string>();
+  const types = new Set<SubmissionAssetType>();
+  for (const asset of outputSet.assets) {
+    if (paths.has(asset.relativePath)) context.addIssue({ code: z.ZodIssueCode.custom, message: `duplicate submission asset path: ${asset.relativePath}` });
+    paths.add(asset.relativePath);
+    types.add(asset.type);
+  }
+  for (const type of requiredSubmissionAssets) if (!types.has(type)) context.addIssue({ code: z.ZodIssueCode.custom, message: `submission Output set requires ${type}` });
+  if (outputSet.status === "ready" && outputSet.limitations.length) context.addIssue({ code: z.ZodIssueCode.custom, message: "ready submission Output sets cannot retain limitations" });
+});
+export type SubmissionOutputSet = z.infer<typeof SubmissionOutputSet>;

@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 00:01 CT
+Last updated: 2026-07-15 00:15 CT
 
 ## Status
 
@@ -366,7 +366,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 
 - [x] Build the “How this was built” provenance surface from dated build evidence.
 - [x] Instrument and display time from first transcript segment to first rendered output.
-- [ ] Produce the Devpost description, README narrative, deck, thumbnails, storyboard, narration, and video as one traced WorkshopLM Output set.
+- [ ] Produce the Devpost description, README narrative, deck, thumbnails, storyboard, narration, and video as one traced WorkshopLM Output set. The recorded fixture now builds and verifies a 12-asset `partial` Output set with source locators, file hashes, and an input fingerprint; close this only after the provider-backed media and final submission video replace the explicitly recorded fallbacks.
 - [ ] Include real UI evidence and the raw-transcript reveal.
 - [ ] Make the public video the canonical judge path: show the live seam, one plugin widget moment, both approval gates, editable control, provenance, and the raw brainstorm → finished submission reveal in under three minutes.
 - [ ] Keep all judge-facing claims proportional to captured evidence.
@@ -395,6 +395,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [Plugin research and adoption map](research/plugins/README.md)
 - [Current UI screenshot gallery](outputs/workshoplm-current-ui/README.md)
 - [Comprehensive WorkshopLM project overview deck](outputs/workshoplm-project-overview.pptx)
+- [Traced submission Output-set builder and verifier](apps/worker/src/submission-package.ts)
 - [Product opportunity](research/product-opportunity.md)
 - [Workflow map](research/workflow-map.md)
 - [NotebookLM live user-flow map](research/notebooklm-user-flow.md)
