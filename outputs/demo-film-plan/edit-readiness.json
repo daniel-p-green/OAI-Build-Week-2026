@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "sourceCapturedAt": "2026-07-15T08:31:14.633Z",
-  "mode": "draft",
+  "mode": "final",
   "planStatus": "draft",
   "finalReady": false,
   "timeline": {
@@ -39,55 +39,82 @@
       "shotId": "codex-doorway",
       "label": "Legible Codex host footage opening the correct local Workshop",
       "path": "outputs/demo-film-inputs/codex-doorway.mov",
-      "exists": false
+      "exists": false,
+      "satisfied": false,
+      "issue": "Evidence file is missing or empty."
     },
     {
       "shotId": "capture-and-shape",
       "label": "Honestly dated founder-brainstorm recording",
       "path": "outputs/demo-film-inputs/founder-brainstorm.mov",
-      "exists": false
+      "exists": false,
+      "satisfied": false,
+      "issue": "Evidence file is missing or empty."
     },
     {
       "shotId": "capture-and-shape",
       "label": "Founder-brainstorm transcript used by the recorded Workshop",
       "path": "outputs/demo-film-inputs/founder-brainstorm.txt",
-      "exists": false
+      "exists": false,
+      "satisfied": false,
+      "issue": "Evidence file is missing or empty."
     },
     {
       "shotId": "capture-and-shape",
       "label": "Inspected Realtime microphone-turn evidence",
       "path": "artifacts/live/realtime-turn.json",
-      "exists": false
+      "exists": false,
+      "satisfied": false,
+      "issue": "Evidence file is missing or empty."
     },
     {
       "shotId": "capture-and-shape",
       "label": "Sanitized GPT-5.6 live-run evidence",
       "path": "artifacts/live/provider-run.json",
-      "exists": false
+      "exists": false,
+      "satisfied": false,
+      "issue": "Evidence file is missing or empty."
     },
     {
       "shotId": "outputs",
       "label": "Inspected six-image GPT Image 2 gallery capture",
       "path": "outputs/demo-film-inputs/provider-image-gallery.mov",
-      "exists": false
+      "exists": false,
+      "satisfied": false,
+      "issue": "Evidence file is missing or empty."
     },
     {
       "shotId": "outputs",
       "label": "Sanitized live-provider run evidence",
       "path": "artifacts/live/provider-run.json",
-      "exists": false
+      "exists": false,
+      "satisfied": false,
+      "issue": "Evidence file is missing or empty."
     },
     {
       "shotId": "render-and-trace",
       "label": "Audibly inspected provider-narrated render",
       "path": "outputs/demo-film-inputs/provider-narrated-video.mp4",
-      "exists": false
+      "exists": false,
+      "satisfied": false,
+      "issue": "Evidence file is missing or empty."
     },
     {
       "shotId": "meta-reveal",
       "label": "Primary eligible Codex feedback Session ID record",
       "path": "artifacts/submission/primary-session.json",
-      "exists": false
+      "exists": false,
+      "satisfied": false,
+      "issue": "Evidence file is missing or empty."
+    },
+    {
+      "shotId": "meta-reveal",
+      "label": "Verified non-partial final submission Output set",
+      "path": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
+      "validator": "ready-submission-manifest",
+      "exists": true,
+      "satisfied": false,
+      "issue": "Submission status is partial, not ready."
     },
     {
       "shotId": "final-export",

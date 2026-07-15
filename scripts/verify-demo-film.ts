@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
-type RequiredEvidence = { label: string; path: string };
+type RequiredEvidence = { label: string; path: string; validator?: "ready-submission-manifest" };
 type FilmShot = {
   id: string;
   title: string;
@@ -37,7 +37,7 @@ const repository = resolve(import.meta.dirname, "..");
 const planPath = resolve(repository, "submission/demo-film-plan.json");
 const reportRoot = resolve(repository, "outputs/demo-film-plan");
 const finalMode = process.argv.includes("--final");
-const requiredMomentIds = ["plugin-doorway", "founder-brainstorm", "realtime-voice", "gpt-5.6-map", "source-trace", "edit-control", "brief-approval", "provider-image-set", "storyboard-approval", "provider-narration", "original-reveal", "codex-evidence"];
+const requiredMomentIds = ["plugin-doorway", "founder-brainstorm", "realtime-voice", "gpt-5.6-map", "source-trace", "edit-control", "brief-approval", "provider-image-set", "storyboard-approval", "provider-narration", "original-reveal", "codex-evidence", "final-submission-output-set"];
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -49,6 +49,21 @@ async function existsWithBytes(relativePath: string): Promise<boolean> {
   } catch {
     return false;
   }
+}
+
+async function inspectEvidence(item: RequiredEvidence): Promise<{ exists: boolean; satisfied: boolean; issue?: string }> {
+  const exists = await existsWithBytes(item.path);
+  if (!exists) return { exists: false, satisfied: false, issue: "Evidence file is missing or empty." };
+  if (item.validator === "ready-submission-manifest") {
+    try {
+      const manifest = JSON.parse(await readFile(resolve(repository, item.path), "utf8")) as { status?: string; limitations?: unknown[] };
+      if (manifest.status !== "ready") return { exists: true, satisfied: false, issue: `Submission status is ${manifest.status ?? "missing"}, not ready.` };
+      if (!Array.isArray(manifest.limitations) || manifest.limitations.length > 0) return { exists: true, satisfied: false, issue: "Submission manifest still records limitations." };
+    } catch {
+      return { exists: true, satisfied: false, issue: "Submission manifest is not valid JSON." };
+    }
+  }
+  return { exists: true, satisfied: true };
 }
 
 function wordCount(text: string): number {
@@ -88,11 +103,11 @@ async function main(): Promise<void> {
   const actualCaptureHash = createHash("sha256").update(captureBytes).digest("hex");
   assert(actualCaptureHash === capture.video.sha256, "The source walkthrough hash no longer matches its manifest.");
 
-  const evidence = await Promise.all(plan.shots.flatMap((shot) => shot.requiredEvidence.map(async (item) => ({ shotId: shot.id, ...item, exists: await existsWithBytes(item.path) }))));
+  const evidence = await Promise.all(plan.shots.flatMap((shot) => shot.requiredEvidence.map(async (item) => ({ shotId: shot.id, ...item, ...await inspectEvidence(item) }))));
   const finalVideoExists = await existsWithBytes(plan.finalVideoPath);
   const finalVideoEvidence = { shotId: "final-export", label: "Final edited MP4 with video and audio streams", path: plan.finalVideoPath, exists: finalVideoExists };
-  const missingEvidence = [...evidence.filter((item) => !item.exists), ...(finalVideoExists ? [] : [finalVideoEvidence])];
-  const blockedShots = plan.shots.filter((shot) => shot.state === "blocked" || evidence.some((item) => item.shotId === shot.id && !item.exists)).map((shot) => shot.id);
+  const missingEvidence = [...evidence.filter((item) => !item.satisfied), ...(finalVideoExists ? [] : [finalVideoEvidence])];
+  const blockedShots = plan.shots.filter((shot) => shot.state === "blocked" || evidence.some((item) => item.shotId === shot.id && !item.satisfied)).map((shot) => shot.id);
   const narrationWords = plan.shots.reduce((total, shot) => total + wordCount(shot.narration), 0);
   const narrationWordsPerMinute = narrationWords / (cursor / 60);
   assert(narrationWordsPerMinute >= 100, `Narration pace is too sparse at ${narrationWordsPerMinute.toFixed(1)} words per minute.`);
@@ -124,7 +139,7 @@ async function main(): Promise<void> {
   };
   await mkdir(reportRoot, { recursive: true });
   await writeFile(resolve(reportRoot, "edit-readiness.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
-  const markdown = `# WorkshopLM demo edit readiness\n\nStatus: **${finalReady ? "final-ready" : "draft"}**\n\n- Planned runtime: ${cursor}s (${Math.floor(cursor / 60)}:${String(cursor % 60).padStart(2, "0")})\n- Hard ceiling: ${plan.maxDurationSeconds}s\n- Shots: ${plan.shots.length}\n- Narration words: ${narrationWords} (${narrationWordsPerMinute.toFixed(1)} words per minute)\n- Source walkthrough: ${capture.video.durationSeconds}s, ${capture.status}, hash verified\n- Ready shots: ${report.readyShots.length}\n- Blocked shots: ${blockedShots.length}\n\n## Missing evidence\n\n${missingEvidence.length ? missingEvidence.map((item) => `- **${item.shotId}:** ${item.label} — \`${item.path}\``).join("\n") : "- None."}\n\n## Edit sequence\n\n${plan.shots.map((shot) => `- ${String(shot.startSeconds).padStart(3, "0")}-${String(shot.endSeconds).padStart(3, "0")} · **${shot.title}** · ${shot.state}${shot.captureBeats.length ? ` · fixture beats: ${shot.captureBeats.join(", ")}` : ""}`).join("\n")}\n`;
+  const markdown = `# WorkshopLM demo edit readiness\n\nStatus: **${finalReady ? "final-ready" : "draft"}**\n\n- Planned runtime: ${cursor}s (${Math.floor(cursor / 60)}:${String(cursor % 60).padStart(2, "0")})\n- Hard ceiling: ${plan.maxDurationSeconds}s\n- Shots: ${plan.shots.length}\n- Narration words: ${narrationWords} (${narrationWordsPerMinute.toFixed(1)} words per minute)\n- Source walkthrough: ${capture.video.durationSeconds}s, ${capture.status}, hash verified\n- Ready shots: ${report.readyShots.length}\n- Blocked shots: ${blockedShots.length}\n\n## Missing evidence\n\n${missingEvidence.length ? missingEvidence.map((item) => `- **${item.shotId}:** ${item.label} — \`${item.path}\`${"issue" in item && item.issue ? ` — ${item.issue}` : ""}`).join("\n") : "- None."}\n\n## Edit sequence\n\n${plan.shots.map((shot) => `- ${String(shot.startSeconds).padStart(3, "0")}-${String(shot.endSeconds).padStart(3, "0")} · **${shot.title}** · ${shot.state}${shot.captureBeats.length ? ` · fixture beats: ${shot.captureBeats.join(", ")}` : ""}`).join("\n")}\n`;
   await writeFile(resolve(reportRoot, "README.md"), markdown, "utf8");
   process.stdout.write(`${JSON.stringify(report, null, 2)}\n`);
   if (finalMode && !finalReady) throw new Error(`Final demo is not ready: ${blockedShots.length} blocked shots and ${missingEvidence.length} missing evidence files.`);

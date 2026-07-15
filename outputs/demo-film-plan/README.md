@@ -12,15 +12,16 @@ Status: **draft**
 
 ## Missing evidence
 
-- **codex-doorway:** Legible Codex host footage opening the correct local Workshop — `outputs/demo-film-inputs/codex-doorway.mov`
-- **capture-and-shape:** Honestly dated founder-brainstorm recording — `outputs/demo-film-inputs/founder-brainstorm.mov`
-- **capture-and-shape:** Founder-brainstorm transcript used by the recorded Workshop — `outputs/demo-film-inputs/founder-brainstorm.txt`
-- **capture-and-shape:** Inspected Realtime microphone-turn evidence — `artifacts/live/realtime-turn.json`
-- **capture-and-shape:** Sanitized GPT-5.6 live-run evidence — `artifacts/live/provider-run.json`
-- **outputs:** Inspected six-image GPT Image 2 gallery capture — `outputs/demo-film-inputs/provider-image-gallery.mov`
-- **outputs:** Sanitized live-provider run evidence — `artifacts/live/provider-run.json`
-- **render-and-trace:** Audibly inspected provider-narrated render — `outputs/demo-film-inputs/provider-narrated-video.mp4`
-- **meta-reveal:** Primary eligible Codex feedback Session ID record — `artifacts/submission/primary-session.json`
+- **codex-doorway:** Legible Codex host footage opening the correct local Workshop — `outputs/demo-film-inputs/codex-doorway.mov` — Evidence file is missing or empty.
+- **capture-and-shape:** Honestly dated founder-brainstorm recording — `outputs/demo-film-inputs/founder-brainstorm.mov` — Evidence file is missing or empty.
+- **capture-and-shape:** Founder-brainstorm transcript used by the recorded Workshop — `outputs/demo-film-inputs/founder-brainstorm.txt` — Evidence file is missing or empty.
+- **capture-and-shape:** Inspected Realtime microphone-turn evidence — `artifacts/live/realtime-turn.json` — Evidence file is missing or empty.
+- **capture-and-shape:** Sanitized GPT-5.6 live-run evidence — `artifacts/live/provider-run.json` — Evidence file is missing or empty.
+- **outputs:** Inspected six-image GPT Image 2 gallery capture — `outputs/demo-film-inputs/provider-image-gallery.mov` — Evidence file is missing or empty.
+- **outputs:** Sanitized live-provider run evidence — `artifacts/live/provider-run.json` — Evidence file is missing or empty.
+- **render-and-trace:** Audibly inspected provider-narrated render — `outputs/demo-film-inputs/provider-narrated-video.mp4` — Evidence file is missing or empty.
+- **meta-reveal:** Primary eligible Codex feedback Session ID record — `artifacts/submission/primary-session.json` — Evidence file is missing or empty.
+- **meta-reveal:** Verified non-partial final submission Output set — `.workshoplm/acceptance/generated/submission-output-set-v1/manifest.json` — Submission status is partial, not ready.
 - **final-export:** Final edited MP4 with video and audio streams — `outputs/demo-film-final/workshoplm-demo.mp4`
 
 ## Edit sequence

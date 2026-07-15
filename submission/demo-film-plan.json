@@ -151,11 +151,16 @@
       "state": "blocked",
       "captureBeats": ["original-reveal"],
       "narration": "Now the reveal: that rough brainstorm became the submission you just watched. The source trail, two human decisions, and build record stayed attached. WorkshopLM produced its own assets, while Codex accelerated the implementation and verification.",
-      "requiredMoments": ["original-reveal", "codex-evidence"],
+      "requiredMoments": ["original-reveal", "codex-evidence", "final-submission-output-set"],
       "requiredEvidence": [
         {
           "label": "Primary eligible Codex feedback Session ID record",
           "path": "artifacts/submission/primary-session.json"
+        },
+        {
+          "label": "Verified non-partial final submission Output set",
+          "path": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
+          "validator": "ready-submission-manifest"
         }
       ]
     }

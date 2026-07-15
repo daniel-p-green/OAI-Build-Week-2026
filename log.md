@@ -4986,3 +4986,36 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Provider-backed media, the final public Video, and final Output-set verification still gate the strongest meta-demo line.
 - Founder brainstorm footage, Codex doorway footage, `/feedback` Session ID, public URL, release tag, and logged-out checks remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 13:46 CT — Film verifier now checks submission finality semantically
+
+**Area:** Demo video / Evidence gate / Final submission
+
+### Changed
+
+- Added `final-submission-output-set` as a required judge moment in the 2:42 paper edit's meta-reveal shot.
+- Added the actual submission manifest as required evidence with a `ready-submission-manifest` validator.
+- Changed evidence evaluation from file existence alone to `exists` plus `satisfied`, with an explicit issue when a present artifact fails its semantic requirement.
+- The final-submission validator now requires manifest status `ready` and an empty limitations array; malformed JSON, a missing status, `partial`, or any remaining limitation fails closed.
+- Added semantic failure reasons to both JSON and Markdown edit-readiness reports.
+
+### Verified
+
+- `pnpm demo:film:verify` passed structural validation of the ten-shot, 162-second plan and regenerated the draft report.
+- The existing submission manifest is correctly reported as `exists: true`, `satisfied: false`, with `Submission status is partial, not ready.`
+- `pnpm demo:film:verify-final` failed as designed: five blocked shots and eleven missing or unsatisfied evidence items, including the non-partial final submission Output set.
+- Narration remains 302 words at 111.9 words per minute, inside the verifier's 100–155 range; the source walkthrough hash still matches its manifest.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages after the verifier change.
+
+### Decisions
+
+- Finality cannot be proven by dropping any JSON file at the expected path. The artifact must declare a ready state with no known limitations.
+- The verifier may keep a strong final-reveal narration only because it is now impossible to mark that shot ready from the current partial fixture.
+
+### Open items
+
+- The meta-reveal remains blocked on both the eligible `/feedback` Session ID record and a ready, limitation-free final submission manifest.
+- The other film blockers remain Codex doorway footage, founder brainstorm and transcript, Realtime/GPT-5.6 evidence, provider image gallery, provider narration, and final export.
+- Codex Session ID: unavailable on this surface; not inferred.

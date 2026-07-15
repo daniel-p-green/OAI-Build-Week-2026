@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 13:42 CT
+Last updated: 2026-07-15 13:46 CT
 
 ## Status
 
@@ -442,6 +442,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
   - 2026-07-15 claim reconciliation: removed the unsupported `WorkshopLM built itself` shortcut and separated the two proven layers: Codex built WorkshopLM from the goal file; WorkshopLM produced a traced 17-asset partial fixture. The demo gate now permits `final self-produced submission` only when the final copy, deck, thumbnail, Storyboard, narration, and public Video verify as one non-partial Output set. The current manifest remains honestly `partial`, validates without stale or tampered assets, and records zero provider images, GPT-5.6 product reasoning, live voice, or narration.
 - [ ] Include real UI evidence and the raw-transcript reveal. The production UI now implements and captures the responsive `Show original` before/after surface with fixture evidence. On July 15, `pnpm demo:capture-draft` recorded the complete reveal in a reviewable 37.76-second fixture walkthrough; close only after the dated contemporaneous founder brainstorm and final recorded footage replace that fixture.
 - [ ] Make the public video the canonical judge path: show the live seam, one plugin widget moment, both approval gates, editable control, provenance, and the raw brainstorm → finished submission reveal in under three minutes. The repeatable capture now proves the two gates, semantic edit, source trace, local render, and reveal as one 12-beat sequence. The evidence-gated paper edit fixes the final target at 2:42 across ten shots and fail-closes on every missing provider, founder, host, Codex, or final-export input; it intentionally remains a draft until those artifacts exist.
+  - 2026-07-15 semantic finality gate: the film verifier no longer treats an existing partial submission manifest as evidence for the `WorkshopLM produced the final submission` reveal. The meta shot now requires a dedicated `final-submission-output-set` moment and semantically checks that the manifest status is `ready` with zero limitations. The current draft correctly reports the file as present but unsatisfied because its status is `partial`; final verification still fails with five blocked shots and eleven missing or unsatisfied evidence items.
 - [ ] Keep all judge-facing claims proportional to captured evidence. The current Devpost packet, demo script, evidence audit, and `submission/CLAIM-LEDGER.md` are reconciled to the July 15 proof floor; the packet leads with the professional problem and maintains explicit live/fallback publication slots. Close only after the final video, Devpost entry, screenshots, release tag, and submitted links pass the same gate.
 - [ ] Produce a public YouTube demo under three minutes with clear audio.
 - [ ] Complete repository, README, Codex collaboration, GPT-5.6, judge-access, and Devpost materials.
