@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
+import { existsSync } from "node:fs";
 import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
@@ -55,7 +56,7 @@ function guideVoiceRate(text, durationSeconds) {
 }
 
 function overlaySvg(shot, index) {
-  const state = shot.state === "ready" ? "CAPTURED FIXTURE" : "FINAL EVIDENCE PENDING";
+  const state = shot.state === "ready" ? (shot.captureBeats.length ? "CAPTURED FIXTURE" : "CAPTURED EVIDENCE") : "FINAL EVIDENCE PENDING";
   const stateFill = shot.state === "ready" ? "#15803d" : "#b45309";
   const lines = captionLines(shot.narration);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
@@ -104,7 +105,17 @@ async function main() {
     run("say", ["-v", voice, "-r", String(shotSpeechRate), "-o", audioPath, shot.narration]);
 
     const selectedBeats = shot.captureBeats.map((id) => beatsById.get(id)).filter(Boolean);
-    if (selectedBeats.length) {
+    const externalVideo = shot.state === "ready"
+      ? shot.requiredEvidence.map((item) => resolve(repository, item.path)).find((path) => /\.(?:mov|mp4)$/i.test(path) && existsSync(path))
+      : undefined;
+    if (externalVideo) {
+      const sourceDuration = Number(probe(externalVideo).format?.duration || 0);
+      const playbackRate = sourceDuration > duration ? sourceDuration / duration : 1;
+      const presentationDuration = Math.min(duration, sourceDuration / playbackRate);
+      const holdDuration = Math.max(0, duration - presentationDuration);
+      run("ffmpeg", ["-y", "-i", externalVideo, "-vf", `setpts=PTS/${playbackRate.toFixed(5)},scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5,trim=duration=${presentationDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${duration},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
+      shotRecords.push({ id: shot.id, state: shot.state, durationSeconds: duration, guideVoiceRate: shotSpeechRate, sourceBeats: [], externalVideo: shot.requiredEvidence.find((item) => resolve(repository, item.path) === externalVideo)?.path, sourceDurationSeconds: sourceDuration });
+    } else if (selectedBeats.length) {
       const sourceStart = Math.max(0, selectedBeats[0].startMs / 1000 - 0.2);
       const sourceEnd = Math.min(capture.video.durationSeconds, selectedBeats.at(-1).endMs / 1000 - 0.3);
       const sourceDuration = Math.max(0.5, sourceEnd - sourceStart);
@@ -148,10 +159,10 @@ async function main() {
     reviewFrames: await Promise.all(reviewFrames.map(async (path) => ({ relativePath: `review/${path.split("/").at(-1)}`, sha256: sha256(await readFile(path)) }))),
     shots: shotRecords,
     limitations: [
-      "Five shots remain visibly marked FINAL EVIDENCE PENDING.",
+      `${plan.shots.filter((shot) => shot.state === "blocked").length} shots remain visibly marked FINAL EVIDENCE PENDING.`,
       "The walkthrough uses the sanitized deterministic fixture and planned image panels.",
       "The guide voice is local macOS speech synthesis, not OpenAI narration.",
-      "Codex doorway, founder brainstorm, Realtime, GPT-5.6, GPT Image 2, provider narration, final Output set, and public-export evidence remain gated elsewhere."
+      "Founder brainstorm, Realtime, GPT-5.6, GPT Image 2, provider narration, final Output set, and public-export evidence remain gated elsewhere."
     ]
   };
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");

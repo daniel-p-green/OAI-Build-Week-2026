@@ -2720,6 +2720,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-15 18:18 CT — Real Codex doorway replaces the rough-cut placeholder
+
+**Area:** Host proof / Meta-demo / Privacy-safe capture
+
+### Changed
+
+- Opened the production WorkshopLM route at `127.0.0.1:3102` through the supported Codex in-app browser and recorded the containing ChatGPT/Codex window by macOS window ID.
+- Cropped the recording to the in-app-browser pane before persistence so the final 12-second clip contains the real WorkshopLM tab, host browser chrome, local capture screen, and `Record voice` action without the unrelated Codex task pane or any other application.
+- Extended `pnpm demo:film:rough` to consume a ready shot's captured `.mov`/`.mp4` evidence directly instead of falling back to a fixture still. The doorway shot now receives the truthful `CAPTURED EVIDENCE` label.
+- Changed only the `codex-doorway` film state from blocked to ready and updated current instructions and GOAL evidence counts from five blocked shots to four.
+
+### Verified
+
+- The source clip probes as 12.000 seconds of 1920×1080 H.264 at 60 fps. SHA-256: `50a5d428e2010f4b149b7e693caa2a75b0aea6d70c7de97631ae6a565a29b67d`.
+- Inspected a six-frame contact sheet and full-resolution midpoint frame from the final crop. No unrelated task text, other application, API key, private source content, or absolute local path appears in the persisted clip.
+- Rebuilt the 2:42 rough cut and inspected its ten-shot contact sheet. Shot 2 now shows the real Codex in-app-browser doorway with a green evidence label rather than the Map still.
+- `pnpm demo:film:verify` passed in honest draft mode with six ready shots, four blocked shots, and ten missing or unsatisfied final-evidence items. It still refuses to call the film final.
+- No paid provider request occurred.
+
+### Decisions
+
+- Window-scoped capture is the privacy-safe host-proof path. Screen-region recording was discarded after another application crossed the region during the first take.
+- This clip proves the local Workshop opens in the Codex in-app browser. It does not prove ChatGPT Work parity or a provider-backed Realtime turn.
+- A ready external-video shot must be consumed by the film builder and recorded in its manifest; file existence alone is not sufficient evidence.
+
+### Open items
+
+- Replace the remaining four amber shots with the dated founder brainstorm plus Realtime/GPT-5.6 evidence, the inspected GPT Image 2 gallery, the provider-narrated render, and the final non-partial submission reveal.
+- Put the external-use presentation in front of its intended professional audience and record `Send` or the first blocking revision.
+- ChatGPT Work invocation, provider spend authorization, founder recording, public links, final audio review, and the Devpost `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-15 17:41 CT — Infographic becomes a shippable narrative canvas
 
 **Area:** Deliver / Infographic / Send-it quality / Editable handoff
@@ -5870,4 +5904,23 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Put the external-use presentation in front of its intended professional audience and record `Send` or the first blocking revision.
 - Record one provider-verified Realtime turn, rerun the zero-spend preflight, obtain explicit request authorization, and run the provider-backed Map, image, and narration path.
 - ChatGPT Work invocation, founder recording, public links, final audio review, and the Devpost `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 18:21 CT — Build-log chronology correction for Codex doorway milestone
+
+**Area:** Evidence hygiene / Host proof
+
+### Changed
+
+- The `18:18 CT — Real Codex doorway replaces the rough-cut placeholder` milestone was appended above later historical entries because its patch matched an earlier repeated Session-ID line. This correction records the chronology error without deleting or rewriting that milestone; its capture, privacy, integration, and verification claims are unchanged.
+
+### Verified
+
+- Confirmed this correction is the final entry in the append-only log, the doorway clip is the external source recorded for shot 2, and the current film report has six ready shots and four blocked shots.
+
+### Open items
+
+- Replace the remaining four amber shots with their named final evidence.
 - Codex Session ID: unavailable on this surface; not inferred.

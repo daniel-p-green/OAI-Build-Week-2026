@@ -22,27 +22,19 @@
   },
   "readyShots": [
     "promise",
+    "codex-doorway",
     "evidence-and-control",
     "brief-approval",
     "style",
     "storyboard-approval"
   ],
   "blockedShots": [
-    "codex-doorway",
     "capture-and-shape",
     "outputs",
     "render-and-trace",
     "meta-reveal"
   ],
   "missingEvidence": [
-    {
-      "shotId": "codex-doorway",
-      "label": "Legible Codex host footage opening the correct local Workshop",
-      "path": "outputs/demo-film-inputs/codex-doorway.mov",
-      "exists": false,
-      "satisfied": false,
-      "issue": "Evidence file is missing or empty."
-    },
     {
       "shotId": "capture-and-shape",
       "label": "Honestly dated founder-brainstorm recording",

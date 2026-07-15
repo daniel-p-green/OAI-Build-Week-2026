@@ -7,12 +7,11 @@ Status: **draft**
 - Shots: 10
 - Narration words: 302 (111.9 words per minute)
 - Source walkthrough: 37.76s, fixture-draft, hash verified
-- Ready shots: 5
-- Blocked shots: 5
+- Ready shots: 6
+- Blocked shots: 4
 
 ## Missing evidence
 
-- **codex-doorway:** Legible Codex host footage opening the correct local Workshop — `outputs/demo-film-inputs/codex-doorway.mov` — Evidence file is missing or empty.
 - **capture-and-shape:** Honestly dated founder-brainstorm recording — `outputs/demo-film-inputs/founder-brainstorm.mov` — Evidence file is missing or empty.
 - **capture-and-shape:** Founder-brainstorm transcript used by the recorded Workshop — `outputs/demo-film-inputs/founder-brainstorm.txt` — Evidence file is missing or empty.
 - **capture-and-shape:** Inspected Realtime microphone-turn evidence — `artifacts/live/realtime-turn.json` — Evidence file is missing or empty.
@@ -27,7 +26,7 @@ Status: **draft**
 ## Edit sequence
 
 - 000-012 · **The promise** · ready · fixture beats: map
-- 012-022 · **Codex is the conversation surface** · blocked
+- 012-022 · **Codex is the conversation surface** · ready
 - 022-045 · **Messy thought becomes a grounded Map** · blocked · fixture beats: sources
 - 045-060 · **Evidence remains inspectable and editable** · ready · fixture beats: source-trace, map-edit
 - 060-075 · **First approval: Brief** · ready · fixture beats: brief-approval

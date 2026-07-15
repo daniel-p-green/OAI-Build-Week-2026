@@ -24,7 +24,7 @@
       "title": "Codex is the conversation surface",
       "startSeconds": 12,
       "endSeconds": 22,
-      "state": "blocked",
+      "state": "ready",
       "captureBeats": [],
       "narration": "WorkshopLM is one unified plugin. Codex stays the conversation surface, uses the project's grounded tools, and opens the visual Workshop only when spatial editing is useful.",
       "requiredMoments": ["plugin-doorway"],

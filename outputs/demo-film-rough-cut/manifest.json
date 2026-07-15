@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "editorial-rough-cut",
   "disclosure": "Truthful fixture rough cut with a local macOS guide voice. This is not provider narration, final host footage, or the public submission video.",
-  "builtAt": "2026-07-15T22:57:57.697Z",
+  "builtAt": "2026-07-15T23:16:28.621Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "voice": {
@@ -13,7 +13,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-rough-cut.mp4",
-    "sha256": "3c9b97c4e2f0056a85cbfb7d9e910b15efbb558db56d9f3a47e207c3c7bb6e6a",
+    "sha256": "2d4d1f64636ab5a3a656f9e7d7de02064b769b8b69be50dda6206f19e881f13d",
     "durationSeconds": 162.021333,
     "streams": [
       {
@@ -31,7 +31,7 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "e5d4b7f25442810745af4c9ed87532afc99c160c479256f38f3636dd251d4a14"
+    "sha256": "a6ea1c7b707a231bfef21d2c79a3a66b596b16acf5468a6bcf165e7d8ef7e64d"
   },
   "reviewFrames": [
     {
@@ -40,7 +40,7 @@
     },
     {
       "relativePath": "review/02.jpg",
-      "sha256": "2048a8e8cd0eb62fb18ce5568303bf91de27a0201f1ba51b27a4ad4a33c4fa00"
+      "sha256": "3e1c054f17b35a1d3462088259825a89b92f1d640547a63f43e7ae04386c68e7"
     },
     {
       "relativePath": "review/03.jpg",
@@ -89,11 +89,12 @@
     },
     {
       "id": "codex-doorway",
-      "state": "blocked",
+      "state": "ready",
       "durationSeconds": 10,
       "guideVoiceRate": 179,
       "sourceBeats": [],
-      "stillFallback": "outputs/workshoplm-current-ui/01-map.png"
+      "externalVideo": "outputs/demo-film-inputs/codex-doorway.mov",
+      "sourceDurationSeconds": 12
     },
     {
       "id": "capture-and-shape",
@@ -188,9 +189,9 @@
     }
   ],
   "limitations": [
-    "Five shots remain visibly marked FINAL EVIDENCE PENDING.",
+    "4 shots remain visibly marked FINAL EVIDENCE PENDING.",
     "The walkthrough uses the sanitized deterministic fixture and planned image panels.",
     "The guide voice is local macOS speech synthesis, not OpenAI narration.",
-    "Codex doorway, founder brainstorm, Realtime, GPT-5.6, GPT Image 2, provider narration, final Output set, and public-export evidence remain gated elsewhere."
+    "Founder brainstorm, Realtime, GPT-5.6, GPT Image 2, provider narration, final Output set, and public-export evidence remain gated elsewhere."
   ]
 }
