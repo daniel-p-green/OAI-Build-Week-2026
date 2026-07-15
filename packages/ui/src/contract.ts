@@ -24,6 +24,7 @@ export const OAI_UI_COMPONENTS = {
   carousel: "2004:30840",
   carouselRow: "2004:29867",
   sideSheetHeader: "2123:26990",
+  stateMessageCard: "2004:22170",
 } as const;
 
 export const OAI_UI_TOKENS = {

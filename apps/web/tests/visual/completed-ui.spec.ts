@@ -128,6 +128,85 @@ test.describe("completed Workshop judge path", () => {
   }
 });
 
+test("empty, loading, partial, error, and needs-update states stay calm and actionable", async ({ page }) => {
+  const readyState = await (await page.request.get("/api/workshop")).json();
+
+  for (const viewport of viewports) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+
+    let releaseLoading!: () => void;
+    const loadingGate = new Promise<void>((resolveLoading) => { releaseLoading = resolveLoading; });
+    await page.route("**/api/workshop", async (route) => {
+      if (route.request().method() !== "GET") return route.continue();
+      await loadingGate;
+      return route.fulfill({ json: readyState });
+    });
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Opening Workshop" })).toBeVisible();
+    await expectPrimaryActions(page, 0);
+    await expectScreen(page, `${viewport.name}-state-loading`);
+    const loadedResponse = page.waitForResponse("**/api/workshop");
+    releaseLoading();
+    await loadedResponse;
+    await page.unroute("**/api/workshop");
+
+    await page.route("**/api/workshop", async (route) => route.request().method() === "GET"
+      ? route.fulfill({ status: 500, json: { error: "unavailable" } })
+      : route.continue());
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Couldn't open Workshop" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Retry" })).toBeVisible();
+    await expectPrimaryActions(page, 1);
+    await expectScreen(page, `${viewport.name}-state-error`);
+    await page.unroute("**/api/workshop");
+
+    const emptyState = { ...readyState, briefApproved: false, storyboardApproved: false, frame: undefined, style: undefined, assetPlan: undefined, sourceItems: [], activeSourceIds: [], claims: [], mapNodes: [], outputs: [], imageBatch: undefined, storyboard: { ...readyState.storyboard, panels: [] } };
+    await page.route("**/api/workshop", async (route) => route.request().method() === "GET"
+      ? route.fulfill({ json: emptyState })
+      : route.continue());
+    await page.goto("/");
+    await expect(page.getByRole("heading", { name: "Start with a source" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Add source" })).toBeVisible();
+    await expectPrimaryActions(page, 1);
+    await expectScreen(page, `${viewport.name}-state-empty`);
+    await page.unroute("**/api/workshop");
+
+    const failedPanels = readyState.imageBatch.panels.map((panel: Record<string, unknown>, index: number) => ({ ...panel, state: index === 0 ? "failed" : "planned" }));
+    const partialState = { ...readyState, outputs: readyState.outputs.slice(0, 1), imageBatch: { ...readyState.imageBatch, stale: false, panels: failedPanels }, storyboard: { ...readyState.storyboard, stale: false, panels: [] } };
+    const postedActions: string[] = [];
+    await page.route("**/api/workshop", async (route) => {
+      if (route.request().method() === "GET") return route.fulfill({ json: partialState });
+      const body = route.request().postDataJSON() as { action?: string };
+      if (body.action) postedActions.push(body.action);
+      return route.fulfill({ json: readyState });
+    });
+    await page.goto("/");
+    await page.getByRole("button", { name: "View brief" }).click();
+    await page.getByRole("button", { name: "View outputs" }).click();
+    await expect(page.getByRole("heading", { name: "Some Outputs are ready" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Update outputs" })).toBeVisible();
+    await expectPrimaryActions(page, 1);
+    await expectScreen(page, `${viewport.name}-state-partial`);
+    await page.getByRole("button", { name: "Update outputs" }).click();
+    await expect(page.getByRole("status")).toContainText("Outputs created");
+    expect(postedActions).toContain("createImageBatch");
+    await page.unroute("**/api/workshop");
+
+    const needsUpdateState = { ...readyState, outputs: readyState.outputs.map((output: Record<string, unknown>) => ({ ...output, stale: true })), assetPlan: { ...readyState.assetPlan, stale: true }, imageBatch: { ...readyState.imageBatch, stale: true }, storyboard: { ...readyState.storyboard, stale: true } };
+    await page.route("**/api/workshop", async (route) => route.request().method() === "GET"
+      ? route.fulfill({ json: needsUpdateState })
+      : route.fulfill({ json: readyState }));
+    await page.goto("/");
+    await page.getByRole("button", { name: "View brief" }).click();
+    await page.getByRole("button", { name: "View outputs" }).click();
+    await expect(page.getByRole("heading", { name: "Outputs need an update" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Update outputs" })).toBeVisible();
+    await expectPrimaryActions(page, 1);
+    await expectScreen(page, `${viewport.name}-state-needs-update`);
+    await page.unroute("**/api/workshop");
+  }
+});
+
 test("core primitive computed styles and states match the official reference", async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");

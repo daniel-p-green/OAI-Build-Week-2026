@@ -3292,3 +3292,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Cover the remaining empty, loading, partial, error, and needs-update presentations before closing the full system-states item.
 - Conduct five independent first-time reviews and repair any critical navigation failure before final recording.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 00:01 CT — Product-state contract completed and visually proved
+
+**Area:** Product UI / recovery / visual acceptance
+
+### Changed
+
+- Added explicit loading and retryable load-error behavior so a failed Workshop request no longer leaves a blank or misleading Map.
+- Added the official-grounded `StateMessage` composite for empty, loading, partial, error, and needs-update explanations. Ready remains the normal work object rather than another status card.
+- Made a truly empty Workshop show only source scope and `Add source`; removed the disabled, inapplicable Brief action from that state.
+- Made partial delivery name what is usable and keep `Update outputs` as the single next action. A failed or selected-for-regeneration image panel now makes Outputs updateable, and the update path replaces that failed batch with a fresh planned batch.
+- Added focused-Output and empty-Storyboard fallbacks that explain the recovery path without exposing route, provider, or queue internals.
+
+### Verified
+
+- Production `next build` passed.
+- The visual production suite passed 9/9 while creating 15 state baselines, then passed 9/9 again without updating snapshots.
+- Empty, loading, partial, error, ready, and needs-update behavior is covered at 1200×800, 1024×768, and 390×844. The partial-state test executes `Update outputs` through intercepted production requests and proves `createImageBatch` is included when an image failed.
+- Directly inspected desktop and mobile screenshots for every new state. The first pass exposed a too-tight state card and an inapplicable disabled Brief action; both were corrected before the final unchanged-baseline run.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages.
+- `pnpm demo:e2e` passed all six gates through rendered video. `pnpm demo:live` passed the isolated preflight with `paidCallsMade: false`.
+
+### Decisions
+
+- State UI does not become a second progress system. It appears only when normal work cannot explain the next action clearly.
+- Ready is proved by the real object surface. Partial and needs-update retain visible finished work so recovery does not erase context.
+- Provider and queue details remain out of state copy; the user sees what happened and what to do next.
+
+### Open items
+
+- Generate and inspect the provider-backed GPT Image 2 set before closing the visual Outputs-gallery item.
+- Conduct five independent first-time orientation reviews and repair any critical navigation failure before final recording.
+- Codex Session ID: unavailable on this surface; not inferred.

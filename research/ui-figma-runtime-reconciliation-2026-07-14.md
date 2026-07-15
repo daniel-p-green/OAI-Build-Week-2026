@@ -22,6 +22,7 @@ This table records the first implementation-level reconciliation after the false
 | Full screen `2133:27199`; mobile header `2124:13243` | `FullScreenShell` plus `NavigationHeader` | stable full-screen frame with responsive header | 1200, 1024, and 390 CSS px; 390px document width equals viewport width | desktop and mobile | `map-1024x768.png`, `map-390x844.png` |
 | EntityCard / Media or map `2117:34873` + Button `2:465` | `EntityCardAction` | Official media-card geometry with the entire card acting as one keyboard-focusable open action | Card border, radius, shadow, media layout, and button focus behavior remain inherited from the mapped primitives; no nested duplicate Open control | default, hover, keyboard focus, focused Output route | `desktop-outputs.png`, `desktop-output-viewer.png`, and mobile equivalents |
 | Full screen side column + sidebar header `2123:26990` | `SideSheet` | Temporary task layer with the official white surface, header geometry, close IconButton, and content composed from mapped primitives | 440px desktop task column; full-width mobile layer; header and close control use the official component styles | Sources, Evidence, Add source, Style; open, close, keyboard focus return | `desktop-style.png`, `mobile-style.png`, Sources and Evidence baselines |
+| Card `2004:22170` + Button `2:465` | `StateMessage` | One calm state explanation with one optional best action | Official Card geometry, heading/body type, and Button behavior; no spinner, status-pill, provider, or queue vocabulary | empty, loading, partial, error, ready-through-content, needs update; Retry and Update outputs | `desktop-state-*.png`, `compact-state-*.png`, `mobile-state-*.png` |
 
 ## Named composites
 
@@ -44,6 +45,7 @@ The implementation deliberately borrows NotebookLM's strongest orientation behav
 | Outputs | `Carousel` + `EntityCardAction` with generated-media previews | rendered presentation, infographic, image, storyboard, and video media | `desktop-outputs.png`, `compact-outputs.png`, `mobile-outputs.png` |
 | Storyboard | `CarouselRow` + `Card` + `Input` + `TextArea` + contextual `Button` | storyboard frames and filmstrip imagery | `desktop-storyboard.png`, `compact-storyboard.png`, `mobile-storyboard.png` |
 | Focused Output | official shell + `Button`/`ButtonLink` around a full-size generated-media viewport | embedded generated document/video | `desktop-output-viewer.png`, `compact-output-viewer.png`, `mobile-output-viewer.png` |
+| System states | `StateMessage` + contextual header action; ready state uses the normal object composition | state-specific work preview remains visible for partial and needs update | `desktop-state-*.png`, `compact-state-*.png`, `mobile-state-*.png` |
 
 ## Fidelity ledger
 
@@ -55,7 +57,7 @@ The implementation deliberately borrows NotebookLM's strongest orientation behav
 | Tangible output history | NotebookLM Studio shows named durable outputs | WorkshopLM shows real deck/infographic previews, image-set state, storyboard strip, and video preview with one open action each | stronger professional control; provider image bytes remain honestly absent |
 | Citation reveal | NotebookLM citations reveal source context | Claim → Show source opens exact excerpt and locator; Show on map returns to the grounded object | matched and screenshot verified |
 | Action hierarchy | NotebookLM keeps creation actions separate from history | Every normal object has one enabled primary next action; Sources intentionally has zero while it is a selection sheet | duplicate-primary mismatch fixed |
-| Official component fidelity | Official Apps in ChatGPT Figma nodes and variants | 8-test production suite covers exact geometry, state colors, focus, responsive screenshots, copy, and accessibility | matched for every used shell primitive and documented composite |
+| Official component fidelity | Official Apps in ChatGPT Figma nodes and variants | 9-test production suite covers exact geometry, state colors, focus, responsive screenshots, copy, accessibility, and all six product-state categories | matched for every used shell primitive and documented composite |
 
 The above-the-fold copy snapshot did not gain new labels during the state correction. The only visual hierarchy changes were demoting `Update style`, `Update outputs`, and background header navigation while a source sheet is open.
 

@@ -135,6 +135,10 @@ export function SideSheet({ title, onClose, className, children, ...props }: HTM
   return <aside className={classes("oai-side-sheet", className)} role="dialog" aria-modal="true" aria-label={title} data-oai-component="SideSheet" {...props}><header><h2>{title}</h2><IconButton label={`Close ${title}`} onClick={onClose}><CloseIcon /></IconButton></header>{children}</aside>;
 }
 
+export function StateMessage({ title, children, action, state, className, ...props }: HTMLAttributes<HTMLElement> & { title: string; action?: ReactNode; state: "empty" | "loading" | "partial" | "error" | "needs-update" }) {
+  return <Card className={classes("oai-state-message", className)} data-state={state} aria-live={state === "loading" ? "polite" : undefined} {...props}><div><h2>{title}</h2><p>{children}</p></div>{action}</Card>;
+}
+
 export function ArrowLeftIcon() {
   return <svg className="oai-icon" data-figma-node="2105:819" viewBox="0 0 24 24" aria-hidden="true"><path d="M15.7071 4.29289C16.0976 4.68342 16.0976 5.31658 15.7071 5.70711L9.41421 12L15.7071 18.2929C16.0976 18.6834 16.0976 19.3166 15.7071 19.7071C15.3166 20.0976 14.6834 20.0976 14.2929 19.7071L7.29289 12.7071C6.90237 12.3166 6.90237 11.6834 7.29289 11.2929L14.2929 4.29289C14.6834 3.90237 15.3166 3.90237 15.7071 4.29289Z" /></svg>;
 }

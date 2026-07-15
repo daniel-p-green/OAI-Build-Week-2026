@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 23:46 CT
+Last updated: 2026-07-15 00:01 CT
 
 ## Status
 
@@ -272,7 +272,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] **Outputs:** use media-first `EntityCard`/`Carousel` compositions. The card itself opens the Output; source trace lives inside the focused Output. Show `Create outputs` for an empty state, `Update outputs` only when inputs need update, and `View storyboard` only when a Storyboard exists. Do not repeat freshness or source counts when they do not change a decision.
 - [x] **Storyboard:** use one `CarouselRow` filmstrip, one large selected panel, and one contextual editor. `Save` appears only when dirty. `Approve storyboard` is the only dominant action before approval; `Create video` replaces it after approval. Secondary source trace opens on demand.
 - [x] **Focused Output:** give the work maximum space. Keep Back/Close, title, and only the relevant edit/export/source actions. Technical Details stay collapsed.
-- [ ] **States:** design empty, loading, partial, error, ready, and needs-update states with the same official primitives. Each state names what happened and the single best next action; it never exposes provider or queue internals.
+- [x] **States:** design empty, loading, partial, error, ready, and needs-update states with the same official primitives. Each state names what happened and the single best next action; it never exposes provider or queue internals.
 
 #### P0 component derivation rule
 

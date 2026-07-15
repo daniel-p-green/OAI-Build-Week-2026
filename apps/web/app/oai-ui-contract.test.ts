@@ -13,7 +13,7 @@ const inventory = readFileSync(resolve(root, OAI_UI_SOURCE.inventory), "utf8");
 describe("official Apps in ChatGPT UI implementation", () => {
   it("pins every reusable shell family to the inspected Figma inventory", () => {
     for (const id of Object.values(OAI_UI_COMPONENTS)) expect(inventory).toContain(`\`${id}\``);
-    for (const component of ["FullScreenShell", "NavigationHeader", "Button", "ButtonLink", "IconButton", "Token", "Checkbox", "Input", "TextArea", "Card", "ListGroup", "ListRow", "ListRowAction", "EntityCard", "EntityCardAction", "Carousel", "CarouselRow", "SideSheet"]) {
+    for (const component of ["FullScreenShell", "NavigationHeader", "Button", "ButtonLink", "IconButton", "Token", "Checkbox", "Input", "TextArea", "Card", "ListGroup", "ListRow", "ListRowAction", "EntityCard", "EntityCardAction", "Carousel", "CarouselRow", "SideSheet", "StateMessage"]) {
       expect(ui).toContain(`function ${component}`);
     }
   });

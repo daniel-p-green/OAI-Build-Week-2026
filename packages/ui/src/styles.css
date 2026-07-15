@@ -194,6 +194,16 @@
 .oai-side-sheet { position: absolute; z-index: 40; top: 52px; right: 0; bottom: 0; width: min(440px, 100vw); padding: 24px; overflow-x: hidden; overflow-y: auto; border-left: 1px solid var(--oai-border); background: var(--oai-bg-primary); box-shadow: -8px 0 32px rgba(0,0,0,.08); }
 .oai-side-sheet > header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .oai-side-sheet > header h2 { margin: 0; font-size: 24px; font-weight: 600; line-height: 28px; letter-spacing: -.25px; }
+
+.oai-state-message { width: min(560px, calc(100% - 32px)); display: flex; align-items: center; justify-content: space-between; gap: 24px; margin: 12vh auto; padding: 24px; }
+.oai-state-message > div { min-width: 0; display: grid; gap: 8px; }
+.oai-state-message h2 { margin: 0; font-size: 18px; font-weight: 600; line-height: 26px; letter-spacing: -.45px; }
+.oai-state-message p { margin: 0; color: var(--oai-text-secondary); font-size: 14px; line-height: 20px; letter-spacing: -.3px; }
+.oai-state-message[data-state="loading"] { opacity: .72; }
+
+@media (max-width: 620px) {
+  .oai-state-message { align-items: flex-start; flex-direction: column; margin-top: 10vh; }
+}
 .oai-side-sheet > .oai-field { margin-bottom: 16px; }
 
 .oai-file-icon { position: relative; width: 44px; height: 44px; flex: 0 0 44px; display: grid; place-items: center; border-radius: 10px; color: var(--oai-text-secondary); background: var(--oai-bg-tertiary); }
