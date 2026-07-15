@@ -34,6 +34,8 @@ pnpm demo:live -- --execute
 
 The command refuses to start when the ceiling is missing or below twelve. One shared counter reserves requests before dispatch, including concurrent image requests, and counts failed provider attempts. It cannot silently exceed the supplied ceiling.
 
+Every authorized attempt writes a terminal record to `.workshoplm/live-operator-run.json`. A passed record includes request usage and provider evidence. A partial or failed record includes the failed stage, sanitized error, completed panel hashes and request IDs, recorded panel failures, and the exact recovery command. The record lives outside the resettable operator root, so a later preflight cannot erase it.
+
 Before authorization, run the zero-spend plan:
 
 ```bash

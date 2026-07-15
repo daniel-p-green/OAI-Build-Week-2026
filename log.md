@@ -3879,3 +3879,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Run and inspect the nine-request benchmark, then run and inspect the provider-backed thought-to-delivery path. Use the retry preflight if either media stage is partial.
 - Capture and inspect one Realtime microphone turn before upgrading the voice-capture claim.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 03:08 CT — Live attempts gained durable terminal evidence
+
+**Area:** Provider-run audit trail / recovery evidence / failure classification
+
+### Changed
+
+- Added `.workshoplm/live-operator-run.json` as the terminal evidence artifact for every authorized live attempt. It begins as `running` only after the operator root exists and ends as `passed`, `partial`, or `failed`.
+- Passed records include start/end timestamps, request usage, GPT-5.6 run provenance, image and narration hashes/request IDs, and final video state. Partial and failed records additionally include the failed stage, sanitized error, panel-level failures, selected retry scope, and exact recovery command.
+- Kept the terminal record outside `.workshoplm/live-operator/`, so the normal preflight reset cannot erase evidence from the previous authorized attempt.
+- Extracted error redaction, recovery-command calculation, failure classification, and state summarization into a deterministic worker module shared by the operator and tests.
+- Updated the provider authorization runbook and current Goal evidence to name the terminal artifact and its reset boundary.
+
+### Verified
+
+- New tests prove API keys and bearer credentials are removed from stored errors and error text is bounded to 500 characters.
+- A deterministic partial state with one completed image, one failed image, one completed narration clip, and one failed narration clip produced `partial`, retained both successful request IDs and hashes, exposed both failures, and calculated exactly nine remaining provider requests. The same state classifies a local video-stage failure as `failed`, not provider-partial.
+- An unprepared Workshop state produces the clean twelve-request command rather than an invalid selective retry.
+- `pnpm demo:live` still passed its zero-spend preflight with one planned Map, six planned images, five planned narration clips, both approvals, two traced Outputs, and `paidCallsMade: false`.
+- `pnpm check` passed across all 13 packages; worker coverage increased from 42/42 to 45/45 and web tests remained 11/11.
+- `pnpm demo:e2e` passed all six recorded gates with two grounded Outputs, six planned images, five Storyboard panels, and a local MP4. `git diff --check` passed.
+- No paid OpenAI request was made, so no actual terminal live-run artifact or provider-backed claim is asserted yet.
+
+### Decisions
+
+- A command exiting nonzero is insufficient evidence for a paid run. The run artifact must preserve what completed, what failed, how much of the authorized request ceiling was consumed, and the smallest safe continuation.
+- Pre-authorization refusal does not create a run record because no provider attempt started. Once the authorized operator root is initialized, every exit path records a terminal state.
+- Local video failure after complete provider media is classified `failed`; partial is reserved for a provider media stage that leaves usable successful panels alongside missing work.
+
+### Open items
+
+- Obtain explicit provider-spend authorization and run the benchmark and live thought-to-delivery path; inspect the resulting terminal record together with the media.
+- Capture and inspect one Realtime microphone turn before upgrading the voice claim.
+- Codex Session ID: unavailable on this surface; not inferred.
