@@ -25,7 +25,8 @@ export type WorkshopMapNode = { id: string; title: string; body: string; kind: "
 export type CanvasNodePatch = { id: string; title: string; x: number; y: number; width: number; height: number };
 export type WorkshopFrame = { version: number; markdown: string; markdownPath: string; executablePath: string; stale: boolean; approvedAt: string };
 export type WorkshopSketch = { version: number; graphRevision: number; nodes: Pick<WorkshopMapNode, "id" | "title" | "body" | "kind" | "locator">[]; stale: boolean; approved: boolean; createdAt: string };
-export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop"; referenceUrl?: string; lockedAt: string; stale: boolean };
+export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop"; referenceUrl?: string; libraryId?: string; lockedAt: string; stale: boolean };
+export type WorkshopStyleLibraryEntry = Omit<WorkshopStyle, "version" | "libraryId" | "lockedAt" | "stale"> & { id: string; createdAt: string; updatedAt: string };
 export type WorkshopDesignArtifact = { version: number; styleVersion: number; markdownPath: string; tokensPath: string; stale: boolean; createdAt: string };
 export type ManualStyleInput = { name?: string; accent?: string; ink?: string; paper?: string; logos?: string[]; licensedFonts?: string[]; references?: string[]; negativeRules?: string[]; intentProfile?: WorkshopStyle["intentProfile"] };
 export type WebsiteStyleSuggestion = { referenceUrl: string; name: string; accent: string; ink: string; paper: string; logos: string[]; fontCandidates: string[]; references: string[]; negativeRules: string[]; findings: { colors: number; fontCandidates: number; assets: number; stylesheets: number } };
@@ -148,6 +149,10 @@ export function selectWorkshop(workshopId: string, root?: string): WorkshopState
   if (!db.prepare("SELECT 1 AS found FROM workshop_state WHERE workshop_id=?").get(workshopId)) throw new Error(`Workshop not found: ${workshopId}.`);
   db.prepare("INSERT INTO app_setting (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value=excluded.value").run(activeWorkshopSetting, workshopId);
   return readWorkshopState(root, workshopId);
+}
+export function listStyleLibrary(root?: string): WorkshopStyleLibraryEntry[] {
+  const db = dbFor(root);
+  return (db.prepare("SELECT id, style_json, created_at, updated_at FROM style_library ORDER BY updated_at DESC, id ASC").all() as Array<{ id: string; style_json: string; created_at: string; updated_at: string }>).map((row) => ({ ...JSON.parse(row.style_json) as Omit<WorkshopStyleLibraryEntry, "id" | "createdAt" | "updatedAt">, id: row.id, createdAt: row.created_at, updatedAt: row.updated_at }));
 }
 export function readWorkshopState(root?: string, requestedWorkshopId?: string): WorkshopState {
   const db = dbFor(root);
@@ -431,9 +436,20 @@ export async function analyzeWebsiteStyle(rawUrl: string, fetchImpl: typeof fetc
 }
 
 function reviewedWebsiteUrl(rawUrl: string) { let url: URL; try { url = new URL(rawUrl); } catch { throw new Error("A valid HTTP(S) website is required."); } if (!/^https?:$/.test(url.protocol) || url.username || url.password) throw new Error("Only credential-free HTTP(S) websites are allowed."); return url.toString(); }
+function styleLibraryId(name: string) { return `style-${createHash("sha256").update(name.trim().toLowerCase()).digest("hex").slice(0, 12)}`; }
+function saveStyleToLibrary(style: WorkshopStyle, root?: string) {
+  const db = dbFor(root); const id = style.libraryId ?? styleLibraryId(style.name); const now = style.lockedAt;
+  const snapshot: Omit<WorkshopStyleLibraryEntry, "id" | "createdAt" | "updatedAt"> = { source: style.source, name: style.name, accent: style.accent, ink: style.ink, paper: style.paper, logos: style.logos, licensedFonts: style.licensedFonts, references: style.references, negativeRules: style.negativeRules, intentProfile: style.intentProfile, referenceUrl: style.referenceUrl };
+  db.prepare("INSERT INTO style_library (id, style_json, created_at, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET style_json=excluded.style_json, updated_at=excluded.updated_at").run(id, JSON.stringify(snapshot), now, now);
+  return id;
+}
+function applyLockedStyle(current: WorkshopState, style: WorkshopStyle, root?: string, saveToLibrary = true) {
+  const libraryId = saveToLibrary ? saveStyleToLibrary(style, root) : style.libraryId; const saved = { ...style, libraryId };
+  return write({ ...current, ...(current.style ? staleStyleDependents(current) : {}), style: saved, designArtifact: materializeDesignArtifact(saved, current.id, root), updatedAt: saved.lockedAt }, root);
+}
 export async function lockWebsiteStyle(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch, requestedIntent?: WorkshopStyle["intentProfile"], reviewed?: ManualStyleInput): Promise<WorkshopState> {
   const suggestion = reviewed ? { ...reviewed, referenceUrl: reviewedWebsiteUrl(rawUrl) } : await analyzeWebsiteStyle(rawUrl, fetchImpl); const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "website", name: suggestion.name?.trim() || "Website foundation", accent: color(suggestion.accent, "#1668E3"), ink: color(suggestion.ink, "#171816"), paper: color(suggestion.paper, "#F4F2EC"), logos: cleanStyleList(suggestion.logos), licensedFonts: cleanStyleList("fontCandidates" in suggestion ? suggestion.fontCandidates : suggestion.licensedFonts), references: cleanStyleList(suggestion.references), negativeRules: cleanStyleList(suggestion.negativeRules), intentProfile: intentProfile(reviewed?.intentProfile ?? requestedIntent), referenceUrl: suggestion.referenceUrl, lockedAt: updatedAt, stale: false };
-  return write({ ...current, ...(current.style ? staleStyleDependents(current) : {}), style, designArtifact: materializeDesignArtifact(style, current.id, root), updatedAt }, root);
+  return applyLockedStyle(current, style, root);
 }
 function cleanStyleList(values: string[] | undefined) { return [...new Set((values ?? []).map((value) => value.trim()).filter(Boolean))]; }
 function color(value: string | undefined, fallback: string) { const candidate = (value ?? fallback).trim().toUpperCase(); if (!/^#[0-9A-F]{6}$/.test(candidate)) throw new Error("Style colors must use exact six-digit hex values."); return candidate; }
@@ -449,7 +465,14 @@ function staleStyleDependents(current: WorkshopState) { return { visualDna: curr
 export function lockManualStyle(input: ManualStyleInput = {}, root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
   const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "manual", name: input.name?.trim() || "Editorial thinking instrument", accent: color(input.accent, "#1668E3"), ink: color(input.ink, "#171816"), paper: color(input.paper, "#F4F2EC"), logos: cleanStyleList(input.logos), licensedFonts: cleanStyleList(input.licensedFonts), references: cleanStyleList(input.references), negativeRules: cleanStyleList(input.negativeRules), intentProfile: intentProfile(input.intentProfile), lockedAt: updatedAt, stale: false };
-  return write({ ...current, ...(current.style ? staleStyleDependents(current) : {}), style, designArtifact: materializeDesignArtifact(style, current.id, root), updatedAt }, root);
+  return applyLockedStyle(current, style, root);
+}
+export function applyStyleLibrary(styleId: string, requestedIntent?: WorkshopStyle["intentProfile"], root?: string): WorkshopState {
+  const db = dbFor(root); const row = db.prepare("SELECT style_json FROM style_library WHERE id=?").get(styleId) as { style_json: string } | undefined;
+  if (!row) throw new Error("Saved Style not found.");
+  const entry = JSON.parse(row.style_json) as Omit<WorkshopStyleLibraryEntry, "id" | "createdAt" | "updatedAt">; const current = readWorkshopState(root); const lockedAt = new Date().toISOString();
+  const style: WorkshopStyle = { ...entry, version: (current.style?.version ?? 0) + 1, libraryId: styleId, intentProfile: intentProfile(requestedIntent ?? entry.intentProfile), lockedAt, stale: false };
+  return applyLockedStyle(current, style, root, false);
 }
 export function createVisualDna(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.style || current.style.stale) throw new Error("Visual DNA requires a current locked Style Foundation."); const createdAt = new Date().toISOString(); const profileRule = current.style.intentProfile === "board_deck" ? "Executive hierarchy with source-visible proof points." : current.style.intentProfile === "internal_workshop" ? "Facilitation-first working canvas with writable space." : "Client-ready narrative sequence with a decisive opening."; return write({ ...current, visualDna: { version: (current.visualDna?.version ?? 0) + 1, styleVersion: current.style.version, palette: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, compositionRules: [profileRule, ...current.style.references], textureRules: ["Subtle paper grain only; preserve legibility."], imageRules: ["Use the locked palette and evidence-aware editorial framing."], negativeRules: current.style.negativeRules, approved: false, stale: false, createdAt }, updatedAt: createdAt }, root); }
 export function createSketch(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.briefApproved || !current.frame || current.frame.stale) throw new Error("Sketch requires an approved current Map."); const createdAt = new Date().toISOString(); return write({ ...current, sketch: { version: (current.sketch?.version ?? 0) + 1, graphRevision: graphFor(current).graph.revision, nodes: current.mapNodes.map(({ id, title, body, kind, locator }) => ({ id, title, body, kind, locator })), stale: false, approved: false, createdAt }, updatedAt: createdAt }, root); }

@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { describe, expect, it } from "vitest";
-import { analyzeWebsiteStyle, applyMapOperation, applyWorkshopAction, approveSketch, approveVisualDna, assertStoryboardGrounding, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, extractWorkshopCandidates, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, ingestUrl, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, markImagePanelFailed, readWorkshopState, resolveWorkshopArtifact, searchWorkshopSources, selectImagePanelForRegeneration, selectWorkshop, setActiveSourceScope, syncMapCanvas, undoMapOperation, updateStoryboardPanel } from "./workshop-service.js";
+import { analyzeWebsiteStyle, applyMapOperation, applyStyleLibrary, applyWorkshopAction, approveSketch, approveVisualDna, assertStoryboardGrounding, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, extractWorkshopCandidates, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, ingestUrl, listStyleLibrary, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, markImagePanelFailed, readWorkshopState, resolveWorkshopArtifact, searchWorkshopSources, selectImagePanelForRegeneration, selectWorkshop, setActiveSourceScope, syncMapCanvas, undoMapOperation, updateStoryboardPanel } from "./workshop-service.js";
 describe("Workshop service", () => { it("persists brief/style/storyboard gates and blocks video until the storyboard is approved", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-service-")); expect(() => applyWorkshopAction("renderVideo", root)).toThrow(/storyboard/); const brief = applyWorkshopAction("approveBrief", root); expect(brief.frame).toMatchObject({ markdownPath: "generated/FRAME-v1.md", executablePath: "generated/FRAME-v1.json" }); expect(await readFile(join(root, brief.frame!.markdownPath), "utf8")).toContain("# FRAME.md"); expect(JSON.parse(await readFile(join(root, brief.frame!.executablePath), "utf8"))).toMatchObject({ frameVersion: 1, schemaVersion: 1, evidence: expect.any(Array) }); applyWorkshopAction("lockManualStyle", root); expect(applyWorkshopAction("approveStoryboard", root).storyboardApproved).toBe(true); expect(applyWorkshopAction("renderVideo", root).videoState).toBe("queued"); expect(readWorkshopState(root).briefApproved).toBe(true); await rm(root, { recursive: true, force: true }); });
 it("creates, lists, selects, and isolates durable Workshops", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-collection-"));
@@ -33,6 +33,36 @@ it("persists a typed Map edge and can undo it", async () => { const root = await
 it("synchronizes direct canvas text, position, and size changes through typed graph history", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-canvas-")); applyWorkshopAction("approveBrief", root); const changed = syncMapCanvas([{ id: "promise", title: "Canvas proof", x: 31.2, y: 44.8, width: 29.5, height: 21.4 }], root); expect(changed.mapNodes.find((node) => node.id === "promise")).toMatchObject({ title: "Canvas proof", x: 31.2, y: 44.8, width: 29.5, height: 21.4 }); expect(changed.graphState).toContain("operation-canvas-"); expect(changed.briefApproved).toBe(false); expect(changed.frame?.stale).toBe(true); expect(undoMapOperation(root).mapNodes.find((node) => node.id === "promise")).toMatchObject({ title: "The product promise", width: 24, height: 18 }); await rm(root, { recursive: true, force: true }); });
 it("creates and approves a versioned Sketch from an approved Map, then stales it", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-sketch-")); applyWorkshopAction("approveBrief", root); const sketch = createSketch(root).sketch; expect(sketch).toMatchObject({ version: 1, graphRevision: 0, stale: false, approved: false }); expect(sketch?.nodes).toHaveLength(4); expect(approveSketch(root).sketch?.approved).toBe(true); expect(applyMapOperation({ type: "update_node", nodeId: "node-promise", patch: { label: "Changed" } }, root).sketch).toMatchObject({ stale: true, approved: false }); await rm(root, { recursive: true, force: true }); });
 it("locks manual style inputs as a versioned inspectable foundation", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-style-")); const state = lockManualStyle({ name: "Proof system", accent: "#1155AA", ink: "#111111", paper: "#F0EFEA", logos: ["local/logo.svg"], licensedFonts: ["Inter"], references: ["editorial grid"], negativeRules: ["no gradients"], intentProfile: "board_deck" }, root); expect(state.style).toMatchObject({ version: 1, source: "manual", accent: "#1155AA", logos: ["local/logo.svg"], licensedFonts: ["Inter"], negativeRules: ["no gradients"], intentProfile: "board_deck", stale: false }); expect(state.designArtifact).toMatchObject({ version: 1, styleVersion: 1, markdownPath: "generated/DESIGN-v1.md", tokensPath: "generated/DESIGN-v1.tokens.json", stale: false }); expect(await readFile(join(root, state.designArtifact!.markdownPath), "utf8")).toContain("# DESIGN.md"); expect(JSON.parse(await readFile(join(root, state.designArtifact!.tokensPath), "utf8"))).toMatchObject({ styleVersion: 1, palette: { accent: "#1155AA" }, intentProfile: "board_deck" }); expect(() => lockManualStyle({ accent: "blue" }, root)).toThrow(/six-digit hex/); await rm(root, { recursive: true, force: true }); });
+it("reuses one saved Style across Workshops without coupling their versions", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-style-library-"));
+  const original = readWorkshopState(root);
+  const saved = lockManualStyle({ name: "Client system", accent: "#1155AA", ink: "#111111", paper: "#F0EFEA", logos: ["local/logo.svg"], licensedFonts: ["Inter"], references: ["quiet editorial grid"], negativeRules: ["no gradients"], intentProfile: "client_facing_pitch" }, root);
+  const library = listStyleLibrary(root);
+  expect(library).toMatchObject([{ id: saved.style?.libraryId, name: "Client system", accent: "#1155AA", intentProfile: "client_facing_pitch" }]);
+  const nextWorkshop = createWorkshop("Weekly client update", root);
+  const reused = applyStyleLibrary(library[0]!.id, "board_deck", root);
+  expect(reused).toMatchObject({ id: nextWorkshop.id, style: { version: 1, libraryId: library[0]!.id, name: "Client system", accent: "#1155AA", logos: ["local/logo.svg"], licensedFonts: ["Inter"], intentProfile: "board_deck", stale: false } });
+  expect(JSON.parse(await readFile(join(root, reused.designArtifact!.tokensPath), "utf8"))).toMatchObject({ styleVersion: 1, name: "Client system", palette: { accent: "#1155AA" }, intentProfile: "board_deck" });
+  expect(readWorkshopState(root, original.id).style).toMatchObject({ version: 1, intentProfile: "client_facing_pitch" });
+  expect(listStyleLibrary(root)[0]).toMatchObject({ intentProfile: "client_facing_pitch" });
+  await rm(root, { recursive: true, force: true });
+});
+it("marks existing work stale when a different saved Style is applied", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-style-library-stale-"));
+  await ingestSource({ title: "Evidence", origin: "Fixture", text: "A saved Style change must update the client deck." }, root);
+  applyWorkshopAction("approveBrief", root);
+  const first = lockManualStyle({ name: "Client light", accent: "#1155AA" }, root);
+  await generateOutput("deck", root);
+  createWorkshop("Style setup", root);
+  const second = lockManualStyle({ name: "Board dark", accent: "#552211", intentProfile: "board_deck" }, root);
+  selectWorkshop(first.id, root);
+  const changed = applyStyleLibrary(second.style!.libraryId!, undefined, root);
+  expect(changed.style).toMatchObject({ name: "Board dark", accent: "#552211", intentProfile: "board_deck", version: 2, stale: false });
+  expect(changed.outputs[0]).toMatchObject({ type: "deck", stale: true });
+  expect(changed.storyboard).toMatchObject({ stale: true });
+  expect(changed.storyboardApproved).toBe(false);
+  await rm(root, { recursive: true, force: true });
+});
 it("analyzes a public website and locks only the reviewed Style values", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-website-style-"));
   const requests: string[] = [];

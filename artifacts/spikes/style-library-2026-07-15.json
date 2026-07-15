@@ -1,0 +1,44 @@
+{
+  "recordedAt": "2026-07-15T11:45:00-05:00",
+  "kind": "local-return-visit-proof",
+  "dataRoot": "/tmp/workshoplm-style-ui",
+  "browser": "Codex in-app browser",
+  "flow": [
+    "Approved the seeded Build Week Brief",
+    "Created and saved WorkshopLM editorial from the existing Style sheet",
+    "Created a separate empty Weekly client update Workshop",
+    "Added a real local meeting note and approved its Brief",
+    "Opened Style and saw the saved Style as the only primary choice",
+    "Applied the saved Style in one click"
+  ],
+  "persistedEvidence": {
+    "styleLibraryCount": 1,
+    "styleLibraryId": "style-6c471c7eaae4",
+    "styleName": "WorkshopLM editorial",
+    "sourceWorkshop": {
+      "id": "workshop-build-week",
+      "styleVersion": 1,
+      "intentProfile": "client_facing_pitch"
+    },
+    "destinationWorkshop": {
+      "id": "workshop-weekly-client-update",
+      "styleVersion": 1,
+      "intentProfile": "client_facing_pitch"
+    },
+    "independentVersions": true
+  },
+  "visualEvidence": {
+    "path": "artifacts/spikes/style-library-ui-2026-07-15.jpg",
+    "sha256": "7e7aab1a6090884f23174cd614840edccb37d1dcf8895983264b1c2d405d807e",
+    "dimensions": "1280x720",
+    "observed": "The new Workshop shows one saved Style row and one secondary Create another style action; website/manual fields remain hidden until requested."
+  },
+  "regression": {
+    "workerTests": "59/59 passed",
+    "webTests": "13/13 passed",
+    "demoE2e": "passed-all-six-gates",
+    "submission": "valid-current-untampered-partial-16-assets"
+  },
+  "stalenessProof": "A service test applies a different saved Style to a Workshop with a current deck and verifies the deck and Storyboard become stale, Storyboard approval is revoked, and the applied Style remains current.",
+  "boundary": "Saved Styles are reusable local snapshots. Updating a library entry does not silently mutate existing Workshop versions. Provider media and external cold-use evidence remain separate open requirements."
+}

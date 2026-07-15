@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 11:31 CT
+Last updated: 2026-07-15 11:45 CT
 
 ## Status
 
@@ -376,6 +376,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Expose website/manual foundation choice and all three Intent Profiles in one progressive-disclosure Style sheet, with the selected intent persisted through the API into inspectable tokens.
 - [x] Create, preview, approve, and version Visual DNA.
 - [x] Produce inspectable `DESIGN.md` plus machine-readable tokens.
+- [x] Save and reuse Style Library snapshots across Workshops without coupling their applied versions. A new Workshop shows saved Styles first and hides website/manual setup behind `Create another style`; applying a different saved Style marks dependent work `Needs update`.
 
 ### 9. Deliver
 

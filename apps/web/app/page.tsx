@@ -34,6 +34,7 @@ type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; orig
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
 type MapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
 type ManualStylePayload = { name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop" };
+type StyleLibraryEntry = ManualStylePayload & { id: string; source: "manual" | "website"; referenceUrl?: string; createdAt: string; updatedAt: string };
 type WebsiteStyleSuggestion = Omit<ManualStylePayload, "licensedFonts" | "intentProfile"> & { referenceUrl: string; fontCandidates: string[]; findings: { colors: number; fontCandidates: number; assets: number; stylesheets: number } };
 type PersistedWorkshop = {
   id: string;
@@ -51,7 +52,7 @@ type PersistedWorkshop = {
   mapEdges: MapEdge[];
   graphState?: string;
   frame?: { version: number; markdown: string; stale: boolean };
-  style?: { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: ManualStylePayload["intentProfile"]; referenceUrl?: string; stale: boolean };
+  style?: { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: ManualStylePayload["intentProfile"]; referenceUrl?: string; libraryId?: string; stale: boolean };
   assetPlan?: { version: number; stale: boolean; evidenceClaimIds: string[] };
   storyboard: { version: number; stale: boolean; panels: { id: string; title: string; narration: string; durationSeconds: number; claimIds: string[]; evidence: { claimId?: string; sourceId: string; chunkId?: string; locator: string }[]; imagePanelId?: string; imagePanelVersion?: number; approved: boolean; stale: boolean }[] };
   imageBatch?: { id: string; stale: boolean; panels: { id: string; version: number; prompt: string; state: "planned" | "selected_for_regeneration" | "generated" | "failed"; relativePath?: string }[] };
@@ -83,6 +84,7 @@ function boundImage(panel: PersistedWorkshop["storyboard"]["panels"][number], im
 export default function WorkshopPage() {
   const [state, setState] = useState<PersistedWorkshop | null>(null);
   const [workshops, setWorkshops] = useState<WorkshopSummary[]>([]);
+  const [styleLibrary, setStyleLibrary] = useState<StyleLibraryEntry[]>([]);
   const [loadState, setLoadState] = useState<"loading" | "ready" | "error">("loading");
   const [view, setView] = useState<ObjectView>("map");
   const [sheet, setSheet] = useState<Sheet>(null);
@@ -94,7 +96,7 @@ export default function WorkshopPage() {
   const [busy, setBusy] = useState(false);
   const returnFocusRef = useRef<HTMLElement | null>(null);
 
-  useEffect(() => { void Promise.all([reload(), reloadWorkshops()]); }, []);
+  useEffect(() => { void Promise.all([reload(), reloadWorkshops(), reloadStyleLibrary()]); }, []);
   useEffect(() => {
     if (state?.videoState !== "queued" && state?.videoState !== "rendering") return;
     let stopped = false;
@@ -134,6 +136,16 @@ export default function WorkshopPage() {
     }
   }
 
+  async function reloadStyleLibrary() {
+    try {
+      const response = await fetch("/api/workshop?view=styles");
+      if (!response.ok) throw new Error("Style Library unavailable");
+      setStyleLibrary((await response.json() as { styles?: StyleLibraryEntry[] }).styles ?? []);
+    } catch {
+      setStyleLibrary([]);
+    }
+  }
+
   async function post(body: Record<string, unknown>) {
     setBusy(true);
     setNotice(null);
@@ -145,6 +157,7 @@ export default function WorkshopPage() {
       if (body.action === "createWorkshop" || body.action === "selectWorkshop") {
         setView("map"); setSelectedNodeId(""); setSelectedSource(null); setSelectedPanelId(""); setSelectedOutputId(""); closeSheet();
       }
+      if (body.action === "lockManualStyle" || body.action === "lockWebsiteStyle" || body.action === "applyStyleLibrary") void reloadStyleLibrary();
       void reloadWorkshops();
       return next;
     } catch (error) {
@@ -254,7 +267,7 @@ export default function WorkshopPage() {
       {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} onClose={closeSheet} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "evidence" && selectedSource && <EvidenceSheet source={selectedSource} onClose={closeSheet} onShowMap={() => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === selectedSource.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "add-source" && <AddSourceSheet onClose={() => setSheet("sources")} onPost={post} />}
-      {sheet === "style" && <StyleSheet style={state?.style} busy={busy} onClose={closeSheet} onPost={post} onAnalyzeWebsite={analyzeWebsiteStyle} />}
+      {sheet === "style" && <StyleSheet style={state?.style} library={styleLibrary} busy={busy} onClose={closeSheet} onPost={post} onAnalyzeWebsite={analyzeWebsiteStyle} />}
       {sheet === "original" && <OriginalRevealSheet state={state} onClose={closeSheet} />}
     </FullScreenShell>
   );
@@ -306,7 +319,7 @@ function BriefView({ state, onChooseStyle, onShowSource }: { state: PersistedWor
   </article>;
 }
 
-function StyleSheet({ style, busy, onClose, onPost, onAnalyzeWebsite }: { style?: PersistedWorkshop["style"]; busy: boolean; onClose: () => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onAnalyzeWebsite: (url: string) => Promise<WebsiteStyleSuggestion | null> }) {
+function StyleSheet({ style, library, busy, onClose, onPost, onAnalyzeWebsite }: { style?: PersistedWorkshop["style"]; library: StyleLibraryEntry[]; busy: boolean; onClose: () => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onAnalyzeWebsite: (url: string) => Promise<WebsiteStyleSuggestion | null> }) {
   const [mode, setMode] = useState<"website" | "manual">(style?.source ?? "manual");
   const [website, setWebsite] = useState(style?.referenceUrl ?? "");
   const [reviewedUrl, setReviewedUrl] = useState(style?.source === "website" ? style.referenceUrl ?? "" : "");
@@ -321,9 +334,10 @@ function StyleSheet({ style, busy, onClose, onPost, onAnalyzeWebsite }: { style?
   const [references, setReferences] = useState((style?.references ?? ["calm editorial work surface"]).join("\n"));
   const [negativeRules, setNegativeRules] = useState((style?.negativeRules ?? ["no decorative gradients"]).join("\n"));
   const [showDetails, setShowDetails] = useState(false);
+  const [showCreator, setShowCreator] = useState(library.length === 0 || Boolean(style));
   useEffect(() => {
-    setMode(style?.source ?? "manual"); setWebsite(style?.referenceUrl ?? ""); setReviewedUrl(style?.source === "website" ? style.referenceUrl ?? "" : ""); setFindings(null); setName(style?.name ?? "WorkshopLM editorial"); setAccent(style?.accent ?? "#0285FF"); setInk(style?.ink ?? "#0D0D0D"); setPaper(style?.paper ?? "#FFFFFF"); setIntent(style?.intentProfile ?? "client_facing_pitch"); setLogos((style?.logos ?? []).join("\n")); setFonts((style?.licensedFonts ?? ["SF Pro"]).join("\n")); setReferences((style?.references ?? ["calm editorial work surface"]).join("\n")); setNegativeRules((style?.negativeRules ?? ["no decorative gradients"]).join("\n")); setShowDetails(false);
-  }, [style]);
+    setMode(style?.source ?? "manual"); setWebsite(style?.referenceUrl ?? ""); setReviewedUrl(style?.source === "website" ? style.referenceUrl ?? "" : ""); setFindings(null); setName(style?.name ?? "WorkshopLM editorial"); setAccent(style?.accent ?? "#0285FF"); setInk(style?.ink ?? "#0D0D0D"); setPaper(style?.paper ?? "#FFFFFF"); setIntent(style?.intentProfile ?? "client_facing_pitch"); setLogos((style?.logos ?? []).join("\n")); setFonts((style?.licensedFonts ?? ["SF Pro"]).join("\n")); setReferences((style?.references ?? ["calm editorial work surface"]).join("\n")); setNegativeRules((style?.negativeRules ?? ["no decorative gradients"]).join("\n")); setShowDetails(false); setShowCreator(library.length === 0 || Boolean(style));
+  }, [style, library.length]);
   const locked = Boolean(style && !style.stale);
   const splitLines = (value: string) => value.split(/[\n,]/).map((item) => item.trim()).filter(Boolean);
   const dirty = mode !== (style?.source ?? "manual") || website.trim() !== (style?.referenceUrl ?? "") || name.trim() !== (style?.name ?? "WorkshopLM editorial") || accent.trim().toUpperCase() !== (style?.accent ?? "#0285FF").toUpperCase() || ink.trim().toUpperCase() !== (style?.ink ?? "#0D0D0D").toUpperCase() || paper.trim().toUpperCase() !== (style?.paper ?? "#FFFFFF").toUpperCase() || intent !== (style?.intentProfile ?? "client_facing_pitch") || logos.trim() !== (style?.logos ?? []).join("\n") || fonts.trim() !== (style?.licensedFonts ?? []).join("\n") || references.trim() !== (style?.references ?? []).join("\n") || negativeRules.trim() !== (style?.negativeRules ?? []).join("\n");
@@ -338,6 +352,7 @@ function StyleSheet({ style, busy, onClose, onPost, onAnalyzeWebsite }: { style?
     }
     void onPost({ action: "lockManualStyle", manualStyle }).then((next) => next && onClose());
   };
+  const useSavedStyle = (entry: StyleLibraryEntry) => { void onPost({ action: "applyStyleLibrary", styleLibraryId: entry.id, intentProfile: entry.intentProfile }).then((next) => next && onClose()); };
 
   const intents: { id: ManualStylePayload["intentProfile"]; title: string; detail: string }[] = [
     { id: "client_facing_pitch", title: "Client pitch", detail: "Bold headlines and generous space" },
@@ -346,11 +361,12 @@ function StyleSheet({ style, busy, onClose, onPost, onAnalyzeWebsite }: { style?
   ];
 
   return <SideSheet title="Style" onClose={onClose}><p className="sheet-intro">Use one visual system across every Output.</p>
-    <fieldset className="style-options"><legend>Start from</legend><ListGroup><ListRow className={`style-choice ${mode === "website" ? "selected" : ""}`}><ListRowAction aria-pressed={mode === "website"} onClick={() => setMode("website")}><span><strong>Website</strong><small>Pull the public visual foundation</small></span></ListRowAction></ListRow><ListRow className={`style-choice ${mode === "manual" ? "selected" : ""}`}><ListRowAction aria-pressed={mode === "manual"} onClick={() => setMode("manual")}><span><strong>Set manually</strong><small>Enter exact brand rules yourself</small></span></ListRowAction></ListRow></ListGroup></fieldset>
+    {library.length > 0 && <fieldset className="style-options"><legend>Saved styles</legend><ListGroup>{library.map((entry) => <ListRow className="style-choice" key={entry.id}><ListRowAction aria-label={`Use saved style ${entry.name}`} disabled={busy || style?.libraryId === entry.id} onClick={() => useSavedStyle(entry)}><div className="palette-preview compact" data-domain-ui="palette-preview"><i style={{ background: entry.accent }} /><i style={{ background: entry.ink }} /><i style={{ background: entry.paper }} /></div><span><strong>{entry.name}</strong><small>{entry.intentProfile === "board_deck" ? "Board presentation" : entry.intentProfile === "internal_workshop" ? "Team workshop" : "Client pitch"}</small></span></ListRowAction></ListRow>)}</ListGroup></fieldset>}
+    {!showCreator ? <Button variant="secondary" onClick={() => setShowCreator(true)}>Create another style</Button> : <><fieldset className="style-options"><legend>Start from</legend><ListGroup><ListRow className={`style-choice ${mode === "website" ? "selected" : ""}`}><ListRowAction aria-pressed={mode === "website"} onClick={() => setMode("website")}><span><strong>Website</strong><small>Pull the public visual foundation</small></span></ListRowAction></ListRow><ListRow className={`style-choice ${mode === "manual" ? "selected" : ""}`}><ListRowAction aria-pressed={mode === "manual"} onClick={() => setMode("manual")}><span><strong>Set manually</strong><small>Enter exact brand rules yourself</small></span></ListRowAction></ListRow></ListGroup></fieldset>
     {mode === "website" && <Input label="Website" type="url" placeholder="https://example.com" value={website} onChange={(event) => { setWebsite(event.target.value); setReviewedUrl(""); setFindings(null); }} />}
     {reviewed && <><Input label="Name" value={name} onChange={(event) => setName(event.target.value)} /><div className="style-color-grid"><Input label="Accent" value={accent} onChange={(event) => setAccent(event.target.value)} /><Input label="Text" value={ink} onChange={(event) => setInk(event.target.value)} /><Input label="Background" value={paper} onChange={(event) => setPaper(event.target.value)} /></div>{findings && <p className="style-findings" role="status">Found {findingSummary}. Review it before using this Style.</p>}{showDetails ? <div className="style-details"><TextArea label="Logos or brand assets" hint="One local path or authorized URL per line" value={logos} onChange={(event) => setLogos(event.target.value)} /><TextArea label="Licensed fonts" hint="Confirm you are licensed to use each font" value={fonts} onChange={(event) => setFonts(event.target.value)} /><TextArea label="Visual references" hint="One rule or reference per line" value={references} onChange={(event) => setReferences(event.target.value)} /><TextArea label="Avoid" hint="One negative rule per line" value={negativeRules} onChange={(event) => setNegativeRules(event.target.value)} /></div> : <Button variant="secondary" size="small" onClick={() => setShowDetails(true)}>{style ? "Edit brand details" : mode === "website" ? "Review brand details" : "Add brand details"}</Button>}</>}
     <fieldset className="style-options"><legend>Use it for</legend><ListGroup>{intents.map((profile) => <ListRow className={`style-choice ${intent === profile.id ? "selected" : ""}`} key={profile.id}><ListRowAction aria-pressed={intent === profile.id} onClick={() => setIntent(profile.id)}><span><strong>{profile.title}</strong><small>{profile.detail}</small></span></ListRowAction></ListRow>)}</ListGroup></fieldset>
-    {reviewed && <div className="style-preview"><div className="palette-preview" data-domain-ui="palette-preview"><i style={{ background: accent }} /><i style={{ background: ink }} /><i style={{ background: paper }} /></div><div className="type-preview" data-domain-ui="type-preview"><strong>Aa</strong><span>{splitLines(fonts)[0] ?? "System type"} · clear hierarchy</span></div></div>}{mode === "website" && !reviewed ? <Button disabled={busy || !website.trim()} onClick={reviewWebsite}>Review style</Button> : (!locked || dirty) && <Button disabled={busy || !name.trim() || !accent.trim() || !ink.trim() || !paper.trim()} onClick={saveStyle}>{locked ? "Update style" : "Use this style"}</Button>}
+    {reviewed && <div className="style-preview"><div className="palette-preview" data-domain-ui="palette-preview"><i style={{ background: accent }} /><i style={{ background: ink }} /><i style={{ background: paper }} /></div><div className="type-preview" data-domain-ui="type-preview"><strong>Aa</strong><span>{splitLines(fonts)[0] ?? "System type"} · clear hierarchy</span></div></div>}{mode === "website" && !reviewed ? <Button disabled={busy || !website.trim()} onClick={reviewWebsite}>Review style</Button> : (!locked || dirty) && <Button disabled={busy || !name.trim() || !accent.trim() || !ink.trim() || !paper.trim()} onClick={saveStyle}>{locked ? "Update style" : "Use this style"}</Button>}</>}
   </SideSheet>;
 }
 

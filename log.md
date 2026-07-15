@@ -4505,3 +4505,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Live GPT-5.6 Map reasoning, six GPT Image 2 outputs, provider narration, and one Realtime microphone turn remain spend-gated and unproved.
 - Founder footage, primary `/feedback` Session ID, final edit, public upload, and Devpost submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 11:45 CT — Saved Styles make the second Workshop materially faster
+
+**Area:** Product / Style / Return visit / UI / Testing
+
+### Changed
+
+- Added a small global SQLite `style_library` table for reusable local Style snapshots. Each applied Workshop Style still receives its own version, `DESIGN.md`, tokens, and downstream dependency state.
+- Manual and website Styles now save automatically by stable Style identity. A new `applyStyleLibrary` service and API command copies the exact palette, authorized assets, licensed fonts, visual rules, negative rules, source type, reference URL, and Intent Profile into the active Workshop.
+- Added `Saved styles` to the existing Style sheet using only the approved `SideSheet`, `ListGroup`, `ListRow`, `ListRowAction`, palette preview, and Button primitives. No tab, Style dashboard, or persistent navigation was added.
+- Simplified the new-Workshop state after live inspection: when a saved Style exists, the sheet shows that choice first and hides the full website/manual editor behind one secondary `Create another style` action.
+
+### Verified
+
+- In an isolated Codex in-app browser run, the Build Week Workshop saved `WorkshopLM editorial`; a separate `Weekly client update` Workshop ingested a meeting note, approved its Brief, displayed that saved Style as the only primary choice, and applied it in one click.
+- SQLite inspection confirmed one library snapshot shared by two Workshops while both Workshops retained independent Style version 1 records and their own generated design artifacts.
+- A dedicated service test applies a different saved Style to a Workshop with a current deck and verifies the deck and Storyboard become stale, Storyboard approval is revoked, and the applied Style remains current.
+- `pnpm check` passed across all 13 packages. Worker passed 59/59 tests and web passed 13/13 tests. `pnpm demo:e2e` passed all six gates; the 16-asset submission set verified `valid: true`, `stale: false`, and `tampered: false` while remaining honestly `partial`.
+- Evidence and the 1280×720 live screenshot are recorded in `artifacts/spikes/style-library-2026-07-15.json` and `artifacts/spikes/style-library-ui-2026-07-15.jpg`.
+
+### Decisions
+
+- The library stores reusable snapshots; it does not silently mutate existing Workshops when a similarly named Style is changed later. Professionals choose when a Workshop adopts a Style change, and normal staleness rules then make the consequence visible.
+- The Intent Profile travels with a saved Style because `Client pitch`, `Board presentation`, and `Team workshop` are full aesthetic systems, not transient renderer flags.
+- Saved-first progressive disclosure is the default return-visit experience. Brand setup remains available but no longer competes with the one-click reuse path.
+
+### Open items
+
+- Complete the weekly rhythm by verifying new meeting → refreshed Map and Brief → regenerated deck with the reused Style and intact claim trace as one live scenario.
+- Produce a genuinely external professional deck and obtain a cold send-or-revise judgment.
+- Live GPT-5.6 Map reasoning, six GPT Image 2 outputs, provider narration, and one Realtime microphone turn remain spend-gated and unproved.
+- Founder footage, primary `/feedback` Session ID, final edit, public upload, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
