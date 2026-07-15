@@ -3654,3 +3654,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Complete five independent first-time orientation reviews before recording; repair any critical finding.
 - Run and inspect the authorized live GPT-5.6, GPT Image 2, Realtime microphone, and provider narration paths before upgrading their claims.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 01:49 CT — Governing design system reconciled to the shipped interface
+
+**Area:** Product design / canonical language / implementation guardrails
+
+### Changed
+
+- Reconciled root `DESIGN.md` to the locked no-tabs product instead of leaving legacy instructions beneath a simplification preface. Removed conflicting prescriptions for Studio, Library, source rails, raw technical-file views, a host strip, `Generate package`, `Approve map as brief`, and `Approve storyboard & render`.
+- Rewrote the surface model and primary screens around the implemented objects and actions: one current object, contextual Sources sheet, editable Map, readable Brief, Style sheet, durable Outputs history, editable Storyboard, `Create video`, exact Source evidence, and the focused Video's `Show original` reveal.
+- Corrected the design system's machine-readable contract reference from the nonexistent `apps/web/app/oai-ui-contract.ts` to `packages/ui/src/contract.ts` plus its enforcing web test.
+- Aligned the responsive specification with the implemented boundary: spatial Map on desktop and compact widths, semantic review outline at mobile, and no fake miniature whiteboard.
+- Replaced unsupported signature motion and crowded technical-state requirements with the actual restrained motion and progressive-disclosure rules.
+- Added a deterministic design-document assertion to `oai-ui-contract.test.ts`. It rejects the legacy section names and actions and requires the canonical objects, approvals, evidence actions, and official contract path.
+
+### Verified
+
+- The updated UI contract passed 11/11 unit tests, including the new design-document alignment case.
+- Static search found the remaining `FRAME.md` and `DESIGN.md` references only in explicit technical-export boundaries; `host strip` remains only in a prohibition. No legacy action or legacy primary-screen heading remains.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; worker tests remained 38/38 and web tests increased to 11/11.
+- `pnpm demo:e2e` passed all six recorded gates with two rendered Outputs, six planned image panels, five Storyboard panels, and a local MP4.
+- `pnpm submission:build` rebuilt the 12-asset `partial` set with provider limitations intact; `pnpm submission:verify` returned `valid: true`, `stale: false`, and `tampered: false`.
+- `git diff --check` passed.
+
+### Decisions
+
+- A governing design document may mention technical export names only to keep them out of the primary UI. It may not prescribe them as default product views.
+- Design-language consistency is now executable. Future changes that restore the crowded MVP's vocabulary or actions fail the normal workspace test instead of relying on a reviewer to remember the correction.
+- The product design lock is stronger, but the independent first-time orientation gate remains open because document and automated checks are not substitutes for five fresh human reviews.
+
+### Open items
+
+- Complete five independent first-time orientation reviews and repair any critical finding before final recording.
+- Replace fixture-only image, voice, reasoning, and narration evidence with inspected provider-backed artifacts before upgrading public claims.
+- Capture the dated founder brainstorm, Codex doorway footage, representative `/feedback` Session ID, final public video, stable release, and submitted links.
+- Codex Session ID: unavailable on this surface; not inferred.

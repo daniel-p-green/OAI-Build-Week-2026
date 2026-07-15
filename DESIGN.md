@@ -1,8 +1,8 @@
 # WorkshopLM Interface Design System
 
-Status: revised simplification direction for the hackathon build (2026-07-14)
+Status: locked simplified interface for the hackathon build (updated 2026-07-15)
 
-This file governs WorkshopLM's product UI. Per-Workshop brand systems generated from customer sources are separate artifacts stored with that Workshop as `DESIGN.md` plus machine-readable tokens.
+This file governs WorkshopLM's product UI. A Workshop's generated brand system is a separate technical export stored as `DESIGN.md` plus machine-readable tokens; it does not control WorkshopLM chrome.
 
 ## Design thesis
 
@@ -10,22 +10,22 @@ WorkshopLM is a **conversation-native thinking and production canvas**, not an A
 
 It should feel native inside ChatGPT/Codex: one calm artifact surface, a clear next action, and complexity revealed only in context. Customer brand expression belongs inside generated work; WorkshopLM's structural chrome inherits the host's neutral system language without copying OpenAI marks or implying an official OpenAI product.
 
-The memorable visual remains **evidence becoming structure**: a native ChatGPT conversation creates cited cards on a spacious Map, those cards become an approved brief, and the same content becomes a gallery of polished outputs.
+The memorable visual remains **evidence becoming structure**: a native ChatGPT conversation creates cited cards on a spacious Map, those cards become an approved Brief, and the same content becomes recognizable professional Outputs.
 
 ## Simplification rule
 
-The product may be technically deep, but the default viewport must not expose the whole system. WorkshopLM renders **one current object at a time**. It has no persistent tabs, stage selector, or generic Library drawer inside a Workshop. Map, Brief, the output package, Storyboard, and every generated asset are reached through Back, direct links, the host conversation, or the current screen's one contextual action.
+The product may be technically deep, but the default viewport must not expose the whole system. WorkshopLM renders **one current object at a time**. It has no persistent tabs, stage selector, generic Library, or destination rail inside a Workshop. Map, Brief, Outputs, Storyboard, Video, and each selected Output are reached through Back, a direct link, the host conversation, or the current screen's one contextual action.
 
-Sources, Style, Trace, creation controls, jobs, versions, and technical provenance are contextual drawers, sheets, inspectors, or disclosures. This rule supersedes older clauses in this document that prescribe persistent rails, center tabs, output filters, a host strip, or Studio as an always-open production console.
+Sources, Style, source evidence, creation controls, jobs, versions, and technical details are contextual sheets, inspectors, or disclosures. The default view shows the current work, `{n} sources`, and one next action—nothing else.
 
 ## Surface model
 
 WorkshopLM has two coordinated native surfaces:
 
 1. **ChatGPT task** — conversation, voice, questions, reasoning, and plugin commands.
-2. **In-app browser Workshop** — Sources, Map, FRAME.md/DESIGN.md review, Studio, asset batches, storyboard, final outputs, and provenance.
+2. **In-app browser Workshop** — Sources, Map, Brief, Style, Outputs, Storyboard, Video, and exact source evidence.
 
-The browser contains no second chat transcript, composer, or capture textarea. ChatGPT remains the conversation and voice surface. If native voice synchronization fails its July 14 spike deadline, the capture-only fallback remains an implementation seam invoked from the host—not a competing browser interface.
+The browser contains no second chat transcript or general chat composer. ChatGPT remains the conversation surface. The final demo voice path is a narrow capture-only Realtime control inside `Add source`; it records a transcript Source and disappears when the sheet closes.
 
 The inline plugin widget is a single-purpose doorway. It shows Workshop title, source count, current outcome/status, and at most two actions: one primary `Open workshop` action and one optional contextual secondary action. It has no tabs, nested navigation, or duplicate composer.
 
@@ -35,11 +35,11 @@ The inline plugin widget is a single-purpose doorway. It shows Workshop title, s
 
 Before a component or style is implemented, record its exact Figma name and source node or variable identifier in the project inventory. If the library has no matching primitive, compose verified library primitives; do not create a new visual language. WorkshopLM-specific content may remain custom only where it expresses the product's domain rather than application chrome—for example Map nodes and edges, evidence-path geometry, generated artifact imagery, charts, slide previews, and storyboard media. The frames, controls, labels, menus, sheets, status treatments, and typography around that content still come from the official library.
 
-The verified source inventory is [research/openai-apps-figma-component-inventory-2026-07-14.md](research/openai-apps-figma-component-inventory-2026-07-14.md). The tables below are now reconciled to that file. `apps/web/app/oai-ui-contract.ts` is the machine-readable implementation allowlist.
+The verified source inventory is [research/openai-apps-figma-component-inventory-2026-07-14.md](research/openai-apps-figma-component-inventory-2026-07-14.md). The tables below are reconciled to that file. `packages/ui/src/contract.ts` is the machine-readable implementation allowlist, and `apps/web/app/oai-ui-contract.test.ts` enforces the boundary.
 
 ## Visual atmosphere
 
-Calm, exact, and native to the ChatGPT/Codex environment. **Use the official chrome; reserve invention for the work itself.** WorkshopLM's identity lives in three proprietary work surfaces: the relational Map, the synchronized evidence trace, and the coherent output package/storyboard.
+Calm, exact, and native to the ChatGPT/Codex environment. **Use the official chrome; reserve invention for the work itself.** WorkshopLM's identity lives in three proprietary work surfaces: the relational Map, exact source paths, and coherent Outputs and Storyboard media.
 
 Avoid:
 
@@ -75,7 +75,7 @@ Color communicates evidence state only when paired with an icon and text label.
 - **Interface:** SF Pro on web through the Apple system font stack.
 - **Workshop titles:** use the same system family with restrained weight and size changes.
 - **Generated artifacts:** may use the active Workshop style library inside the artifact preview only.
-- **Evidence, locators, timing, and provenance:** use system body-small styling; monospace is reserved for explicit technical detail views.
+- **Evidence, locators, timing, and technical details:** use system body-small styling; monospace is reserved for explicit technical detail views.
 - Heading 1: 36/40, semibold, -0.10px tracking.
 - Heading 2: 24/28, semibold, -0.25px tracking.
 - Heading 3: 18/26, semibold, -0.45px tracking.
@@ -98,25 +98,25 @@ Design first for the ChatGPT in-app browser at approximately 1200×800, then ver
 │                     one focused canvas                               │
 │              Map / Brief / selected Output                           │
 │                                                                      │
-│  optional source drawer                    optional context inspector│
+│  optional Sources sheet                    optional claim inspector │
 │                                                                      │
 │                 contextual approval bar when ready                   │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-- Top bar: 52px, flat white `Navigation/Header`. It contains Back, the current object title and purpose, a source-scope Token, and one context-sensitive primary Button.
+- Top bar: 52px, flat white `Navigation/Header`. It contains Back when needed, `Workshop / current object`, the `{n} sources` secondary Button, and at most one context-sensitive primary Button.
 - The current object title is not navigation. Object changes come from the active workflow, direct links, Back, or the host conversation.
-- Sources: closed by default; a 360px reference column may expand to 420px for readable ListRows and evidence excerpts.
-- Creation: one `Generate package` action creates the configured deliverable set. Output-type customization is secondary. There is no permanent Studio rail.
-- Context inspector: closed by default and appears only after selecting a Map node, citation, storyboard panel, or output element. Its title is specific—Evidence, Claim, Source, Panel, or Artifact—never generic Details.
+- Sources: closed by default; the same control opens an official SideSheet from every object and returns focus to its trigger when closed.
+- Creation: `Create outputs` produces the configured deliverables from the approved Brief, current Style, and active Sources. `Update outputs` replaces it when dependencies change or creation is partial.
+- Context inspector: closed by default and appears only after selecting a Map claim. Its title and actions are specific; source evidence always opens the `Source` sheet.
 - Center: at least 80% of default workspace width and never narrower than 640px on desktop.
-- Host synchronization and technical state live under Details. Do not reserve a permanent bottom strip.
+- Technical state is absent from the default path. Do not reserve a permanent host strip, activity strip, status bar, or bottom approval bar.
 
 ## Primary screens
 
 ### 1. Workshop entry
 
-Open the last active Workshop or the sanitized demo Workshop immediately. A compact Workshop switcher in the title bar replaces a large dashboard for the judged path. An optional library route may show a restrained card/list hybrid, but it must not delay the first useful state.
+Open the last active Workshop or sanitized demo Workshop immediately on its Map. Do not insert a dashboard, chooser, onboarding carousel, or Workshop library into the judged path.
 
 ### 2. Map — default visual home
 
@@ -127,52 +127,50 @@ The Map is the product's hero screen and opens by default after a task is linked
 - Thin arrows expose direct source→node evidence and semantic node→node relationships. The canonical graph and durable locators remain the truth; Excalidraw owns presentation geometry only.
 - Users drag and resize semantic nodes directly and double-click their bound text to edit it. Position, size, and title changes persist through typed graph operations, invalidate approved downstream work, and can be restored through WorkshopLM's `Undo` action.
 - Selecting a node opens one contextual claim inspector. `Show source` opens the exact source excerpt and locator, and closing the sheet returns to the selected Map context.
-- Source nodes are reference anchors rather than freeform content. Selecting one opens its source trace instead of introducing a second inspector or navigation system.
+- Source nodes are reference anchors rather than freeform content. Selecting one opens the Source sheet instead of introducing a second inspector or navigation system.
 - Desktop and compact widths render the spatial canvas. Mobile renders a calm review outline over the same semantic graph; it does not pretend to be a miniature whiteboard.
 - The approval action reads `Approve brief`; after approval, the same position becomes `View brief`.
 
-Signature motion: when new ChatGPT turns synchronize, small ink pulses enter from the host strip, pause as candidate notes, then settle into a cluster. The movement lasts under 700ms and respects reduced motion.
+The hackathon path does not depend on ingestion animation. New nodes may appear with a short standard transition only when it helps the user understand what changed; reduced-motion mode removes it.
 
-### 3. Source rail
+### 3. Sources sheet
 
 Source rows show:
 
 - source type and title;
 - origin: `Local`, `ChatGPT task`, `Granola`, `Drive`, or other connected app;
-- indexed/parsed status;
 - source selection checkbox;
 - grounded-claim count;
-- permission/privacy state when relevant.
+- a selected-source preview with exact excerpt and locator.
 
-Clicking a source opens an adjacent evidence sheet over part of the center, not a full navigation away. The sheet shows searchable normalized content with highlighted chunk/locator and a `Show on Map` action.
+Clicking a row updates the preview without navigating. `Show on map` closes the sheet, returns to Map, and selects the related semantic node. A factual citation uses `Show source` to open the exact excerpt and locator in the Source sheet.
 
-### 4. Brief and Design review
+### 4. Brief and Style
 
-`FRAME.md` and per-Workshop `DESIGN.md` render as designed documents with a split view:
+The Brief is a readable product view, not raw Markdown. It shows the approved outcome, evidence, success condition, source locators, and current Style in one centered document.
 
-- readable formatted document on the left;
-- executable fields/tokens and provenance on the right.
+Style opens as an official SideSheet. It previews the name, exact palette, and type treatment; website-derived or manual inputs resolve into the same versioned Style data. Updating Style marks dependent work `Needs update`.
 
-Editing a field previews exactly which outputs would become stale. Style review uses real palette, type, logo, image-treatment, and layout previews—not a JSON form.
+Technical exports such as `FRAME.md`, `DESIGN.md`, tokens, model IDs, hashes, and version mechanics appear only under technical Details or export. They never replace the formatted Brief or Style views.
 
-### 5. Coherent output package
+### 5. Outputs history
 
-After Brief and Style approval, the output package becomes the primary home. Every completed output has a distinct real thumbnail or playable preview above its metadata.
+After Brief approval and Style selection, Outputs becomes the durable history of professional work. Every completed Output has a distinct real thumbnail or playable preview above quiet metadata.
 
-- One `Generate package` action creates the selected output types from the same Brief, Style, and source scope.
-- The package header surfaces Brief version, Style version, active source count, and stale status.
-- Each artifact shows its own aspect ratio, Style version, citation coverage, current/stale state, and one Open or Trace action.
-- A compact activity disclosure shows real job stages, cancellation, failures, and partial success.
-- Current, stale, failed, and partial outputs remain visible and honest without exposing internal artifact paths.
+- `Create outputs` creates the selected types from the same Brief, Style, and source scope.
+- Presentation and infographic versions remain visible newest-first with a real preview, type, version, freshness, source coverage, and one card-level open action.
+- Image set, Storyboard, and Video summaries expose source coverage and honest readiness without competing with primary history.
+- `Needs update` and partial messages appear only when they change the next action; current, stale, failed, and partial work remains visible without internal paths.
+- A focused factual Output uses `Show source`; the focused Video uses `Show original` for the meta-demo before/after reveal.
 - Provider-planned images remain explicitly labeled until genuine provider bytes exist.
 
 ### 6. Image batch
 
-Use a contact-sheet layout with one dominant selected image and five coherent companions. Show shared Visual DNA, locked references, palette, and regeneration controls in a narrow inspector. `Regenerate selected` may not disturb sibling asset IDs or versions.
+Use a compact contact sheet for six visually coherent panels. Each tile says `Planned`, `Ready`, `Needs update`, or `Couldn't create`. Shared Style, references, palette, and selective regeneration belong in a contextual inspector; regenerating one panel may not disturb sibling IDs or versions.
 
 ### 7. Storyboard
 
-Use a horizontal filmstrip above a large selected-panel editor. Every panel displays duration, claim/source badges, narration state, and stale status. The second and final blocking action reads `Approve storyboard & render` only when every required panel is current.
+Use a horizontal filmstrip above a large selected-panel editor. Every panel displays duration, editable title and narration, source access, and stale status. The second and final blocking action is `Approve storyboard`. Only after approval does the same header position become `Create video`.
 
 ### 8. Source evidence and original reveal
 
@@ -200,7 +198,7 @@ For the meta-demo, the focused Video replaces `Show source` with one secondary `
 Motion explains state change:
 
 - synchronized turn → candidate notes → settled cluster;
-- approval → brief sheet folds into Studio inputs;
+- brief approval → the current Map becomes the readable Brief;
 - output job → visible staged progression;
 - stale propagation → affected paths illuminate, then settle with persistent labels;
 - storyboard approval → panels lock in sequence before render begins.
@@ -209,9 +207,9 @@ No looping ambient animation. Standard transitions are 140–220ms; the signatur
 
 ## Responsive behavior
 
-- **Wide desktop (≥1280):** one current object with optional source drawer or context inspector; both are closed by default.
-- **Compact desktop/tablet (800–1279):** only one drawer may be open at a time; center remains primary.
-- **Mobile (<800):** review companion only—Sources, transcript/evidence, approvals, output review, and `Continue in ChatGPT`. Do not render a fake miniature whiteboard or full slide editor.
+- **Wide desktop (≥1200):** one current object with an optional Sources sheet or claim inspector; both are closed by default.
+- **Compact desktop/tablet (621–1199):** one current object; only one sheet or inspector may be open at a time.
+- **Mobile (≤620):** review and approval companion. Map becomes a semantic outline; Sources, evidence, Brief, Outputs, Storyboard, Video, and the original reveal remain readable. Do not render a fake miniature whiteboard or full slide editor.
 
 The judged desktop path must be visually complete at 1200×800 and remain usable at 1024×768.
 
@@ -228,11 +226,11 @@ The judged desktop path must be visually complete at 1200×800 and remain usable
 
 The three-minute video should capture these visual beats:
 
-1. ChatGPT voice/text task beside the empty Workshop Map.
-2. Messy turns resolve into cited clusters on the Map.
-3. One evidence path opens from claim to exact source locator.
-4. `Approve map as brief` creates the designed FRAME.md view.
-5. Website-derived style visibly changes the same content system.
-6. The approved system produces one coherent package: contact sheet, deck, infographic, storyboard, and video.
-7. `Approve storyboard & render` runs local HyperFrames.
-8. A compact plugin trace widget opens the provenance view, which reveals that the displayed submission came from the original raw task.
+1. A Codex-side WorkshopLM doorway opens the local Workshop.
+2. A dated brainstorm Source becomes cited clusters on the editable Map.
+3. `Show source` opens one exact excerpt and locator; a Map edit makes dependent work `Needs update`.
+4. `Approve brief` creates the readable Brief.
+5. Style visibly locks the palette and type system for every Output.
+6. `Create outputs` produces the presentation, infographic, image set, and editable Storyboard.
+7. `Approve storyboard` enables `Create video`; the local worker renders the approved current Storyboard.
+8. A focused factual Output opens its Source; the focused Video uses `Show original` to reveal the brainstorm beside the five connected Outputs.
