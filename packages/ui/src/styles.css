@@ -180,6 +180,9 @@
   box-shadow: 0 4px 16px rgba(0,0,0,.05);
 }
 .oai-entity-card { overflow: hidden; }
+.oai-entity-card-action { width: 100%; padding: 0; color: var(--oai-text-primary); font-family: var(--oai-font); text-align: left; cursor: pointer; }
+.oai-entity-card-action:hover { border-color: rgba(13,13,13,.28); box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+.oai-entity-card-action:focus-visible { outline: 2px solid var(--oai-blue); outline-offset: 2px; }
 .oai-list-group { overflow: hidden; border-top: 1px solid var(--oai-border-subtle); border-bottom: 1px solid var(--oai-border-subtle); }
 .oai-list-row { min-height: 68px; display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--oai-border-subtle); background: var(--oai-bg-primary); }
 .oai-list-row:last-child { border-bottom: 0; }
@@ -188,6 +191,11 @@
 .oai-carousel { display: grid; gap: 16px; }
 .oai-carousel-row { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: thin; }
 
+.oai-side-sheet { position: absolute; z-index: 40; top: 52px; right: 0; bottom: 0; width: min(440px, 100vw); padding: 24px; overflow-x: hidden; overflow-y: auto; border-left: 1px solid var(--oai-border); background: var(--oai-bg-primary); box-shadow: -8px 0 32px rgba(0,0,0,.08); }
+.oai-side-sheet > header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.oai-side-sheet > header h2 { margin: 0; font-size: 24px; font-weight: 600; line-height: 28px; letter-spacing: -.25px; }
+.oai-side-sheet > .oai-field { margin-bottom: 16px; }
+
 .oai-file-icon { position: relative; width: 44px; height: 44px; flex: 0 0 44px; display: grid; place-items: center; border-radius: 10px; color: var(--oai-text-secondary); background: var(--oai-bg-tertiary); }
 .oai-file-icon svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linejoin: round; }
 .oai-file-icon small { position: absolute; bottom: 3px; font-size: 7px; font-weight: 700; line-height: 1; }
@@ -195,4 +203,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .oai-button, .oai-tooltip { transition: none; }
+}
+
+@media (max-width: 620px) {
+  .oai-side-sheet { padding: 20px 16px; }
 }

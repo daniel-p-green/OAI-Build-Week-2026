@@ -3255,3 +3255,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Implement the reopened P0 screen-by-screen checklist before treating the UI as final.
 - Provider-backed image and narration proof remains separately open and may proceed without changing the UI files.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 23:46 CT — Judge path rebuilt around one calm work object
+
+**Area:** Product UI / official component conformance / planning
+
+### Changed
+
+- Rebuilt the active Workshop around one current object and one state-dependent primary action. Back now appears only for nested work; Map, Brief, Outputs, Storyboard, and focused Output no longer repeat their page title or approval controls in the body.
+- Replaced raw Brief Markdown with a readable executive document. Moved Style from a permanent competing panel into a compact Brief summary and an on-demand task sheet.
+- Made each Output card the single open action, moved source trace into the focused Output, removed repeated freshness/source controls, and gave the selected Output the full work area.
+- Reduced Storyboard to one filmstrip, one selected panel, and one editor. `Save` appears only after an edit; the header changes from `Approve storyboard` to `Create video` after approval.
+- Added the official-grounded `EntityCardAction` and `SideSheet` composites to `packages/ui`, the machine-readable contract, the Figma inventory, and the final screen-to-component reconciliation.
+- Simplified generated Output and Storyboard language so judge-visible work no longer exposes `FRAME`, Visual DNA, or production-pipeline jargon.
+- Preserved Daniel's rough six-phase submission sequence as `docs/planning/2026-07-14-submission-sequence-rough.md`. It is deferred input and does not override `GOAL.md`, the dated execution plan, or the current interface priority.
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. The worker suite passed 34/34, the UI contract passed 3/3, and the web shell contract passed 5/5.
+- `pnpm demo:e2e` passed the recorded Capture → Map → Brief → Outputs → Storyboard → Video seam with all six gates true, two traced rendered outputs, five storyboard panels, and a rendered video artifact.
+- `pnpm demo:live` passed the isolated preflight with two approvals and two traced outputs; `paidCallsMade` remained `false`.
+- The production visual suite passed 8/8 while replacing the deliberate baselines, then passed 8/8 again without baseline updates. It covers reset and complete states at 1200×800, 1024×768, and 390×844; keyboard completion of both approvals; focus return; official computed styles and interaction states; screen-reader names; reduced motion; contrast; 200%-equivalent reflow; and no horizontal overflow.
+- Inspected the final Map, Brief, Style, Outputs, Storyboard, focused Output, Sources, and Evidence screenshots at desktop and mobile widths. The Style sheet is a 440px contextual desktop layer and a clear full-width mobile task; the mobile focused Output uses a scaled document viewport rather than clipping its generated content.
+
+### Decisions
+
+- The official component foundation is necessary but not sufficient. Screen composition, visible language, and progressive disclosure remain separately evidenced completion gates.
+- The simplified judge path is now the canonical UI. Provider-backed image media may land without reopening the screen architecture unless live evidence reveals a concrete failure.
+- Five independent five-second orientation reviews remain a human proof gate; passing automated UI tests is not substituted for first-time comprehension.
+
+### Open items
+
+- Generate and inspect the provider-backed GPT Image 2 set before closing the visual Outputs-gallery item.
+- Cover the remaining empty, loading, partial, error, and needs-update presentations before closing the full system-states item.
+- Conduct five independent first-time reviews and repair any critical navigation failure before final recording.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -23,6 +23,7 @@ export const OAI_UI_COMPONENTS = {
   entityCardMedia: "2117:34873",
   carousel: "2004:30840",
   carouselRow: "2004:29867",
+  sideSheetHeader: "2123:26990",
 } as const;
 
 export const OAI_UI_TOKENS = {

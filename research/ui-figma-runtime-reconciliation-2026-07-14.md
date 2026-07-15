@@ -20,6 +20,8 @@ This table records the first implementation-level reconciliation after the false
 | Navigation/Header `2:626` | `NavigationHeader` | 52px; 8px vertical; 4px left; 16px right | 52px with exact padding; current object remains visible at 390px | desktop, 1024px, 390px | every recorded screen |
 | ListGroup `2004:21591`; ListRow `2002:21224` | `ListGroup`, `ListRow`, `ListRowAction` composite | 68px row; 12px 16px; 12px gap; 44px media; 5% divider | 68px minimum; official padding/gap; 44px file media; 5% divider; transparent row action reuses official title/subtitle typography and blue focus | selected source, checkbox change, row action, keyboard focus | `sources-390x844.png` |
 | Full screen `2133:27199`; mobile header `2124:13243` | `FullScreenShell` plus `NavigationHeader` | stable full-screen frame with responsive header | 1200, 1024, and 390 CSS px; 390px document width equals viewport width | desktop and mobile | `map-1024x768.png`, `map-390x844.png` |
+| EntityCard / Media or map `2117:34873` + Button `2:465` | `EntityCardAction` | Official media-card geometry with the entire card acting as one keyboard-focusable open action | Card border, radius, shadow, media layout, and button focus behavior remain inherited from the mapped primitives; no nested duplicate Open control | default, hover, keyboard focus, focused Output route | `desktop-outputs.png`, `desktop-output-viewer.png`, and mobile equivalents |
+| Full screen side column + sidebar header `2123:26990` | `SideSheet` | Temporary task layer with the official white surface, header geometry, close IconButton, and content composed from mapped primitives | 440px desktop task column; full-width mobile layer; header and close control use the official component styles | Sources, Evidence, Add source, Style; open, close, keyboard focus return | `desktop-style.png`, `mobile-style.png`, Sources and Evidence baselines |
 
 ## Named composites
 
@@ -28,6 +30,20 @@ The official kit marks Inspector as coming soon. The source sheet, evidence shee
 ## Behavioral comparison to NotebookLM
 
 The implementation deliberately borrows NotebookLM's strongest orientation behaviors without copying its Google chrome: the Workshop and current object stay fixed in the header; one source count opens the same source list from every object; source selection is directly visible; outputs are named durable objects with previews and one open action; and a citation opens the exact excerpt and locator. The center remains a professional Map, Brief, Outputs view, or editable Storyboard rather than a duplicate chat surface.
+
+## Final screen-to-component reconciliation
+
+| Surface | Final composition | Domain-content exception | Final screenshot evidence |
+| --- | --- | --- | --- |
+| Shared frame | `FullScreenShell` + `NavigationHeader` + `Button`/`IconButton` | none | all desktop, compact, and mobile baselines |
+| Map | `Card`, `Token`, `Button`, contextual `ClaimInspector` | relationship geometry, evidence paths, source/claim nodes | `desktop-map.png`, `compact-map.png`, `mobile-map.png` |
+| Sources | `SideSheet` + `ListGroup`/`ListRow`/`ListRowAction` + `Checkbox` + `Button` | source document thumbnail content | `desktop-sources.png`, `compact-sources.png`, `mobile-sources.png` |
+| Evidence | `SideSheet` + official body/caption type + `Button` | quoted source excerpt | `desktop-evidence.png`, `compact-evidence.png`, `mobile-evidence.png` |
+| Brief | readable document inside the official shell + compact Style summary + `Button` | approved Brief content | `desktop-brief.png`, `compact-brief.png`, `mobile-brief.png` |
+| Style | `SideSheet` + `Input` + official color/style preview + contextual `Button` | selected brand values | `desktop-style.png`, `compact-style.png`, `mobile-style.png` |
+| Outputs | `Carousel` + `EntityCardAction` with generated-media previews | rendered presentation, infographic, image, storyboard, and video media | `desktop-outputs.png`, `compact-outputs.png`, `mobile-outputs.png` |
+| Storyboard | `CarouselRow` + `Card` + `Input` + `TextArea` + contextual `Button` | storyboard frames and filmstrip imagery | `desktop-storyboard.png`, `compact-storyboard.png`, `mobile-storyboard.png` |
+| Focused Output | official shell + `Button`/`ButtonLink` around a full-size generated-media viewport | embedded generated document/video | `desktop-output-viewer.png`, `compact-output-viewer.png`, `mobile-output-viewer.png` |
 
 ## Fidelity ledger
 

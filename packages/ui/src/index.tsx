@@ -117,12 +117,22 @@ export function EntityCard({ className, ...props }: HTMLAttributes<HTMLElement>)
   return <article className={classes("oai-entity-card", className)} data-oai-component="EntityCard" {...props} />;
 }
 
+export const EntityCardAction = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement>>(
+  function EntityCardAction({ className, type = "button", ...props }, ref) {
+    return <button ref={ref} type={type} className={classes("oai-entity-card", "oai-entity-card-action", className)} data-oai-component="EntityCardAction" {...props} />;
+  },
+);
+
 export function Carousel({ className, ...props }: HTMLAttributes<HTMLElement>) {
   return <section className={classes("oai-carousel", className)} data-oai-component="Carousel" {...props} />;
 }
 
 export function CarouselRow({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={classes("oai-carousel-row", className)} data-oai-component="CarouselRow" {...props} />;
+}
+
+export function SideSheet({ title, onClose, className, children, ...props }: HTMLAttributes<HTMLElement> & { title: string; onClose: () => void }) {
+  return <aside className={classes("oai-side-sheet", className)} role="dialog" aria-modal="true" aria-label={title} data-oai-component="SideSheet" {...props}><header><h2>{title}</h2><IconButton label={`Close ${title}`} onClick={onClose}><CloseIcon /></IconButton></header>{children}</aside>;
 }
 
 export function ArrowLeftIcon() {

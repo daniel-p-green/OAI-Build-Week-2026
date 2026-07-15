@@ -50,10 +50,14 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await expect(page.getByRole("button", { name: /sources$/ })).toBeFocused();
   await pressTabUntil(page, "Approve brief");
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { name: "Turn raw thinking into finished, traceable work." })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Turn raw thinking into finished work");
+  await pressTabUntil(page, "Choose style");
+  await page.keyboard.press("Enter");
+  await expect(page.getByRole("dialog", { name: "Style" })).toBeVisible();
   await pressTabUntil(page, "Use this style");
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("button", { name: "Update style" })).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Style" })).toBeHidden();
+  await expect(page.getByRole("button", { name: "View outputs" })).toBeVisible();
 
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
@@ -61,7 +65,7 @@ test("reset fixture is calm and responsive", async ({ page }) => {
 
 test.describe("completed Workshop judge path", () => {
   for (const viewport of viewports) {
-    test(`${viewport.name} visual path`, async ({ page, context }) => {
+    test(`${viewport.name} visual path`, async ({ page }) => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await page.goto("/");
       await expect(page.getByRole("region", { name: "Map" })).toBeVisible();
@@ -84,7 +88,12 @@ test.describe("completed Workshop judge path", () => {
 
       await page.getByRole("button", { name: "View brief" }).click();
       await expectPrimaryActions(page, 1);
+      await expect(page.getByText("# FRAME.md", { exact: false })).toHaveCount(0);
       await expectScreen(page, `${viewport.name}-brief`);
+      await page.getByRole("button", { name: "Edit" }).click();
+      await expect(page.getByRole("dialog", { name: "Style" })).toBeVisible();
+      await expectScreen(page, `${viewport.name}-style`);
+      await closeDialog(page, "Style");
 
       await page.getByRole("button", { name: "View outputs" }).click();
       await expectPrimaryActions(page, 1);
@@ -92,23 +101,28 @@ test.describe("completed Workshop judge path", () => {
       await expect(page.getByRole("heading", { name: "Evidence infographic" })).toHaveCount(1);
       await expect(page.getByRole("heading", { name: "Image set" })).toHaveCount(1);
       await expect(page.getByRole("heading", { name: "Storyboard" })).toHaveCount(1);
+      await expect(page.getByRole("button", { name: "Show source" })).toHaveCount(0);
       await expectScreen(page, `${viewport.name}-outputs`);
 
-      const popupPromise = context.waitForEvent("page");
-      await page.getByRole("link", { name: "Open" }).first().click();
-      const popup = await popupPromise;
-      await popup.setViewportSize({ width: viewport.width, height: viewport.height });
-      await popup.waitForLoadState("networkidle");
-      await expectScreen(popup, `${viewport.name}-output-viewer`);
-      await popup.close();
+      await page.getByRole("button", { name: "Open Build Week presentation" }).click();
+      await expect(page.getByRole("heading", { name: "Build Week presentation" })).toBeVisible();
+      await expectScreen(page, `${viewport.name}-output-viewer`);
+      await page.getByRole("button", { name: "Back to Outputs" }).click();
 
       await page.getByRole("button", { name: "View storyboard" }).click();
       await expectPrimaryActions(page, 1);
+      await expect(page.getByRole("button", { name: "Save" })).toHaveCount(0);
       await expectScreen(page, `${viewport.name}-storyboard`);
+      const titleField = page.getByRole("textbox", { name: "Panel title" });
+      const originalTitle = await titleField.inputValue();
+      await titleField.fill(`${originalTitle} revised`);
+      await expect(page.getByRole("button", { name: "Save" })).toBeVisible();
+      await titleField.fill(originalTitle);
+      await expect(page.getByRole("button", { name: "Save" })).toHaveCount(0);
       if (viewport.name === "mobile") {
         await pressTabUntil(page, "Approve storyboard");
         await page.keyboard.press("Enter");
-        await expect(page.getByRole("button", { name: "Storyboard approved" })).toBeVisible();
+        await expect(page.getByRole("button", { name: "Create video" })).toBeVisible();
       }
     });
   }

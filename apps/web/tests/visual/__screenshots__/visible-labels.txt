@@ -1,14 +1,20 @@
-01Source-traceable deck4s
-02Evidence infographic4s
-03Coherent visual batch4s
-04Editable meta-demo storyboard4s
-05Narrated local video6s
+01Presentation4s
+02Infographic4s
+03Image set4s
+04Storyboard4s
+05Demo video6s
 3 sources
+Back to Brief
 Back to Map
+Back to Outputs
 Build Week presentation
+Build Week presentation2 cited claims
 Create video
 DerivedVoice capture fallbackUse a capture-only control when durable native voice linkage is not proven.Goal · capture
+Edit
+Evidence
 Evidence infographic
+Evidence infographic2 cited claims
 IdeaVisual behaviorEvidence first becomes an editable production system, not a static report.Design · Map
 Image set
 Outputs
@@ -16,15 +22,12 @@ PDFBuild Week brief3 claims
 Save
 Show source
 Storyboard
-Storyboard approved
+Success looks like
 TXTRaw voice brainstorm5 claims
-Turn raw thinking into finished, traceable work.
-Update outputs
-Update style
+Turn raw thinking into finished work without losing the trail back to source material.
 VerifiedJudge proofShow one continuous capture → map → brief → storyboard → rendered video seam.Build notes · §2
 VerifiedThe product promiseTurn raw thinking into finished work without losing the trail back to source material.Meeting · 12:41
 View brief
 View outputs
 View storyboard
 WEBWorkshopLM direction2 claims
-WorkshopLM editorial

@@ -13,7 +13,7 @@ const inventory = readFileSync(resolve(root, OAI_UI_SOURCE.inventory), "utf8");
 describe("official Apps in ChatGPT UI implementation", () => {
   it("pins every reusable shell family to the inspected Figma inventory", () => {
     for (const id of Object.values(OAI_UI_COMPONENTS)) expect(inventory).toContain(`\`${id}\``);
-    for (const component of ["FullScreenShell", "NavigationHeader", "Button", "ButtonLink", "IconButton", "Token", "Checkbox", "Input", "TextArea", "Card", "ListGroup", "ListRow", "ListRowAction", "EntityCard", "Carousel", "CarouselRow"]) {
+    for (const component of ["FullScreenShell", "NavigationHeader", "Button", "ButtonLink", "IconButton", "Token", "Checkbox", "Input", "TextArea", "Card", "ListGroup", "ListRow", "ListRowAction", "EntityCard", "EntityCardAction", "Carousel", "CarouselRow", "SideSheet"]) {
       expect(ui).toContain(`function ${component}`);
     }
   });
@@ -45,7 +45,7 @@ describe("official Apps in ChatGPT UI implementation", () => {
   });
 
   it("keeps internal product language out of visible copy", () => {
-    for (const retired of ["Grounding this Workshop", "Evidence becomes structure", "Production contract", "Visual contract", "Lock one coherent system", "Lock Style v1", "Update Style v1", "Coherent delivery package", "One system. Every format.", "Generate package", "Refresh package", "Open package", "Illuminate path on Map", "Highlight on Map", "Provider render pending", "Editable before the expensive step", "Prepare render"]) {
+    for (const retired of ["Grounding this Workshop", "Evidence becomes structure", "Production contract", "Visual contract", "Lock one coherent system", "Lock Style v1", "Update Style v1", "Coherent delivery package", "One system. Every format.", "Generate package", "Refresh package", "Open package", "Illuminate path on Map", "Highlight on Map", "Provider render pending", "Editable before the expensive step", "Prepare render", "FRAME.md", "DESIGN.md", "Storyboard approved", "Approval needed", "In use"]) {
       expect(page).not.toContain(retired);
     }
     for (const required of ["Approve brief", "Create outputs", "Show source", "Show on map", "Create video"]) expect(page).toContain(required);
