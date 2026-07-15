@@ -5837,3 +5837,37 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Product evidence gates remain unchanged: provider-backed Map/media, uncoached professional `Send`/`Revise`, ChatGPT Work invocation, founder recording, public links, and `/feedback` Session ID.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 17:55 CT — The 2:42 demo plan becomes a truthful reviewable rough cut
+
+**Area:** Meta-demo / Recording loop / Film verification
+
+### Changed
+
+- Added `pnpm demo:film:rough`, a repository-native builder that maps the ten-shot evidence-gated paper edit onto the twelve captured UI beats and assembles a real 2:42 review MP4.
+- Added restrained shot labels, bounded two-line captions, a four-percent editorial push-in, one midpoint review frame per shot, and a five-by-two contact sheet. Supported fixture shots are green; the five shots missing final evidence remain visibly amber.
+- Added an explicitly disclosed local macOS guide voice and time-fitted each clip to its exact edit slot. This track exists only for pacing review and is not represented as OpenAI narration.
+- Replaced the outdated `plugin widget` language in the film instructions with the actual Codex plugin doorway required by the locked product architecture.
+
+### Verified
+
+- `outputs/demo-film-rough-cut/workshoplm-demo-rough-cut.mp4` probes as 162.021 seconds with 1280×720 H.264 video and 48 kHz AAC audio, below the 175-second edit ceiling.
+- Audio volume measures −16.3 dB mean and −1.9 dB maximum. A −45 dB silence scan found no interval lasting 1.5 seconds.
+- Visually inspected the ten-shot contact sheet and representative full-resolution frames. The review loop caught and repaired clipped captions, a promise shot bleeding into the Sources action, static dead holds, and fixed-rate narration gaps up to 8.6 seconds.
+- `manifest.json` hashes the MP4, contact sheet, and all ten review frames, identifies every source beat, discloses the local guide voice, and preserves the five blocked evidence states.
+
+### Decisions
+
+- A rough cut is useful before provider footage only if it exposes rather than conceals missing proof. Evidence-pending shots therefore remain present and visibly labeled so their exact replacements are obvious.
+- Final publication still requires actual Codex doorway footage, founder/Realtime/GPT-5.6 capture, the inspected GPT Image 2 gallery, provider-narrated render, non-partial final Output set, and eligible `/feedback` Session ID.
+- Automated stream, volume, silence, and frame checks do not prove narration quality. A human audible review remains required for the final voice and mix.
+
+### Open items
+
+- Replace the five amber shots with their named live evidence instead of editing around them.
+- Put the external-use presentation in front of its intended professional audience and record `Send` or the first blocking revision.
+- Record one provider-verified Realtime turn, rerun the zero-spend preflight, obtain explicit request authorization, and run the provider-backed Map, image, and narration path.
+- ChatGPT Work invocation, founder recording, public links, final audio review, and the Devpost `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

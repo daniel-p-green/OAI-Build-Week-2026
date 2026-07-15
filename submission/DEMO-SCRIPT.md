@@ -49,7 +49,7 @@ Every answer must point to an inspected artifact in `log.md`. A missing or ambig
 2. If authorized, capture and log one GPT-5.6 runtime result and one image batch before choosing the provider-backed script lines.
 3. Retrieve the `/feedback` ID from the session that most honestly represents the core implementation; record the selected ID and rationale in `log.md`. If the surface still cannot produce one, contact the organizers immediately and preserve that correspondence.
 4. Capture and timestamp the raw founder brainstorm; label it truthfully as a current recording.
-5. Reset the sanitized fixture, rehearse the complete seam, and capture the required widget moment.
+5. Reset the sanitized fixture, rehearse the complete seam, and capture the required Codex plugin doorway moment.
 6. Record the first full take, edit to 2:40–2:45, and reject any export longer than 2:55.
 
 ## Repeatable fixture draft
@@ -68,6 +68,16 @@ This production-build command resets an isolated sanitized recording root, captu
 - `outputs/demo-recording-draft/original-reveal.png` as final-beat proof.
 
 The draft is screen-only fixture footage, not the final submission video. It deliberately keeps planned-image and deterministic-narration disclosures and omits the separately recorded Codex doorway. After live provider evidence exists, rerun the same capture against the provider-backed fixture and replace only the shots whose claim gates changed.
+
+## Editorial rough cut
+
+Assemble the current ten-shot plan before recording the final provider footage:
+
+```bash
+pnpm demo:film:rough
+```
+
+This writes a 2:42 review cut, manifest, ten shot frames, and contact sheet to `outputs/demo-film-rough-cut/`. The local macOS guide voice and every blocked shot are explicitly labeled. Use the cut to review pacing and replace only the five evidence-pending shots; never publish it as the provider-backed demo.
 
 ## Evidence-gated edit plan
 

@@ -1,0 +1,196 @@
+{
+  "schemaVersion": 1,
+  "status": "editorial-rough-cut",
+  "disclosure": "Truthful fixture rough cut with a local macOS guide voice. This is not provider narration, final host footage, or the public submission video.",
+  "builtAt": "2026-07-15T22:57:57.697Z",
+  "plan": "submission/demo-film-plan.json",
+  "sourceCapture": "outputs/demo-recording-draft/manifest.json",
+  "voice": {
+    "provider": "local macOS say",
+    "name": "Samantha",
+    "ratePolicy": "adaptive 120–180 words per minute",
+    "finalProviderNarration": false
+  },
+  "video": {
+    "relativePath": "workshoplm-demo-rough-cut.mp4",
+    "sha256": "3c9b97c4e2f0056a85cbfb7d9e910b15efbb558db56d9f3a47e207c3c7bb6e6a",
+    "durationSeconds": 162.021333,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "48000"
+      }
+    ]
+  },
+  "contactSheet": {
+    "relativePath": "contact-sheet.jpg",
+    "sha256": "e5d4b7f25442810745af4c9ed87532afc99c160c479256f38f3636dd251d4a14"
+  },
+  "reviewFrames": [
+    {
+      "relativePath": "review/01.jpg",
+      "sha256": "30eaca06710584e8f2281dd79bf1dd94cf04187aaafab2c1c70fb8f54319a2a9"
+    },
+    {
+      "relativePath": "review/02.jpg",
+      "sha256": "2048a8e8cd0eb62fb18ce5568303bf91de27a0201f1ba51b27a4ad4a33c4fa00"
+    },
+    {
+      "relativePath": "review/03.jpg",
+      "sha256": "717e23099234e76a92975fe3c3e56efcb6a72fc432b2d9797138bc762e12f126"
+    },
+    {
+      "relativePath": "review/04.jpg",
+      "sha256": "8af2c55a82307b40ad8c55440692cef25a31a39a29995b4010e0856018b54391"
+    },
+    {
+      "relativePath": "review/05.jpg",
+      "sha256": "f6f2078d470edb101b8e6d5082e3adddd6f0e4caa4d0b495280919617d82fcc7"
+    },
+    {
+      "relativePath": "review/06.jpg",
+      "sha256": "f40916265fbceb059f261c4139dcd9ec4b3ea28111a48f3316d2b5f330b02f01"
+    },
+    {
+      "relativePath": "review/07.jpg",
+      "sha256": "7e5ec3e785843570084020ea3d56a363fb5581a8449658c63e46fb7b892ea81b"
+    },
+    {
+      "relativePath": "review/08.jpg",
+      "sha256": "de5bf42a49a8d12a8fb591c0cca476d4d9bd5fe54a00e0af4113b01960fc78ae"
+    },
+    {
+      "relativePath": "review/09.jpg",
+      "sha256": "d1acd4674a7dbffae389c0d412cf710320c7a823f315d29cf7ee50f5ddaa7efa"
+    },
+    {
+      "relativePath": "review/10.jpg",
+      "sha256": "46e640dd73abad55ee7d95d0fd28da49ca5b14b272e65c01f30bf12bb61f077d"
+    }
+  ],
+  "shots": [
+    {
+      "id": "promise",
+      "state": "ready",
+      "durationSeconds": 12,
+      "guideVoiceRate": 175,
+      "sourceBeats": [
+        "map"
+      ],
+      "sourceStartSeconds": 0.568,
+      "sourceEndSeconds": 2.671
+    },
+    {
+      "id": "codex-doorway",
+      "state": "blocked",
+      "durationSeconds": 10,
+      "guideVoiceRate": 179,
+      "sourceBeats": [],
+      "stillFallback": "outputs/workshoplm-current-ui/01-map.png"
+    },
+    {
+      "id": "capture-and-shape",
+      "state": "blocked",
+      "durationSeconds": 23,
+      "guideVoiceRate": 120,
+      "sourceBeats": [
+        "sources"
+      ],
+      "sourceStartSeconds": 2.771,
+      "sourceEndSeconds": 4.946
+    },
+    {
+      "id": "evidence-and-control",
+      "state": "ready",
+      "durationSeconds": 15,
+      "guideVoiceRate": 142,
+      "sourceBeats": [
+        "source-trace",
+        "map-edit"
+      ],
+      "sourceStartSeconds": 5.071,
+      "sourceEndSeconds": 8.374
+    },
+    {
+      "id": "brief-approval",
+      "state": "ready",
+      "durationSeconds": 15,
+      "guideVoiceRate": 120,
+      "sourceBeats": [
+        "brief-approval"
+      ],
+      "sourceStartSeconds": 8.505,
+      "sourceEndSeconds": 10.654
+    },
+    {
+      "id": "style",
+      "state": "ready",
+      "durationSeconds": 13,
+      "guideVoiceRate": 124,
+      "sourceBeats": [
+        "style"
+      ],
+      "sourceStartSeconds": 10.754,
+      "sourceEndSeconds": 12.533
+    },
+    {
+      "id": "outputs",
+      "state": "blocked",
+      "durationSeconds": 19,
+      "guideVoiceRate": 120,
+      "sourceBeats": [
+        "create-outputs"
+      ],
+      "sourceStartSeconds": 12.651,
+      "sourceEndSeconds": 15.269
+    },
+    {
+      "id": "storyboard-approval",
+      "state": "ready",
+      "durationSeconds": 18,
+      "guideVoiceRate": 120,
+      "sourceBeats": [
+        "storyboard-edit",
+        "storyboard-approval"
+      ],
+      "sourceStartSeconds": 17.309,
+      "sourceEndSeconds": 20.92
+    },
+    {
+      "id": "render-and-trace",
+      "state": "blocked",
+      "durationSeconds": 18,
+      "guideVoiceRate": 121,
+      "sourceBeats": [
+        "video-render",
+        "output-evidence"
+      ],
+      "sourceStartSeconds": 21.02,
+      "sourceEndSeconds": 17.129
+    },
+    {
+      "id": "meta-reveal",
+      "state": "blocked",
+      "durationSeconds": 19,
+      "guideVoiceRate": 122,
+      "sourceBeats": [
+        "original-reveal"
+      ],
+      "sourceStartSeconds": 34.585,
+      "sourceEndSeconds": 37.539
+    }
+  ],
+  "limitations": [
+    "Five shots remain visibly marked FINAL EVIDENCE PENDING.",
+    "The walkthrough uses the sanitized deterministic fixture and planned image panels.",
+    "The guide voice is local macOS speech synthesis, not OpenAI narration.",
+    "Codex doorway, founder brainstorm, Realtime, GPT-5.6, GPT Image 2, provider narration, final Output set, and public-export evidence remain gated elsewhere."
+  ]
+}
