@@ -2718,6 +2718,32 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
+## 2026-07-15 12:43 CT — Office-hours guidance captured in hackathon notes
+
+**Area:** Research / Submission
+
+### Changed
+
+- Added the user-provided OpenAI Build Week Office Hours notes to `research/hackathon/BUILD-NOTES.md`.
+- Captured the workflow lessons on Sol/Terra orchestration, Figma library consistency, long-running `GOAL.md` work, unreliable AI time estimates, early submission-answer drafting, the “Start With Why” demo arc, and problem-first judging.
+- Recorded the GPT-5.6 themes and the Goblins discussion with an explicit source/claim boundary.
+
+### Verified
+
+- Confirmed the notes file and existing Build Week reference structure locally.
+- Opened the linked X post at `https://x.com/reagan_hsu/status/2027917087264674168`; the available page returned no readable post text, so no additional claims were extracted from it.
+
+### Decisions
+
+- Treat the office-hours material as strategy guidance, not as a replacement for the official Devpost rules.
+- Keep the final demo centered on the problem solved and the coherent end-to-end outcome, consistent with the current WorkshopLM submission direction.
+
+### Open items
+
+- Revisit the linked X post if readable content or a text transcript becomes available.
+- Apply the early-submission-draft and why/how/what guidance while finalizing the Devpost narrative and under-three-minute video.
+- Codex Session ID: unavailable on this surface; not inferred.
+
 ## 2026-07-14 17:32 CT — Official Figma library made the exclusive UI system
 
 **Area:** Product design system / implementation boundary
@@ -4646,4 +4672,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Measure the provider-backed own-material path against the two-minute Map and fifteen-minute first-deck gates after spend authorization.
 - Capture one uncoached weekly return on representative material after the demo-critical provider and recording gates are closed.
 - Live GPT-5.6 Map reasoning, six GPT Image 2 outputs, provider narration, one Realtime microphone turn, founder footage, primary `/feedback` Session ID, final edit, public upload, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 12:53 CT — Infographic now has a professional last-mile editing path
+
+**Area:** Deliver / Editable Outputs / Browser UI / Submission integrity / Testing
+
+### Changed
+
+- Added a one-slide editable PowerPoint renderer for Infographic Outputs. It uses the same approved Style, grounded claims, concise citations, and source notes as the HTML preview; repeated or truncated claim headings are collapsed into one readable row instead of duplicated across columns.
+- Made the existing focused-Output `Download PowerPoint` action available whenever an Output has an editable file. The Infographic route now serves its `.pptx` with the correct Office MIME type and download filename without adding another control or navigation concept.
+- Added the editable infographic to the traced submission Output set beside the editable presentation. Both files now carry claim IDs, source locators, hashes, byte counts, and `workshop_output` provenance in the manifest.
+- Closed the product gate requiring a credible last-10-percent path for every primary Output: editable presentation and infographic PowerPoints, direct image files and selective regeneration, in-product Storyboard editing, and standard MP4 Video handoff.
+
+### Verified
+
+- In the ChatGPT/Codex in-app browser, the focused Infographic showed one `Download PowerPoint` link at `/api/workshop/artifacts/infographic-v1?format=editable` beside `Show source` and `Open preview`; the rendered screen retained one clear dominant action and no new navigation.
+- The generated `.pptx` passed `unzip -t`, contained one editable slide plus embedded source notes, opened in LibreOffice, converted to a one-page 16:9 PDF, and passed visual inspection after the duplicate-text repair.
+- `pnpm check` passed all 13 packages. Production passed 4/4 tests, worker 63/63, and web 13/13. The production-browser suite passed all 17/17 responsive, state, provenance, Style, Storyboard, Video, accessibility, and visible-copy scenarios.
+- A final serialized `pnpm demo:e2e` passed all six gates. `pnpm submission:build` produced the honest 17-asset `partial` set, and `pnpm submission:verify` reported `valid: true`, `stale: false`, and `tampered: false`.
+- Two intermediate acceptance attempts collided with an already-running destructive acceptance reset from the broader visual-test command. Polling that session to completion and serializing later runs removed the collision; no provider or product-runtime failure was hidden.
+
+### Decisions
+
+- Professional editability should reuse the user's normal tools. A one-slide PowerPoint is a smaller and more credible infographic handoff than adding a second in-product vector editor.
+- The presentation remains the wedge. Editable infographic support closes a workflow seam; it does not promote the infographic into an equal-weight hero flow.
+- Submission integrity includes editable deliverables, not only previews. If the UI claims a professional can finish the last 10 percent, the self-produced package must contain and hash that file.
+
+### Open items
+
+- Obtain a cold `Send` or `Revise` judgment on the external-use presentation candidate.
+- Provider-backed GPT-5.6 Map reasoning, six GPT Image 2 outputs, provider narration, and one Realtime microphone turn remain authorization-gated and unproved.
+- Founder footage, primary `/feedback` Session ID, final video edit, public upload, submitted links, and Devpost submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.

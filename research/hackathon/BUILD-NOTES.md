@@ -35,3 +35,39 @@ These are working implications derived from the current rules and judging criter
 - Monitor API and Codex credit use.
 - Keep setup instructions tested from a clean environment.
 - Verify both public and private repository access before submission.
+
+## 2026-07-15 — Build Week Office Hours with VB
+
+These are working notes from the OpenAI Build Week Office Hours session. They are useful guidance, not additional rules; the official Devpost rules remain authoritative.
+
+### Build Week reminders
+
+- Build Week runs through **July 21, 2026** at [openai.devpost.com](https://openai.devpost.com/).
+- The project must use **GPT-5.6 and/or Codex**. Credits may be available through the form on the Devpost challenge page.
+- Confirm registration and submission details directly on the Devpost challenge page before submitting.
+
+### Daniel's workflow lessons
+
+- Use GPT-5.6 Sol for orchestration and spawn implementation Codex tasks with Terra when appropriate; this can reduce credit burn versus running high-reasoning Sol for every implementation task.
+- A Figma library connector helps preserve a consistent component language and avoid one-off UI generation.
+- GPT-5.6 is particularly useful for long-running work when a durable `GOAL.md` is maintained and updated continuously.
+- AI duration estimates are not reliable schedule estimates: a task estimated at six days completed in roughly two hours. Translate “AI time” into observed project throughput before planning.
+
+### Submission and demo guidance
+
+- Prepare the submission-answer Markdown early. Fill in the category, GPT-5.6 usage, and other required fields before the deadline, then update it as the project evolves.
+- Structure the demo with a Simon Sinek “Start With Why” arc: first 30 seconds explain why the project matters; the next 30–60 seconds show how it answers that need; the final minute shows what was built.
+- Judges review the complete submitted package, so prioritize a coherent, high-quality story over a long feature list.
+- Focus the submission on the problem solved and the resulting value, not on the number of technologies or features used.
+
+### GPT-5.6 themes discussed
+
+- High agency and intent inference from minimal prompts.
+- Long-running persistent Codex threads and autonomous assistants for practical workflows.
+- Content workflows such as drafting social posts, finding partners, and preparing newsletter drafts.
+- The “Goblins” behavior was described as a post-training pipeline issue fixed in a recent GPT-5.6 release; it can still be prompted intentionally. Treat this as session context, not a product claim.
+
+### Source boundary
+
+- The office-hours notes above were supplied in the project conversation on July 15, 2026.
+- The linked X post was checked at [Reagan Hsu's post](https://x.com/reagan_hsu/status/2027917087264674168), but the available page returned no readable post text. No additional claims from that post are recorded until its contents are available.
