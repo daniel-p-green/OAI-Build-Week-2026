@@ -2720,6 +2720,41 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-15 17:41 CT — Infographic becomes a shippable narrative canvas
+
+**Area:** Deliver / Infographic / Send-it quality / Editable handoff
+
+### Changed
+
+- Audited the recorded-fixture infographic against the professional send-it bar. The original editable export was a narrow four-row table: traceable and functional, but visually closer to an implementation manifest than a client-facing artifact.
+- Rebuilt the HTML and editable PowerPoint renderers around a 16:9 two-by-two narrative canvas with four numbered evidence cards, clearer headline hierarchy, supporting context, and quiet source labels.
+- Added a responsive one-column browser layout below 720px and renderer assertions for the new semantic grid.
+- Preserved exact source locators in HTML `data-source` attributes and exact claim IDs plus locators in PowerPoint speaker notes.
+
+### Verified
+
+- Regenerated the deterministic acceptance fixture, converted the editable PowerPoint through LibreOffice, and visually inspected the final 1334×750 review image. The PowerPoint remains a valid archive and the PDF reports one 16:9 page at 960.009×540 points.
+- Inspected the notes XML and confirmed all four fixture claim IDs and exact chunk locators survived the editable handoff.
+- Production renderer tests passed 7 cases and worker tests passed 84 cases. All 27 production browser tests passed at desktop, compact, and mobile widths; eight intended baselines changed only because their real infographic iframe content changed.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. `pnpm demo:e2e` passed all six deterministic gates.
+- The evidence record is `artifacts/spikes/professional-infographic-2026-07-15.json`, with visual proof at `artifacts/spikes/professional-infographic-2026-07-15.jpg`. No paid provider request occurred.
+
+### Decisions
+
+- A professional infographic should be a single visual argument, not a reformatted table. The four approved grounded claims therefore become a balanced narrative composition without changing their content or trace edges.
+- The infographic remains a supporting output. Product-quality effort continues to prioritize the grounded editable presentation as the wedge deliverable.
+- This internal visual and round-trip proof does not substitute for an external professional's cold `Send` or `Revise` judgment.
+
+### Open items
+
+- Put the external-use presentation in front of its intended professional audience and record `Send` or the first blocking revision.
+- Record one provider-verified Realtime turn, rerun the zero-spend preflight, obtain explicit request authorization, and run the provider-backed Map, image, and narration path.
+- Invoke the installed package from ChatGPT Work and record actual surface support without inferring parity from Codex.
+- Provider-backed media, final founder recording, public links, and the Devpost `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-15 17:17 CT — Clean-start Shape becomes claim-level professional composition
 
 **Area:** Product quality / Shape / Brief / Source trust
@@ -5782,4 +5817,23 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Record one provider-verified Realtime turn, rerun the zero-spend preflight, obtain explicit request authorization, and run the provider-backed Map, image, and narration path.
 - Invoke the installed package from ChatGPT Work and record actual surface support without inferring parity from Codex.
 - Provider-backed media, final founder recording, public links, and the Devpost `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 17:43 CT — Build-log chronology correction for infographic milestone
+
+**Area:** Evidence hygiene / Deliver
+
+### Changed
+
+- The `17:41 CT — Infographic becomes a shippable narrative canvas` milestone was appended above later historical entries because its patch matched an earlier repeated Session-ID line. This correction records the chronology error without deleting or rewriting the original milestone; its implementation and verification claims are unchanged.
+
+### Verified
+
+- Confirmed this correction is the final entry in the append-only log and that the infographic evidence record, visual proof, renderer changes, and test baselines remain present in the working tree.
+
+### Open items
+
+- Product evidence gates remain unchanged: provider-backed Map/media, uncoached professional `Send`/`Revise`, ChatGPT Work invocation, founder recording, public links, and `/feedback` Session ID.
 - Codex Session ID: unavailable on this surface; not inferred.

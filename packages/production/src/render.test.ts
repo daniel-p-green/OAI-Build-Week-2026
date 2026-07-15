@@ -19,7 +19,10 @@ describe("production renderers", () => {
     expect(deck).toContain('class="slide recommendation"');
     expect(deck).toContain('class="brand-logo"');
     expect(deck).toContain("WorkshopLM · Client presentation");
-    expect(renderInfographic(brief)).toContain("Source-defensible brief");
+    const infographic = renderInfographic(brief);
+    expect(infographic).toContain("Source-defensible brief");
+    expect(infographic).toContain('class="infographic-grid"');
+    expect(infographic.match(/<article class="block">/g)).toHaveLength(3);
   });
   it("treats a claim with no supporting sentence as an intentional sparse slide", () => {
     const deck = renderDeck({ ...brief, blocks: [{ id: "claim-only", heading: "One defensible statement", body: "", citations: ["meeting · 12:41"], layout: "statement" }] });

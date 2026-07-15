@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 17:30 CT
+Last updated: 2026-07-15 17:41 CT
 
 ## Status
 
@@ -580,6 +580,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
   - 2026-07-15 current-renderer refresh: the external-use candidate now rebuilds from a checked-in grounded brief and authorized logo with `pnpm dogfood:deck:build`. The current renderer removed the vague support fragment rather than padding it, produced fresh HTML, editable PowerPoint, five-page PDF, individual review images, and a cold-review contact sheet, and passed archive, page-size, and visual inspection. This closes reproducibility and stale-render risk; the human `Send`/`Revise` gate remains open.
   - 2026-07-15 evidence-layout pass: numeric proof now becomes an editorial metric composition in both HTML and editable PowerPoint instead of a decorative source box. The external deck visibly presents `180+ chapters` and `40+ countries` with the `400+ volunteer organizers` support beneath it. Slide footers use quiet source names while exact chunk locators and claim IDs remain in HTML metadata and PowerPoint notes. The rebuild command now regenerates and hashes the contact sheet too. The refreshed five-page PowerPoint/PDF passed visual inspection and all checks; external `Send`/`Revise` evidence is still required.
 - [x] Generate a source-traceable infographic.
+  - 2026-07-15 send-it layout pass: the editable infographic moved from a narrow four-row table to a balanced 16:9 two-by-two narrative canvas. Responsive HTML uses the same hierarchy and collapses cleanly on mobile. Quiet visible source names, exact HTML locators, and PowerPoint claim/locator notes survived the round trip; the checked-in evidence image was visually inspected. This remains a supporting output behind the hero presentation.
 - [ ] Generate and evaluate a coherent GPT Image 2 batch.
   - 2026-07-15: the production batch now creates a 512×512 style-derived reference board, hashes and versions it with the approved Visual DNA, sends the same bytes and locked direction through `/v1/images/edits` for all six panels and selective retries, and refuses provider dispatch if the reference or sibling contract drifts. Keep this open until the six real images are generated and visually inspected as one set.
   - 2026-07-15 provider-media gate: decoded Image API output must be a structurally complete PNG with a valid IHDR, positive dimensions, terminal IEND, no trailing bytes, and exact requested dimensions before a panel can become `generated`. Malformed, truncated, or wrong-sized bytes become a selective-retry failure and never enter Storyboard or Video provenance.
