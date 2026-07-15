@@ -55,7 +55,7 @@ describe("WorkshopLM stdio MCP server", () => {
     expect(results[0]!.result.serverInfo.name).toBe("workshoplm");
     expect(results[1]!.result.tools.map((tool: { name: string }) => tool.name)).toContain("workshop_render_video");
     expect(results[2]!.result.structuredContent.workshops[0].title).toBe("Sanitized Build Week");
-    expect(results[3]!.result.structuredContent.url).toBe("http://127.0.0.1:3000/workshops/workshop-build-week");
+    expect(results[3]!.result.structuredContent.url).toBe("http://127.0.0.1:3000/");
     expect(results[4]!.result.structuredContent.results[0]).toMatchObject({ id: "chunk-evidence-1", claims: [{ id: "claim-evidence-1", evidenceState: "verified" }] });
     expect(results[5]!.result.structuredContent.result).toMatchObject({ sourceId: "source-brief", id: "chunk-evidence-1", locator: "Sanitized brief · chunk 01" });
   });

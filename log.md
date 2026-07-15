@@ -4273,3 +4273,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Provider-backed images, narration, GPT-5.6 reasoning, and one inspected Realtime microphone turn remain unproved and intentionally show as zero in the build record.
 - Founder brainstorm recording, Codex doorway footage, primary `/feedback` Session ID, final edited Video, public upload, and Devpost submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 05:42 CT — Codex desktop now grounds and opens the local Workshop
+
+**Area:** Unified plugin / default fixture grounding / Codex desktop host proof
+
+### Changed
+
+- Corrected a real installed-host failure found by a read-only Codex desktop task: the default sanitized Workshop listed Sources but persisted no normalized chunks or verified claims, so plugin `search` and exact `fetch` failed unless an acceptance-only data-root override was supplied.
+- Added three deterministic sanitized chunks and five verified claims to the default Workshop, plus a migration for legacy default states whose seed Sources existed with empty evidence. Newly ingested evidence is stored ahead of seed evidence so a professional's current material leads generated work without removing the built-in judge-safe grounding path.
+- Corrected `workshop_open` from the nonexistent `/workshops/:id` route to the real root doorway, with `WORKSHOPLM_APP_URL` as an explicit override.
+- Refreshed the locally installed `workshoplm@workshoplm-local` version `0.1.2`; installed and worktree `dist/tools.js` now share SHA-256 `dd8383cc2ec8fc5038ace7099698bcbcedfd6d3f25573783af276534ce908a06`.
+- Recorded the before/after desktop proof in `artifacts/spikes/plugin-desktop-host-2026-07-15.json` and reconciled the public claim ledger and evidence audit.
+
+### Verified
+
+- The initial Codex desktop verification turn `019f6554-bee8-77d0-8b72-bdeb9ea8d18a` honestly failed grounded search/fetch and exposed the empty-evidence defect.
+- After migration, Codex desktop task `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`, turn `019f655c-7580-7432-ad1b-f4c7994064a2`, activated `$workshoplm`, called `workshop_list → search → fetch`, and fetched `source-design` / `chunk-seed-design`, linked verified claim `claim-seed-design-system`, locator `Design · Map`.
+- The restarted local root returned HTTP 200. The Codex in-app Playwright browser rendered `WorkshopLM Build Week`, the Map, `3 sources`, and `View brief`; a fresh navigation reported zero new console errors.
+- Worker tests passed 54/54, plugin tests passed 7/7, and `pnpm check` passed lint, typecheck, and tests across all 13 packages. No provider request or paid call was made.
+- `pnpm demo:e2e` passed all six recorded gates. Because that deterministic run recreates the acceptance root, the first package verification correctly reported its prior manifest missing; `pnpm submission:build` then rebuilt the honest 15-asset `partial` set and `pnpm submission:verify` reported `valid: true`, `stale: false`, and `tampered: false`.
+
+### Decisions
+
+- The default sanitized Workshop must be honestly searchable on its own. Hidden fallback to the acceptance fixture or an arbitrary checkout path would make the plugin appear grounded only under test-only configuration.
+- Recent user Sources lead generation; built-in sanitized evidence remains searchable and keeps the first plugin interaction useful before import.
+- Codex desktop support is now proven for the installed read path and local browser doorway. ChatGPT Work parity remains a separate unverified claim, and the running pre-refresh MCP process correctly requires a fresh task to inherit the refreshed `workshop_open` route.
+
+### Open items
+
+- Record the matching ChatGPT Work activation only if that surface exposes and successfully runs the plugin; keep Spike E open until then.
+- Capture legible Codex-side plugin-to-browser footage for the final edit. The live proof exists, but it is not yet a recorded judge artifact.
+- Provider-backed images, narration, GPT-5.6 reasoning, one Realtime microphone turn, founder recording, primary `/feedback` Session ID, final edit, public upload, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; task and turn IDs are recorded but not substituted.

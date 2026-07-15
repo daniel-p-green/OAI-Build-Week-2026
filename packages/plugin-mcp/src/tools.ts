@@ -127,7 +127,7 @@ export function executeTool(name: string, arguments_: Record<string, unknown> = 
   const state = requireWorkshop(database, workshopId);
   if (isToolError(state)) { database?.close(); return state; }
   try {
-    if (name === "workshop_open") return { text: `Opened local Workshop: ${state.title}.`, data: { workshop: state, url: `http://127.0.0.1:3000/workshops/${encodeURIComponent(state.id)}` } };
+    if (name === "workshop_open") return { text: `Opened local Workshop: ${state.title}.`, data: { workshop: state, url: process.env.WORKSHOPLM_APP_URL ?? "http://127.0.0.1:3000/" } };
     if (name === "workshop_add_source") {
       if (typeof arguments_.source !== "string" || !arguments_.source.trim()) return { isError: true, text: "Source import requires a local path or URL." };
       const next = { ...state, sources: state.sources + 1, updatedAt: new Date().toISOString() }; save(database!, next);

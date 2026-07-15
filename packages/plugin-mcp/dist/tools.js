@@ -135,7 +135,7 @@ export function executeTool(name, arguments_ = {}) {
     }
     try {
         if (name === "workshop_open")
-            return { text: `Opened local Workshop: ${state.title}.`, data: { workshop: state, url: `http://127.0.0.1:3000/workshops/${encodeURIComponent(state.id)}` } };
+            return { text: `Opened local Workshop: ${state.title}.`, data: { workshop: state, url: process.env.WORKSHOPLM_APP_URL ?? "http://127.0.0.1:3000/" } };
         if (name === "workshop_add_source") {
             if (typeof arguments_.source !== "string" || !arguments_.source.trim())
                 return { isError: true, text: "Source import requires a local path or URL." };

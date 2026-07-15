@@ -60,11 +60,23 @@ export type WorkshopState = { id: string; title: string; briefApproved: boolean;
 export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string; permission?: WorkshopSource["permission"] };
 const execFile = promisify(execFileCallback);
 const id = "workshop-build-week";
+const seedChunks: WorkshopChunk[] = [
+  { id: "chunk-seed-raw", sourceId: "source-raw", text: "The judge should see the messy original thought become a cited Map, a real Brief, and finished work without losing the trail back to source material.", locator: "ChatGPT task · 12:41 · chunk 04", ordinal: 1 },
+  { id: "chunk-seed-brief", sourceId: "source-brief", text: "One visible chain links capture, the editable Map, approved work, Storyboard review, and finished delivery.", locator: "Build notes · §2", ordinal: 1 },
+  { id: "chunk-seed-design", sourceId: "source-design", text: "Evidence first becomes an editable production system, not a static report.", locator: "Design · Map", ordinal: 1 },
+];
+const seedClaims: WorkshopClaim[] = [
+  { id: "claim-seed-raw-outcome", sourceId: "source-raw", chunkId: "chunk-seed-raw", text: "Raw thinking becomes finished work.", evidenceState: "verified", locator: "ChatGPT task · 12:41 · chunk 04" },
+  { id: "claim-seed-raw-trace", sourceId: "source-raw", chunkId: "chunk-seed-raw", text: "The source trail remains attached.", evidenceState: "verified", locator: "ChatGPT task · 12:41 · chunk 04" },
+  { id: "claim-seed-brief-chain", sourceId: "source-brief", chunkId: "chunk-seed-brief", text: "One visible chain connects capture to delivery.", evidenceState: "verified", locator: "Build notes · §2" },
+  { id: "claim-seed-brief-review", sourceId: "source-brief", chunkId: "chunk-seed-brief", text: "The Map and Storyboard remain reviewable before delivery.", evidenceState: "verified", locator: "Build notes · §2" },
+  { id: "claim-seed-design-system", sourceId: "source-design", chunkId: "chunk-seed-design", text: "Evidence becomes an editable production system.", evidenceState: "verified", locator: "Design · Map" },
+];
 const defaultState = (): WorkshopState => ({ id, title: "WorkshopLM Build Week", briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: 3, groundedClaims: 5, sourceItems: [
   { id: "source-raw", type: "TXT", title: "Raw voice brainstorm", origin: "ChatGPT task", claimCount: 5, excerpt: "The judge should be able to see the messy original thought become a cited map, a real brief, and a finished piece of work.", locator: "ChatGPT task · 12:41 · chunk 04", permission: "sanitized" },
   { id: "source-brief", type: "PDF", title: "Build Week brief", origin: "Local", claimCount: 3, excerpt: "One visible chain links capture, approved work, and finished delivery.", locator: "Build notes · §2", permission: "sanitized" },
   { id: "source-design", type: "WEB", title: "WorkshopLM direction", origin: "Local", claimCount: 2, excerpt: "Evidence first becomes an editable production system, not a static report.", locator: "Design · Map", permission: "sanitized" },
-], activeSourceIds: ["source-raw", "source-brief", "source-design"], transcriptSegments: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [
+], activeSourceIds: ["source-raw", "source-brief", "source-design"], transcriptSegments: [], sourceChunks: seedChunks, claims: seedClaims, candidates: [], mapEdges: [
   { id: "edge-promise-proof", from: "promise", to: "proof", kind: "supports" },
   { id: "edge-proof-visual", from: "proof", to: "visual", kind: "depends_on" },
   { id: "edge-proof-risk", from: "proof", to: "risk", kind: "depends_on" },
@@ -80,11 +92,24 @@ function normalizeStoryboard(storyboard: WorkshopStoryboard | undefined, fallbac
   const value = storyboard ?? fallback;
   return { ...value, panels: value.panels.map((panel) => { const evidence = panel.evidence ?? []; return { ...panel, evidence, claimIds: panel.claimIds ?? evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []) }; }) };
 }
+function withSeedEvidence(state: WorkshopState): WorkshopState {
+  const hasSeedSources = ["source-raw", "source-brief", "source-design"].every((sourceId) => state.sourceItems.some((source) => source.id === sourceId));
+  if (!hasSeedSources || state.sourceChunks.length || state.claims.length) return state;
+  return { ...state, sourceChunks: seedChunks, claims: seedClaims, groundedClaims: seedClaims.length };
+}
 export function readWorkshopState(root?: string): WorkshopState {
   const db = dbFor(root); const createdAt = new Date().toISOString();
   db.prepare("INSERT OR IGNORE INTO workshop VALUES (?, ?, ?)").run(id, "WorkshopLM Build Week", createdAt);
   const row = db.prepare("SELECT state_json FROM workshop_state WHERE workshop_id=?").get(id) as { state_json: string } | undefined;
-  if (row) { const state = JSON.parse(row.state_json) as Partial<WorkshopState>; if (state.sourceItems && state.mapNodes) return state.sourceChunks && state.claims ? { ...state, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), style: state.style ? { ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" } : undefined, storyboard: normalizeStoryboard(state.storyboard, defaultState().storyboard), aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState : write({ ...state, activeSourceIds: state.sourceItems.map((source) => source.id), transcriptSegments: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), storyboard: defaultState().storyboard, aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [] } as WorkshopState, root); return write({ ...defaultState(), ...state, sourceItems: defaultState().sourceItems, activeSourceIds: defaultState().sourceItems.map((source) => source.id), transcriptSegments: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], storyboard: defaultState().storyboard, aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [], mapNodes: defaultState().mapNodes } as WorkshopState, root); }
+  if (row) {
+    const state = JSON.parse(row.state_json) as Partial<WorkshopState>;
+    if (state.sourceItems && state.mapNodes && state.sourceChunks && state.claims) {
+      const normalized = withSeedEvidence({ ...state, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), style: state.style ? { ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" } : undefined, storyboard: normalizeStoryboard(state.storyboard, defaultState().storyboard), aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
+      return normalized.sourceChunks === state.sourceChunks ? normalized : write(normalized, root);
+    }
+    if (state.sourceItems && state.mapNodes) return write(withSeedEvidence({ ...state, activeSourceIds: state.sourceItems.map((source) => source.id), transcriptSegments: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), storyboard: defaultState().storyboard, aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [] } as WorkshopState), root);
+    return write({ ...defaultState(), ...state, sourceItems: defaultState().sourceItems, activeSourceIds: defaultState().sourceItems.map((source) => source.id), transcriptSegments: [], sourceChunks: seedChunks, claims: seedClaims, candidates: [], mapEdges: [], storyboard: defaultState().storyboard, aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [], mapNodes: defaultState().mapNodes } as WorkshopState, root);
+  }
   const state = defaultState(); db.prepare("INSERT INTO workshop_state VALUES (?, ?, ?)").run(id, JSON.stringify(state), state.updatedAt); return state;
 }
 export function resolveWorkshopArtifact(id: string, root?: string): { path: string; contentType: string } | undefined {
@@ -253,7 +278,7 @@ export async function ingestSource(input: SourceIngestion, root?: string): Promi
   const createdAt = new Date().toISOString(); const snapshot = graphFor(current);
   const operation = GraphOperation.parse({ type: "add_node", node: { id: `node-${node.id}`, kind: "claim", label: node.title, claimId: claims[0]?.id, evidenceState: "verified", metadata: { body: node.body, locator: node.locator, sourceId, x: node.x, y: node.y, width: node.width, height: node.height } } });
   const applied = appendGraphOperation(snapshot.graph, snapshot.history, operation, { id: `operation-source-${hash.slice(0, 12)}`, actor: "system", createdAt });
-  return write({ ...current, sources: current.sources + 1, groundedClaims: current.groundedClaims + claims.length, sourceItems: [...current.sourceItems, source], activeSourceIds: [...new Set([...current.activeSourceIds, sourceId])], sourceChunks: [...current.sourceChunks, ...chunks], claims: [...current.claims, ...claims], mapNodes: mapNodesFor(applied.graph, [...current.mapNodes, node]), mapEdges: mapEdgesFor(applied.graph), graphState: serializeGraphState(applied.graph, applied.history), updatedAt: createdAt }, root);
+  return write({ ...current, sources: current.sources + 1, groundedClaims: current.groundedClaims + claims.length, sourceItems: [...current.sourceItems, source], activeSourceIds: [...new Set([...current.activeSourceIds, sourceId])], sourceChunks: [...chunks, ...current.sourceChunks], claims: [...claims, ...current.claims], mapNodes: mapNodesFor(applied.graph, [...current.mapNodes, node]), mapEdges: mapEdgesFor(applied.graph), graphState: serializeGraphState(applied.graph, applied.history), updatedAt: createdAt }, root);
 }
 export async function captureFallbackTranscript(text: string, root?: string, evidence?: RealtimeCaptureEvidence): Promise<WorkshopState> {
   const normalized = normalizeSourceText(text); if (!normalized) throw new Error("Capture text is required."); const capturedAt = new Date().toISOString();

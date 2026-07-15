@@ -1,0 +1,52 @@
+{
+  "schemaVersion": 1,
+  "recordedAt": "2026-07-15T05:42:00-05:00",
+  "surface": {
+    "name": "Codex desktop app",
+    "bundleId": "com.openai.codex",
+    "version": "26.707.72221",
+    "build": "5307",
+    "taskId": "019f5eb9-d996-7f42-ac5a-d4ed2cc8a324",
+    "verificationTurnId": "019f655c-7580-7432-ad1b-f4c7994064a2"
+  },
+  "plugin": {
+    "id": "workshoplm@workshoplm-local",
+    "version": "0.1.2",
+    "skillActivated": "$workshoplm",
+    "tools": ["workshop_list", "search", "fetch", "workshop_open"],
+    "installedToolsSha256": "dd8383cc2ec8fc5038ace7099698bcbcedfd6d3f25573783af276534ce908a06",
+    "worktreeToolsSha256": "dd8383cc2ec8fc5038ace7099698bcbcedfd6d3f25573783af276534ce908a06"
+  },
+  "groundingProof": {
+    "workshopId": "workshop-build-week",
+    "query": "editable production system",
+    "resultCount": 2,
+    "fetched": {
+      "sourceId": "source-design",
+      "chunkId": "chunk-seed-design",
+      "claimId": "claim-seed-design-system",
+      "locator": "Design · Map",
+      "text": "Evidence first becomes an editable production system, not a static report."
+    }
+  },
+  "browserProof": {
+    "pluginUrlAfterRefresh": "http://127.0.0.1:3000/",
+    "httpStatus": 200,
+    "pageTitle": "WorkshopLM",
+    "visibleSurface": ["WorkshopLM Build Week", "Map", "3 sources", "View brief"],
+    "newConsoleErrors": 0,
+    "verificationSurface": "Codex in-app Playwright browser in the primary task"
+  },
+  "correction": {
+    "preFixTurnId": "019f6554-bee8-77d0-8b72-bdeb9ea8d18a",
+    "preFixResult": "Desktop tools listed source summaries but search and exact fetch failed because the default persisted Workshop had no normalized chunks or claims.",
+    "fix": "The sanitized default Workshop now includes deterministic chunks and verified claims, legacy empty evidence is migrated, newer ingested evidence leads generation, and workshop_open returns the real root route.",
+    "verification": ["54 worker tests", "7 plugin tests", "13-package pnpm check", "desktop list-search-fetch", "HTTP and in-app browser root inspection"]
+  },
+  "limitations": [
+    "This proves the installed read path in Codex desktop, not ChatGPT Work.",
+    "The already-running desktop plugin process returned its pre-refresh nested URL; the refreshed installed package and server tests return the root URL. A fresh task is required to inherit the refreshed process.",
+    "No plugin write tool or paid provider call was used.",
+    "The task ID and verification turn ID are not represented as the required Devpost /feedback Session ID."
+  ]
+}
