@@ -3365,3 +3365,32 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Replace the recorded fixture Video with the final under-three-minute meta-demo and rebuild the Output set from that approved state.
 - Complete the five first-time orientation reviews before final recording.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 00:17 CT — Spike A deadline closed on the capture-only path
+
+**Area:** Voice capture / host integration / fallback decision
+
+### Changed
+
+- Closed the Spike A decision after its July 14 end-of-day deadline elapsed without native durable task/voice-turn proof.
+- Made the already-implemented capture-only `gpt-realtime-2.1` path the final demo voice architecture and removed native ChatGPT task/account turn linkage from the hackathon implementation claim.
+- Corrected the runbook's Spike A location to the actual `spikes/a-host-sync/` workspace and separated the completed fallback decision from the still-open live WebRTC verification.
+
+### Verified
+
+- Re-read the latest persisted host report at `artifacts/spikes/host-sync-2026-07-14T06-37-52-460Z.json`: status `credential_blocked`; account, task, typed-turn, native-voice, and token checks were skipped; the report explicitly selects the capture-only fallback.
+- Re-ran `pnpm spike:host-sync:verify` after the decision deadline. It again returned `credential_blocked`, recorded no inferred host capability, and selected the capture-only `gpt-realtime-2.1` fallback.
+- Existing worker coverage proves the fallback transcript becomes a durable private Source, normalized chunk, verified claim, Map evidence, and time-to-first-output measurement. Existing production UI evidence proves the capture-only control is visible and distinct from a chat composer.
+
+### Decisions
+
+- Spike A is complete as a fallback decision, not as native host proof. No judge-facing surface may claim durable native ChatGPT task or voice synchronization.
+- The Capture implementation remains open until one real voice turn crosses the `gpt-realtime-2.1` transport and lands in the already-verified durable transcript/source boundary.
+
+### Open items
+
+- Implement and verify the server-minted ephemeral Realtime session plus browser WebRTC capture against the existing `captureFallbackTranscript` boundary.
+- Record the first live voice capture before filming the final demo.
+- Codex Session ID: unavailable on this surface; not inferred.

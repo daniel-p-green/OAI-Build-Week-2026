@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 00:15 CT
+Last updated: 2026-07-15 00:17 CT
 
 ## Status
 
@@ -8,7 +8,7 @@ Last updated: 2026-07-15 00:15 CT
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
 **Current gate:** The P0 screen-composition and language rebuild is implemented and passes the full repository checks, recorded demo seam, and final three-width visual suite. The remaining interface completion gates are five independent first-time orientation reviews and provider-backed GPT Image 2 gallery media. Provider media may proceed in isolated files; do not record the final demo until the review gate is complete and any critical navigation finding is repaired.
 **Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found` for this account even though the current public model page describes it as a Sol alias. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. The benchmark and live grounded-Map adapter now share a tested parser for both top-level and nested Responses text, but no request has run. The current model catalog labels `gpt-4o-mini-tts` deprecated while the current speech guide still recommends it; verify the actual live response before recording. Do not claim live product use or change per-operation defaults before these checks.
-**Known host risk:** The July 14 host-sync verification is credential-blocked, so it does not prove native task or voice-turn persistence. The designed capture-only fallback remains active; Spike A stays open until the end-of-day decision deadline or a separately authorized live host check.
+**Known host risk:** The July 14 host-sync verification is credential-blocked and the decision deadline has passed, so the capture-only `gpt-realtime-2.1` fallback is the final demo voice path. Native task and voice-turn persistence remain unproven and must not be claimed. The durable fallback transcript boundary is implemented; the live WebRTC transport still requires provider-backed verification before recording.
 
 **Hard schedule gates:**
 
@@ -305,7 +305,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [ ] Capture and timestamp the original raw voice brainstorm before product code exists.
   - This can no longer be backfilled. Capture a dated contemporaneous founder-brainstorm recording for the demo reveal, label it honestly, and keep the original pre-code requirement open.
 - [x] Verify API-key authentication and list access for the required OpenAI model IDs without spending generation credits; record any entitlement or spend-cap uncertainty.
-- [ ] Spike A: Codex app-server account/login read, ChatGPT task linking, native text/voice-turn persistence, and `gpt-realtime-2.1` fallback decision.
+- [x] Spike A: the app-server host probe remained credential-blocked through the July 14 deadline, so native text/voice-turn persistence is unproven and the implemented capture-only `gpt-realtime-2.1` fallback is the final demo decision.
 - [x] Spike B: deterministic normalized local sources, standard plugin `search`/`fetch`, FTS5/exact retrieval, and durable Source/Claim citations; live GPT-5.6 expansion remains entitlement-gated.
 - [x] Spike C: six-image batch manifest, locked reference, and selective regeneration contract; live image generation remains opt-in and unrun.
 - [x] Spike D: local HyperFrames CLI health check, validated three-scene composition, disclosed narration fixture, and rendered MP4.
@@ -331,7 +331,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 
 - [x] Ingest local text/PDF files, safe public URLs, and sanitized meeting material.
 - [x] Normalize local and connected-app/MCP sources for grounded `search`/`fetch` retrieval.
-- [ ] Link the ChatGPT task/account to the Workshop and persist native typed/voice turns; implement the Realtime fallback only if required by the live spike.
+- [ ] Persist a live voice turn through the final capture-only `gpt-realtime-2.1` path and its existing durable transcript/source contract; native ChatGPT task/account turn linkage remains an explicitly unsupported future path.
 - [x] Extract candidate goals, audience, claims, constraints, and unresolved questions from grounded claims with source locators.
 - [x] Preserve claim-level evidence locators and source permissions.
 
