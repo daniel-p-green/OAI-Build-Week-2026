@@ -5295,3 +5295,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - The broader failure matrix, Company Style revision behavior, accessible orientation return entry, mobile first-use proof, and real-public-website in-app-browser run remain open.
 - Live microphone, GPT-5.6, GPT Image 2, Speech, and final-video evidence remain unchanged and authorization-gated.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 14:55 CT — Company Styles distinguish brand evidence from usable inputs
+
+**Area:** Product / Company Styles / Trust / Responsive verification
+
+### Changed
+
+- Company Styles now persist explicit Accent, Text, and Background roles with exact six-digit hex values and whether each value came from a website, manual entry, or the clean default.
+- Heading and Body are now separate typography roles. Every role records whether the family is a system font, explicitly confirmed by the professional, or still an unverified website candidate.
+- Website analysis returns candidate typography as unverified evidence. It no longer silently promotes a discovered CSS family into the renderer's licensed-font list.
+- The Style review shows the three color jobs, exact values, Heading and Body fields, and a plain availability statement. Custom or website-discovered fonts require the professional to confirm that they can be used; otherwise the live preview and generated work use a safe system fallback.
+- `DESIGN.md` and its versioned token file now preserve palette roles, typography roles, availability, evidence origin, and only the font families actually confirmed for generated work. Existing saved Styles normalize safely into the new metadata without losing their prior colors or confirmed fonts.
+
+### Verified
+
+- The deterministic linked-CSS fixture proves normalized role colors, an unverified website font candidate, a likely logo asset, editable correction, unconfirmed safe fallback, explicit confirmation, and the resulting version-two Style token contract.
+- Worker tests passed all 77 cases across eight files; web tests passed all 15 cases across four files.
+- The production build passed and the production browser suite passed all 20 tests from a normal non-update run. Website review is covered at 1200×800, 1024×768, and 390×844; the browser test proves an unconfirmed candidate is not sent as a licensed input and a confirmed candidate is.
+- Inspected the responsive Style and website-review baselines plus current, stale, and Video Output states before accepting the intentional captures. Test fixture routing now isolates saved Styles so results do not depend on test order.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. `pnpm demo:e2e` passed all six recorded-fixture gates.
+- `pnpm submission:build` produced the expected truthful 17-asset partial set with four provider limitations; `pnpm submission:verify` returned valid, not stale, and not tampered.
+
+### Decisions
+
+- Finding a font on a public website proves visual evidence, not licensing or local availability. WorkshopLM must never collapse those claims.
+- The legacy flat palette and font fields remain as renderer-compatible projections; the role metadata is the inspectable source of truth and can evolve without breaking current deck, infographic, image, and video consumers.
+- Broad screenshot changes were accepted only where a clean full-suite run reproduced the current product state; no visual baseline was accepted in place of behavioral assertions.
+
+### Open items
+
+- Brand assets are still text candidates. Visual selection, media/SVG validation, bounded local copying, hashing, and renderer use remain open.
+- The full website failure matrix, saved Style revision semantics, accessible orientation return entry, and real-public-website in-app-browser run remain open.
+- Live microphone, GPT-5.6, GPT Image 2, Speech, and final-video evidence remain unchanged and authorization-gated.
+- Codex Session ID: unavailable on this surface; not inferred.

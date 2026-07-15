@@ -25,7 +25,18 @@ export type WorkshopMapNode = { id: string; title: string; body: string; kind: "
 export type CanvasNodePatch = { id: string; title: string; x: number; y: number; width: number; height: number };
 export type WorkshopFrame = { version: number; markdown: string; markdownPath: string; executablePath: string; stale: boolean; approvedAt: string };
 export type WorkshopSketch = { version: number; graphRevision: number; nodes: Pick<WorkshopMapNode, "id" | "title" | "body" | "kind" | "locator">[]; stale: boolean; approved: boolean; createdAt: string };
-export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop"; referenceUrl?: string; libraryId?: string; lockedAt: string; stale: boolean };
+export type StyleEvidenceSource = "website" | "manual" | "default";
+export type StylePaletteRoles = {
+  accent: { value: string; source: StyleEvidenceSource };
+  text: { value: string; source: StyleEvidenceSource };
+  background: { value: string; source: StyleEvidenceSource };
+};
+export type FontAvailability = "system" | "user_confirmed" | "unverified";
+export type StyleTypographyRoles = {
+  heading: { family: string; availability: FontAvailability; source: StyleEvidenceSource };
+  body: { family: string; availability: FontAvailability; source: StyleEvidenceSource };
+};
+export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; paletteRoles: StylePaletteRoles; typographyRoles: StyleTypographyRoles; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop"; referenceUrl?: string; libraryId?: string; lockedAt: string; stale: boolean };
 export type WorkshopStyleLibraryEntry = Omit<WorkshopStyle, "version" | "libraryId" | "lockedAt" | "stale"> & { id: string; createdAt: string; updatedAt: string };
 export type WorkshopOutcome = "client_facing_pitch" | "board_deck" | "internal_workshop";
 export type WebsiteStyleAnalysis = {
@@ -45,8 +56,8 @@ export type WorkshopOnboarding = {
   completedAt?: string;
 };
 export type WorkshopDesignArtifact = { version: number; styleVersion: number; markdownPath: string; tokensPath: string; stale: boolean; createdAt: string };
-export type ManualStyleInput = { name?: string; accent?: string; ink?: string; paper?: string; logos?: string[]; licensedFonts?: string[]; references?: string[]; negativeRules?: string[]; intentProfile?: WorkshopStyle["intentProfile"] };
-export type WebsiteStyleSuggestion = { referenceUrl: string; name: string; accent: string; ink: string; paper: string; logos: string[]; fontCandidates: string[]; references: string[]; negativeRules: string[]; findings: { colors: number; fontCandidates: number; assets: number; stylesheets: number } };
+export type ManualStyleInput = { name?: string; accent?: string; ink?: string; paper?: string; headingFont?: string; bodyFont?: string; fontsConfirmed?: boolean; logos?: string[]; licensedFonts?: string[]; references?: string[]; negativeRules?: string[]; intentProfile?: WorkshopStyle["intentProfile"] };
+export type WebsiteStyleSuggestion = { referenceUrl: string; name: string; accent: string; ink: string; paper: string; paletteRoles: StylePaletteRoles; logos: string[]; fontCandidates: string[]; typographyCandidates: Array<{ family: string; availability: "unverified"; source: "website" }>; references: string[]; negativeRules: string[]; findings: { colors: number; fontCandidates: number; assets: number; stylesheets: number } };
 export type WorkshopVisualDna = { version: number; styleVersion: number; palette: { accent: string; ink: string; paper: string }; compositionRules: string[]; textureRules: string[]; imageRules: string[]; negativeRules: string[]; approved: boolean; stale: boolean; createdAt: string };
 export type WorkshopEvidenceReference = { claimId?: string; sourceId: string; chunkId?: string; locator: string };
 export type WorkshopAssetPlan = { version: number; graphRevision: number; briefVersion: number; styleVersion: number; visualDnaVersion?: number; evidenceClaimIds: string[]; items: { id: string; outputType: "deck" | "infographic" | "images" | "storyboard" | "video"; title: string; prompt: string; locator: string; evidence: WorkshopEvidenceReference[] }[]; stale: boolean; createdAt: string };
@@ -114,6 +125,23 @@ function dbFor(root = repositoryDataRoot()) { const db = openLocalDatabase(join(
 function normalizeStoryboard(storyboard: WorkshopStoryboard | undefined, fallback: WorkshopStoryboard): WorkshopStoryboard {
   const value = storyboard ?? fallback;
   return { ...value, panels: value.panels.map((panel) => { const evidence = panel.evidence ?? []; return { ...panel, evidence, claimIds: panel.claimIds ?? evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []) }; }) };
+}
+function paletteRoles(accent: string, ink: string, paper: string, source: StyleEvidenceSource): StylePaletteRoles {
+  return { accent: { value: accent, source }, text: { value: ink, source }, background: { value: paper, source } };
+}
+function isSystemFont(family: string) { return /^(system-ui|-apple-system|blinkmacsystemfont|arial|helvetica|sans-serif|serif|monospace)$/i.test(family.trim()); }
+function typographyRoles(heading: string, body: string, availability: FontAvailability, source: StyleEvidenceSource): StyleTypographyRoles {
+  const role = (family: string) => ({ family, availability: isSystemFont(family) ? "system" as const : availability, source });
+  return { heading: role(heading), body: role(body) };
+}
+function normalizeStyleMetadata<T extends Pick<WorkshopStyle, "accent" | "ink" | "paper" | "source" | "licensedFonts"> & Partial<Pick<WorkshopStyle, "paletteRoles" | "typographyRoles">>>(style: T): T & Pick<WorkshopStyle, "paletteRoles" | "typographyRoles"> {
+  const source: StyleEvidenceSource = style.source;
+  const families = style.licensedFonts ?? [];
+  return {
+    ...style,
+    paletteRoles: style.paletteRoles ?? paletteRoles(style.accent, style.ink, style.paper, source),
+    typographyRoles: style.typographyRoles ?? typographyRoles(families[0] ?? "system-ui", families[1] ?? families[0] ?? "system-ui", families.length ? "user_confirmed" : "system", source),
+  };
 }
 function withSeedEvidence(state: WorkshopState): WorkshopState {
   const hasSeedSources = ["source-raw", "source-brief", "source-design"].every((sourceId) => state.sourceItems.some((source) => source.id === sourceId));
@@ -233,7 +261,7 @@ export function selectWorkshop(workshopId: string, root?: string): WorkshopState
 }
 export function listStyleLibrary(root?: string): WorkshopStyleLibraryEntry[] {
   const db = dbFor(root);
-  return (db.prepare("SELECT id, style_json, created_at, updated_at FROM style_library ORDER BY updated_at DESC, id ASC").all() as Array<{ id: string; style_json: string; created_at: string; updated_at: string }>).map((row) => ({ ...JSON.parse(row.style_json) as Omit<WorkshopStyleLibraryEntry, "id" | "createdAt" | "updatedAt">, id: row.id, createdAt: row.created_at, updatedAt: row.updated_at }));
+  return (db.prepare("SELECT id, style_json, created_at, updated_at FROM style_library ORDER BY updated_at DESC, id ASC").all() as Array<{ id: string; style_json: string; created_at: string; updated_at: string }>).map((row) => ({ ...normalizeStyleMetadata(JSON.parse(row.style_json) as Omit<WorkshopStyleLibraryEntry, "id" | "createdAt" | "updatedAt">), id: row.id, createdAt: row.created_at, updatedAt: row.updated_at }));
 }
 export function readWorkshopState(root?: string, requestedWorkshopId?: string): WorkshopState {
   const db = dbFor(root);
@@ -245,7 +273,7 @@ export function readWorkshopState(root?: string, requestedWorkshopId?: string): 
     const state = JSON.parse(row.state_json) as Partial<WorkshopState>;
     const fallback = defaultState(workshopId, state.title ?? (workshopId === defaultWorkshopId ? defaultWorkshopTitle : "Untitled Workshop"), workshopId === defaultWorkshopId && Boolean(state.sourceItems?.length));
     if (state.sourceItems && state.mapNodes && state.sourceChunks && state.claims) {
-      const normalized = withSeedEvidence({ ...fallback, ...state, id: workshopId, onboarding: state.onboarding ?? fallback.onboarding, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), style: state.style ? { ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" } : undefined, storyboard: normalizeStoryboard(state.storyboard, fallback.storyboard), aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
+      const normalized = withSeedEvidence({ ...fallback, ...state, id: workshopId, onboarding: state.onboarding ?? fallback.onboarding, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), style: state.style ? normalizeStyleMetadata({ ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" }) : undefined, storyboard: normalizeStoryboard(state.storyboard, fallback.storyboard), aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
       if (normalized.sourceChunks !== state.sourceChunks) return write(normalized, root);
       ensureEvidenceIndex(db, normalized);
       return normalized;
@@ -564,14 +592,15 @@ export async function analyzeWebsiteStyle(rawUrl: string, fetchImpl: typeof fetc
   const logoTags = [...(html.match(/<img\b[^>]*>/gi) ?? []), ...linkTags.filter((tag) => /icon/i.test(htmlAttribute(tag, "rel") ?? ""))];
   const logos = [...new Set(logoTags.filter((tag) => /logo|brand|icon/i.test(`${htmlAttribute(tag, "alt") ?? ""} ${htmlAttribute(tag, "class") ?? ""} ${htmlAttribute(tag, "id") ?? ""} ${htmlAttribute(tag, "src") ?? ""} ${htmlAttribute(tag, "href") ?? ""}`)).map((tag) => absoluteWebUrl(htmlAttribute(tag, "src") ?? htmlAttribute(tag, "href"), url)).filter((value): value is string => Boolean(value)))].slice(0, 5);
   const title = html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.replace(/\s+/g, " ").trim() || url.hostname;
-  return { referenceUrl: url.toString(), name: `${title} foundation`, accent, ink, paper, logos, fontCandidates: [...new Set(fontCandidates)].slice(0, 6), references: [url.toString()], negativeRules: [], findings: { colors: colors.length, fontCandidates: new Set(fontCandidates).size, assets: logos.length, stylesheets: stylesheets.filter(Boolean).length } };
+  const reviewedFonts = [...new Set(fontCandidates)].slice(0, 6);
+  return { referenceUrl: url.toString(), name: `${title} foundation`, accent, ink, paper, paletteRoles: paletteRoles(accent, ink, paper, "website"), logos, fontCandidates: reviewedFonts, typographyCandidates: reviewedFonts.map((family) => ({ family, availability: "unverified", source: "website" })), references: [url.toString()], negativeRules: [], findings: { colors: colors.length, fontCandidates: new Set(fontCandidates).size, assets: logos.length, stylesheets: stylesheets.filter(Boolean).length } };
 }
 
 function reviewedWebsiteUrl(rawUrl: string) { let url: URL; try { url = new URL(rawUrl); } catch { throw new Error("A valid HTTP(S) website is required."); } if (!/^https?:$/.test(url.protocol) || url.username || url.password) throw new Error("Only credential-free HTTP(S) websites are allowed."); return url.toString(); }
 function styleLibraryId(name: string) { return `style-${createHash("sha256").update(name.trim().toLowerCase()).digest("hex").slice(0, 12)}`; }
 function saveStyleToLibrary(style: WorkshopStyle, root?: string) {
   const db = dbFor(root); const id = style.libraryId ?? styleLibraryId(style.name); const now = style.lockedAt;
-  const snapshot: Omit<WorkshopStyleLibraryEntry, "id" | "createdAt" | "updatedAt"> = { source: style.source, name: style.name, accent: style.accent, ink: style.ink, paper: style.paper, logos: style.logos, licensedFonts: style.licensedFonts, references: style.references, negativeRules: style.negativeRules, intentProfile: style.intentProfile, referenceUrl: style.referenceUrl };
+  const snapshot: Omit<WorkshopStyleLibraryEntry, "id" | "createdAt" | "updatedAt"> = { source: style.source, name: style.name, accent: style.accent, ink: style.ink, paper: style.paper, paletteRoles: style.paletteRoles, typographyRoles: style.typographyRoles, logos: style.logos, licensedFonts: style.licensedFonts, references: style.references, negativeRules: style.negativeRules, intentProfile: style.intentProfile, referenceUrl: style.referenceUrl };
   db.prepare("INSERT INTO style_library (id, style_json, created_at, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET style_json=excluded.style_json, updated_at=excluded.updated_at").run(id, JSON.stringify(snapshot), now, now);
   return id;
 }
@@ -580,7 +609,13 @@ function applyLockedStyle(current: WorkshopState, style: WorkshopStyle, root?: s
   return write({ ...current, ...(current.style ? staleStyleDependents(current) : {}), style: saved, designArtifact: materializeDesignArtifact(saved, current.id, root), updatedAt: saved.lockedAt }, root);
 }
 export async function lockWebsiteStyle(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch, requestedIntent?: WorkshopStyle["intentProfile"], reviewed?: ManualStyleInput): Promise<WorkshopState> {
-  const suggestion = reviewed ? { ...reviewed, referenceUrl: reviewedWebsiteUrl(rawUrl) } : await analyzeWebsiteStyle(rawUrl, fetchImpl); const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "website", name: suggestion.name?.trim() || "Website foundation", accent: color(suggestion.accent, "#1668E3"), ink: color(suggestion.ink, "#171816"), paper: color(suggestion.paper, "#F4F2EC"), logos: cleanStyleList(suggestion.logos), licensedFonts: cleanStyleList("fontCandidates" in suggestion ? suggestion.fontCandidates : suggestion.licensedFonts), references: cleanStyleList(suggestion.references), negativeRules: cleanStyleList(suggestion.negativeRules), intentProfile: intentProfile(reviewed?.intentProfile ?? requestedIntent ?? current.onboarding.outcome), referenceUrl: suggestion.referenceUrl, lockedAt: updatedAt, stale: false };
+  const suggestion = reviewed ? { ...reviewed, referenceUrl: reviewedWebsiteUrl(rawUrl) } : await analyzeWebsiteStyle(rawUrl, fetchImpl); const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
+  const candidateFonts = cleanStyleList("fontCandidates" in suggestion ? suggestion.fontCandidates : suggestion.licensedFonts);
+  const headingFont = reviewed?.headingFont?.trim() || candidateFonts[0] || "system-ui";
+  const bodyFont = reviewed?.bodyFont?.trim() || candidateFonts[1] || headingFont;
+  const fontsConfirmed = reviewed?.fontsConfirmed ?? Boolean(reviewed?.licensedFonts?.length);
+  const accent = color(suggestion.accent, "#1668E3"); const ink = color(suggestion.ink, "#171816"); const paper = color(suggestion.paper, "#F4F2EC");
+  const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "website", name: suggestion.name?.trim() || "Website foundation", accent, ink, paper, paletteRoles: paletteRoles(accent, ink, paper, "website"), typographyRoles: typographyRoles(headingFont, bodyFont, fontsConfirmed ? "user_confirmed" : "unverified", "website"), logos: cleanStyleList(suggestion.logos), licensedFonts: fontsConfirmed ? cleanStyleList([headingFont, bodyFont]).filter((font) => !isSystemFont(font)) : [], references: cleanStyleList(suggestion.references), negativeRules: cleanStyleList(suggestion.negativeRules), intentProfile: intentProfile(reviewed?.intentProfile ?? requestedIntent ?? current.onboarding.outcome), referenceUrl: suggestion.referenceUrl, lockedAt: updatedAt, stale: false };
   return applyLockedStyle(current, style, root);
 }
 function cleanStyleList(values: string[] | undefined) { return [...new Set((values ?? []).map((value) => value.trim()).filter(Boolean))]; }
@@ -588,21 +623,24 @@ function color(value: string | undefined, fallback: string) { const candidate = 
 function intentProfile(value: WorkshopStyle["intentProfile"] | undefined) { const profile = value ?? "client_facing_pitch"; if (!["client_facing_pitch", "board_deck", "internal_workshop"].includes(profile)) throw new Error("Invalid intent profile."); return profile; }
 function materializeDesignArtifact(style: WorkshopStyle, workshopId: string, root?: string): WorkshopDesignArtifact {
   const dataRoot = root ?? repositoryDataRoot(); const markdownPath = workshopGeneratedPath(workshopId, `DESIGN-v${style.version}.md`); const tokensPath = workshopGeneratedPath(workshopId, `DESIGN-v${style.version}.tokens.json`); const generated = join(dataRoot, dirname(markdownPath));
-  const markdown = `# DESIGN.md\n\n## Foundation\n- Name: ${style.name}\n- Version: ${style.version}\n- Source: ${style.source}\n- Intent profile: ${style.intentProfile}\n\n## Palette\n- Accent: ${style.accent}\n- Ink: ${style.ink}\n- Paper: ${style.paper}\n\n## Licensed inputs\n${style.licensedFonts.length ? style.licensedFonts.map((font) => `- Font: ${font}`).join("\n") : "- Fonts: none recorded"}\n${style.logos.length ? style.logos.map((logo) => `- Logo / asset: ${logo}`).join("\n") : "- Logos / assets: none recorded"}\n\n## References\n${style.references.length ? style.references.map((reference) => `- ${reference}`).join("\n") : "- No external visual references recorded"}\n\n## Negative rules\n${style.negativeRules.length ? style.negativeRules.map((rule) => `- ${rule}`).join("\n") : "- No negative rules recorded"}\n\n## Provenance\n- Locked: ${style.lockedAt}\n${style.referenceUrl ? `- Website reference: ${style.referenceUrl}\n` : ""}`;
-  const tokens = { schemaVersion: 1, styleVersion: style.version, source: style.source, name: style.name, palette: { accent: style.accent, ink: style.ink, paper: style.paper }, logos: style.logos, licensedFonts: style.licensedFonts, references: style.references, negativeRules: style.negativeRules, intentProfile: style.intentProfile, referenceUrl: style.referenceUrl, lockedAt: style.lockedAt };
+  const markdown = `# DESIGN.md\n\n## Foundation\n- Name: ${style.name}\n- Version: ${style.version}\n- Source: ${style.source}\n- Intent profile: ${style.intentProfile}\n\n## Palette\n- Accent: ${style.paletteRoles.accent.value} (${style.paletteRoles.accent.source})\n- Text: ${style.paletteRoles.text.value} (${style.paletteRoles.text.source})\n- Background: ${style.paletteRoles.background.value} (${style.paletteRoles.background.source})\n\n## Typography\n- Heading: ${style.typographyRoles.heading.family} (${style.typographyRoles.heading.availability})\n- Body: ${style.typographyRoles.body.family} (${style.typographyRoles.body.availability})\n\n## Licensed inputs\n${style.licensedFonts.length ? style.licensedFonts.map((font) => `- Confirmed font: ${font}`).join("\n") : "- Confirmed fonts: none; renderers use system fallbacks"}\n${style.logos.length ? style.logos.map((logo) => `- Logo / asset: ${logo}`).join("\n") : "- Logos / assets: none recorded"}\n\n## References\n${style.references.length ? style.references.map((reference) => `- ${reference}`).join("\n") : "- No external visual references recorded"}\n\n## Negative rules\n${style.negativeRules.length ? style.negativeRules.map((rule) => `- ${rule}`).join("\n") : "- No negative rules recorded"}\n\n## Provenance\n- Locked: ${style.lockedAt}\n${style.referenceUrl ? `- Website reference: ${style.referenceUrl}\n` : ""}`;
+  const tokens = { schemaVersion: 2, styleVersion: style.version, source: style.source, name: style.name, palette: { accent: style.accent, ink: style.ink, paper: style.paper }, paletteRoles: style.paletteRoles, typographyRoles: style.typographyRoles, logos: style.logos, licensedFonts: style.licensedFonts, references: style.references, negativeRules: style.negativeRules, intentProfile: style.intentProfile, referenceUrl: style.referenceUrl, lockedAt: style.lockedAt };
   mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, tokensPath), `${JSON.stringify(tokens, null, 2)}\n`, "utf8");
   return { version: style.version, styleVersion: style.version, markdownPath, tokensPath, stale: false, createdAt: style.lockedAt };
 }
 function staleStyleDependents(current: WorkshopState) { return { visualDna: current.visualDna ? { ...current.visualDna, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), storyboardApproved: false, videoState: "blocked" as const }; }
 export function lockManualStyle(input: ManualStyleInput = {}, root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
-  const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "manual", name: input.name?.trim() || "Clean professional", accent: color(input.accent, "#1668E3"), ink: color(input.ink, "#171816"), paper: color(input.paper, "#F4F2EC"), logos: cleanStyleList(input.logos), licensedFonts: cleanStyleList(input.licensedFonts), references: cleanStyleList(input.references), negativeRules: cleanStyleList(input.negativeRules), intentProfile: intentProfile(input.intentProfile ?? current.onboarding.outcome), lockedAt: updatedAt, stale: false };
+  const accent = color(input.accent, "#1668E3"); const ink = color(input.ink, "#171816"); const paper = color(input.paper, "#F4F2EC");
+  const suppliedFonts = cleanStyleList(input.licensedFonts); const headingFont = input.headingFont?.trim() || suppliedFonts[0] || "system-ui"; const bodyFont = input.bodyFont?.trim() || suppliedFonts[1] || headingFont;
+  const fontsConfirmed = input.fontsConfirmed ?? Boolean(suppliedFonts.length); const evidenceSource: StyleEvidenceSource = Object.keys(input).length ? "manual" : "default";
+  const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "manual", name: input.name?.trim() || "Clean professional", accent, ink, paper, paletteRoles: paletteRoles(accent, ink, paper, evidenceSource), typographyRoles: typographyRoles(headingFont, bodyFont, fontsConfirmed ? "user_confirmed" : "unverified", evidenceSource), logos: cleanStyleList(input.logos), licensedFonts: fontsConfirmed ? cleanStyleList([headingFont, bodyFont]).filter((font) => !isSystemFont(font)) : [], references: cleanStyleList(input.references), negativeRules: cleanStyleList(input.negativeRules), intentProfile: intentProfile(input.intentProfile ?? current.onboarding.outcome), lockedAt: updatedAt, stale: false };
   return applyLockedStyle(current, style, root);
 }
 export function applyStyleLibrary(styleId: string, requestedIntent?: WorkshopStyle["intentProfile"], root?: string): WorkshopState {
   const db = dbFor(root); const row = db.prepare("SELECT style_json FROM style_library WHERE id=?").get(styleId) as { style_json: string } | undefined;
   if (!row) throw new Error("Saved Style not found.");
-  const entry = JSON.parse(row.style_json) as Omit<WorkshopStyleLibraryEntry, "id" | "createdAt" | "updatedAt">; const current = readWorkshopState(root); const lockedAt = new Date().toISOString();
+  const entry = normalizeStyleMetadata(JSON.parse(row.style_json) as Omit<WorkshopStyleLibraryEntry, "id" | "createdAt" | "updatedAt">); const current = readWorkshopState(root); const lockedAt = new Date().toISOString();
   const style: WorkshopStyle = { ...entry, version: (current.style?.version ?? 0) + 1, libraryId: styleId, intentProfile: intentProfile(requestedIntent ?? current.onboarding.outcome ?? entry.intentProfile), lockedAt, stale: false };
   return applyLockedStyle(current, style, root, false);
 }

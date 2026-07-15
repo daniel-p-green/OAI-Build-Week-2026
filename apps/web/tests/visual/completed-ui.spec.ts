@@ -180,7 +180,8 @@ test("Style can start from a website and apply a professional intent", async ({ 
   const stylelessState = { ...readyState, style: undefined };
   const posted: Record<string, unknown>[] = [];
   const suggestion = { referenceUrl: "https://example.com/brand", name: "Example Studio foundation", accent: "#2457D6", ink: "#102030", paper: "#FAF8F4", logos: ["https://example.com/logo.svg"], fontCandidates: ["Studio Sans"], references: ["https://example.com/brand"], negativeRules: [], findings: { colors: 3, fontCandidates: 1, assets: 1, stylesheets: 1 } };
-  await page.route("**/api/workshop", async (route) => {
+  await page.route("**/api/workshop*", async (route) => {
+    if (route.request().method() === "GET" && route.request().url().includes("view=styles")) return route.fulfill({ json: { styles: [] } });
     if (route.request().method() === "GET") return route.fulfill({ json: stylelessState });
     const body = route.request().postDataJSON() as Record<string, unknown>;
     posted.push(body);
@@ -204,10 +205,15 @@ test("Style can start from a website and apply a professional intent", async ({ 
     await sheet.getByRole("button", { name: "Review style" }).click();
     await expect(sheet.getByRole("status")).toContainText("Found 3 colors, 1 font candidate, and 1 brand asset");
     await expect(sheet.getByRole("textbox", { name: "Name" })).toHaveValue("Example Studio foundation");
+    await expect(sheet.getByRole("textbox", { name: "Heading" })).toHaveValue("Studio Sans");
+    await expect(sheet.getByText("Found on the website · usage not verified")).toBeVisible();
+    const fontConfirmation = sheet.getByRole("checkbox", { name: "I can use these fonts in generated work" });
+    await expect(fontConfirmation).not.toBeChecked();
     await sheet.getByRole("textbox", { name: "Accent" }).fill("#335577");
     await expectScreen(page, `${viewport.name}-website-style`);
+    await fontConfirmation.check();
     await sheet.getByRole("button", { name: "Use this style" }).click();
-    await expect.poll(() => posted.at(-1)).toEqual({ action: "lockWebsiteStyle", url: "https://example.com/brand", intentProfile: "board_deck", manualStyle: { name: "Example Studio foundation", accent: "#335577", ink: "#102030", paper: "#FAF8F4", logos: ["https://example.com/logo.svg"], licensedFonts: ["Studio Sans"], references: ["https://example.com/brand"], negativeRules: [], intentProfile: "board_deck" } });
+    await expect.poll(() => posted.at(-1)).toEqual({ action: "lockWebsiteStyle", url: "https://example.com/brand", intentProfile: "board_deck", manualStyle: { name: "Example Studio foundation", accent: "#335577", ink: "#102030", paper: "#FAF8F4", headingFont: "Studio Sans", bodyFont: "Studio Sans", fontsConfirmed: true, logos: ["https://example.com/logo.svg"], licensedFonts: ["Studio Sans"], references: ["https://example.com/brand"], negativeRules: [], intentProfile: "board_deck" } });
   }
 });
 
@@ -216,7 +222,8 @@ test("a completed website review hands off from the editable Map without blockin
   const suggestion = { referenceUrl: "https://example.com/brand", name: "Example Studio foundation", accent: "#2457D6", ink: "#102030", paper: "#FAF8F4", logos: ["https://example.com/logo.svg"], fontCandidates: ["Studio Sans"], references: ["https://example.com/brand"], negativeRules: [], findings: { colors: 3, fontCandidates: 1, assets: 1, stylesheets: 1 } };
   const stylelessState = { ...current, briefApproved: false, frame: current.frame ? { ...current.frame, stale: true } : undefined, style: undefined, onboarding: { ...current.onboarding, step: "complete", outcome: "board_deck", mapOrientationDismissed: true, styleAnalysis: { status: "ready", url: suggestion.referenceUrl, startedAt: "2026-07-15T14:00:00.000Z", completedAt: "2026-07-15T14:00:01.000Z", suggestion } } };
   const posted: Record<string, unknown>[] = [];
-  await page.route("**/api/workshop", async (route) => {
+  await page.route("**/api/workshop*", async (route) => {
+    if (route.request().method() === "GET" && route.request().url().includes("view=styles")) return route.fulfill({ json: { styles: [] } });
     if (route.request().method() === "GET") return route.fulfill({ json: stylelessState });
     posted.push(route.request().postDataJSON() as Record<string, unknown>);
     return route.fulfill({ json: current });
@@ -234,9 +241,14 @@ test("a completed website review hands off from the editable Map without blockin
   await expect(sheet.getByRole("textbox", { name: "Accent" })).toHaveValue("#2457D6");
   await expect(sheet.getByRole("textbox", { name: "Text" })).toHaveValue("#102030");
   await expect(sheet.getByRole("textbox", { name: "Background" })).toHaveValue("#FAF8F4");
+  await expect(sheet.getByRole("textbox", { name: "Heading" })).toHaveValue("Studio Sans");
+  await expect(sheet.getByText("Found on the website · usage not verified")).toBeVisible();
+  await expect(sheet.getByText("System fallback · candidate not used until confirmed")).toBeVisible();
   await expect(sheet.getByRole("button", { name: /Board presentation/ })).toHaveAttribute("aria-pressed", "true");
   await sheet.getByRole("button", { name: "Save company style" }).click();
   await expect.poll(() => posted.at(-1)?.action).toBe("lockWebsiteStyle");
+  await expect.poll(() => (posted.at(-1)?.manualStyle as Record<string, unknown>)?.fontsConfirmed).toBe(false);
+  await expect.poll(() => (posted.at(-1)?.manualStyle as Record<string, unknown>)?.licensedFonts).toEqual([]);
 });
 
 test.describe("completed Workshop judge path", () => {
