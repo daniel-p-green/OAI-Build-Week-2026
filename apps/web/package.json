@@ -6,8 +6,9 @@
     "build": "next build",
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run --passWithNoTests",
-    "test:e2e": "tsx scripts/e2e.ts"
+    "test": "vitest run app --passWithNoTests",
+    "test:e2e": "tsx scripts/e2e.ts",
+    "test:visual": "next build && playwright test --config playwright.config.ts"
   },
   "dependencies": {
     "@excalidraw/excalidraw": "^0.18.1",
@@ -17,6 +18,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0"
   }

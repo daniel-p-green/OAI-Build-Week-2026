@@ -1,12 +1,12 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 21:58 CT
+Last updated: 2026-07-14 22:12 CT
 
 ## Status
 
 **Active phase:** P0 interface proof — official component states, visual regression, and accessibility
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
-**Current gate:** The reusable official UI layer, professional layout, and plain-language migration are implemented. P0 remains open until automated computed-state checks, the complete screenshot matrix, keyboard-only approvals, 200% zoom, and full visible-copy snapshots prove the implementation. No founder approval is required to finish this proof pass.
+**Current gate:** The reusable official UI layer, professional layout, plain-language migration, reset/completed screenshot matrix, keyboard approvals, core computed styles, contrast, reduced motion, overflow checks, and visible-copy snapshot are implemented. P0 remains open until every primitive variant/state and native 200% browser zoom are verified. No founder approval is required to finish this proof pass.
 **Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found`. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. It must run before claiming live product use or changing per-operation defaults.
 **Known host risk:** The July 14 host-sync verification is credential-blocked, so it does not prove native task or voice-turn persistence. The designed capture-only fallback remains active; Spike A stays open until the end-of-day decision deadline or a separately authorized live host check.
 
@@ -238,9 +238,11 @@ Use NotebookLM's screenshots as behavioral evidence, then express the result in 
 
 - [x] Add structural tests that fail for unmapped interactive elements, raw shell controls, glyph icons, unapproved tokens, or custom chrome outside the exception manifest.
 - [ ] Add computed-style assertions for the exact official geometry and type of the core primitives in every interaction state.
-- [ ] Add screenshot regression coverage for reset and completed fixtures at 1200×800, 1024×768, and 390×844 across Map, Sources, evidence, Brief/Style, Outputs, Storyboard, and focused output viewer.
+  - Core default, focus, checked, and reduced-motion states now pass; hover, pressed, disabled, error, and remaining primitive variants stay open.
+- [x] Add screenshot regression coverage for reset and completed fixtures at 1200×800, 1024×768, and 390×844 across Map, Sources, evidence, Brief/Style, Outputs, Storyboard, and focused output viewer.
 - [ ] Verify keyboard-only completion of both approval paths, focus return after drawers, visible focus, WCAG AA contrast, reduced motion, screen-reader names, 200% zoom, and no horizontal overflow.
-- [ ] Run a copy inventory test that snapshots every judge-visible label and rejects the retired/internal vocabulary above outside technical Details.
+  - Both approvals, focus return, visible focus, core token contrast, reduced motion, role/name queries, a 600px logical viewport equivalent to 200% on a 1200px screen, and no overflow pass. Native browser zoom remains open.
+- [x] Run a copy inventory test that snapshots every judge-visible label and rejects the retired/internal vocabulary above outside technical Details.
 - [x] Complete a manual Figma-to-runtime reconciliation table with source node, code component, rendered measurement, state coverage, and screenshot evidence. Only then may the two reopened compliance items be checked again.
 
 ### 3. Specification and implementation plan

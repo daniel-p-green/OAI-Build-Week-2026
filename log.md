@@ -2966,3 +2966,91 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Verify keyboard-only completion of both approval paths, WCAG AA, reduced motion, and 200% browser zoom.
 - Snapshot every judge-visible label, not only the retired-language allowlist.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 22:03 CT — Completed-fixture visual regression and copy snapshot added
+
+**Area:** Frontend verification
+
+### Changed
+
+- Added a production-server Playwright suite using the locally installed Chrome channel rather than an unverified bundled browser.
+- Added 21 image baselines covering Map, Sources, exact evidence, Brief/Style, Outputs, focused output viewer, and Storyboard at 1200×800, 1024×768, and 390×844.
+- Added rendered computed-style assertions for Button, Token, Checkbox, and keyboard focus states.
+- Added focus-return and no-horizontal-overflow assertions to every viewport path.
+- Added a stable snapshot of the judge-visible buttons and headings across Map, Brief, Outputs, and Storyboard.
+
+### Verified
+
+- `pnpm --filter @workshoplm/web exec playwright test --config playwright.config.ts` passed 5/5 against the committed baselines after an independent baseline-generation run.
+- All 21 completed-fixture screens matched within the locked 0.1% pixel tolerance.
+- Button and Token geometry, official focus color, custom Checkbox appearance, source-drawer focus return, and document-width equality passed in the live production server.
+
+### Decisions
+
+- Visual regression runs against `next start`, not `next dev`, so the screenshot contract excludes development-only chrome.
+- The current baseline proves the completed fixture only. The reset fixture remains explicitly open instead of being implied by the completed matrix.
+
+### Open items
+
+- Add reset-fixture visual coverage without leaving the shared local fixture in a reset state after failures.
+- Complete keyboard-only approval, WCAG AA, reduced-motion, and 200% zoom verification.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 22:12 CT — Isolated reset matrix and keyboard approval proof added
+
+**Area:** Frontend verification / accessibility
+
+### Changed
+
+- Isolated the visual suite under `.workshoplm-visual-test`; global setup and teardown remove that test root so screenshots never alter Daniel's working demo fixture.
+- Added reset-state Map and Sources baselines at all three target viewports, bringing the visual contract to 27 image baselines plus one visible-copy snapshot.
+- Added keyboard-only Brief approval and Style selection before deterministic output seeding, then keyboard-only Storyboard approval after all completed-state screenshots.
+- Added reduced-motion, core WCAG contrast, accessible role/name, focus return, visible focus, no-overflow, and 600px logical viewport checks representing a 200% layout on a 1200px screen.
+
+### Verified
+
+- A fresh non-update run of `pnpm --filter @workshoplm/web exec playwright test --config playwright.config.ts` passed 7/7 after baseline generation.
+- The suite proved reset and completed states without touching `.workshoplm`; the isolated data root was removed by teardown.
+- Both approval actions completed through Tab and Enter, not pointer clicks.
+
+### Decisions
+
+- The visual matrix item is now complete. Native browser zoom remains open because the automated check currently proves the equivalent logical viewport, not the browser UI's zoom command itself.
+- Computed-style proof remains open for untested hover, pressed, disabled, error, and secondary primitive variants even though core geometry and focus/checked states pass.
+
+### Open items
+
+- Add the remaining primitive interaction-state assertions.
+- Verify native 200% browser zoom or document the browser-control limitation with an equivalent accepted check.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 22:16 CT — Official UI proof suite integrated with repository checks
+
+**Area:** Frontend verification / build integration
+
+### Changed
+
+- Scoped the web unit-test command to `app` so Vitest does not collect the independent Playwright specifications.
+- Added `test:visual` as the production build plus visual-contract command.
+
+### Verified
+
+- `pnpm --filter @workshoplm/web test` passed 5/5 unit tests.
+- `pnpm check` passed lint, typecheck, and tests across all 13 workspace packages.
+- `pnpm --filter @workshoplm/web test:visual` built the production app and passed all 7 Playwright cases against 27 image baselines and the visible-copy snapshot.
+- Playwright teardown removed `.workshoplm-visual-test`; Daniel's working `.workshoplm` fixture was not changed.
+
+### Decisions
+
+- The production visual suite remains separate from the default repository unit-test loop because it builds and launches a real server. It is a required UI-proof command, not an accidental Vitest input.
+
+### Open items
+
+- P0 remains open only for the remaining primitive variants/states and native browser 200% zoom proof.
+- Codex Session ID: unavailable on this surface; not inferred.
