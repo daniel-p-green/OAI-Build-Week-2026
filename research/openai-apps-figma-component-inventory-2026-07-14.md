@@ -73,21 +73,21 @@ Component-specific mobile/card typography is also verified: Card header `17/23`,
 
 | Component | Figma source | Verified implementation facts | WorkshopLM use |
 | --- | --- | --- | --- |
-| Button | set `2:465`, key `d7098df…`; inspected instance `7:104094` | primary/secondary/destructive/sec-destructive; large/small; 36px primary, `8px 16px`, 4px gap, 999px radius, `14/20`, primary `#0D0D0D` | every labeled action |
+| Button | set `2:465`, key `d7098df…`; inspected instance `7:104094`; set verified directly through the Plugin API | primary/secondary/destructive/sec-destructive; large `36px`/`8px 16px`; small `30px`/`6px 16px`; 4px gap; 999px radius; `14/20`; exact hover, pressed, and inactive opacity/color variants | every labeled action and `ButtonLink` composition |
 | IconButton | Desktop Web component; iconography page `2100:26850` | icon-only action with accessible label; exact 24px icon assets | Back, close, dismiss |
 | Chevron left icon | `2105:819` | exact `icon / chevron-left-lg` path from Figma asset | Back |
 | Close icon | `2105:904` | exact `icon / x, crossed` path from Figma asset | Close and dismiss |
 | Plus icon | `2105:886` | exact `icon / plus-lg, 18px, add` path from Figma asset | Add source |
 | SegmentedControl | set `6:20104`, key `7dd52a…` | large round 44px, 4px padding, 999px radius, secondary background | mutually exclusive view choices when needed |
-| Token | set `2:373`, key `b623…` | 42px, `12px 16px`, 8px gap, 25px radius, 10% ink stroke, `13/18` | citation and source-scope tokens |
-| Checkbox | set `5:34676`, key `2b762…` | checked/indeterminate/hover/press/inactive; label `16/28` | active source scope |
+| Token | set `2:373`, key `b623…` | 42px, `12px 16px`, 8px gap, 25px radius, 10% ink stroke, `13/18`; hover 2% fill/5% stroke; press 5% fill/stroke; inactive 5% stroke | citation tokens |
+| Checkbox | set `5:34676`, key `2b762…` | 18px; 2.7px radius; 0.9px 10% ink stroke; checked, indeterminate, hover, press, and inactive variants; label `16/28` | active source scope |
 | Radio | set `5:34763` | checked and interaction variants; label `16/28` | exclusive settings |
 | Toggle | set `2:16199` | state variants; label `16/28` | boolean settings |
 | Menu | main `6:9803`, key `41da4…` | 6px padding, 12px radius, white, 10% ink stroke, two restrained shadows, `13/18` labels | popovers and overflow menus |
 | DropdownMenu | set `2:415`, key `8a190…` | popover/expanded variants | compact selection controls |
 | Navigation/Header | set `2:626` | 52px high, `8px` vertical, `4px` left, `16px` right | Workshop top bar |
-| Input | main `7:109657` | label/optional/placeholder `14/20`; 464×66 reference | single-line fields |
-| TextArea | main `6:20458` | label/placeholder `14/20`; 600×104 reference | narration and source text |
+| Input | main `7:109657`; field set `6:20042` | 284×66 reference; title/optional/placeholder `14/20`; inner field 38px high, 8px radius, white, 10% ink stroke | single-line fields |
+| TextArea | main `6:20458`; field set `6:20049` | 600×104 reference; title/placeholder `14/20`; inner field 76px high, 8px radius, white, 10% ink stroke | narration and source text |
 | Modal/Input | set `7:109664` | 592×402 reference, 40px outer padding, scrim variants, title `20/25` | add-source dialog composition |
 | Card | main `2004:22170`, key `e871ab…` | 24px radius, white, 0.5px 15% ink border, `0 4px 16px` 5% shadow, 361px reference | approvals, output objects, inspectors |
 | ListGroup | main `2004:21591` | grouped ListRows | source list |
@@ -115,6 +115,8 @@ The official library does not ship a finished Inspector. WorkshopLM uses only th
 | `EvidenceSheet` | Full screen content column + Sidebar desktop header + IconButton + caption/body type + Button | The excerpt and locator are content; there is no invented inspector control family. |
 | `ClaimInspector` | Card + IconButton + Input + Button + caption/body type | Map-specific content sits inside official primitives. |
 | `ApprovalSummary` | Card + caption/body type + Button | Current state is plain official caption text, not a badge or custom pill. |
+| `ButtonLink` | Button variants + semantic anchor | Export/open actions retain the exact Button geometry, typography, state colors, and focus behavior without inventing a separate link control. |
+| `ListRowAction` | ListRow typography/media anatomy + Button keyboard/focus behavior | The source title region is a transparent row action inside ListRow; it introduces no new fill, border, shadow, radius family, or type scale. |
 
 Map nodes, provenance edges, generated previews, image tiles, and storyboard imagery remain domain content. Their surrounding controls and containers use the official primitives above.
 

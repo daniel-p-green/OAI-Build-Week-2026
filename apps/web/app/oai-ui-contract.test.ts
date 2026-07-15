@@ -13,7 +13,7 @@ const inventory = readFileSync(resolve(root, OAI_UI_SOURCE.inventory), "utf8");
 describe("official Apps in ChatGPT UI implementation", () => {
   it("pins every reusable shell family to the inspected Figma inventory", () => {
     for (const id of Object.values(OAI_UI_COMPONENTS)) expect(inventory).toContain(`\`${id}\``);
-    for (const component of ["FullScreenShell", "NavigationHeader", "Button", "IconButton", "Token", "Checkbox", "Input", "TextArea", "Card", "ListGroup", "ListRow", "EntityCard", "Carousel", "CarouselRow"]) {
+    for (const component of ["FullScreenShell", "NavigationHeader", "Button", "ButtonLink", "IconButton", "Token", "Checkbox", "Input", "TextArea", "Card", "ListGroup", "ListRow", "ListRowAction", "EntityCard", "Carousel", "CarouselRow"]) {
       expect(ui).toContain(`function ${component}`);
     }
   });
@@ -35,7 +35,13 @@ describe("official Apps in ChatGPT UI implementation", () => {
     for (const retired of ["#10a37f", "#7356b8", "#9a650f", "#f7f7f8", "#ececf1"]) expect(cascade).not.toContain(retired);
     expect(uiCss).toContain("height: 42px");
     expect(uiCss).toContain("height: 36px");
+    expect(uiCss).toContain("height: 30px");
+    expect(uiCss).toContain("height: 38px");
+    expect(uiCss).toContain("min-height: 76px");
+    expect(uiCss).toContain("border-radius: 2.7px");
     expect(uiCss).toContain("border-radius: 24px");
+    expect(uiCss).not.toContain("filter: brightness");
+    expect(uiCss).not.toContain("scale(0.98)");
   });
 
   it("keeps internal product language out of visible copy", () => {

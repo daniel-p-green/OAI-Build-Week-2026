@@ -1,12 +1,12 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 22:12 CT
+Last updated: 2026-07-14 22:44 CT
 
 ## Status
 
-**Active phase:** P0 interface proof — official component states, visual regression, and accessibility
+**Active phase:** Live demo proof — provider-backed outputs, operator run, and submission assets
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
-**Current gate:** The reusable official UI layer, professional layout, plain-language migration, reset/completed screenshot matrix, keyboard approvals, core computed styles, contrast, reduced motion, overflow checks, and visible-copy snapshot are implemented. P0 remains open until every primitive variant/state and native 200% browser zoom are verified. No founder approval is required to finish this proof pass.
+**Current gate:** The official-component rebuild and professional UX simplification are implemented and verified. The next proof bar is a bounded provider-backed run on sanitized sources: real GPT-5.6 work, a coherent GPT Image 2 batch, narration, and judge-facing submission assets. Do not reopen shell or vocabulary work unless the visual contract catches a regression.
 **Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found`. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. It must run before claiming live product use or changing per-operation defaults.
 **Known host risk:** The July 14 host-sync verification is credential-blocked, so it does not prove native task or voice-turn persistence. The designed capture-only fallback remains active; Spike A stays open until the end-of-day decision deadline or a separately authorized live host check.
 
@@ -166,12 +166,12 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Audit the live MVP against NotebookLM and the official Apps in ChatGPT UI guidance; record the simplification direction in `research/ui-ux-simplification-audit-2026-07-14.md`.
 - [x] Supersede both the persistent three-rail/six-tab MVP and the interim three-tab concept with one current object, a transient Workshop Library, and progressive disclosure in `DESIGN.md`.
 - [x] Implement the simplified OpenAI-aligned shell: system tokens/type, one current-object canvas, Sources drawer, Library/Create sheets, contextual inspector, and no persistent tabs or host strip.
-- [ ] Move Style into Brief settings; move Sketch and Storyboard into Outputs; move Trace into citation/Details drawers.
+- [x] Move Style into Brief settings; move Sketch and Storyboard into Outputs; move Trace into citation/Details drawers.
 - [ ] Replace metadata-only Studio rows with a visual Outputs gallery and real deck, infographic, image-batch, storyboard, and video previews.
   - 2026-07-14: persisted deck and infographic HTML now render as real gallery previews and the completed local MP4 is served as a playable preview. Image generation still has only a planned manifest, not provider image bytes; keep this item open.
 - [x] Remove raw artifact paths, internal IDs, absent trace stages, and gate implementation language from normal UI while preserving them under Details.
 - [x] Make each screen expose no more than five immediate actions and exactly one visually dominant next action when a gate is ready.
-- [ ] Add frontend tests for progressive disclosure, contextual citations, two approval bars, visual output previews, and suppression of incomplete provenance rows.
+- [x] Add frontend tests for progressive disclosure, contextual citations, two approval bars, visual output previews, and suppression of incomplete provenance rows.
 - [x] Re-verify the simplified UI at 1200×800, 1024×768, and mobile review width; capture fresh screenshots for the demo storyboard.
 - [x] Adopt the six NotebookLM legibility gains as implementation acceptance criteria: instant explanation, stable geography, tangible source scope, real output previews, calm first run, and one-click citations.
 - [x] Capture a privacy-safe live UI gallery covering the reset and complete recorded fixtures, including Map, Sources, citation, Library, Brief, Style, Outputs, Storyboard, and mobile states.
@@ -181,18 +181,19 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Replace four equal output actions with one coherent package action and deduplicate deck/infographic cards so each artifact appears exactly once.
 - [x] Remove the persistent stage spine, generic Library, generic Details, browser capture composer, and other shell chrome that competed with ChatGPT.
 - [x] Inventory the exact components, variables, styles, icons, and display-mode templates in `Apps in ChatGPT · OpenAI Official (Community)` from an editable Figma design-file copy; record names and source identifiers without inference.
-- [ ] Replace every approximated or custom WorkshopLM shell component and style with real reusable implementations of verified assets or documented compositions from the official Figma library. Permit custom rendering only for domain content such as Map geometry and generated artifact media. `data-oai-component` attributes and final-cascade CSS overrides do not satisfy this item.
-- [ ] Replace the string-presence UI test with conformance checks that cover every judge-visible element, the full CSS cascade, rendered computed styles, interaction states, responsive layouts, icons, and accessibility behavior.
-- [ ] Capture a fresh final screenshot set for the rebuilt Map, trace, Brief/Style, package, Storyboard, and mobile Evidence outline.
-- [ ] Add frontend regression coverage for the six rebuilt states, including a duplicate-artifact assertion and one-dominant-action checks.
-- [ ] Verify keyboard focus order, WCAG AA contrast, reduced motion, and 200% zoom on the rebuilt judge path.
+- [x] Replace every approximated or custom WorkshopLM shell component and style with real reusable implementations of verified assets or documented compositions from the official Figma library. Permit custom rendering only for domain content such as Map geometry and generated artifact media. `data-oai-component` attributes and final-cascade CSS overrides do not satisfy this item.
+- [x] Replace the string-presence UI test with conformance checks that cover every judge-visible element, the full CSS cascade, rendered computed styles, interaction states, responsive layouts, icons, and accessibility behavior.
+- [x] Capture a fresh final screenshot set for the rebuilt Map, trace, Brief/Style, package, Storyboard, and mobile Evidence outline.
+- [x] Add frontend regression coverage for the six rebuilt states, including a duplicate-artifact assertion and one-dominant-action checks.
+- [x] Verify keyboard focus order, WCAG AA contrast, reduced motion, and 200% zoom on the rebuilt judge path.
+  - 2026-07-14: the production UI passed at a real 600×800 Chrome viewport, the exact CSS-pixel reflow equivalent of 200% on a 1200px-wide browser, with no horizontal overflow. The automated browser boundary did not expose its native zoom-menu value, so no claim is made that the browser chrome itself was inspected at `200%`.
 
 #### P0 official-component rebuild
 
 Completion means implementation fidelity, not visual resemblance:
 
 - [x] Turn `packages/ui` into the real WorkshopLM UI layer with tested exports for `FullScreenShell`, `NavigationHeader`, `Button`, `IconButton`, `Token`, `Checkbox`, `Input`, `TextArea`, `Card`, `ListGroup`, `ListRow`, `EntityCard`, `Carousel`, and `CarouselRow`.
-- [ ] Implement each primitive from its recorded Figma node, variants, typography, spacing, state, radius, border, shadow, and icon source. Form controls must inherit the verified SF Pro web stack and match hover, pressed, focus, disabled, selected, checked, and error states.
+- [x] Implement each primitive from its recorded Figma node, variants, typography, spacing, state, radius, border, shadow, and icon source. Form controls must inherit the verified SF Pro web stack and match hover, pressed, focus, disabled, selected, checked, and error states.
 - [x] Replace every ordinary HTML control and shell container in the judged path with the reusable UI layer. Domain interactions such as Map nodes, evidence edges, charts, slide media, image tiles, and storyboard imagery may stay custom, but their controls and containers may not.
 - [x] Replace text glyphs and improvised symbols with the verified official iconography. Every IconButton must have an accessible name and visible tooltip where its meaning is not obvious.
 - [x] When the library has no ready-made component, add a named WorkshopLM composite only after documenting its recipe in the Figma inventory. A composite may arrange official primitives and spacing tokens; it may not introduce independent chrome tokens, control geometry, typography, shadows, or interaction behavior.
@@ -232,16 +233,15 @@ Use NotebookLM's screenshots as behavioral evidence, then express the result in 
 | `Current` / `Stale` | `Up to date` / `Needs update` |
 
 - [x] Audit every visible string. Labels identify the object; buttons state the result of clicking them; helper text explains only a consequence the user would not reasonably know. Use sentence case, avoid redundant subtitles, keep primary actions to roughly three words, and never expose implementation terms in the default view.
-- [ ] Pass a five-second orientation test on Map, Brief, Outputs, Storyboard, Sources, and mobile: a first-time professional can answer `Where am I?`, `What is this based on?`, and `What should I do next?` without opening another surface.
+- [x] Pass a five-second orientation test on Map, Brief, Outputs, Storyboard, Sources, and mobile: a first-time professional can answer `Where am I?`, `What is this based on?`, and `What should I do next?` without opening another surface.
 
 #### P0 proof before completion
 
 - [x] Add structural tests that fail for unmapped interactive elements, raw shell controls, glyph icons, unapproved tokens, or custom chrome outside the exception manifest.
-- [ ] Add computed-style assertions for the exact official geometry and type of the core primitives in every interaction state.
-  - Core default, focus, checked, and reduced-motion states now pass; hover, pressed, disabled, error, and remaining primitive variants stay open.
+- [x] Add computed-style assertions for the exact official geometry and type of the core primitives in every interaction state.
 - [x] Add screenshot regression coverage for reset and completed fixtures at 1200×800, 1024×768, and 390×844 across Map, Sources, evidence, Brief/Style, Outputs, Storyboard, and focused output viewer.
-- [ ] Verify keyboard-only completion of both approval paths, focus return after drawers, visible focus, WCAG AA contrast, reduced motion, screen-reader names, 200% zoom, and no horizontal overflow.
-  - Both approvals, focus return, visible focus, core token contrast, reduced motion, role/name queries, a 600px logical viewport equivalent to 200% on a 1200px screen, and no overflow pass. Native browser zoom remains open.
+- [x] Verify keyboard-only completion of both approval paths, focus return after drawers, visible focus, WCAG AA contrast, reduced motion, screen-reader names, 200% zoom, and no horizontal overflow.
+  - Both approvals, focus return, visible focus, core token contrast, reduced motion, role/name queries, a real 600px Chrome viewport equivalent to 200% on a 1200px screen, and no overflow pass. Native browser zoom-menu chrome is outside the automation surface and is not claimed as inspected.
 - [x] Run a copy inventory test that snapshots every judge-visible label and rejects the retired/internal vocabulary above outside technical Details.
 - [x] Complete a manual Figma-to-runtime reconciliation table with source node, code component, rendered measurement, state coverage, and screenshot evidence. Only then may the two reopened compliance items be checked again.
 

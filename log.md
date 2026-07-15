@@ -3054,3 +3054,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - P0 remains open only for the remaining primitive variants/states and native browser 200% zoom proof.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 22:45 CT — Official component and professional UX gate completed
+
+**Area:** Product design / reusable UI / accessibility / visual verification
+
+### Changed
+
+- Re-read the official editable Figma component sets through the Plugin API and corrected the reusable layer to the recorded Button, Token, Checkbox, Input, and TextArea anatomy and interaction variants.
+- Limited Button to the official primary, secondary, destructive, and secondary-destructive variants; added documented `ButtonLink` and `ListRowAction` compositions for semantic links and source-row selection without inventing a new control family.
+- Removed remaining page-level geometry overrides for citations and compact header controls, restored the verified Button state colors and disabled opacities, and implemented checked, indeterminate, hover, pressed, focus, disabled, and error behavior for the applicable primitives.
+- Simplified action hierarchy so every normal object state has one enabled primary action at most; maintenance actions are secondary and the Sources state intentionally has no primary action.
+- Refreshed the permanent Map, Brief, Outputs, Storyboard, Sources, Evidence, and output-viewer screenshot gallery from the production visual baselines.
+- Updated `GOAL.md` to close the official-component and professional-language proof gate and move the active phase to provider-backed demo evidence.
+
+### Verified
+
+- `pnpm --filter @workshoplm/web exec playwright test --config playwright.config.ts` passed 8/8 without updating snapshots. The suite covers 27 reset/completed baselines, visible copy, all implemented primitive variants and states, both keyboard-only approvals, focus return, accessible names, duplicate output prevention, one-dominant-action rules, reduced motion, contrast, and no horizontal overflow.
+- `pnpm check` passed lint, typecheck, and tests across all 13 workspace packages.
+- `pnpm demo:e2e` passed the deterministic Capture → Shape → Deliver seam with both approvals, five planned assets, five storyboard panels, and the rendered-video gate.
+- The production app was inspected in the ChatGPT/Codex in-app browser and the Chrome extension surface. Real Chrome at 600×800—the exact CSS-pixel reflow equivalent of 200% on a 1200px-wide browser—kept the Map, Sources action, primary action, and document width usable without horizontal overflow.
+- Manual comparison of the NotebookLM populated-workspace reference against the refreshed Map, Brief, Outputs, Storyboard, and mobile screens confirmed the intended behavioral adaptation: stable object identity, immediate source scope, one focused work area, tangible output history, and progressive disclosure in the official OpenAI visual system.
+- An initial repository check correctly failed when the Figma inventory no longer named inspected Button instance `7:104094`; the source identifier was restored and the complete check reran green.
+
+### Decisions
+
+- P0 UI work is complete. Further shell or label changes require a concrete regression, not subjective churn.
+- Literal native browser zoom-menu state is not exposed by the automation boundary. The claim is limited to verified 200% layout behavior through a real 600px Chrome viewport plus the same production-browser overflow contract; browser chrome itself is not claimed as inspected.
+- NotebookLM remains behavioral layout evidence, not a visual skin. WorkshopLM preserves a professional Map → Brief → Outputs → Storyboard workflow while ChatGPT owns conversation.
+
+### Open items
+
+- Real GPT Image 2 bytes and provider-backed output evaluation remain unrun; the gallery still labels planned image content honestly.
+- The next active proof is a bounded live operator run that produces provider-backed assets for the demo and submission package.
+- Codex Session ID: unavailable on this surface; not inferred.

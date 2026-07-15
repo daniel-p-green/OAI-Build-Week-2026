@@ -1,10 +1,15 @@
 import {
+  type AnchorHTMLAttributes,
   forwardRef,
   type ButtonHTMLAttributes,
+  type ForwardedRef,
   type HTMLAttributes,
   type InputHTMLAttributes,
   type ReactNode,
   type TextareaHTMLAttributes,
+  useCallback,
+  useEffect,
+  useRef,
 } from "react";
 
 export { DOMAIN_UI_EXCEPTIONS, OAI_UI_COMPONENTS, OAI_UI_SOURCE, OAI_UI_TOKENS } from "./contract.js";
@@ -21,11 +26,18 @@ export function NavigationHeader({ className, ...props }: HTMLAttributes<HTMLEle
   return <header className={classes("oai-navigation-header", className)} data-oai-component="NavigationHeader" {...props} />;
 }
 
-export type ButtonVariant = "primary" | "secondary" | "danger" | "text";
+export type ButtonVariant = "primary" | "secondary" | "destructive" | "secondary-destructive";
+export type ButtonSize = "large" | "small";
 
-export const Button = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant }>(
-  function Button({ className, variant = "primary", type = "button", ...props }, ref) {
-    return <button ref={ref} type={type} className={classes("oai-button", `oai-button--${variant}`, className)} data-oai-component="Button" {...props} />;
+export const Button = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant; size?: ButtonSize }>(
+  function Button({ className, variant = "primary", size = "large", type = "button", ...props }, ref) {
+    return <button ref={ref} type={type} className={classes("oai-button", `oai-button--${variant}`, `oai-button--${size}`, className)} data-oai-component="Button" {...props} />;
+  },
+);
+
+export const ButtonLink = forwardRef<HTMLAnchorElement, AnchorHTMLAttributes<HTMLAnchorElement> & { variant?: ButtonVariant; size?: ButtonSize }>(
+  function ButtonLink({ className, variant = "primary", size = "large", ...props }, ref) {
+    return <a ref={ref} className={classes("oai-button", `oai-button--${variant}`, `oai-button--${size}`, className)} data-oai-component="ButtonLink" {...props} />;
   },
 );
 
@@ -46,9 +58,22 @@ export const Token = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButt
   },
 );
 
-export const Checkbox = forwardRef<HTMLInputElement, Omit<InputHTMLAttributes<HTMLInputElement>, "type">>(
-  function Checkbox({ className, ...props }, ref) {
-    return <input ref={ref} type="checkbox" className={classes("oai-checkbox", className)} data-oai-component="Checkbox" {...props} />;
+function setForwardedRef<T>(ref: ForwardedRef<T>, value: T | null) {
+  if (typeof ref === "function") ref(value);
+  else if (ref) ref.current = value;
+}
+
+export const Checkbox = forwardRef<HTMLInputElement, Omit<InputHTMLAttributes<HTMLInputElement>, "type"> & { indeterminate?: boolean }>(
+  function Checkbox({ className, indeterminate = false, ...props }, forwardedRef) {
+    const localRef = useRef<HTMLInputElement | null>(null);
+    const ref = useCallback((node: HTMLInputElement | null) => {
+      localRef.current = node;
+      setForwardedRef(forwardedRef, node);
+    }, [forwardedRef]);
+    useEffect(() => {
+      if (localRef.current) localRef.current.indeterminate = indeterminate;
+    }, [indeterminate]);
+    return <input ref={ref} type="checkbox" className={classes("oai-checkbox", className)} data-indeterminate={indeterminate || undefined} aria-checked={indeterminate ? "mixed" : undefined} data-oai-component="Checkbox" {...props} />;
   },
 );
 
@@ -81,6 +106,12 @@ export function ListGroup({ className, ...props }: HTMLAttributes<HTMLDivElement
 export function ListRow({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return <div className={classes("oai-list-row", className)} data-oai-component="ListRow" {...props} />;
 }
+
+export const ListRowAction = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement>>(
+  function ListRowAction({ className, type = "button", ...props }, ref) {
+    return <button ref={ref} type={type} className={classes("oai-list-row-action", className)} data-oai-component="ListRowAction" {...props} />;
+  },
+);
 
 export function EntityCard({ className, ...props }: HTMLAttributes<HTMLElement>) {
   return <article className={classes("oai-entity-card", className)} data-oai-component="EntityCard" {...props} />;

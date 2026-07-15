@@ -41,7 +41,12 @@ export const OAI_UI_TOKENS = {
   radiusMenu: "12px",
   headerHeight: "52px",
   buttonHeight: "36px",
+  buttonSmallHeight: "30px",
   tokenHeight: "42px",
+  inputHeight: "38px",
+  textAreaHeight: "76px",
+  checkboxSize: "18px",
+  checkboxRadius: "2.7px",
 } as const;
 
 export const DOMAIN_UI_EXCEPTIONS = [

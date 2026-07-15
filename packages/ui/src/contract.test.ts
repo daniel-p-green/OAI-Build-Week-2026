@@ -11,7 +11,11 @@ describe("official UI contract", () => {
       backgroundPrimary: "#FFFFFF",
       textPrimary: "#0D0D0D",
       buttonHeight: "36px",
+      buttonSmallHeight: "30px",
       tokenHeight: "42px",
+      inputHeight: "38px",
+      textAreaHeight: "76px",
+      checkboxRadius: "2.7px",
       radiusCard: "24px",
     });
   });

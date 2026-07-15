@@ -65,15 +65,14 @@ button { -webkit-tap-highlight-color: transparent; }
 .sheet-intro { margin-bottom: 16px; }
 .source-row { padding-left: 12px; padding-right: 12px; }
 .source-row.selected { background: #f3f3f3; }
-.source-row-button { min-width: 0; height: auto; flex: 1; justify-content: flex-start; gap: 12px; padding: 0; border: 0; border-radius: 0; background: transparent; text-align: left; cursor: pointer; }
-.source-row-button > span { min-width: 0; display: grid; gap: 2px; }
-.source-row-button strong, .source-row-button small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.source-row-button strong { font-size: 17px; font-weight: 500; line-height: 24px; letter-spacing: -.35px; }
-.source-row-button small { color: #5d5d5d; font-size: 14px; line-height: 20px; }
+.source-row .oai-list-row-action > span { min-width: 0; display: grid; gap: 2px; }
+.source-row .oai-list-row-action strong, .source-row .oai-list-row-action small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.source-row .oai-list-row-action strong { font-size: 17px; font-weight: 500; line-height: 24px; letter-spacing: -.35px; }
+.source-row .oai-list-row-action small { color: #5d5d5d; font-size: 14px; line-height: 20px; }
 .source-preview { display: grid; gap: 12px; margin-top: 20px; padding: 18px; }
 .source-preview p { margin: 0; font-size: 16px; line-height: 26px; letter-spacing: -.4px; }
 .source-preview small { color: #8f8f8f; }
-.source-preview .oai-button { justify-self: start; margin-left: -8px; }
+.source-preview .oai-button { justify-self: start; }
 .evidence-quote { margin: 20px 0 12px; font-size: 18px; line-height: 28px; letter-spacing: -.35px; }
 .evidence-meta { display: grid; grid-template-columns: 72px 1fr; gap: 10px; margin: 24px 0; font-size: 14px; line-height: 20px; }
 .evidence-meta dt { color: #8f8f8f; }
@@ -86,7 +85,6 @@ button { -webkit-tap-highlight-color: transparent; }
 .document-intro { margin: 0 0 28px; color: #5d5d5d; font-size: 16px; line-height: 26px; letter-spacing: -.4px; }
 .brief-document pre { max-width: 100%; overflow: auto; white-space: pre-wrap; color: #5d5d5d; font: 13px/1.65 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .citation-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
-.citation-row .oai-token { height: 34px; padding: 8px 12px; }
 .style-panel { align-self: start; display: grid; gap: 16px; padding: 24px; }
 .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
 .panel-heading small { color: #5d5d5d; font-size: 12px; line-height: 16px; }
@@ -113,8 +111,6 @@ button { -webkit-tap-highlight-color: transparent; }
 .output-card-body { min-height: 124px; display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 18px; }
 .output-card-body h2, .image-set h2, .storyboard-summary h2 { margin: 8px 0 4px; font-size: 18px; line-height: 26px; letter-spacing: -.45px; }
 .output-card-body p, .image-set p, .storyboard-summary p { margin: 0; color: #5d5d5d; font-size: 12px; line-height: 16px; }
-.open-link { height: 32px; display: inline-flex; align-items: center; padding: 6px 8px; border-radius: 999px; color: #0d0d0d; font-size: 14px; font-weight: 600; line-height: 20px; text-decoration: none; }
-.open-link:hover { background: #f3f3f3; }
 .image-set, .storyboard-summary { max-width: 1180px; display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 24px; align-items: center; margin: 20px auto 0; padding: 20px; border: .5px solid rgba(13,13,13,.15); border-radius: 24px; background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,.05); }
 .image-tile, .film-frame { flex: 0 0 148px; height: 92px; display: grid; align-content: space-between; padding: 10px; border: .5px solid rgba(13,13,13,.15); border-radius: 12px; background: linear-gradient(145deg, #e8e8e8, #f3f3f3); }
 .image-tile:nth-child(3n+2), .film-frame:nth-child(3n+2) { background: linear-gradient(145deg, #e9efff, #c9d9ff); }
@@ -148,8 +144,6 @@ button { -webkit-tap-highlight-color: transparent; }
 
 @media (max-width: 620px) {
   .workshop-identity strong, .workshop-identity span { display: none; }
-  .header-actions .oai-token { height: 36px; padding: 8px 12px; }
-  .header-actions .oai-button { padding: 8px 12px; }
   .map-canvas { display: grid; align-content: start; gap: 12px; padding: 62px 14px 92px; overflow: auto; background-image: none; }
   .map-caption { top: 14px; left: 14px; }
   .map-cluster, .relationship-lines { display: none; }
