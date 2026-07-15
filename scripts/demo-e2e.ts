@@ -26,7 +26,7 @@ assertEligible("create_output", gates); assertEligible("approve_storyboard", gat
 const storyboard = Storyboard.parse({ id: "storyboard-v1", versionId: "story-version-v1", workshopId: "workshop-build-week", approvedAt: "2026-07-13T23:00:00.000Z", staleState: "current", panels: [{ id: "panel-1", purpose: "Show proof", claimIds: ["claim-1"], evidence: [{ claimId: "claim-1", sourceId: "source-1", chunkId: "chunk-1", locator: "Fixture · chunk 01" }], voiceover: "AI-generated narration: raw thinking becomes grounded work.", onScreenText: "Capture → Shape → Deliver", durationSeconds: 4, composition: "editorial evidence map", visualDnaVersionId: "dna-v1", transition: "cut", approved: true, staleState: "current" }] });
 
 const brief = { workshopTitle: "WorkshopLM Build Week", version: "brief-v1", style: { accent: "#1668E3", ink: "#171816", paper: "#F4F2EC" }, blocks: [{ id: "claim-1", heading: "Judges see the complete trail", body: answer.answer, citations: answer.citations.map((citation) => citation.nativeLocator?.value ?? citation.chunkId) }] };
-if (!renderDeck(brief).includes("Judges see") || !renderInfographic(brief).includes("SOURCE-TRACEABLE")) throw new Error("production render missing content");
+if (!renderDeck(brief).includes("Judges see") || !renderInfographic(brief).includes("Source-defensible")) throw new Error("production render missing content");
 
 const db = openLocalDatabase(resolve(root, "workshoplm.sqlite")); migrate(db);
 db.prepare("INSERT INTO workshop VALUES (?, ?, ?)").run("workshop-build-week", "WorkshopLM Build Week", new Date().toISOString());

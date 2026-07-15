@@ -56,7 +56,8 @@ describe("submission Output set", () => {
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "VIDEO-PROVENANCE.json", mimeType: "application/json", provenance: "video_render" }));
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "BUILD-TRACE.html", mimeType: "text/html", provenance: "source_trace" }));
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "BUILD-TRACE.json", mimeType: "application/json", provenance: "source_trace" }));
-    expect(built.outputSet.assets).toHaveLength(15);
+    expect(built.outputSet.assets).toHaveLength(16);
+    expect(built.outputSet.assets).toEqual(expect.arrayContaining([expect.objectContaining({ type: "deck", relativePath: "presentation.pptx", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation" })]));
     await expect(readFile(join(built.manifestPath, "..", "DEVPOST.md"), "utf8")).resolves.toContain("No live GPT-5.6 run is claimed");
     await expect(readFile(join(built.manifestPath, "..", "STORYBOARD.md"), "utf8")).resolves.toContain("Sanitized fixture · chunk 01");
     await expect(verifySubmissionOutputSet(root, built.manifestPath)).resolves.toEqual({ valid: true, stale: false, tampered: false, issues: [] });

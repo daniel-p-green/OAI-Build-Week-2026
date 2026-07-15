@@ -4436,3 +4436,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Live GPT-5.6, GPT Image 2, provider narration, and one provider-backed Realtime microphone turn remain unproved and spend-gated. The submission package remains correctly labeled `partial`.
 - Founder footage, primary `/feedback` Session ID, final edit, public upload, and Devpost submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 11:18 CT — Presentation output crosses from proof template to editable deck system
+
+**Area:** Deliver / Product quality / Testing
+
+### Changed
+
+- Replaced the repeated one-page HTML presentation template with five content-aware slide compositions: cover, statement, split, evidence, and recommendation. The renderer chooses a stable narrative sequence while preserving exact Style colors and licensed font choices.
+- Made source trace quiet but persistent: every preview slide retains its locator in the footer, and every editable slide stores the source locator and claim ID in speaker notes.
+- Added a real `.pptx` handoff built from editable text and shapes. The focused Presentation view now offers `Download PowerPoint` alongside `Show source` and `Open preview`.
+- Stored both HTML and PowerPoint bytes as content-addressed Workshop artifacts, resolved the editable format through the local artifact route, and added `presentation.pptx` as a separately hashed deck asset in the submission Output set.
+- Escaped all source-derived HTML before rendering and used source chunks as supporting body copy rather than repeating each claim as both heading and body.
+
+### Verified
+
+- A five-slide leadership sample was visually inspected in the Codex in-app browser. Cover, statement, split, proof, and recommendation layouts had clear hierarchy, restrained citations, no observed overflow, and no browser console errors.
+- The actual acceptance `.pptx` passed `unzip -t`, contained five slide XML files and five notes-slide files, opened through LibreOffice, converted to a five-page 16:9 PDF, and rendered without corruption. The default export uses the broadly compatible Arial family when no licensed font is selected.
+- `pnpm demo:e2e` passed the full recorded seam and all six gates after the renderer change. `pnpm check` passed across all 13 packages; production passed 3/3, worker 56/56, and web 12/12 tests.
+- The rebuilt submission package now contains 16 assets, including separately hashed HTML and editable PowerPoint deck files, and verifies `valid: true`, `stale: false`, and `tampered: false` while remaining honestly `partial` for live-provider gaps.
+- Evidence is recorded in `artifacts/spikes/professional-deck-2026-07-15.json`.
+
+### Decisions
+
+- HTML remains the fast responsive in-product preview; `.pptx` is the professional editing and PowerPoint-world handoff. They are two representations of one grounded deck, not separate Outputs.
+- Output quality now controls sequencing. This increment establishes the renderer and handoff floor, but the send-it goal stays open until a real external deliverable survives a cold professional review.
+- Brand fonts are used only when recorded as licensed Style inputs. The portable default is Arial rather than a custom or platform-specific display face.
+
+### Open items
+
+- Dogfood a genuinely external professional deck, record friction as product defects, and obtain a cold send-or-revise judgment. Improve content planning and layout selection from that evidence rather than adding more templates speculatively.
+- Live GPT-5.6 Map reasoning, GPT Image 2 media, provider narration, and a provider-backed Realtime microphone turn remain spend-gated and unproved.
+- Founder footage, primary `/feedback` Session ID, final video edit, public upload, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

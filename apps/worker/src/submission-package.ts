@@ -180,11 +180,17 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   const deck = [...currentOutputs].reverse().find((output) => output.type === "deck")!;
   const infographic = [...currentOutputs].reverse().find((output) => output.type === "infographic")!;
   const deckName = `presentation${extname(deck.relativePath) || ".html"}`;
+  const editableDeckName = deck.editableRelativePath ? "presentation.pptx" : undefined;
   const infographicName = `infographic${extname(infographic.relativePath) || ".html"}`;
   for (const [output, name] of [[deck, deckName], [infographic, infographicName]] as const) {
     const source = resolve(dataRoot, output.relativePath);
     if (!inside(dataRoot, source)) throw new Error(`Output path escaped the Workshop data root: ${output.id}`);
     await copyFile(source, join(packageRoot, name));
+  }
+  if (deck.editableRelativePath && editableDeckName) {
+    const source = resolve(dataRoot, deck.editableRelativePath);
+    if (!inside(dataRoot, source)) throw new Error(`Editable output path escaped the Workshop data root: ${deck.id}`);
+    await copyFile(source, join(packageRoot, editableDeckName));
   }
   await copyFile(videoPath, join(packageRoot, "workshoplm-demo.mp4"));
   await copyFile(videoProvenancePath, join(packageRoot, "VIDEO-PROVENANCE.json"));
@@ -216,6 +222,7 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   assets.push(await assetFor(packageRoot, "devpost_description", "DEVPOST.md", "text/markdown", claimIds, sourceLocators, "source_trace"));
   assets.push(await assetFor(packageRoot, "readme_narrative", "README-NARRATIVE.md", "text/markdown", claimIds, sourceLocators, "source_trace"));
   assets.push(await assetFor(packageRoot, "deck", deckName, "text/html", deck.claimIds, sourceLocators, "workshop_output"));
+  if (editableDeckName) assets.push(await assetFor(packageRoot, "deck", editableDeckName, "application/vnd.openxmlformats-officedocument.presentationml.presentation", deck.claimIds, sourceLocators, "workshop_output"));
   assets.push(await assetFor(packageRoot, "infographic", infographicName, "text/html", infographic.claimIds, sourceLocators, "workshop_output"));
   assets.push(await assetFor(packageRoot, "image_manifest", "IMAGE-SET.md", "text/markdown", claimIds, sourceLocators, "source_trace"));
   for (const [name] of thumbnailSpecs) assets.push(await assetFor(packageRoot, "thumbnail", name, "image/png", claimIds, sourceLocators, "generated_preview"));

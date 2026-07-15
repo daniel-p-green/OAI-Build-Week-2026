@@ -52,7 +52,7 @@ export type WorkshopNarrationFailure = { panelId: string; error: string; failedA
 export type WorkshopNarration = { storyboardVersion: number; disclosure: "AI-generated voice"; panels: WorkshopNarrationPanel[]; failures?: WorkshopNarrationFailure[]; stale: boolean; createdAt: string };
 export type WorkshopAiRun = { id: string; operation: "grounded_graph"; model: "gpt-5.6-sol" | "gpt-5.6-terra" | "gpt-5.6-luna"; inputClaimIds: string[]; outputSha256: string; requestId?: string; createdAt: string };
 export type GroundedMapProposal = { nodes: { id: string; title: string; body: string; evidenceState: "grounded" | "derived"; evidenceClaimIds: string[]; x: number; y: number }[]; edges: WorkshopMapEdge[] };
-export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; artifactPath: string; claimIds: string[]; stale: boolean; createdAt: string };
+export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; editableRelativePath?: string; artifactPath: string; editableArtifactPath?: string; claimIds: string[]; stale: boolean; createdAt: string };
 export type WorkshopBuildTraceRecord = { htmlPath: string; dataPath: string; htmlSha256: string; dataSha256: string; milestoneCount: number; commitCount: number; taskIds: string[] };
 export type WorkshopVideo = { id: string; version: number; storyboardVersion: number; styleVersion: number; visualDnaVersion?: number; imageBatchId?: string; relativePath: string; provenancePath: string; artifactPath: string; sha256: string; byteCount: number; claimIds: string[]; buildTrace: WorkshopBuildTraceRecord; stale: boolean; createdAt: string };
 export type RenderedVideoInput = Omit<WorkshopVideo, "id" | "version" | "stale" | "createdAt">;
@@ -169,7 +169,7 @@ export function readWorkshopState(root?: string, requestedWorkshopId?: string): 
   }
   throw new Error(`Workshop not found: ${workshopId}.`);
 }
-export function resolveWorkshopArtifact(id: string, root?: string, workshopId?: string): { path: string; contentType: string } | undefined {
+export function resolveWorkshopArtifact(id: string, root?: string, workshopId?: string, format?: "preview" | "editable"): { path: string; contentType: string; fileName?: string } | undefined {
   const state = readWorkshopState(root, workshopId); const dataRoot = root ?? repositoryDataRoot();
   if (id === "video" || id.startsWith("video-v")) {
     const video = id === "video"
@@ -197,9 +197,12 @@ export function resolveWorkshopArtifact(id: string, root?: string, workshopId?: 
   }
   const output = state.outputs.find((item) => item.id === id);
   if (!output) return undefined;
-  const path = resolve(dataRoot, output.relativePath);
+  const editable = format === "editable" && output.type === "deck" && output.editableRelativePath;
+  const path = resolve(dataRoot, editable || output.relativePath);
   if (!path.startsWith(`${dataRoot}/`)) return undefined;
-  return { path, contentType: "text/html; charset=utf-8" };
+  return editable
+    ? { path, contentType: "application/vnd.openxmlformats-officedocument.presentationml.presentation", fileName: `${output.id}.pptx` }
+    : { path, contentType: "text/html; charset=utf-8" };
 }
 function syncEvidenceIndex(db: ReturnType<typeof dbFor>, state: WorkshopState) {
   const remove = db.prepare("DELETE FROM evidence_fts WHERE workshop_id=?");
@@ -489,16 +492,19 @@ export function generateStoryboard(root?: string): WorkshopState {
   return write({ ...current, storyboard: { version: current.storyboard.version + 1, panels, stale: false }, narration: current.narration ? { ...current.narration, stale: true } : undefined, videos: staleVideos(current), storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
 function outputHeading(text: string) { if (text.length <= 64) return text; const clipped = text.slice(0, 64).trimEnd(); return `${clipped.slice(0, clipped.lastIndexOf(" ")).trim()}…`; }
+function outputBody(text: string) { if (text.length <= 240) return text; const clipped = text.slice(0, 240).trimEnd(); return `${clipped.slice(0, clipped.lastIndexOf(" ")).trim()}…`; }
 export async function generateOutput(type: "deck" | "infographic", root?: string): Promise<WorkshopState> {
   const current = readWorkshopState(root);
   if (!current.briefApproved || !current.frame || current.frame.stale) throw new Error("Output generation requires an approved current brief.");
   if (!current.style || current.style.stale) throw new Error("Output generation requires a locked current style.");
   const dataRoot = root ?? repositoryDataRoot(); const claims = activeClaimsFor(current).slice(0, 4);
-  const blocks = (claims.length ? claims : current.mapNodes.filter((node) => node.kind === "grounded").map((node) => ({ id: node.id, text: node.body, locator: node.locator }))).map((claim) => ({ id: claim.id, heading: outputHeading(claim.text), body: claim.text, citations: [claim.locator] }));
+  const blocks = (claims.length ? claims.map((claim) => ({ ...claim, body: current.sourceChunks.find((chunk) => chunk.id === claim.chunkId)?.text ?? claim.text })) : current.mapNodes.filter((node) => node.kind === "grounded").map((node) => ({ id: node.id, text: node.title, body: node.body, locator: node.locator }))).map((claim, index, all) => ({ id: claim.id, heading: outputHeading(claim.text), body: outputBody(claim.body), citations: [claim.locator], layout: index === 0 ? "statement" as const : index === all.length - 1 ? "recommendation" as const : index % 2 ? "split" as const : "proof" as const }));
   const outputId = `${type}-v${current.outputs.filter((output) => output.type === type).length + 1}`;
-  const rendered = await writeRenderedArtifact(dataRoot, current.id === defaultWorkshopId ? outputId : `${current.id}/${outputId}`, type, { workshopTitle: current.title, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, blocks });
-  const stored = await storeArtifact(dataRoot, `${current.id}-${outputId}`, Buffer.from(await readFile(join(dataRoot, rendered.relativePath))), "text/html"); const createdAt = new Date().toISOString();
-  return write({ ...current, outputs: [...current.outputs, { id: outputId, type, relativePath: rendered.relativePath, artifactPath: stored.relativePath, claimIds: blocks.map((block) => block.id), stale: false, createdAt }], firstRenderedOutputAt: current.firstRenderedOutputAt ?? createdAt, updatedAt: createdAt }, root);
+  const rendered = await writeRenderedArtifact(dataRoot, current.id === defaultWorkshopId ? outputId : `${current.id}/${outputId}`, type, { workshopTitle: current.title, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper, fonts: current.style.licensedFonts, intent: current.style.intentProfile }, blocks });
+  const stored = await storeArtifact(dataRoot, `${current.id}-${outputId}`, Buffer.from(await readFile(join(dataRoot, rendered.relativePath))), "text/html");
+  const editableStored = rendered.editableRelativePath ? await storeArtifact(dataRoot, `${current.id}-${outputId}-editable`, Buffer.from(await readFile(join(dataRoot, rendered.editableRelativePath))), "application/vnd.openxmlformats-officedocument.presentationml.presentation") : undefined;
+  const createdAt = new Date().toISOString();
+  return write({ ...current, outputs: [...current.outputs, { id: outputId, type, relativePath: rendered.relativePath, editableRelativePath: rendered.editableRelativePath, artifactPath: stored.relativePath, editableArtifactPath: editableStored?.relativePath, claimIds: blocks.map((block) => block.id), stale: false, createdAt }], firstRenderedOutputAt: current.firstRenderedOutputAt ?? createdAt, updatedAt: createdAt }, root);
 }
 
 function crc32(bytes: Uint8Array): number {
