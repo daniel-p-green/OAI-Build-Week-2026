@@ -105,12 +105,14 @@ export function readWorkshopState(root?: string): WorkshopState {
     const state = JSON.parse(row.state_json) as Partial<WorkshopState>;
     if (state.sourceItems && state.mapNodes && state.sourceChunks && state.claims) {
       const normalized = withSeedEvidence({ ...state, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), style: state.style ? { ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" } : undefined, storyboard: normalizeStoryboard(state.storyboard, defaultState().storyboard), aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
-      return normalized.sourceChunks === state.sourceChunks ? normalized : write(normalized, root);
+      if (normalized.sourceChunks !== state.sourceChunks) return write(normalized, root);
+      ensureEvidenceIndex(db, normalized);
+      return normalized;
     }
     if (state.sourceItems && state.mapNodes) return write(withSeedEvidence({ ...state, activeSourceIds: state.sourceItems.map((source) => source.id), transcriptSegments: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), storyboard: defaultState().storyboard, aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [] } as WorkshopState), root);
     return write({ ...defaultState(), ...state, sourceItems: defaultState().sourceItems, activeSourceIds: defaultState().sourceItems.map((source) => source.id), transcriptSegments: [], sourceChunks: seedChunks, claims: seedClaims, candidates: [], mapEdges: [], storyboard: defaultState().storyboard, aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [], mapNodes: defaultState().mapNodes } as WorkshopState, root);
   }
-  const state = defaultState(); db.prepare("INSERT INTO workshop_state VALUES (?, ?, ?)").run(id, JSON.stringify(state), state.updatedAt); return state;
+  const state = defaultState(); db.prepare("INSERT INTO workshop_state VALUES (?, ?, ?)").run(id, JSON.stringify(state), state.updatedAt); syncEvidenceIndex(db, state); return state;
 }
 export function resolveWorkshopArtifact(id: string, root?: string): { path: string; contentType: string } | undefined {
   const state = readWorkshopState(root); const dataRoot = root ?? repositoryDataRoot();
@@ -144,7 +146,27 @@ export function resolveWorkshopArtifact(id: string, root?: string): { path: stri
   if (!path.startsWith(`${dataRoot}/`)) return undefined;
   return { path, contentType: "text/html; charset=utf-8" };
 }
-function write(next: WorkshopState, root?: string) { const db = dbFor(root); db.prepare("UPDATE workshop_state SET state_json=?, updated_at=? WHERE workshop_id=?").run(JSON.stringify(next), next.updatedAt, id); return next; }
+function syncEvidenceIndex(db: ReturnType<typeof dbFor>, state: WorkshopState) {
+  const remove = db.prepare("DELETE FROM evidence_fts WHERE workshop_id=?");
+  const insert = db.prepare("INSERT INTO evidence_fts (workshop_id, source_id, chunk_id, locator, chunk_text, claim_text) VALUES (?, ?, ?, ?, ?, ?)");
+  db.exec("BEGIN IMMEDIATE");
+  try {
+    remove.run(state.id);
+    for (const chunk of state.sourceChunks) {
+      const claimText = state.claims.filter((claim) => claim.sourceId === chunk.sourceId && claim.chunkId === chunk.id).map((claim) => claim.text).join("\n");
+      insert.run(state.id, chunk.sourceId, chunk.id, chunk.locator, chunk.text, claimText);
+    }
+    db.exec("COMMIT");
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+}
+function ensureEvidenceIndex(db: ReturnType<typeof dbFor>, state: WorkshopState) {
+  const row = db.prepare("SELECT count(*) AS count FROM evidence_fts WHERE workshop_id=?").get(state.id) as { count: number };
+  if (row.count !== state.sourceChunks.length) syncEvidenceIndex(db, state);
+}
+function write(next: WorkshopState, root?: string) { const db = dbFor(root); db.prepare("UPDATE workshop_state SET state_json=?, updated_at=? WHERE workshop_id=?").run(JSON.stringify(next), next.updatedAt, id); syncEvidenceIndex(db, next); return next; }
 function staleVideos(state: WorkshopState): WorkshopVideo[] { return state.videos.map((video) => video.stale ? video : { ...video, stale: true }); }
 function activeClaimsFor(state: WorkshopState) { return state.claims.filter((claim) => state.activeSourceIds.includes(claim.sourceId)); }
 export function assertStoryboardGrounding(state: WorkshopState): void {
@@ -254,7 +276,14 @@ function chunksFor(text: string, sourceId: string, hash: string, origin: string)
 function claimsFor(chunks: WorkshopChunk[], hash: string): WorkshopClaim[] { return chunks.flatMap((chunk) => chunk.text.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean).map((text, index) => ({ id: `claim-${hash.slice(0, 12)}-${chunk.ordinal}-${index + 1}`, sourceId: chunk.sourceId, chunkId: chunk.id, text, evidenceState: "verified" as const, locator: chunk.locator }))); }
 function candidateCategory(text: string): WorkshopCandidate["category"] { const normalized = text.toLowerCase(); if (/\?|\b(how|what|which|when|where|why)\b/.test(normalized)) return "question"; if (/\b(must|must not|only|cannot|deadline|require|constraint)\b/.test(normalized)) return "constraint"; if (/\b(judge|customer|client|team|user|audience)\b/.test(normalized)) return "audience"; if (/\b(goal|aim|need to|should|want to|deliver|build)\b/.test(normalized)) return "goal"; return "claim"; }
 export function extractWorkshopCandidates(root?: string): WorkshopState { const current = readWorkshopState(root); const candidates = activeClaimsFor(current).slice(0, 40).map((claim) => ({ id: `candidate-${claim.id}`, category: candidateCategory(claim.text), text: claim.text, sourceId: claim.sourceId, chunkId: claim.chunkId, locator: claim.locator })); return write({ ...current, candidates, updatedAt: new Date().toISOString() }, root); }
-export function searchWorkshopSources(query: string, root?: string): WorkshopChunk[] { const terms = normalizeSourceText(query).toLowerCase().split(/\W+/).filter((term) => term.length > 1); if (!terms.length) return []; return readWorkshopState(root).sourceChunks.map((chunk) => ({ chunk, score: terms.reduce((score, term) => score + (chunk.text.toLowerCase().includes(term) ? 1 : 0), 0) })).filter(({ score }) => score > 0).sort((a, b) => b.score - a.score || a.chunk.ordinal - b.chunk.ordinal).map(({ chunk }) => chunk); }
+function evidenceMatchQuery(query: string): string | undefined { const terms = [...new Set(normalizeSourceText(query).toLocaleLowerCase().split(/[^\p{L}\p{N}_]+/u).filter((term) => term.length > 1))]; return terms.length ? terms.map((term) => `"${term.replaceAll('"', '""')}"`).join(" OR ") : undefined; }
+export function searchWorkshopSources(query: string, root?: string): WorkshopChunk[] {
+  const match = evidenceMatchQuery(query); if (!match) return [];
+  const state = readWorkshopState(root); const db = dbFor(root);
+  const rows = db.prepare("SELECT source_id, chunk_id FROM evidence_fts WHERE workshop_id=? AND evidence_fts MATCH ? ORDER BY bm25(evidence_fts, 0.0, 0.0, 0.0, 0.0, 1.0, 0.7) ASC, rowid ASC LIMIT 40").all(state.id, match) as Array<{ source_id: string; chunk_id: string }>;
+  const chunks = new Map(state.sourceChunks.map((chunk) => [`${chunk.sourceId}\u0000${chunk.id}`, chunk]));
+  return rows.flatMap((row) => { const chunk = chunks.get(`${row.source_id}\u0000${row.chunk_id}`); return chunk ? [chunk] : []; });
+}
 export async function ingestSource(input: SourceIngestion, root?: string): Promise<WorkshopState> {
   const text = normalizeSourceText(input.text);
   if (!text) throw new Error("Source text is required.");

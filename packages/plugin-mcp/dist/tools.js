@@ -6,7 +6,8 @@ const readOnly = { readOnlyHint: true, destructiveHint: false, openWorldHint: fa
 const localWrite = { readOnlyHint: false, destructiveHint: false, openWorldHint: false };
 const schema = `CREATE TABLE IF NOT EXISTS workshop (id TEXT PRIMARY KEY, title TEXT NOT NULL, created_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS job (id TEXT PRIMARY KEY, workshop_id TEXT NOT NULL, kind TEXT NOT NULL, input_key TEXT NOT NULL UNIQUE, state TEXT NOT NULL, lease_until TEXT, attempts INTEGER NOT NULL DEFAULT 0, payload_json TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS workshop_state (workshop_id TEXT PRIMARY KEY, state_json TEXT NOT NULL, updated_at TEXT NOT NULL);`;
+CREATE TABLE IF NOT EXISTS workshop_state (workshop_id TEXT PRIMARY KEY, state_json TEXT NOT NULL, updated_at TEXT NOT NULL);
+CREATE VIRTUAL TABLE IF NOT EXISTS evidence_fts USING fts5(workshop_id UNINDEXED, source_id UNINDEXED, chunk_id UNINDEXED, locator UNINDEXED, chunk_text, claim_text, tokenize='unicode61');`;
 export const toolDefinitions = [
     { name: "workshop_list", kind: "read", description: "Use this when you need to list local Workshop summaries without changing them.", inputSchema: object({}), annotations: readOnly },
     { name: "workshop_create", kind: "write", description: "Use this when the user asks to create a local Workshop.", inputSchema: object({ title: { type: "string" } }, ["title"]), annotations: localWrite },
@@ -66,16 +67,41 @@ export function listWorkshops() {
     }
 }
 function evidenceStates() { return listWorkshops(); }
-function queryTerms(query) { return query.toLocaleLowerCase().split(/\W+/).filter((term) => term.length > 1); }
-export function searchEvidence(query) {
-    const terms = queryTerms(query);
-    if (!terms.length)
-        return [];
-    return evidenceStates().flatMap((workshop) => (workshop.sourceChunks ?? []).map((chunk) => {
+function queryTerms(query) { return [...new Set(query.toLocaleLowerCase().split(/[^\p{L}\p{N}_]+/u).filter((term) => term.length > 1))]; }
+function ftsMatch(terms) { return terms.map((term) => `"${term.replaceAll('"', '""')}"`).join(" OR "); }
+function fallbackEvidenceSearch(states, terms) {
+    return states.flatMap((workshop) => (workshop.sourceChunks ?? []).map((chunk) => {
         const claims = (workshop.claims ?? []).filter((claim) => claim.sourceId === chunk.sourceId && claim.chunkId === chunk.id);
         const searchable = `${chunk.text}\n${claims.map((claim) => claim.text).join("\n")}`.toLocaleLowerCase();
         return { ...chunk, claims, score: terms.reduce((score, term) => score + (searchable.includes(term) ? 1 : 0), 0) };
     })).filter((result) => result.score > 0).sort((a, b) => b.score - a.score || a.ordinal - b.ordinal || a.id.localeCompare(b.id));
+}
+export function searchEvidence(query) {
+    const terms = queryTerms(query);
+    if (!terms.length)
+        return [];
+    const states = evidenceStates();
+    const database = db();
+    if (!database)
+        return [];
+    try {
+        const available = database.prepare("SELECT 1 AS found FROM sqlite_master WHERE type='table' AND name='evidence_fts'").get();
+        if (!available)
+            return fallbackEvidenceSearch(states, terms);
+        const rows = database.prepare("SELECT workshop_id, source_id, chunk_id, bm25(evidence_fts, 0.0, 0.0, 0.0, 0.0, 1.0, 0.7) AS rank FROM evidence_fts WHERE evidence_fts MATCH ? ORDER BY rank ASC, rowid ASC LIMIT 40").all(ftsMatch(terms));
+        const stateById = new Map(states.map((state) => [state.id, state]));
+        return rows.flatMap((row) => {
+            const state = stateById.get(row.workshop_id);
+            const chunk = state?.sourceChunks?.find((candidate) => candidate.sourceId === row.source_id && candidate.id === row.chunk_id);
+            if (!state || !chunk)
+                return [];
+            const claims = (state.claims ?? []).filter((claim) => claim.sourceId === chunk.sourceId && claim.chunkId === chunk.id);
+            return [{ ...chunk, claims, score: Math.max(0, -row.rank) }];
+        });
+    }
+    finally {
+        database.close();
+    }
 }
 export function fetchEvidence(sourceId, chunkId) {
     for (const workshop of evidenceStates()) {

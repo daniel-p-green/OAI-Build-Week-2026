@@ -308,7 +308,8 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
   - This can no longer be backfilled. Capture a dated contemporaneous founder-brainstorm recording for the demo reveal, label it honestly, and keep the original pre-code requirement open.
 - [x] Verify API-key authentication and list access for the required OpenAI model IDs without spending generation credits; record any entitlement or spend-cap uncertainty.
 - [x] Spike A: the app-server host probe remained credential-blocked through the July 14 deadline, so native text/voice-turn persistence is unproven and the implemented capture-only `gpt-realtime-2.1` fallback is the final demo decision.
-- [x] Spike B: deterministic normalized local sources, standard plugin `search`/`fetch`, FTS5/exact retrieval, and durable Source/Claim citations; live GPT-5.6 expansion remains entitlement-gated.
+- [x] Spike B: deterministic normalized local sources, standard plugin `search`/`fetch`, FTS5/BM25 retrieval, and durable Source/Claim citations; live GPT-5.6 expansion remains entitlement-gated.
+  - 2026-07-15: replaced the JSON substring scorer with a durable SQLite FTS5 `unicode61` index over normalized chunk and linked claim text. Worker and plugin search now use BM25 ranking; exact fetch remains bound to `sourceId` + `chunkId`. The live and refreshed installed fixtures each contain three indexed sanitized chunks, and `editable production system` ranks `Design · Map` first.
 - [x] Spike C: six-image batch manifest, locked reference, and selective regeneration contract; live image generation remains opt-in and unrun.
 - [x] Spike D: local HyperFrames CLI health check, validated three-scene composition, disclosed narration fixture, and rendered MP4.
 - [ ] Spike E: locally install the unified plugin, invoke its skill, call its stdio MCP tools, and record actual Work/Codex surface support.

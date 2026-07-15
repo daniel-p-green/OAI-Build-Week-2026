@@ -4308,3 +4308,35 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Capture legible Codex-side plugin-to-browser footage for the final edit. The live proof exists, but it is not yet a recorded judge artifact.
 - Provider-backed images, narration, GPT-5.6 reasoning, one Realtime microphone turn, founder recording, primary `/feedback` Session ID, final edit, public upload, and Devpost submission remain open.
 - Codex Session ID: unavailable on this surface; task and turn IDs are recorded but not substituted.
+
+---
+
+## 2026-07-15 05:52 CT — Grounding now uses the promised FTS5/BM25 retrieval layer
+
+**Area:** Local RAG / source grounding / installed plugin
+
+### Changed
+
+- Corrected a specification-to-runtime mismatch found during the completion audit: `GOAL.md` promised SQLite FTS5/BM25, but worker and plugin search still scored substring matches over JSON state.
+- Added a durable `evidence_fts` virtual table using the Unicode tokenizer. Every Workshop write atomically reindexes normalized chunk text and its linked claim text while retaining workshop, source, chunk, and locator identity as unindexed provenance fields.
+- Migrated existing Workshop state on read when the index row count is missing or stale. New default Workshops index their sanitized evidence immediately.
+- Routed worker source search and installed plugin `search` through BM25. Exact `fetch` remains fail-closed on the requested `sourceId` and `chunkId`; older pre-migration databases keep a bounded read-only substring fallback until the worker creates the index.
+- Refreshed installed `workshoplm@workshoplm-local` `0.1.2`; installed and worktree `dist/tools.js` share SHA-256 `77ff257eef3eea4ad3c7b62883edaaf661508834129b0664b265fd1a6b2eff1a`.
+
+### Verified
+
+- Worker tests passed 54/54 and plugin tests passed 7/7. Worker and plugin typechecks passed.
+- The live fixture contains three FTS rows. Query `editable production system` ranked `chunk-seed-design` / `Design · Map` first with BM25 `-1.4966554538880497`, followed by `chunk-seed-brief` / `Build notes · §2`.
+- The refreshed installed plugin cache contains the `evidence_fts` table and the same three indexed sanitized chunks. No provider or network retrieval call was made.
+- `pnpm check` passed across all 13 packages. `pnpm demo:e2e` passed all six gates, and the rebuilt 15-asset `partial` submission set verified `valid: true`, `stale: false`, and `tampered: false`.
+
+### Decisions
+
+- Retrieval ranking is infrastructure, not a marketing label. The evidence artifact records the actual table, tokenizer, indexed fields, query, ranks, and installed package hash.
+- FTS rows are derived from authoritative Workshop state. Source/chunk/claim IDs in persisted state remain the provenance contract; the search index can be rebuilt without changing citations.
+- Local FTS5/BM25 is not described as hosted OpenAI File Search, and it does not prove live GPT-5.6 reasoning.
+
+### Open items
+
+- The completion audit continues. Plugin write tools still need to be checked against the same real-service boundary; provider media, Realtime microphone proof, founder footage, final video, `/feedback`, and submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
