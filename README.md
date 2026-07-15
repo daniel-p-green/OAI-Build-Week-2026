@@ -2,7 +2,20 @@
 
 > Turn raw thinking into finished work.
 
-WorkshopLM is an OpenAI Build Week 2026 project for moving from captured source material through a grounded Map, approvals, production outputs, and a locally rendered video. The local app is intentionally split: ChatGPT/Codex owns the conversation, while the in-app browser owns the focused Map, Brief, Outputs, and Storyboard workspace. It does not add a second chat composer.
+WorkshopLM turns meetings, documents, and half-formed thinking into a branded deck a professional can defend, with every factual claim traced to its source. It is built for consultants, strategists, and enablement leads who produce client-facing or leadership-facing work every week.
+
+Notebook-style tools help people understand source material. WorkshopLM is designed to help them ship from it: capture the conversation in ChatGPT/Codex, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create a presentation that remains editable in PowerPoint. Infographic, Image set, Storyboard, and Video are supporting Outputs around that wedge.
+
+The local product keeps one clear boundary: ChatGPT/Codex owns the conversation; the in-app browser owns the focused Map, Brief, Outputs, and Storyboard workspace. WorkshopLM does not add a second chat composer.
+
+## The professional path
+
+```text
+Meeting or documents → grounded Map → approved Brief + reusable Style
+  → editable, source-defensible Presentation → supporting Outputs → approved Storyboard → Video
+```
+
+Two approvals carry visible consequence: `Approve brief` freezes the production direction, and `Approve storyboard` authorizes Video. Source or Style changes preserve history while marking dependent work `Needs update`.
 
 ## Current, verified slice
 
@@ -10,15 +23,16 @@ The repository currently provides a local-first deterministic seam with:
 
 - SQLite WAL state, hash-addressed local artifacts, and leased local jobs;
 - normalized, locally searchable sanitized source fixtures and claim-level evidence in the recorded acceptance run;
-- local ingestion for text, URLs, and PDFs, plus a capture-only Realtime fallback for voice;
+- local ingestion for pasted notes, public URLs, and absolute PDF paths, plus an implemented and tested capture-only Realtime transport awaiting its first provider-backed microphone proof;
 - an editable, persisted Excalidraw Map with typed operations and versioned approvals;
 - materialized `FRAME.md`, `DESIGN.md`, style-token, asset-plan, deck, infographic, and editable storyboard artifacts;
 - independent brief and storyboard approval gates, stale propagation, retry, and queued-render cancellation;
-- source-traceable deck and infographic HTML artifacts with claim locators;
-- a local HyperFrames render worker for the approved sanitized storyboard fixture;
-- a thin stdio MCP/plugin shell that reads the same local fixture state.
+- source-traceable presentation and infographic previews plus editable PowerPoint handoffs with claim locators and source notes;
+- a versioned local HyperFrames Video render with per-scene provenance for the approved sanitized Storyboard fixture;
+- a unified `0.1.2` plugin whose stdio tools search and fetch grounded local evidence and route authorized workflow writes through the same loopback Workshop API;
+- a responsive Apps in ChatGPT-aligned interface where the current Presentation is the hero Output and supporting work remains one interaction away.
 
-This is active Build Week work, not a claim that every locked capability is complete. Native ChatGPT durable voice synchronization, paid GPT-5.6 reasoning, live GPT Image rendering, and the final public demo remain unproven or in progress. The local app uses deterministic fallbacks where provider access has not been demonstrated. See [GOAL.md](GOAL.md) for the exact completion definition and [log.md](log.md) for dated evidence.
+This is active Build Week work, not a claim that every locked capability is complete. Native ChatGPT durable voice synchronization is not supported in this build. Paid GPT-5.6 reasoning, live GPT Image 2 rendering, a provider-backed Realtime microphone turn, provider narration, and the final public demo remain unproven or in progress. The recorded path uses labeled deterministic fallbacks where provider behavior has not been demonstrated. See [GOAL.md](GOAL.md) for the exact completion definition and [log.md](log.md) for dated evidence.
 
 ## Run the recorded fixture
 
@@ -34,6 +48,8 @@ pnpm dev
 ```
 
 `pnpm demo:e2e` is recorded-fixture mode: it does not require OpenAI credentials or paid model calls. `pnpm demo:render` runs the approved sanitized fixture through the local HyperFrames worker. `pnpm demo:thumbnail` derives a local PNG thumbnail and hash metadata from that rendered video. The app data is stored under `.workshoplm/`, which is reset by `demo:reset`.
+
+After `pnpm dev` starts, open `http://localhost:3000` in the ChatGPT/Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, real presentation and infographic previews, editable PowerPoint files, planned Image set, editable Storyboard, and local Video. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
 
 The GPT-5.6 routing benchmark is deliberately spend-gated. Once a paid-call authorization exists, run `WORKSHOPLM_LIVE_OPENAI=1 OPENAI_API_KEY=… pnpm --filter @workshoplm/ai probe:gpt56`; it compares Sol, Terra, and Luna on compact grounded-graph, brief, and claim-triage cases, recording latency, reported token usage, and deterministic JSON/evidence checks. It does not invent dollar costs from token counts.
 
@@ -74,7 +90,7 @@ export WORKSHOPLM_DATA_ROOT="/absolute/path/to/OAI-Build-Week-2026/.workshoplm/l
 
 The plugin forwards only that explicit local path to its stdio server. It does not upload the Workshop, scan arbitrary folders, or assume an installed cache shares the source checkout. Run the fixture or live-operator preflight before trying grounded `search` and `fetch`.
 
-Verified installation surface: the Codex CLI marketplace flow on macOS. Codex can discover and call the bundled stdio tools; the installed version must be refreshed after a public plugin update before the latest data-root forwarding change is present.
+Verified installation surface: the Codex CLI marketplace flow on macOS. Fresh Codex tasks have activated the bundled skill and called `workshop_list → search → fetch` against the sanitized local evidence. The write-capable stdio tools and loopback service path pass isolated contract and end-to-end tests; ChatGPT Work invocation remains unverified and must not be inferred from Codex proof. Refresh the installed plugin after a public update before testing new behavior.
 
 ## Architecture
 
@@ -86,7 +102,7 @@ Capture sources → normalized evidence → grounded Map → approved brief
 - `apps/web` — focused Map, Brief, Outputs, Storyboard, and source-evidence workspace.
 - `apps/worker` — SQLite state, queue, artifact store, and render executor.
 - `packages/domain` — schemas, approvals, dependencies, graph operations, and provenance contracts.
-- `packages/plugin-mcp` — compact stdio MCP/plugin entry point.
+- `packages/plugin-mcp` — unified skill and stdio MCP entry point for grounded reads and version-gated local workflow writes.
 - `packages/production` — traceable production artifacts.
 - `spikes/` — deterministic evidence for host sync, grounding, image manifests, and HyperFrames.
 - `.agents/plugins/marketplace.json` — public Codex marketplace descriptor for the unified plugin.

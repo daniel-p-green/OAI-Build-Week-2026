@@ -4924,3 +4924,33 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - The external deck still needs a representative professional's `Send` or first blocking revision.
 - Provider-backed Map, image, narration, and Realtime evidence plus final founder footage and public submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 13:39 CT — Public README reconciled to the professional product truth
+
+**Area:** Repository / Product narrative / Judge inspection
+
+### Changed
+
+- Replaced the implementation-first opening with the primary user, weekly professional problem, and source-defensible Presentation wedge.
+- Added the one-line professional path from meeting or documents through grounded Map, approved Brief and reusable Style, editable Presentation, supporting Outputs, approved Storyboard, and Video.
+- Corrected stale capability language: presentation and infographic now name their editable PowerPoint handoffs; Video names immutable local versions and per-scene provenance; plugin `0.1.2` names grounded reads plus version-gated local writes rather than a thin read-only shell.
+- Added one deterministic local inspection route and preserved explicit boundaries around unsupported native ChatGPT synchronization, unverified ChatGPT Work invocation, and every paid-provider capability.
+
+### Verified
+
+- Parsed every local Markdown link in `README.md`; all five targets exist.
+- `pnpm demo:reset`, `pnpm demo:e2e`, `pnpm demo:render`, and `pnpm demo:thumbnail` all passed in the documented order.
+- The acceptance run passed all six gates, the worker produced a 671,469-byte MP4, and the thumbnail command produced a hashed PNG without changing tracked output.
+- Reconciled plugin version and capabilities directly against `.codex-plugin/plugin.json`, `packages/plugin-mcp/src/server.ts`, and the tested tool definitions.
+
+### Decisions
+
+- The README should answer “does this replace part of my workflow?” before explaining the monorepo or hackathon machinery.
+- Deterministic fixture proof and live-provider proof remain separate. A working fallback may teach the product without being described as a live model run.
+
+### Open items
+
+- Final provider evidence, public YouTube URL, `/feedback` Session ID, final Devpost fields, and a logged-out public-link pass still block the repository/submission completion item.
+- Codex Session ID: unavailable on this surface; not inferred.

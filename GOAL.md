@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 13:34 CT
+Last updated: 2026-07-15 13:39 CT
 
 ## Status
 
@@ -444,6 +444,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [ ] Keep all judge-facing claims proportional to captured evidence. The current Devpost packet, demo script, evidence audit, and `submission/CLAIM-LEDGER.md` are reconciled to the July 15 proof floor; the packet leads with the professional problem and maintains explicit live/fallback publication slots. Close only after the final video, Devpost entry, screenshots, release tag, and submitted links pass the same gate.
 - [ ] Produce a public YouTube demo under three minutes with clear audio.
 - [ ] Complete repository, README, Codex collaboration, GPT-5.6, judge-access, and Devpost materials.
+  - 2026-07-15 README reconciliation: the public entry point now leads with the consultant/strategist/enablement persona, the source-defensible Presentation wedge, the two consequential approvals, and the weekly professional path. It accurately describes editable PowerPoint outputs, the versioned local Video, plugin `0.1.2` grounded reads and version-gated writes, the deterministic inspection route, and every unproved provider or Work-host boundary. Local links and the full documented fixture command sequence passed. Keep this item open for final provider evidence, public Video URL, `/feedback` Session ID, final Devpost fields, and fresh public-link verification.
 
 ### 11. Daily acceptance and completion verification
 
