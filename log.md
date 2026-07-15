@@ -3806,3 +3806,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Capture and inspect authorized live GPT-5.6 reasoning, one Realtime microphone turn, and provider narration before upgrading public claims.
 - Capture the dated founder brainstorm, Codex doorway footage, representative `/feedback` Session ID, final public video, stable release, and submitted links.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 02:52 CT — Paid provider paths gained enforceable request ceilings
+
+**Area:** Live-provider safety / GPT-5.6 benchmark / live operator authorization
+
+### Changed
+
+- Added a concurrency-safe provider request budget shared by the live operator's GPT-5.6 Map, GPT Image 2 batch, and narration calls. It reserves each request before dispatch, counts failed attempts, and refuses the next call once the ceiling is reached.
+- Required `WORKSHOPLM_MAX_PAID_REQUESTS` for live execution. The thought-to-delivery run needs an explicit ceiling of at least twelve: one Map, six images, and five narration clips.
+- Applied the same fail-closed rule to the separate GPT-5.6 routing benchmark. It needs an explicit ceiling of at least nine for three cases across Sol, Terra, and Luna, then records used and allowed requests in its artifact.
+- Updated the no-spend operator plan to distinguish its twelve planned requests from the separate nine-request benchmark and print the exact authorized command.
+- Added `docs/planning/2026-07-15-live-provider-authorization.md` with the two commands, the external dollar-budget boundary, artifact inspection gate, and partial-run behavior.
+
+### Verified
+
+- Worker lint passed and worker tests increased from 38/38 to 41/41. New tests prove successful and failed calls both consume budget, concurrent calls cannot race beyond the ceiling, and invalid ceilings fail before a provider client is used.
+- AI lint and tests passed. The benchmark accepts ceiling nine and rejects missing or lower ceilings in deterministic tests.
+- Live-command probes with a non-credential test string and either no ceiling or ceiling eleven refused before making any provider request. Benchmark probes likewise refused with no ceiling or ceiling eight.
+- `pnpm demo:live` completed the isolated preflight with `paidCallsMade: false`, one planned Map request, six planned image requests, five planned narration requests, and the exact ceiling-12 next command.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; web tests remained 11/11 and worker tests remained 41/41.
+- `pnpm demo:e2e` passed all six recorded gates with two rendered Outputs, six planned image panels, five Storyboard panels, and a local MP4.
+
+### Decisions
+
+- Request ceilings are an application safety boundary, not a dollar estimate. Authorization still requires setting and checking an OpenAI project budget against current official pricing.
+- The benchmark and live production run have separate ceilings and artifacts. Running one never silently authorizes the other.
+- No paid OpenAI request was made in this increment, and no live-provider claim changed.
+
+### Open items
+
+- Obtain explicit provider-spend authorization and an external project budget before running either command.
+- Run and inspect the nine-request benchmark before changing the operation routing defaults.
+- Run and inspect the twelve-request live operator path before upgrading GPT-5.6, GPT Image 2, narration, or final-video claims.
+- Codex Session ID: unavailable on this surface; not inferred.

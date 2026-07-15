@@ -25,6 +25,14 @@ export const routingBenchmarkCases = Object.freeze([
   },
 ]);
 
+export function requireBenchmarkRequestCeiling(value, plannedRequests) {
+  const ceiling = Number(value);
+  if (!Number.isSafeInteger(ceiling) || ceiling < plannedRequests) {
+    throw new Error(`WORKSHOPLM_MAX_PAID_REQUESTS must explicitly authorize at least ${plannedRequests} requests for the GPT-5.6 benchmark.`);
+  }
+  return ceiling;
+}
+
 export function scoreBenchmarkOutput(testCase, outputText) {
   if (typeof outputText !== "string") return { parseable: false, matchedTerms: [], score: 0 };
   let parsed;
