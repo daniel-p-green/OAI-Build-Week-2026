@@ -8,6 +8,14 @@ import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDn
 const roots: string[] = [];
 const config: OpenAiMediaConfig = { apiKey: "test-key", ...defaultOpenAiMediaConfig };
 
+function testWav(durationSeconds = 1, marker = 0): Buffer {
+  const sampleRate = 8_000; const channels = 1; const bitsPerSample = 16; const byteRate = sampleRate * channels * bitsPerSample / 8; const dataSize = Math.round(durationSeconds * byteRate); const bytes = Buffer.alloc(44 + dataSize, marker);
+  bytes.write("RIFF", 0); bytes.writeUInt32LE(36 + dataSize, 4); bytes.write("WAVE", 8); bytes.write("fmt ", 12); bytes.writeUInt32LE(16, 16); bytes.writeUInt16LE(1, 20); bytes.writeUInt16LE(channels, 22); bytes.writeUInt32LE(sampleRate, 24); bytes.writeUInt32LE(byteRate, 28); bytes.writeUInt16LE(channels * bitsPerSample / 8, 32); bytes.writeUInt16LE(bitsPerSample, 34); bytes.write("data", 36); bytes.writeUInt32LE(dataSize, 40);
+  return bytes;
+}
+
+const responseBody = (bytes: Buffer): ArrayBuffer => Uint8Array.from(bytes).buffer;
+
 async function readyRoot(): Promise<string> {
   const root = await mkdtemp(join(tmpdir(), "workshop-openai-media-"));
   roots.push(root);
@@ -104,7 +112,7 @@ describe("OpenAI media adapters", () => {
     const calls: Record<string, unknown>[] = [];
     const fetchImpl: typeof fetch = async (_input, init) => {
       calls.push(JSON.parse(String(init?.body)) as Record<string, unknown>);
-      return new Response(Buffer.from(`RIFF-test-${calls.length}`), { status: 200, headers: { "content-type": "audio/wav", "x-request-id": `speech-request-${calls.length}` } });
+      return new Response(responseBody(testWav(1, calls.length)), { status: 200, headers: { "content-type": "audio/wav", "x-request-id": `speech-request-${calls.length}` } });
     };
 
     await expect(generateOpenAiNarration(root, config, fetchImpl)).resolves.toMatchObject({ status: "passed", failed: [] });
@@ -113,7 +121,23 @@ describe("OpenAI media adapters", () => {
     const narration = readWorkshopState(root).narration;
     expect(narration).toMatchObject({ storyboardVersion: 2, disclosure: "AI-generated voice", stale: false });
     expect(narration?.panels).toHaveLength(5);
-    await expect(readFile(join(root, narration!.panels[0]!.relativePath), "utf8")).resolves.toContain("RIFF-test");
+    const storedWav = await readFile(join(root, narration!.panels[0]!.relativePath));
+    expect(storedWav.toString("ascii", 0, 4)).toBe("RIFF");
+    expect(storedWav.toString("ascii", 8, 12)).toBe("WAVE");
+  });
+
+  it("rejects malformed speech bytes before they become approved narration", async () => {
+    const root = await readyRoot(); const panel = readWorkshopState(root).storyboard.panels[0]!;
+    const fetchImpl: typeof fetch = async () => new Response(Buffer.from("not-a-wave"), { status: 200, headers: { "content-type": "audio/wav" } });
+    await expect(generateOpenAiNarration(root, config, fetchImpl, [panel.id])).resolves.toEqual({ status: "partial", completed: [], failed: [panel.id] });
+    expect(readWorkshopState(root).narration).toMatchObject({ stale: true, panels: [], failures: [{ panelId: panel.id, error: "Speech API returned an invalid WAV file." }] });
+  });
+
+  it("rejects narration that would overrun its approved Storyboard panel", async () => {
+    const root = await readyRoot(); const panel = readWorkshopState(root).storyboard.panels[0]!;
+    const fetchImpl: typeof fetch = async () => new Response(responseBody(testWav(panel.durationSeconds + 1)), { status: 200, headers: { "content-type": "audio/wav" } });
+    await expect(generateOpenAiNarration(root, config, fetchImpl, [panel.id])).resolves.toEqual({ status: "partial", completed: [], failed: [panel.id] });
+    expect(readWorkshopState(root).narration?.failures?.[0]?.error).toContain(`longer than its approved ${panel.durationSeconds.toFixed(2)}-second Storyboard duration`);
   });
 
   it("rejects oversized narration before dispatching a speech request", async () => {
@@ -138,7 +162,7 @@ describe("OpenAI media adapters", () => {
     const partialFetch: typeof fetch = async () => {
       initialCalls += 1;
       if (initialCalls === 3) return new Response(JSON.stringify({ error: { message: "temporary speech failure" } }), { status: 503 });
-      return new Response(Buffer.from(`RIFF-initial-${initialCalls}`), { status: 200, headers: { "content-type": "audio/wav", "x-request-id": `speech-initial-${initialCalls}` } });
+      return new Response(responseBody(testWav(1, initialCalls)), { status: 200, headers: { "content-type": "audio/wav", "x-request-id": `speech-initial-${initialCalls}` } });
     };
 
     await expect(generateOpenAiNarration(root, config, partialFetch)).resolves.toMatchObject({ status: "partial", completed: expect.any(Array), failed: [failedPanelId] });
@@ -151,7 +175,7 @@ describe("OpenAI media adapters", () => {
     const retryCalls: Record<string, unknown>[] = [];
     const retryFetch: typeof fetch = async (_input, init) => {
       retryCalls.push(JSON.parse(String(init?.body)) as Record<string, unknown>);
-      return new Response(Buffer.from("RIFF-retry-panel-3"), { status: 200, headers: { "content-type": "audio/wav", "x-request-id": "speech-retry-1" } });
+      return new Response(responseBody(testWav(1, 9)), { status: 200, headers: { "content-type": "audio/wav", "x-request-id": "speech-retry-1" } });
     };
     await expect(generateOpenAiNarration(root, config, retryFetch, [failedPanelId])).resolves.toEqual({ status: "passed", completed: [failedPanelId], failed: [] });
 

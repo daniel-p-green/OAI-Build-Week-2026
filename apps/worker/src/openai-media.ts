@@ -79,6 +79,24 @@ function sha256(bytes: Uint8Array): string {
   return createHash("sha256").update(bytes).digest("hex");
 }
 
+function wavDurationSeconds(bytes: Buffer): number {
+  if (bytes.length < 12 || bytes.toString("ascii", 0, 4) !== "RIFF" || bytes.toString("ascii", 8, 12) !== "WAVE") throw new Error("Speech API returned an invalid WAV file.");
+  let byteRate: number | undefined;
+  let dataBytes: number | undefined;
+  for (let offset = 12; offset + 8 <= bytes.length;) {
+    const id = bytes.toString("ascii", offset, offset + 4);
+    const size = bytes.readUInt32LE(offset + 4);
+    const start = offset + 8;
+    if (start + size > bytes.length) throw new Error("Speech API returned a truncated WAV file.");
+    if (id === "fmt " && size >= 16) byteRate = bytes.readUInt32LE(start + 8);
+    if (id === "data") dataBytes = size;
+    offset = start + size + (size % 2);
+  }
+  const duration = byteRate && dataBytes !== undefined ? dataBytes / byteRate : 0;
+  if (!Number.isFinite(duration) || duration <= 0) throw new Error("Speech API returned a WAV file without playable audio.");
+  return duration;
+}
+
 function safeError(error: unknown): string {
   return (error instanceof Error ? error.message : String(error))
     .replace(/sk-[A-Za-z0-9_-]+/g, "[redacted]")
@@ -198,6 +216,8 @@ export async function generateOpenAiNarration(
     if (!response.ok) throw await responseError("Speech API", response);
     const bytes = Buffer.from(await response.arrayBuffer());
     if (!bytes.length) throw new Error("Speech API returned an empty audio file.");
+    const durationSeconds = wavDurationSeconds(bytes);
+    if (durationSeconds > panel.durationSeconds + 0.25) throw new Error(`Narration for panel ${panel.id} is ${durationSeconds.toFixed(2)} seconds, longer than its approved ${panel.durationSeconds.toFixed(2)}-second Storyboard duration.`);
     const panelIndex = state.storyboard.panels.findIndex((item) => item.id === panel.id);
     const relativePath = workshopGeneratedPath(state.id, "narration", `storyboard-v${state.storyboard.version}`, `panel-${panelIndex + 1}.wav`);
     await writeFile(join(root, relativePath), bytes);

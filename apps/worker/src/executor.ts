@@ -19,9 +19,13 @@ function currentNarrationForPanel(state: WorkshopState, panel: StoryboardPanel) 
   if (!state.narration || state.narration.stale || state.narration.storyboardVersion !== state.storyboard.version) return undefined;
   return state.narration.panels.find((candidate) => candidate.panelId === panel.id);
 }
+function hasCurrentNarrationRecord(state: WorkshopState): boolean {
+  return Boolean(state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version);
+}
 function hasCurrentNarration(state: WorkshopState): boolean {
-  if (!state.narration || state.narration.stale || state.narration.storyboardVersion !== state.storyboard.version) return false;
-  const narrationIds = state.narration.panels.map((panel) => panel.panelId);
+  const narration = state.narration;
+  if (!narration || narration.stale || narration.storyboardVersion !== state.storyboard.version) return false;
+  const narrationIds = narration.panels.map((panel) => panel.panelId);
   return narrationIds.length === state.storyboard.panels.length
     && new Set(narrationIds).size === narrationIds.length
     && state.storyboard.panels.every((panel) => narrationIds.includes(panel.id));
@@ -100,7 +104,9 @@ export async function executeOne(root: string, run: RunCommand = defaultRun) : P
       if (actualSha256 !== image.sha256) throw new Error(`Storyboard image hash does not match recorded provenance for panel ${panel.id}.`);
       await writeFile(join(staging, `panel-${index + 1}.png`), bytes);
     }
-    if (hasCurrentNarration(state)) {
+    const useProviderNarration = hasCurrentNarration(state);
+    if (hasCurrentNarrationRecord(state) && !useProviderNarration) throw new Error("Current provider narration must contain exactly one clip for every approved Storyboard panel.");
+    if (useProviderNarration) {
       for (const [index, storyboardPanel] of state.storyboard.panels.entries()) {
         const panel = currentNarrationForPanel(state, storyboardPanel)!;
         const source = resolve(root, panel.relativePath);

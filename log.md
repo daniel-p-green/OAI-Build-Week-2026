@@ -5052,3 +5052,35 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Audio duration fit against each approved Storyboard panel remains a live-provider review item; no provider audio has run on this account yet.
 - The external AI Collective deck still needs a real professional `Send` or first-revision verdict.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 13:57 CT — Provider narration is validated for identity, playability, and timing
+
+**Area:** Video / Provider readiness / Professional quality
+
+### Changed
+
+- Added a worker-side defense-in-depth gate for malformed current narration records. The domain write boundary already rejects missing and duplicate panel identities; a corrupted persisted record now also fails before fallback or HyperFrames can run.
+- Preserved fallback narration only for genuinely absent, stale, or older-Storyboard provider audio. A malformed current provider result is never silently presented as a successful fallback render.
+- Added structural RIFF/WAVE inspection for Speech API bytes, including bounded chunk parsing, byte-rate validation, a non-empty playable data requirement, and truncated-file rejection.
+- Added an approved-timing gate: any provider clip longer than its Storyboard panel by more than 250 ms becomes a retryable panel failure rather than clipped final narration.
+- Replaced fake RIFF strings in adapter tests with deterministic valid PCM WAV fixtures and added malformed-audio and duration-overrun coverage.
+
+### Verified
+
+- The first broad `pnpm check` correctly exposed a TypeScript narrowing issue and DOM `Response` fixture mismatch that Vitest transpilation alone did not; both were repaired before acceptance.
+- `pnpm --filter @workshoplm/worker test` passed 68 tests across eight files, including corrupted persistence, modified media hashes, malformed WAV, and narration overrun cases.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages.
+- `pnpm demo:e2e` passed all six recorded gates and produced the same hashed deterministic Video artifact.
+
+### Decisions
+
+- A professional Video cannot clear the send-it bar if speech is truncated or an invalid provider payload is accepted as narration. Storyboard timing is therefore an executable approval constraint, not advisory metadata.
+- Provider media remains panel-retryable so one invalid or overlong clip does not discard the valid clips or consume another full narration batch.
+
+### Open items
+
+- The first paid narration run still needs explicit request authorization, listening review, and confirmation that the selected voice consistently fits approved panel timing.
+- No live-provider quality claim is unlocked by deterministic WAV fixtures.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 13:52 CT
+Last updated: 2026-07-15 13:56 CT
 
 ## Status
 
@@ -427,7 +427,8 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Generate an editable, panel-level storyboard.
   - 2026-07-15: every generated Storyboard panel stores durable claim/source/chunk/locator evidence plus its bound image-panel ID and version. `Show source` opens that panel's exact Source; the focused review and HyperFrames composition resolve the same generated image bytes, and any version-changing image regeneration revokes Storyboard approval before narration or video can proceed.
 - [x] Block video enqueueing until the current storyboard approval is persisted; the worker accepts current provider narration when present and otherwise uses the disclosed deterministic fallback.
-  - 2026-07-15 render-integrity gate: HyperFrames staging now accepts provider narration only when it contains one unique clip for every approved Storyboard panel, maps clips in approved Storyboard order, and verifies the stored SHA-256 of every narration clip and approved image immediately before rendering. Missing, duplicated, reordered, or modified media fails closed before HyperFrames runs; deterministic fallback remains available only when there is no complete current provider narration.
+  - 2026-07-15 render-integrity gate: HyperFrames staging now accepts provider narration only when it contains one unique clip for every approved Storyboard panel, maps clips into approved Storyboard order regardless of storage order, and verifies the stored SHA-256 of every narration clip and approved image immediately before rendering. Missing, duplicated, corrupted, or modified current media fails closed before HyperFrames runs; deterministic fallback remains available only when provider narration is genuinely absent or stale.
+  - 2026-07-15 narration-fit gate: Speech responses must be structurally playable RIFF/WAVE audio with a valid byte rate and non-empty data chunk. A generated clip longer than its approved Storyboard panel by more than 250 ms is retained only as a retryable provider failure, never staged into a clipped final Video.
 - [x] Render the sanitized approved storyboard through the local HyperFrames worker path with disclosed fixture narration and verified MP4 streams.
   - 2026-07-15: every render now emits `workshoplm-demo.provenance.json` with the MP4 hash and per-scene claim, chunk, source, locator, excerpt, image version/hash, and narration hash/provider. The traced submission Output set includes and verifies that sidecar as technical evidence.
   - 2026-07-15: Video is now a versioned persisted artifact instead of a fixed-file state flag. Each render writes immutable version-specific MP4 and provenance paths, stores Storyboard/Style/Visual DNA/image-batch inputs plus claim and content hashes, preserves all older files, and makes only the latest current version the canonical `video` alias. The Outputs grid shows history only when it exists; the focused player opens the selected historical bytes.
