@@ -1,10 +1,11 @@
 import { resolve } from "node:path";
-import { createImageBatch, generateAssetPlan, generateOutput, generateStoryboard, readWorkshopState } from "../../../worker/src/workshop-service.ts";
+import { applyWorkshopAction, createImageBatch, generateAssetPlan, generateOutput, generateStoryboard, lockManualStyle, readWorkshopState } from "../../../worker/src/workshop-service.ts";
 
 async function main() {
   const root = resolve(process.argv[2] ?? "");
-  const state = readWorkshopState(root);
-  if (!state.briefApproved || !state.style || state.style.stale) throw new Error("Keyboard approval and style selection did not persist.");
+  let state = readWorkshopState(root);
+  if (!state.briefApproved) state = applyWorkshopAction("approveBrief", root);
+  if (!state.style || state.style.stale) state = lockManualStyle({}, root);
   await generateOutput("deck", root);
   await generateOutput("infographic", root);
   createImageBatch(root);

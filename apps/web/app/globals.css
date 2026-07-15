@@ -91,6 +91,16 @@ button { -webkit-tap-highlight-color: transparent; }
 .palette-preview.compact { gap: 4px; }
 .palette-preview.compact i { width: 22px; height: 22px; }
 .style-preview { display: grid; gap: 18px; margin: 4px 0 20px; }
+.style-options { min-width: 0; display: grid; gap: 8px; margin: 0 0 18px; padding: 0; border: 0; }
+.style-options legend { margin-bottom: 8px; color: #5d5d5d; font-size: 14px; line-height: 20px; }
+.style-choice { padding: 0; }
+.style-choice.selected { background: #f3f3f3; }
+.style-choice .oai-list-row-action { padding: 12px 16px; }
+.style-choice .oai-list-row-action > span { min-width: 0; display: grid; gap: 2px; text-align: left; }
+.style-choice .oai-list-row-action strong { font-size: 14px; line-height: 20px; }
+.style-choice .oai-list-row-action small { color: #5d5d5d; font-size: 12px; line-height: 16px; }
+.style-color-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.style-details { display: grid; gap: 14px; }
 .type-preview { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 12px; background: #f3f3f3; }
 .type-preview strong { font-size: 24px; line-height: 28px; }
 .type-preview span { color: #5d5d5d; font-size: 12px; }
@@ -181,6 +191,7 @@ button { -webkit-tap-highlight-color: transparent; }
   .focused-output { padding: 12px; }
   .focused-output-heading { gap: 12px; }
   .focused-output-preview iframe { width: 200%; height: 200%; transform: scale(.5); transform-origin: top left; }
+  .style-color-grid { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

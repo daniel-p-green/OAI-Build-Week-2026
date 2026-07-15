@@ -3691,3 +3691,41 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Replace fixture-only image, voice, reasoning, and narration evidence with inspected provider-backed artifacts before upgrading public claims.
 - Capture the dated founder brainstorm, Codex doorway footage, representative `/feedback` Session ID, final public video, stable release, and submitted links.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 02:03 CT — Website Style and professional intent became a usable product path
+
+**Area:** Style / website foundation / Intent Profiles / responsive product UI
+
+### Changed
+
+- Rebuilt the Style sheet around two plain choices: `Website` and `Set manually`. Website mode accepts a public URL; manual mode accepts the name and exact accent, text, and background colors without exposing the full brand schema by default.
+- Added `Client pitch`, `Board presentation`, and `Team workshop` as visible professional-use choices. The selected Intent Profile now travels through the web route and website-style worker path instead of silently defaulting every website to a client pitch.
+- Kept logos, licensed fonts, visual references, and negative rules behind one `Add brand details` or `Edit brand details` disclosure in manual mode. This preserves the implemented brand system without making the common path feel like a configuration form.
+- Documented `StyleSetup` as a WorkshopLM composite assembled from the approved SideSheet, ListGroup/ListRow/ListRowAction, Input/TextArea, and Button primitives. No new component primitive or parallel interaction system was added.
+- Made completed-fixture visual seeding independent of test order. The seed now creates the approved Brief and manual Style when absent, so completed-route tests no longer rely on an earlier reset test's side effects.
+- Added responsive Website Style screenshots and refreshed the manual Style screenshots at 1200×800, 1024×768, and 390×844.
+
+### Verified
+
+- The first complete check exposed six stale duplicate declarations in generated `.next/types` cache files. Removing only those generated duplicates and rebuilding resolved the failure; the production Next build then passed.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. Worker tests passed 38/38, including website palette extraction, selected board-presentation intent persistence, and the generated token artifact. Web unit tests passed 11/11, including required plain-language Style labels.
+- The first no-update visual run exposed an assertion race: it checked the routed POST payload before the browser request reached the test harness. The test now waits for the actual request. The rerun passed 13/13 production-route tests.
+- The Website Style route test proves the exact request `{ action: "lockWebsiteStyle", url: "https://example.com/brand", intentProfile: "board_deck" }` and captures Website plus Board presentation as the selected controls at all three widths.
+- Visual inspection at all three widths confirmed the manual Style path keeps secondary brand fields collapsed by default and the website path keeps source, URL, intended use, palette, and action in one focused sheet.
+- `pnpm demo:e2e` passed all six recorded gates with two rendered Outputs, six planned image panels, five Storyboard panels, and a local MP4.
+- `pnpm submission:build` rebuilt the 12-asset Output set as honestly `partial`; `pnpm submission:verify` returned `valid: true`, `stale: false`, and `tampered: false`.
+
+### Decisions
+
+- Intent is a product decision, not hidden metadata. It belongs beside the Style source because changing from a client pitch to a board presentation should change the entire output system.
+- Advanced brand inputs remain available but collapsed. This is the simplest UI that preserves the locked professional brand capability without recreating the crowded MVP.
+- Provider claims remain unchanged. This increment made Style usable and verified the deterministic seam; it did not run paid OpenAI calls or create provider-backed media.
+
+### Open items
+
+- Complete five independent first-time orientation reviews and repair any critical finding before final recording.
+- Replace fixture-only image, voice, reasoning, and narration evidence with inspected provider-backed artifacts before upgrading public claims.
+- Capture the dated founder brainstorm, Codex doorway footage, representative `/feedback` Session ID, final public video, stable release, and submitted links.
+- Codex Session ID: unavailable on this surface; not inferred.

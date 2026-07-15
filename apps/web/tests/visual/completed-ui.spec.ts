@@ -105,8 +105,6 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await expect(page.getByRole("dialog", { name: "Style" })).toBeHidden();
   await expect(page.getByRole("button", { name: "View outputs" })).toBeVisible();
 
-  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
-  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
 });
 
 test("voice capture is bounded inside Add source and fails closed without live opt-in", async ({ page }) => {
@@ -120,7 +118,39 @@ test("voice capture is bounded inside Add source and fails closed without live o
   await expect(page.getByRole("textbox", { name: "Title" })).toBeVisible();
 });
 
+test("Style can start from a website and apply a professional intent", async ({ page }) => {
+  const readyState = await (await page.request.get("/api/workshop")).json();
+  const stylelessState = { ...readyState, style: undefined };
+  const posted: Record<string, unknown>[] = [];
+  await page.route("**/api/workshop", async (route) => {
+    if (route.request().method() === "GET") return route.fulfill({ json: stylelessState });
+    posted.push(route.request().postDataJSON() as Record<string, unknown>);
+    return route.fulfill({ json: readyState });
+  });
+
+  for (const viewport of viewports) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto("/");
+    await page.getByRole("button", { name: "View brief" }).click();
+    await page.getByRole("button", { name: "Choose style" }).click();
+    const sheet = page.getByRole("dialog", { name: "Style" });
+    await sheet.getByRole("button", { name: /Website/ }).click();
+    await sheet.getByRole("textbox", { name: "Website" }).fill("https://example.com/brand");
+    await sheet.getByRole("button", { name: /Board presentation/ }).click();
+    await expect(sheet.getByRole("button", { name: /Website/ })).toHaveAttribute("aria-pressed", "true");
+    await expect(sheet.getByRole("button", { name: /Board presentation/ })).toHaveAttribute("aria-pressed", "true");
+    await expectScreen(page, `${viewport.name}-website-style`);
+    await sheet.getByRole("button", { name: "Use this style" }).click();
+    await expect.poll(() => posted.at(-1)).toEqual({ action: "lockWebsiteStyle", url: "https://example.com/brand", intentProfile: "board_deck" });
+  }
+});
+
 test.describe("completed Workshop judge path", () => {
+  test.beforeAll(() => {
+    const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+    execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+  });
+
   for (const viewport of viewports) {
     test(`${viewport.name} visual path`, async ({ page }) => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });

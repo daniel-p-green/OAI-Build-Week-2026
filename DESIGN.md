@@ -149,7 +149,7 @@ Clicking a row updates the preview without navigating. `Show on map` closes the 
 
 The Brief is a readable product view, not raw Markdown. It shows the approved outcome, evidence, success condition, source locators, and current Style in one centered document.
 
-Style opens as an official SideSheet. It previews the name, exact palette, and type treatment; website-derived or manual inputs resolve into the same versioned Style data. Updating Style marks dependent work `Needs update`.
+Style opens as the `StyleSetup` composite: official SideSheet, selectable ListRows, fields, Buttons, and palette/type previews. `Start from` chooses a public website or manual rules; `Use it for` chooses Client pitch, Board presentation, or Team workshop. Manual brand details stay collapsed until requested. Both sources resolve into the same versioned Style data, and updating Style marks dependent work `Needs update`.
 
 Technical exports such as `FRAME.md`, `DESIGN.md`, tokens, model IDs, hashes, and version mechanics appear only under technical Details or export. They never replace the formatted Brief or Style views.
 
