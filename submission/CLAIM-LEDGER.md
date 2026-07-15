@@ -19,7 +19,7 @@ Use this ledger before recording, editing the Devpost entry, or publishing scree
 | Local-first judge path | “The sanitized fixture runs without an account, private connector, paid API call, or judge-supplied credits.” | `demo:reset`, `demo:e2e`, and submission build/verify commands | Provider-backed production remains a separate gated path. |
 | Unified Codex plugin | “An isolated Codex profile activated the packaged `$workshoplm` skill and used its read-only MCP tools to search and fetch grounded evidence.” | `artifacts/spikes/plugin-skill-activation-2026-07-15.json` | This proves Codex CLI only, not ChatGPT Work or write confirmation. |
 | Codex contribution | “Codex accelerated implementation and verification across the monorepo, local state, plugin, UI, worker, and evidence path.” | Dated commits; `log.md`; package checks and acceptance records | Do not substitute a disposable task ID for the required `/feedback` Session ID. |
-| Current verification floor | “The current recorded build passes checks across 13 packages, 11 production-route UI tests, six acceptance gates, and submission integrity verification.” | Latest `pnpm check`, production-route Playwright, `pnpm demo:e2e`, and `pnpm submission:verify` entries in `log.md` | Re-run before final publication; counts may change as tests are added. |
+| Current verification floor | “The current recorded build passes checks across 13 packages, 11 web contract/unit tests, 15 production-route browser tests, six acceptance gates, and submission integrity verification.” | Latest `pnpm check`, production-route Playwright, `pnpm demo:e2e`, and `pnpm submission:verify` entries in `log.md` | Re-run before final publication; counts may change as tests are added. |
 
 ## Claims that remain gated
 

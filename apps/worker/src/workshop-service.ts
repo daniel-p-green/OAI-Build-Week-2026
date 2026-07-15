@@ -27,6 +27,7 @@ export type WorkshopSketch = { version: number; graphRevision: number; nodes: Pi
 export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop"; referenceUrl?: string; lockedAt: string; stale: boolean };
 export type WorkshopDesignArtifact = { version: number; styleVersion: number; markdownPath: string; tokensPath: string; stale: boolean; createdAt: string };
 export type ManualStyleInput = { name?: string; accent?: string; ink?: string; paper?: string; logos?: string[]; licensedFonts?: string[]; references?: string[]; negativeRules?: string[]; intentProfile?: WorkshopStyle["intentProfile"] };
+export type WebsiteStyleSuggestion = { referenceUrl: string; name: string; accent: string; ink: string; paper: string; logos: string[]; fontCandidates: string[]; references: string[]; negativeRules: string[]; findings: { colors: number; fontCandidates: number; assets: number; stylesheets: number } };
 export type WorkshopVisualDna = { version: number; styleVersion: number; palette: { accent: string; ink: string; paper: string }; compositionRules: string[]; textureRules: string[]; imageRules: string[]; negativeRules: string[]; approved: boolean; stale: boolean; createdAt: string };
 export type WorkshopAssetPlan = { version: number; graphRevision: number; briefVersion: number; styleVersion: number; visualDnaVersion?: number; evidenceClaimIds: string[]; items: { id: string; outputType: "deck" | "infographic" | "images" | "storyboard" | "video"; title: string; prompt: string; locator: string }[]; stale: boolean; createdAt: string };
 export type StoryboardPanel = { id: string; title: string; narration: string; durationSeconds: number; approved: boolean; stale: boolean };
@@ -220,10 +221,19 @@ export async function captureFallbackTranscript(text: string, root?: string, evi
 function isPrivateAddress(address: string) { return address === "::1" || address.startsWith("127.") || address.startsWith("10.") || address.startsWith("192.168.") || /^172\.(1[6-9]|2\d|3[0-1])\./.test(address) || address.startsWith("fc") || address.startsWith("fd") || address.startsWith("fe80:"); }
 async function fetchPublicText(rawUrl: string, fetchImpl: typeof fetch = fetch) {
   let url: URL; try { url = new URL(rawUrl); } catch { throw new Error("A valid HTTP(S) URL is required."); }
-  if (!/^https?:$/.test(url.protocol) || url.username || url.password) throw new Error("Only credential-free HTTP(S) URLs are allowed.");
-  if (url.hostname === "localhost" || url.hostname.endsWith(".local")) throw new Error("Local network URLs are not allowed.");
-  const addresses = await lookup(url.hostname, { all: true }); if (addresses.some(({ address }) => isPrivateAddress(address))) throw new Error("Private network URLs are not allowed.");
-  const response = await fetchImpl(url, { redirect: "follow", signal: AbortSignal.timeout(10_000) }); if (!response.ok) throw new Error(`URL fetch failed: HTTP ${response.status}.`);
+  let response: Response | undefined;
+  for (let redirects = 0; redirects <= 3; redirects += 1) {
+    if (!/^https?:$/.test(url.protocol) || url.username || url.password) throw new Error("Only credential-free HTTP(S) URLs are allowed.");
+    if (url.hostname === "localhost" || url.hostname.endsWith(".local")) throw new Error("Local network URLs are not allowed.");
+    const addresses = await lookup(url.hostname, { all: true }); if (addresses.some(({ address }) => isPrivateAddress(address))) throw new Error("Private network URLs are not allowed.");
+    response = await fetchImpl(url, { redirect: "manual", signal: AbortSignal.timeout(10_000), headers: { accept: "text/html,text/css,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8", "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 WorkshopLM/1.0" } });
+    if (response.status < 300 || response.status >= 400) break;
+    const location = response.headers.get("location");
+    if (!location || redirects === 3) throw new Error("URL redirected too many times or without a destination.");
+    url = new URL(location, url);
+  }
+  if (response?.status === 401 || response?.status === 403) throw new Error(`This website blocked automatic review (HTTP ${response.status}). Try another public page or set the Style manually.`);
+  if (!response?.ok) throw new Error(`URL fetch failed: HTTP ${response?.status ?? "unknown"}.`);
   const contentType = response.headers.get("content-type") ?? ""; if (!/^(text\/|application\/(json|xml|javascript))/.test(contentType)) throw new Error("URL must return text content.");
   const text = await response.text(); if (text.length > 1_000_000) throw new Error("URL content exceeds the 1 MB local ingestion limit."); return { url, text };
 }
@@ -236,8 +246,37 @@ export async function ingestPdfFile(filePath: string, root?: string, permission:
   let stdout: string; try { ({ stdout } = await execFile("pdftotext", ["-layout", filePath, "-"], { maxBuffer: 1_000_000 })); } catch { throw new Error("PDF text extraction failed. Use a readable text-based PDF or provide extracted text."); }
   const text = normalizeSourceText(stdout); if (!text) throw new Error("PDF contains no extractable text."); return ingestSource({ title: basename(filePath), origin: `Local PDF · ${basename(filePath)}`, type: "PDF", text, permission }, root);
 }
-export async function lockWebsiteStyle(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch, requestedIntent?: WorkshopStyle["intentProfile"]): Promise<WorkshopState> {
-  const { url, text } = await fetchPublicText(rawUrl, fetchImpl); const current = readWorkshopState(root); const colors = [...text.matchAll(/#[0-9a-fA-F]{6}\b/g)].map((match) => match[0].toUpperCase()); const palette = [...new Set(colors)]; const title = text.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim() || url.hostname; const updatedAt = new Date().toISOString(); const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "website", name: `${title} foundation`, accent: palette[0] ?? "#1668E3", ink: palette[1] ?? "#171816", paper: palette[2] ?? "#F4F2EC", logos: [], licensedFonts: [], references: [url.toString()], negativeRules: [], intentProfile: intentProfile(requestedIntent), referenceUrl: url.toString(), lockedAt: updatedAt, stale: false };
+function htmlAttribute(tag: string, name: string) { const match = tag.match(new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, "i")); return match?.[1] ?? match?.[2] ?? match?.[3]; }
+function normalizeHex(value: string) { const upper = value.toUpperCase(); return upper.length === 4 ? `#${upper[1]}${upper[1]}${upper[2]}${upper[2]}${upper[3]}${upper[3]}` : upper; }
+function luminance(value: string) { const channels = [value.slice(1, 3), value.slice(3, 5), value.slice(5, 7)].map((channel) => Number.parseInt(channel, 16) / 255).map((channel) => channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4); return channels[0]! * 0.2126 + channels[1]! * 0.7152 + channels[2]! * 0.0722; }
+function absoluteWebUrl(value: string | undefined, base: URL) { if (!value) return undefined; try { const url = new URL(value, base); return /^https?:$/.test(url.protocol) && !url.username && !url.password ? url.toString() : undefined; } catch { return undefined; } }
+function uniqueMatches(text: string, pattern: RegExp) { return [...new Set([...text.matchAll(pattern)].map((match) => match[1]?.trim()).filter((value): value is string => Boolean(value)))]; }
+
+export async function analyzeWebsiteStyle(rawUrl: string, fetchImpl: typeof fetch = fetch): Promise<WebsiteStyleSuggestion> {
+  const { url, text: html } = await fetchPublicText(rawUrl, fetchImpl);
+  const linkTags = html.match(/<link\b[^>]*>/gi) ?? [];
+  const stylesheetUrls = linkTags.filter((tag) => /(?:^|\s)stylesheet(?:\s|$)/i.test(htmlAttribute(tag, "rel") ?? "")).map((tag) => absoluteWebUrl(htmlAttribute(tag, "href"), url)).filter((value): value is string => Boolean(value)).slice(0, 4);
+  const stylesheets = await Promise.all(stylesheetUrls.map(async (stylesheetUrl) => { try { return (await fetchPublicText(stylesheetUrl, fetchImpl)).text; } catch { return ""; } }));
+  const css = `${html}\n${stylesheets.join("\n")}`;
+  const themeTag = (html.match(/<meta\b[^>]*>/gi) ?? []).find((tag) => htmlAttribute(tag, "name")?.toLowerCase() === "theme-color");
+  const themeColor = htmlAttribute(themeTag ?? "", "content")?.match(/^#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?$/)?.[0];
+  const colors = [...new Set([...(themeColor ? [normalizeHex(themeColor)] : []), ...[...css.matchAll(/#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?\b/g)].map((match) => normalizeHex(match[0]))])];
+  const namedColors = [...css.matchAll(/(?:--([\w-]+)|\b(background-color|color))\s*:\s*(#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?)\b/gi)].map((match) => ({ name: `${match[1] ?? match[2] ?? ""}`.toLowerCase(), value: normalizeHex(match[3]!) }));
+  const byName = (pattern: RegExp) => namedColors.find((item) => pattern.test(item.name))?.value;
+  const sortedByLight = [...colors].sort((left, right) => luminance(left) - luminance(right));
+  const ink = byName(/ink|text|foreground/) ?? sortedByLight[0] ?? "#171816";
+  const paper = byName(/paper|background|surface|canvas/) ?? sortedByLight.at(-1) ?? "#F4F2EC";
+  const accent = byName(/accent|primary|brand/) ?? (themeColor ? normalizeHex(themeColor) : undefined) ?? colors.find((candidate) => candidate !== ink && candidate !== paper && luminance(candidate) > 0.05 && luminance(candidate) < 0.85) ?? "#1668E3";
+  const fontCandidates = uniqueMatches(css, /font-family\s*:\s*([^;}]+)/gi).flatMap((declaration) => declaration.split(",")).map((font) => font.replace(/["']/g, "").trim()).filter((font) => font && !/^(inherit|initial|system-ui|sans-serif|serif|monospace|cursive|fantasy|ui-)/i.test(font) && !font.startsWith("var("));
+  const logoTags = [...(html.match(/<img\b[^>]*>/gi) ?? []), ...linkTags.filter((tag) => /icon/i.test(htmlAttribute(tag, "rel") ?? ""))];
+  const logos = [...new Set(logoTags.filter((tag) => /logo|brand|icon/i.test(`${htmlAttribute(tag, "alt") ?? ""} ${htmlAttribute(tag, "class") ?? ""} ${htmlAttribute(tag, "id") ?? ""} ${htmlAttribute(tag, "src") ?? ""} ${htmlAttribute(tag, "href") ?? ""}`)).map((tag) => absoluteWebUrl(htmlAttribute(tag, "src") ?? htmlAttribute(tag, "href"), url)).filter((value): value is string => Boolean(value)))].slice(0, 5);
+  const title = html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.replace(/\s+/g, " ").trim() || url.hostname;
+  return { referenceUrl: url.toString(), name: `${title} foundation`, accent, ink, paper, logos, fontCandidates: [...new Set(fontCandidates)].slice(0, 6), references: [url.toString()], negativeRules: [], findings: { colors: colors.length, fontCandidates: new Set(fontCandidates).size, assets: logos.length, stylesheets: stylesheets.filter(Boolean).length } };
+}
+
+function reviewedWebsiteUrl(rawUrl: string) { let url: URL; try { url = new URL(rawUrl); } catch { throw new Error("A valid HTTP(S) website is required."); } if (!/^https?:$/.test(url.protocol) || url.username || url.password) throw new Error("Only credential-free HTTP(S) websites are allowed."); return url.toString(); }
+export async function lockWebsiteStyle(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch, requestedIntent?: WorkshopStyle["intentProfile"], reviewed?: ManualStyleInput): Promise<WorkshopState> {
+  const suggestion = reviewed ? { ...reviewed, referenceUrl: reviewedWebsiteUrl(rawUrl) } : await analyzeWebsiteStyle(rawUrl, fetchImpl); const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "website", name: suggestion.name?.trim() || "Website foundation", accent: color(suggestion.accent, "#1668E3"), ink: color(suggestion.ink, "#171816"), paper: color(suggestion.paper, "#F4F2EC"), logos: cleanStyleList(suggestion.logos), licensedFonts: cleanStyleList("fontCandidates" in suggestion ? suggestion.fontCandidates : suggestion.licensedFonts), references: cleanStyleList(suggestion.references), negativeRules: cleanStyleList(suggestion.negativeRules), intentProfile: intentProfile(reviewed?.intentProfile ?? requestedIntent), referenceUrl: suggestion.referenceUrl, lockedAt: updatedAt, stale: false };
   return write({ ...current, ...(current.style ? staleStyleDependents(current) : {}), style, designArtifact: materializeDesignArtifact(style, root), updatedAt }, root);
 }
 function cleanStyleList(values: string[] | undefined) { return [...new Set((values ?? []).map((value) => value.trim()).filter(Boolean))]; }

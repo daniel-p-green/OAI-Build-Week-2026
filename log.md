@@ -4021,3 +4021,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Supply and inspect the ten named evidence inputs, update the five blocked shots only after those files exist, assemble the final MP4, and pass `pnpm demo:film:verify-final`.
 - The provider-spend, founder recording, host footage, and `/feedback` Session ID gates remain open; no unsupported claim was upgraded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 03:58 CT — Website Style became reviewable before it becomes truth
+
+**Area:** Style extraction / progressive disclosure / `DESIGN.md` fidelity
+
+### Changed
+
+- Replaced the one-step website Style lock with `Review style` followed by `Use this style`. Analysis no longer mutates Workshop state; only the values the user reviewed and corrected become the website-sourced Style and versioned `DESIGN.md` tokens.
+- Expanded extraction from one HTML hex scan to the page plus up to four linked public stylesheets. The analyzer resolves exact color candidates and roles, font-family candidates, logo/icon asset URLs, the page title, and the canonical reference URL.
+- Kept the additional controls inside the existing Style sheet. Before analysis, the website path shows only URL, Intent Profile, and one `Review style` action. After analysis, it reveals editable name and colors plus one collapsed `Review brand details` control for assets, font licensing, references, and negative rules.
+- Revalidated every redirect and linked stylesheet against the existing private-network boundary before fetching. Automatic review uses manual redirects and rejects local-network destinations.
+- Added plain recovery copy for public sites that reject server-side analysis: try another public page or set the Style manually.
+
+### Verified
+
+- A deterministic page-plus-stylesheet test extracted `#2457D6`, `#102030`, `#FAF8F4`, `Studio Sans`, and an absolute logo URL; a reviewed accent edit to `#335577` was the value persisted in both Style state and tokens. Locking the reviewed result performed no second website fetch.
+- A redirect test proved a public URL cannot redirect the analyzer to `127.0.0.1`. Worker coverage increased from 46/46 to 47/47.
+- A live no-spend analysis of `https://www.w3.org/` succeeded across three linked stylesheets and found 29 colors, six font candidates, and five brand assets. `https://openai.com` returned HTTP 403 to the local server fetch and produced the intended plain fallback instruction rather than a false extraction.
+- The website review path passed at 1200×800, 1024×768, and 390×844 with replacement visual baselines. Visual inspection confirmed the official SideSheet/ListRow/Input/Button language remains intact and the reviewed fields stay scrollable on mobile.
+- The full production-route browser suite passed 15/15, including reduced motion, contrast, 200 percent logical zoom, output history, source coverage, video refresh, and the completed desktop/compact/mobile judge path.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; web contract/unit tests remained 11/11. `pnpm demo:e2e`, `pnpm demo:film:verify`, and `git diff --check` passed.
+- `pnpm submission:verify` first failed because the acceptance reset had removed its generated manifest. `pnpm submission:build` regenerated the honestly `partial` 12-asset set, after which verification passed with `valid: true`, `stale: false`, `tampered: false`, and no issues.
+- No paid provider request was made.
+
+### Decisions
+
+- Website extraction is a suggestion, never automatic brand truth. Font candidates are explicitly presented for license confirmation before persistence.
+- A site that blocks automated fetch remains a recoverable product state, not a reason to bypass its controls or pretend a fallback palette came from that site.
+- The two approval gates remain unchanged. `Review style` is corrective setup, not a third blocking approval.
+
+### Open items
+
+- Provider-backed GPT Image 2 media remains the only open visual Output in the main product seam; website review does not upgrade any provider claim.
+- Final provider, founder, host, Session ID, and public-video evidence remains open under the film verifier.
+- Codex Session ID: unavailable on this surface; not inferred.

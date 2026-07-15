@@ -35,6 +35,7 @@ type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; orig
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
 type MapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
 type ManualStylePayload = { name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop" };
+type WebsiteStyleSuggestion = Omit<ManualStylePayload, "licensedFonts" | "intentProfile"> & { referenceUrl: string; fontCandidates: string[]; findings: { colors: number; fontCandidates: number; assets: number; stylesheets: number } };
 type PersistedWorkshop = {
   title: string;
   briefApproved: boolean;
@@ -134,6 +135,22 @@ export default function WorkshopPage() {
     }
   }
 
+  async function analyzeWebsiteStyle(url: string) {
+    setBusy(true);
+    setNotice(null);
+    try {
+      const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "analyzeWebsiteStyle", url }) });
+      const suggestion = await response.json() as WebsiteStyleSuggestion & { error?: string };
+      if (!response.ok) throw new Error(suggestion.error ?? "That website could not be reviewed");
+      return suggestion;
+    } catch (error) {
+      setNotice({ message: error instanceof Error ? error.message : "That website could not be reviewed", tone: "error" });
+      return null;
+    } finally {
+      setBusy(false);
+    }
+  }
+
   function openView(next: ObjectView) {
     setView(next);
     closeSheet();
@@ -216,7 +233,7 @@ export default function WorkshopPage() {
       {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} onClose={closeSheet} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "evidence" && selectedSource && <EvidenceSheet source={selectedSource} onClose={closeSheet} onShowMap={() => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === selectedSource.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "add-source" && <AddSourceSheet onClose={() => setSheet("sources")} onPost={post} />}
-      {sheet === "style" && <StyleSheet style={state?.style} busy={busy} onClose={closeSheet} onPost={post} />}
+      {sheet === "style" && <StyleSheet style={state?.style} busy={busy} onClose={closeSheet} onPost={post} onAnalyzeWebsite={analyzeWebsiteStyle} />}
       {sheet === "original" && <OriginalRevealSheet state={state} onClose={closeSheet} />}
     </FullScreenShell>
   );
@@ -268,9 +285,11 @@ function BriefView({ state, onChooseStyle, onShowSource }: { state: PersistedWor
   </article>;
 }
 
-function StyleSheet({ style, busy, onClose, onPost }: { style?: PersistedWorkshop["style"]; busy: boolean; onClose: () => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null> }) {
+function StyleSheet({ style, busy, onClose, onPost, onAnalyzeWebsite }: { style?: PersistedWorkshop["style"]; busy: boolean; onClose: () => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onAnalyzeWebsite: (url: string) => Promise<WebsiteStyleSuggestion | null> }) {
   const [mode, setMode] = useState<"website" | "manual">(style?.source ?? "manual");
   const [website, setWebsite] = useState(style?.referenceUrl ?? "");
+  const [reviewedUrl, setReviewedUrl] = useState(style?.source === "website" ? style.referenceUrl ?? "" : "");
+  const [findings, setFindings] = useState<WebsiteStyleSuggestion["findings"] | null>(null);
   const [name, setName] = useState(style?.name ?? "WorkshopLM editorial");
   const [accent, setAccent] = useState(style?.accent ?? "#0285FF");
   const [ink, setInk] = useState(style?.ink ?? "#0D0D0D");
@@ -282,17 +301,20 @@ function StyleSheet({ style, busy, onClose, onPost }: { style?: PersistedWorksho
   const [negativeRules, setNegativeRules] = useState((style?.negativeRules ?? ["no decorative gradients"]).join("\n"));
   const [showDetails, setShowDetails] = useState(false);
   useEffect(() => {
-    setMode(style?.source ?? "manual"); setWebsite(style?.referenceUrl ?? ""); setName(style?.name ?? "WorkshopLM editorial"); setAccent(style?.accent ?? "#0285FF"); setInk(style?.ink ?? "#0D0D0D"); setPaper(style?.paper ?? "#FFFFFF"); setIntent(style?.intentProfile ?? "client_facing_pitch"); setLogos((style?.logos ?? []).join("\n")); setFonts((style?.licensedFonts ?? ["SF Pro"]).join("\n")); setReferences((style?.references ?? ["calm editorial work surface"]).join("\n")); setNegativeRules((style?.negativeRules ?? ["no decorative gradients"]).join("\n")); setShowDetails(false);
+    setMode(style?.source ?? "manual"); setWebsite(style?.referenceUrl ?? ""); setReviewedUrl(style?.source === "website" ? style.referenceUrl ?? "" : ""); setFindings(null); setName(style?.name ?? "WorkshopLM editorial"); setAccent(style?.accent ?? "#0285FF"); setInk(style?.ink ?? "#0D0D0D"); setPaper(style?.paper ?? "#FFFFFF"); setIntent(style?.intentProfile ?? "client_facing_pitch"); setLogos((style?.logos ?? []).join("\n")); setFonts((style?.licensedFonts ?? ["SF Pro"]).join("\n")); setReferences((style?.references ?? ["calm editorial work surface"]).join("\n")); setNegativeRules((style?.negativeRules ?? ["no decorative gradients"]).join("\n")); setShowDetails(false);
   }, [style]);
   const locked = Boolean(style && !style.stale);
   const splitLines = (value: string) => value.split(/[\n,]/).map((item) => item.trim()).filter(Boolean);
   const dirty = mode !== (style?.source ?? "manual") || website.trim() !== (style?.referenceUrl ?? "") || name.trim() !== (style?.name ?? "WorkshopLM editorial") || accent.trim().toUpperCase() !== (style?.accent ?? "#0285FF").toUpperCase() || ink.trim().toUpperCase() !== (style?.ink ?? "#0D0D0D").toUpperCase() || paper.trim().toUpperCase() !== (style?.paper ?? "#FFFFFF").toUpperCase() || intent !== (style?.intentProfile ?? "client_facing_pitch") || logos.trim() !== (style?.logos ?? []).join("\n") || fonts.trim() !== (style?.licensedFonts ?? []).join("\n") || references.trim() !== (style?.references ?? []).join("\n") || negativeRules.trim() !== (style?.negativeRules ?? []).join("\n");
+  const reviewed = mode === "manual" || Boolean(reviewedUrl && reviewedUrl === website.trim());
+  const findingSummary = findings ? `${findings.colors} color${findings.colors === 1 ? "" : "s"}, ${findings.fontCandidates} font candidate${findings.fontCandidates === 1 ? "" : "s"}, and ${findings.assets} brand asset${findings.assets === 1 ? "" : "s"}` : "";
+  const reviewWebsite = () => { void onAnalyzeWebsite(website.trim()).then((suggestion) => { if (!suggestion) return; setReviewedUrl(website.trim()); setFindings(suggestion.findings); setName(suggestion.name); setAccent(suggestion.accent); setInk(suggestion.ink); setPaper(suggestion.paper); setLogos(suggestion.logos.join("\n")); setFonts(suggestion.fontCandidates.join("\n")); setReferences(suggestion.references.join("\n")); setNegativeRules(suggestion.negativeRules.join("\n")); }); };
   const saveStyle = () => {
+    const manualStyle: ManualStylePayload = { name: name.trim(), accent: accent.trim(), ink: ink.trim(), paper: paper.trim(), logos: splitLines(logos), licensedFonts: splitLines(fonts), references: splitLines(references), negativeRules: splitLines(negativeRules), intentProfile: intent };
     if (mode === "website") {
-      void onPost({ action: "lockWebsiteStyle", url: website.trim(), intentProfile: intent }).then((next) => next && onClose());
+      void onPost({ action: "lockWebsiteStyle", url: website.trim(), intentProfile: intent, manualStyle }).then((next) => next && onClose());
       return;
     }
-    const manualStyle: ManualStylePayload = { name: name.trim(), accent: accent.trim(), ink: ink.trim(), paper: paper.trim(), logos: splitLines(logos), licensedFonts: splitLines(fonts), references: splitLines(references), negativeRules: splitLines(negativeRules), intentProfile: intent };
     void onPost({ action: "lockManualStyle", manualStyle }).then((next) => next && onClose());
   };
 
@@ -304,9 +326,10 @@ function StyleSheet({ style, busy, onClose, onPost }: { style?: PersistedWorksho
 
   return <SideSheet title="Style" onClose={onClose}><p className="sheet-intro">Use one visual system across every Output.</p>
     <fieldset className="style-options"><legend>Start from</legend><ListGroup><ListRow className={`style-choice ${mode === "website" ? "selected" : ""}`}><ListRowAction aria-pressed={mode === "website"} onClick={() => setMode("website")}><span><strong>Website</strong><small>Pull the public visual foundation</small></span></ListRowAction></ListRow><ListRow className={`style-choice ${mode === "manual" ? "selected" : ""}`}><ListRowAction aria-pressed={mode === "manual"} onClick={() => setMode("manual")}><span><strong>Set manually</strong><small>Enter exact brand rules yourself</small></span></ListRowAction></ListRow></ListGroup></fieldset>
-    {mode === "website" ? <Input label="Website" type="url" placeholder="https://example.com" value={website} onChange={(event) => setWebsite(event.target.value)} /> : <><Input label="Name" value={name} onChange={(event) => setName(event.target.value)} /><div className="style-color-grid"><Input label="Accent" value={accent} onChange={(event) => setAccent(event.target.value)} /><Input label="Text" value={ink} onChange={(event) => setInk(event.target.value)} /><Input label="Background" value={paper} onChange={(event) => setPaper(event.target.value)} /></div>{showDetails ? <div className="style-details"><TextArea label="Logos or brand assets" hint="One local path or authorized URL per line" value={logos} onChange={(event) => setLogos(event.target.value)} /><TextArea label="Licensed fonts" hint="One font per line" value={fonts} onChange={(event) => setFonts(event.target.value)} /><TextArea label="Visual references" hint="One rule or reference per line" value={references} onChange={(event) => setReferences(event.target.value)} /><TextArea label="Avoid" hint="One negative rule per line" value={negativeRules} onChange={(event) => setNegativeRules(event.target.value)} /></div> : <Button variant="secondary" size="small" onClick={() => setShowDetails(true)}>{style?.logos.length || style?.licensedFonts.length || style?.references.length || style?.negativeRules.length ? "Edit brand details" : "Add brand details"}</Button>}</>}
+    {mode === "website" && <Input label="Website" type="url" placeholder="https://example.com" value={website} onChange={(event) => { setWebsite(event.target.value); setReviewedUrl(""); setFindings(null); }} />}
+    {reviewed && <><Input label="Name" value={name} onChange={(event) => setName(event.target.value)} /><div className="style-color-grid"><Input label="Accent" value={accent} onChange={(event) => setAccent(event.target.value)} /><Input label="Text" value={ink} onChange={(event) => setInk(event.target.value)} /><Input label="Background" value={paper} onChange={(event) => setPaper(event.target.value)} /></div>{findings && <p className="style-findings" role="status">Found {findingSummary}. Review it before using this Style.</p>}{showDetails ? <div className="style-details"><TextArea label="Logos or brand assets" hint="One local path or authorized URL per line" value={logos} onChange={(event) => setLogos(event.target.value)} /><TextArea label="Licensed fonts" hint="Confirm you are licensed to use each font" value={fonts} onChange={(event) => setFonts(event.target.value)} /><TextArea label="Visual references" hint="One rule or reference per line" value={references} onChange={(event) => setReferences(event.target.value)} /><TextArea label="Avoid" hint="One negative rule per line" value={negativeRules} onChange={(event) => setNegativeRules(event.target.value)} /></div> : <Button variant="secondary" size="small" onClick={() => setShowDetails(true)}>{style ? "Edit brand details" : mode === "website" ? "Review brand details" : "Add brand details"}</Button>}</>}
     <fieldset className="style-options"><legend>Use it for</legend><ListGroup>{intents.map((profile) => <ListRow className={`style-choice ${intent === profile.id ? "selected" : ""}`} key={profile.id}><ListRowAction aria-pressed={intent === profile.id} onClick={() => setIntent(profile.id)}><span><strong>{profile.title}</strong><small>{profile.detail}</small></span></ListRowAction></ListRow>)}</ListGroup></fieldset>
-    <div className="style-preview"><div className="palette-preview" data-domain-ui="palette-preview"><i style={{ background: accent }} /><i style={{ background: ink }} /><i style={{ background: paper }} /></div><div className="type-preview" data-domain-ui="type-preview"><strong>Aa</strong><span>{splitLines(fonts)[0] ?? "System type"} · clear hierarchy</span></div></div>{(!locked || dirty) && <Button disabled={busy || (mode === "website" ? !website.trim() : !name.trim() || !accent.trim() || !ink.trim() || !paper.trim())} onClick={saveStyle}>{locked ? "Update style" : "Use this style"}</Button>}
+    {reviewed && <div className="style-preview"><div className="palette-preview" data-domain-ui="palette-preview"><i style={{ background: accent }} /><i style={{ background: ink }} /><i style={{ background: paper }} /></div><div className="type-preview" data-domain-ui="type-preview"><strong>Aa</strong><span>{splitLines(fonts)[0] ?? "System type"} · clear hierarchy</span></div></div>}{mode === "website" && !reviewed ? <Button disabled={busy || !website.trim()} onClick={reviewWebsite}>Review style</Button> : (!locked || dirty) && <Button disabled={busy || !name.trim() || !accent.trim() || !ink.trim() || !paper.trim()} onClick={saveStyle}>{locked ? "Update style" : "Use this style"}</Button>}
   </SideSheet>;
 }
 

@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { applyMapOperation, applyWorkshopAction, approveSketch, approveVisualDna, cancelVideoRender, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, extractWorkshopCandidates, generateAssetPlan, generateOutput, generateStoryboard, ingestPdfFile, ingestSource, ingestUrl, lockManualStyle, lockWebsiteStyle, readWorkshopState, selectImagePanelForRegeneration, setActiveSourceScope, syncMapCanvas, type CanvasNodePatch, type ManualStyleInput, type RealtimeCaptureEvidence, type SourceIngestion, undoMapOperation, updateStoryboardPanel } from "../../../../worker/src/workshop-service";
+import { analyzeWebsiteStyle, applyMapOperation, applyWorkshopAction, approveSketch, approveVisualDna, cancelVideoRender, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, extractWorkshopCandidates, generateAssetPlan, generateOutput, generateStoryboard, ingestPdfFile, ingestSource, ingestUrl, lockManualStyle, lockWebsiteStyle, readWorkshopState, selectImagePanelForRegeneration, setActiveSourceScope, syncMapCanvas, type CanvasNodePatch, type ManualStyleInput, type RealtimeCaptureEvidence, type SourceIngestion, undoMapOperation, updateStoryboardPanel } from "../../../../worker/src/workshop-service";
 
 export const runtime = "nodejs";
-type Action = "approveBrief" | "lockManualStyle" | "lockWebsiteStyle" | "createSketch" | "approveSketch" | "createVisualDna" | "approveVisualDna" | "approveStoryboard" | "renderVideo" | "cancelVideoRender" | "ingestSource" | "captureFallbackTranscript" | "ingestUrl" | "ingestPdfFile" | "extractCandidates" | "setActiveSourceScope" | "mapOperation" | "syncMapCanvas" | "undoMapOperation" | "generateAssetPlan" | "generateOutput" | "generateStoryboard" | "createImageBatch" | "regenerateImagePanel" | "updateStoryboardPanel";
+type Action = "approveBrief" | "analyzeWebsiteStyle" | "lockManualStyle" | "lockWebsiteStyle" | "createSketch" | "approveSketch" | "createVisualDna" | "approveVisualDna" | "approveStoryboard" | "renderVideo" | "cancelVideoRender" | "ingestSource" | "captureFallbackTranscript" | "ingestUrl" | "ingestPdfFile" | "extractCandidates" | "setActiveSourceScope" | "mapOperation" | "syncMapCanvas" | "undoMapOperation" | "generateAssetPlan" | "generateOutput" | "generateStoryboard" | "createImageBatch" | "regenerateImagePanel" | "updateStoryboardPanel";
 type RequestBody = { action?: Action; source?: SourceIngestion; text?: string; capture?: RealtimeCaptureEvidence; url?: string; filePath?: string; permission?: "private" | "sanitized" | "shareable"; sourceIds?: string[]; panelId?: string; operation?: unknown; canvasNodes?: CanvasNodePatch[]; outputType?: "deck" | "infographic"; manualStyle?: ManualStyleInput; intentProfile?: ManualStyleInput["intentProfile"]; panel?: { id: string; title: string; narration: string; durationSeconds: number } };
 
 export async function GET() { return NextResponse.json(readWorkshopState()); }
@@ -35,6 +35,7 @@ export async function POST(request: NextRequest) {
     if (body.action === "ingestPdfFile") { if (!body.filePath) return NextResponse.json({ error: "filePath is required" }, { status: 400 }); return NextResponse.json(await ingestPdfFile(body.filePath, undefined, body.permission)); }
     if (body.action === "extractCandidates") return NextResponse.json(extractWorkshopCandidates());
     if (body.action === "setActiveSourceScope") { if (!Array.isArray(body.sourceIds)) return NextResponse.json({ error: "sourceIds are required" }, { status: 400 }); return NextResponse.json(setActiveSourceScope(body.sourceIds)); }
+    if (body.action === "analyzeWebsiteStyle") { if (!body.url) return NextResponse.json({ error: "url is required" }, { status: 400 }); return NextResponse.json(await analyzeWebsiteStyle(body.url)); }
     if (body.action === "lockManualStyle") return NextResponse.json(lockManualStyle(body.manualStyle));
     if (body.action === "createSketch") return NextResponse.json(createSketch());
     if (body.action === "approveSketch") return NextResponse.json(approveSketch());
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
     if (body.action === "generateAssetPlan") return NextResponse.json(generateAssetPlan());
     if (body.action === "generateStoryboard") return NextResponse.json(generateStoryboard());
     if (body.action === "cancelVideoRender") return NextResponse.json(cancelVideoRender());
-    if (body.action === "lockWebsiteStyle") { if (!body.url) return NextResponse.json({ error: "url is required" }, { status: 400 }); return NextResponse.json(await lockWebsiteStyle(body.url, undefined, fetch, body.intentProfile)); }
+    if (body.action === "lockWebsiteStyle") { if (!body.url) return NextResponse.json({ error: "url is required" }, { status: 400 }); return NextResponse.json(await lockWebsiteStyle(body.url, undefined, fetch, body.intentProfile, body.manualStyle)); }
     if (body.action === "mapOperation") { if (!body.operation) return NextResponse.json({ error: "operation is required" }, { status: 400 }); return NextResponse.json(applyMapOperation(body.operation)); }
     if (body.action === "syncMapCanvas") { if (!Array.isArray(body.canvasNodes)) return NextResponse.json({ error: "canvasNodes are required" }, { status: 400 }); return NextResponse.json(syncMapCanvas(body.canvasNodes)); }
     if (body.action === "undoMapOperation") return NextResponse.json(undoMapOperation());

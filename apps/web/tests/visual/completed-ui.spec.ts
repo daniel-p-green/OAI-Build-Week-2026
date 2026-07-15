@@ -119,12 +119,16 @@ test("voice capture is bounded inside Add source and fails closed without live o
 });
 
 test("Style can start from a website and apply a professional intent", async ({ page }) => {
+  await page.request.post("/api/workshop", { data: { action: "approveBrief" } });
   const readyState = await (await page.request.get("/api/workshop")).json();
   const stylelessState = { ...readyState, style: undefined };
   const posted: Record<string, unknown>[] = [];
+  const suggestion = { referenceUrl: "https://example.com/brand", name: "Example Studio foundation", accent: "#2457D6", ink: "#102030", paper: "#FAF8F4", logos: ["https://example.com/logo.svg"], fontCandidates: ["Studio Sans"], references: ["https://example.com/brand"], negativeRules: [], findings: { colors: 3, fontCandidates: 1, assets: 1, stylesheets: 1 } };
   await page.route("**/api/workshop", async (route) => {
     if (route.request().method() === "GET") return route.fulfill({ json: stylelessState });
-    posted.push(route.request().postDataJSON() as Record<string, unknown>);
+    const body = route.request().postDataJSON() as Record<string, unknown>;
+    posted.push(body);
+    if (body.action === "analyzeWebsiteStyle") return route.fulfill({ json: suggestion });
     return route.fulfill({ json: readyState });
   });
 
@@ -139,9 +143,13 @@ test("Style can start from a website and apply a professional intent", async ({ 
     await sheet.getByRole("button", { name: /Board presentation/ }).click();
     await expect(sheet.getByRole("button", { name: /Website/ })).toHaveAttribute("aria-pressed", "true");
     await expect(sheet.getByRole("button", { name: /Board presentation/ })).toHaveAttribute("aria-pressed", "true");
+    await sheet.getByRole("button", { name: "Review style" }).click();
+    await expect(sheet.getByRole("status")).toContainText("Found 3 colors, 1 font candidate, and 1 brand asset");
+    await expect(sheet.getByRole("textbox", { name: "Name" })).toHaveValue("Example Studio foundation");
+    await sheet.getByRole("textbox", { name: "Accent" }).fill("#335577");
     await expectScreen(page, `${viewport.name}-website-style`);
     await sheet.getByRole("button", { name: "Use this style" }).click();
-    await expect.poll(() => posted.at(-1)).toEqual({ action: "lockWebsiteStyle", url: "https://example.com/brand", intentProfile: "board_deck" });
+    await expect.poll(() => posted.at(-1)).toEqual({ action: "lockWebsiteStyle", url: "https://example.com/brand", intentProfile: "board_deck", manualStyle: { name: "Example Studio foundation", accent: "#335577", ink: "#102030", paper: "#FAF8F4", logos: ["https://example.com/logo.svg"], licensedFonts: ["Studio Sans"], references: ["https://example.com/brand"], negativeRules: [], intentProfile: "board_deck" } });
   }
 });
 
