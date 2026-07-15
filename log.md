@@ -3433,3 +3433,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Run one authorized provider-backed microphone turn and inspect the durable transcript, private Source, item/event IDs, and downstream grounding before final recording.
 - Complete the five independent first-time orientation reviews before filming.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 00:40 CT — Fresh Codex task called the installed WorkshopLM evidence tools
+
+**Area:** Plugin host / MCP safety metadata / grounded search and fetch
+
+### Changed
+
+- Added standard MCP safety annotations to every WorkshopLM tool. Read tools now advertise `readOnlyHint: true`, `destructiveHint: false`, and `openWorldHint: false`; local state-changing tools explicitly advertise `readOnlyHint: false` while remaining non-destructive and closed-world.
+- Rewrote tool descriptions to start with their concrete use condition so model discovery distinguishes read evidence work from user-authorized local mutations.
+- Rebuilt the distributed MCP bundle, refreshed the installed `workshoplm@workshoplm-local` version `0.1.2`, and recorded the host evidence in `artifacts/spikes/plugin-host-2026-07-15.json`.
+
+### Verified
+
+- Official OpenAI tool guidance requires `readOnlyHint` for retrieval-only tools and notes that tools without it are treated as writes. Official Codex skill guidance documents the initial 2% context budget and that large installations may omit skills from the model-visible list.
+- Before the repair, fresh task `019f6445-5254-7491-99de-288759c224e8` discovered the WorkshopLM MCP server but did not activate `$workshoplm`; its first read call was cancelled under the host's write-style confirmation policy.
+- `pnpm --filter @workshoplm/plugin-mcp test` passed 7/7, including exact safety-annotation assertions; plugin typecheck and distribution build passed.
+- `codex plugin add workshoplm@workshoplm-local --json` refreshed the installed bundle. SHA-256 proved the installed manifest and generated tools match the repository versions exactly.
+- Fresh read-only Codex task `019f6448-5a04-7753-b585-e156aec9f1b6` invoked the real installed MCP server and completed `workshop_list → search → fetch` without confirmation. It found one sanitized Workshop and fetched `Sanitized fixture · chunk 01` with its linked verified claim.
+- Fresh read-only task `019f6449-577f-7de3-a39e-7079ff46ea98` could not access the write-classified `workshop_render_video` tool; no mutation occurred. This proves the host no longer treats read and write tools identically, but it does not replace an interactive confirmation test for an authorized write.
+- Direct installed-bundle `tools/list` returned the expected annotations for all eleven tools.
+- `pnpm check` passed across all 13 packages. `pnpm demo:e2e` passed all six gates. `pnpm demo:live` remained a no-spend preflight with `paidCallsMade: false`.
+
+### Decisions
+
+- Spike E remains open rather than overstated. Codex MCP read-tool invocation is proved; ChatGPT Work invocation and explicit WorkshopLM skill activation are not.
+- The skill failure is recorded as a host-environment constraint: this machine exceeded the documented initial 2% skills context budget and omitted 311 additional skills. The plugin server and tools remained available.
+- Read operations should never require write confirmation. Local write operations remain visibly classified and require an interactive authorization-capable surface.
+
+### Open items
+
+- Activate WorkshopLM from the desktop Skills surface or a clean plugin-only profile and record that result.
+- Test the available ChatGPT Work surface explicitly; do not infer parity from Codex CLI.
+- Run one interactive, intentionally bounded write confirmation without changing the sanitized fixture, or keep the current read-only demo doorway if write-tool proof adds no judge value.

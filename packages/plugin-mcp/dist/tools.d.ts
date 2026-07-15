@@ -1,4 +1,9 @@
 export type ToolKind = "read" | "write";
+export type ToolAnnotations = {
+    readOnlyHint: boolean;
+    destructiveHint: boolean;
+    openWorldHint: boolean;
+};
 export type ToolDefinition = {
     name: string;
     kind: ToolKind;
@@ -8,6 +13,7 @@ export type ToolDefinition = {
         properties: Record<string, unknown>;
         required?: string[];
     };
+    annotations: ToolAnnotations;
 };
 export type WorkshopChunk = {
     id: string;

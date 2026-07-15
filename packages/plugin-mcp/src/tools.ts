@@ -3,29 +3,32 @@ import { DatabaseSync } from "node:sqlite";
 import { dirname, join, resolve } from "node:path";
 
 export type ToolKind = "read" | "write";
-export type ToolDefinition = { name: string; kind: ToolKind; description: string; inputSchema: { type: "object"; properties: Record<string, unknown>; required?: string[] } };
+export type ToolAnnotations = { readOnlyHint: boolean; destructiveHint: boolean; openWorldHint: boolean };
+export type ToolDefinition = { name: string; kind: ToolKind; description: string; inputSchema: { type: "object"; properties: Record<string, unknown>; required?: string[] }; annotations: ToolAnnotations };
 export type WorkshopChunk = { id: string; sourceId: string; text: string; locator: string; ordinal: number };
 export type WorkshopClaim = { id: string; sourceId: string; chunkId: string; text: string; evidenceState: "verified" | "derived" | "creative" | "unverified"; locator: string };
 export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; sourceChunks?: WorkshopChunk[]; claims?: WorkshopClaim[]; updatedAt: string };
 export type ToolResult = { text: string; data?: Record<string, unknown>; isError?: boolean };
 
 const object = (properties: Record<string, unknown>, required: string[] = []) => ({ type: "object" as const, properties, ...(required.length ? { required } : {}) });
+const readOnly: ToolAnnotations = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
+const localWrite: ToolAnnotations = { readOnlyHint: false, destructiveHint: false, openWorldHint: false };
 const schema = `CREATE TABLE IF NOT EXISTS workshop (id TEXT PRIMARY KEY, title TEXT NOT NULL, created_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS job (id TEXT PRIMARY KEY, workshop_id TEXT NOT NULL, kind TEXT NOT NULL, input_key TEXT NOT NULL UNIQUE, state TEXT NOT NULL, lease_until TEXT, attempts INTEGER NOT NULL DEFAULT 0, payload_json TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS workshop_state (workshop_id TEXT PRIMARY KEY, state_json TEXT NOT NULL, updated_at TEXT NOT NULL);`;
 
 export const toolDefinitions: ToolDefinition[] = [
-  { name: "workshop_list", kind: "read", description: "List local Workshop summaries.", inputSchema: object({}) },
-  { name: "workshop_create", kind: "write", description: "Create a local Workshop.", inputSchema: object({ title: { type: "string" } }, ["title"]) },
-  { name: "workshop_open", kind: "read", description: "Return the local Workshop URL and status.", inputSchema: object({ workshopId: { type: "string" } }, ["workshopId"]) },
-  { name: "workshop_add_source", kind: "write", description: "Import a sanctioned local file or URL.", inputSchema: object({ workshopId: { type: "string" }, source: { type: "string" } }, ["workshopId", "source"]) },
-  { name: "search", kind: "read", description: "Search normalized source evidence.", inputSchema: object({ query: { type: "string" } }, ["query"]) },
-  { name: "fetch", kind: "read", description: "Fetch a normalized evidence chunk.", inputSchema: object({ sourceId: { type: "string" }, chunkId: { type: "string" } }, ["sourceId", "chunkId"]) },
-  { name: "workshop_get_trace", kind: "read", description: "Read artifact to claim to source traceability.", inputSchema: object({ artifactId: { type: "string" } }, ["artifactId"]) },
-  { name: "workshop_approve_brief", kind: "write", description: "Approve only the current eligible Map version.", inputSchema: object({ workshopId: { type: "string" }, mapVersion: { type: "string" } }, ["workshopId", "mapVersion"]) },
-  { name: "workshop_create_output", kind: "write", description: "Enqueue one typed output from approved current state.", inputSchema: object({ workshopId: { type: "string" }, outputType: { enum: ["deck", "infographic", "images", "storyboard", "video"] } }, ["workshopId", "outputType"]) },
-  { name: "workshop_approve_storyboard", kind: "write", description: "Approve only the current storyboard version.", inputSchema: object({ workshopId: { type: "string" }, storyboardVersion: { type: "string" } }, ["workshopId", "storyboardVersion"]) },
-  { name: "workshop_render_video", kind: "write", description: "Render only an approved, current storyboard.", inputSchema: object({ workshopId: { type: "string" }, storyboardVersion: { type: "string" } }, ["workshopId", "storyboardVersion"]) },
+  { name: "workshop_list", kind: "read", description: "Use this when you need to list local Workshop summaries without changing them.", inputSchema: object({}), annotations: readOnly },
+  { name: "workshop_create", kind: "write", description: "Use this when the user asks to create a local Workshop.", inputSchema: object({ title: { type: "string" } }, ["title"]), annotations: localWrite },
+  { name: "workshop_open", kind: "read", description: "Use this when you need the local URL and current status for one Workshop.", inputSchema: object({ workshopId: { type: "string" } }, ["workshopId"]), annotations: readOnly },
+  { name: "workshop_add_source", kind: "write", description: "Use this when the user asks to import a sanctioned local file or URL into a Workshop.", inputSchema: object({ workshopId: { type: "string" }, source: { type: "string" } }, ["workshopId", "source"]), annotations: localWrite },
+  { name: "search", kind: "read", description: "Use this when you need to search normalized local source evidence without changing it.", inputSchema: object({ query: { type: "string" } }, ["query"]), annotations: readOnly },
+  { name: "fetch", kind: "read", description: "Use this when you need to retrieve one exact normalized evidence chunk and its linked claims.", inputSchema: object({ sourceId: { type: "string" }, chunkId: { type: "string" } }, ["sourceId", "chunkId"]), annotations: readOnly },
+  { name: "workshop_get_trace", kind: "read", description: "Use this when you need to inspect an artifact-to-claim-to-source trace without changing it.", inputSchema: object({ artifactId: { type: "string" } }, ["artifactId"]), annotations: readOnly },
+  { name: "workshop_approve_brief", kind: "write", description: "Use this only when the user asks to approve the current eligible Map as the Brief.", inputSchema: object({ workshopId: { type: "string" }, mapVersion: { type: "string" } }, ["workshopId", "mapVersion"]), annotations: localWrite },
+  { name: "workshop_create_output", kind: "write", description: "Use this when the user asks to create one typed Output from approved current state.", inputSchema: object({ workshopId: { type: "string" }, outputType: { enum: ["deck", "infographic", "images", "storyboard", "video"] } }, ["workshopId", "outputType"]), annotations: localWrite },
+  { name: "workshop_approve_storyboard", kind: "write", description: "Use this only when the user asks to approve the current Storyboard version.", inputSchema: object({ workshopId: { type: "string" }, storyboardVersion: { type: "string" } }, ["workshopId", "storyboardVersion"]), annotations: localWrite },
+  { name: "workshop_render_video", kind: "write", description: "Use this when the user asks to render Video from an approved current Storyboard.", inputSchema: object({ workshopId: { type: "string" }, storyboardVersion: { type: "string" } }, ["workshopId", "storyboardVersion"]), annotations: localWrite },
 ];
 
 export function mutationGate(tool: string, state: { mapCurrent?: boolean; storyboardApproved?: boolean; storyboardCurrent?: boolean }) {

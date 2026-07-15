@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 00:30 CT
+Last updated: 2026-07-15 00:40 CT
 
 ## Status
 
@@ -310,6 +310,8 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Spike C: six-image batch manifest, locked reference, and selective regeneration contract; live image generation remains opt-in and unrun.
 - [x] Spike D: local HyperFrames CLI health check, validated three-scene composition, disclosed narration fixture, and rendered MP4.
 - [ ] Spike E: locally install the unified plugin, invoke its skill, call its stdio MCP tools, and record actual Work/Codex surface support.
+  - Codex tool proof is complete: installed `workshoplm@workshoplm-local` version `0.1.2` matches the repository bundle, and fresh task `019f6448-5a04-7753-b585-e156aec9f1b6` called `workshop_list → search → fetch` against the sanitized fixture without confirmation after the read-only annotation repair.
+  - Keep this open: the current machine's unusually large installation exceeded Codex's initial 2% skill-list budget and omitted `$workshoplm`, and ChatGPT Work invocation remains unverified. The read-only host also withheld `workshop_render_video`, so no unauthorized write occurred.
 - [x] Activate and verify the designed capture-only fallback for the unproven native task/voice synchronization spike; live Realtime transport remains separately unverified.
 
 ### 5. Repository and platform foundation
@@ -399,6 +401,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [Traced submission Output-set builder and verifier](apps/worker/src/submission-package.ts)
 - [Realtime voice capture UI](apps/web/app/realtime-capture.tsx)
 - [Server-only Realtime client-secret boundary](apps/web/app/api/realtime/realtime-server.ts)
+- [Fresh Codex plugin-host evidence](artifacts/spikes/plugin-host-2026-07-15.json)
 - [Product opportunity](research/product-opportunity.md)
 - [Workflow map](research/workflow-map.md)
 - [NotebookLM live user-flow map](research/notebooklm-user-flow.md)
