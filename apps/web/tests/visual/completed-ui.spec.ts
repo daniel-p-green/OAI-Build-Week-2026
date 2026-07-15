@@ -266,6 +266,33 @@ test("empty, loading, partial, error, and needs-update states stay calm and acti
   }
 });
 
+test("Outputs preserve recognizable version history and source coverage", async ({ page }) => {
+  const readyState = await (await page.request.get("/api/workshop")).json();
+  const firstDeck = readyState.outputs.find((output: { type: string }) => output.type === "deck");
+  const historyState = {
+    ...readyState,
+    outputs: [
+      { ...firstDeck, id: "deck-v0", stale: true, createdAt: "2026-07-14T12:00:00.000Z", claimIds: firstDeck.claimIds.slice(0, 1) },
+      ...readyState.outputs,
+    ],
+  };
+  await page.route("**/api/workshop", async (route) => route.request().method() === "GET"
+    ? route.fulfill({ json: historyState })
+    : route.continue());
+  await page.goto("/");
+  await page.getByRole("button", { name: "View brief" }).click();
+  await page.getByRole("button", { name: "View outputs" }).click();
+
+  await expect(page.getByRole("button", { name: "Open Build Week presentation, version 2" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Open Build Week presentation, version 1" })).toBeVisible();
+  await expect(page.getByText("Presentation · Version 2")).toBeVisible();
+  await expect(page.getByText("Presentation · Version 1")).toBeVisible();
+  await expect(page.getByText("Up to date", { exact: true }).first()).toBeVisible();
+  await expect(page.getByText("Needs update", { exact: true }).first()).toBeVisible();
+  await expect(page.locator(".output-card").first()).toContainText(/\d+ sources?/);
+  await expect(page.locator('.output-card iframe[title$="preview"]')).toHaveCount(3);
+});
+
 test("core primitive computed styles and states match the official reference", async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");

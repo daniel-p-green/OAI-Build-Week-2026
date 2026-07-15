@@ -1,12 +1,12 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 01:03 CT
+Last updated: 2026-07-15 01:20 CT
 
 ## Status
 
 **Active phase:** P0 interface simplification, then live demo proof
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
-**Current gate:** The P0 screen-composition and language rebuild, bounded Realtime capture UI, and constrained semantic Excalidraw Map are implemented. The Map now persists direct movement, resizing, and text edits through typed graph history, exposes source trace, and restores each operation through WorkshopLM Undo; its native Excalidraw product chrome is suppressed so the official Apps in ChatGPT shell remains the only surrounding interface system. The remaining interface completion gates are five independent first-time orientation reviews and provider-backed GPT Image 2 gallery media. The Realtime transport is ready for its first provider-backed microphone turn but is not yet live-verified. Provider media may proceed in isolated files; do not record the final demo until the review gate is complete and any critical navigation finding is repaired.
+**Current gate:** The P0 screen-composition and canonical-language rebuild, bounded Realtime capture UI, constrained semantic Excalidraw Map, and version-aware Outputs history are implemented. The Map persists direct movement, resizing, and text edits through typed graph history, exposes source trace, and restores each operation through WorkshopLM Undo; its native Excalidraw product chrome is suppressed so the official Apps in ChatGPT shell remains the only surrounding interface system. Outputs now preserve real previews and version history with type, freshness, and source coverage while keeping creation in the single header action. The remaining interface completion gates are five independent first-time orientation reviews and provider-backed GPT Image 2 gallery media. The Realtime transport is ready for its first provider-backed microphone turn but is not yet live-verified. Provider media may proceed in isolated files; do not record the final demo until the review gate is complete and any critical navigation finding is repaired.
 **Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found` for this account even though the current public model page describes it as a Sol alias. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. The benchmark and live grounded-Map adapter now share a tested parser for both top-level and nested Responses text, but no request has run. The current model catalog labels `gpt-4o-mini-tts` deprecated while the current speech guide still recommends it; verify the actual live response before recording. Do not claim live product use or change per-operation defaults before these checks.
 **Known host risk:** The July 14 host-sync verification is credential-blocked and the decision deadline has passed, so the capture-only `gpt-realtime-2.1` fallback is the final demo voice path. Native task and voice-turn persistence remain unproven and must not be claimed. The server-minted ephemeral session route, browser WebRTC control, final-transcript reducer, durable Source boundary, and provider event provenance are implemented and tested; one provider-backed microphone turn still must be captured and inspected before recording.
 
@@ -227,9 +227,9 @@ Use NotebookLM's screenshots as behavioral evidence, then express the result in 
 
 - [x] Keep one stable orientation frame: Workshop name and current object at top left, Sources in one consistent location, one focused center object, and one primary next action. Do not reintroduce persistent workflow tabs or a duplicate browser chat.
 - [x] Make Sources feel as immediate as NotebookLM: one labeled count opens the source list; selection is directly visible; one click from any citation reveals the exact source excerpt and locator; closing it returns focus to the originating claim.
-- [ ] Make Outputs behave like NotebookLM's useful Studio history without copying its panel: each output is a recognizable named object with a real preview, type, freshness, source coverage, and one obvious open action. Creation controls do not compete with the output history.
+- [x] Make Outputs behave like NotebookLM's useful Studio history without copying its panel: each output is a recognizable named object with a real preview, type, freshness, source coverage, and one obvious open action. Creation controls do not compete with the output history.
 - [x] Preserve the professional control advantage through progressive disclosure: Map editing, Brief approval, Style selection, Storyboard editing, and Storyboard approval appear only when relevant. The user sees two blocking approvals—Brief and Storyboard—not internal gate machinery.
-- [ ] Replace judge-visible copy using this canonical dictionary:
+- [x] Replace judge-visible copy using this canonical dictionary:
 
 | Current or internal wording | Required user-facing wording |
 | --- | --- |
@@ -260,6 +260,7 @@ Use NotebookLM's screenshots as behavioral evidence, then express the result in 
 
 - [x] Audit every visible string. Labels identify the object; buttons state the result of clicking them; helper text explains only a consequence the user would not reasonably know. Use sentence case, avoid redundant subtitles and marketing copy, keep primary actions to two or three words, and never expose implementation terms in the default view.
 - [ ] Pass a five-second orientation test on Map, Brief, Outputs, Storyboard, Sources, and mobile: a first-time professional can answer `Where am I?`, `What is this based on?`, and `What should I do next?` without opening another surface.
+  - The final compositions now expose the current object, `{n} sources`, and one dominant next action at all three verified widths. Keep this open until independent first-time professionals validate comprehension rather than only structural presence.
 
 #### P0 screen-by-screen simplification
 

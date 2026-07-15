@@ -3512,3 +3512,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Complete the five independent first-time orientation reviews and repair any critical finding before final recording.
 - Run and inspect the spend-gated live GPT-5.6, GPT Image 2, Realtime microphone, and TTS paths before changing provider claims.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 01:20 CT — Outputs became a version-aware, source-scoped work history
+
+**Area:** Outputs / interface language / responsive product UI
+
+### Changed
+
+- Closed the remaining implementation gap behind the Studio-history requirement. The gallery now presents every retained presentation and infographic version as a recognizable object with its real rendered preview, specific title, output type, version number, `Up to date` or `Needs update` state, source coverage, and one card-level open action.
+- Grouped presentation history before infographic history and ordered versions newest-first within each type so prior work stays available without destabilizing the main delivery order.
+- Added the same source-scope signal to the image set, Storyboard, and rendered-video summaries. Removed cited-claim counts from gallery cards because source coverage is the user-facing decision signal; claim-level trace remains inside the focused Output.
+- Expanded the canonical-copy contract to reject every retired phrase in the locked dictionary and require the approved action/state vocabulary. The default interface continues to reserve `FRAME.md`, `DESIGN.md`, and `Visual DNA` for exported or technical artifacts rather than judge-visible chrome.
+- Refreshed only the expected Outputs, partial, needs-update, and visible-label baselines at 1200×800, 1024×768, and 390×844 after inspecting the new composition.
+
+### Verified
+
+- Production Next build passed and kept `/` statically prerenderable.
+- The production-route Playwright suite passed 11/11, including the new version-history test, all three responsive judge paths, state handling, exact official primitive states, visible-copy snapshot, accessibility checks, reduced motion, contrast, and 200% logical zoom.
+- The history test injects two presentation versions and proves both independently named card actions, version labels, current/stale language, source coverage, and three real iframe previews across the presentation/infographic set.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; worker tests remained 38/38 and web tests remained 10/10.
+- `pnpm demo:e2e` passed all six recorded gates with two traced rendered Outputs, six image plans, five Storyboard panels, and a rendered MP4.
+- `pnpm demo:live` passed the isolated no-spend preflight with `paidCallsMade: false`.
+- `pnpm submission:build` rebuilt the 12-asset partial submission set with provider limitations intact; `pnpm submission:verify` returned `valid: true`, `stale: false`, and `tampered: false`.
+- Inspected the final desktop, compact, and mobile Outputs screenshots. Each exposes the current object, three-source scope, a singular `View storyboard` next action, readable previews, and quiet history metadata without introducing a tab, side rail, or duplicate composer.
+
+### Decisions
+
+- The Outputs-history and canonical-language implementation boxes are now supported by direct runtime and test evidence and are checked in `GOAL.md`.
+- The five-second orientation and five-independent-review boxes remain open. Structural presence and agent inspection are useful evidence, but they are not independent first-time human comprehension tests.
+- No provider capability claim changed. GPT Image 2 bytes, GPT-5.6 reasoning, Realtime microphone capture, and provider narration remain explicitly unverified.
+
+### Open items
+
+- Conduct five independent first-time orientation reviews and repair any critical navigation failure before recording.
+- Run and inspect the authorized live GPT-5.6, GPT Image 2, Realtime microphone, and TTS paths before upgrading provider claims.
+- Codex Session ID: unavailable on this surface; not inferred.

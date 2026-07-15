@@ -51,11 +51,25 @@ type PersistedWorkshop = {
   assetPlan?: { version: number; stale: boolean; evidenceClaimIds: string[] };
   storyboard: { version: number; stale: boolean; panels: { id: string; title: string; narration: string; durationSeconds: number; approved: boolean; stale: boolean }[] };
   imageBatch?: { id: string; stale: boolean; panels: { id: string; version: number; prompt: string; state: "planned" | "selected_for_regeneration" | "generated" | "failed"; relativePath?: string }[] };
-  outputs: { id: string; type: "deck" | "infographic"; stale: boolean; artifactPath: string; claimIds?: string[] }[];
+  outputs: { id: string; type: "deck" | "infographic"; stale: boolean; artifactPath: string; claimIds?: string[]; createdAt: string }[];
 };
 
 const VIEW_TITLES: Record<ObjectView, string> = { map: "Map", brief: "Brief", outputs: "Outputs", storyboard: "Storyboard", output: "Output" };
 const outputTitle = (type: "deck" | "infographic") => type === "deck" ? "Build Week presentation" : "Evidence infographic";
+const outputType = (type: "deck" | "infographic") => type === "deck" ? "Presentation" : "Infographic";
+
+function outputVersion(output: PersistedWorkshop["outputs"][number], outputs: PersistedWorkshop["outputs"]) {
+  return outputs.filter((item) => item.type === output.type).findIndex((item) => item.id === output.id) + 1;
+}
+
+function outputSourceCount(output: PersistedWorkshop["outputs"][number], state: PersistedWorkshop | null) {
+  const claimIds = new Set(output.claimIds ?? []);
+  const sourceIds = new Set([
+    ...(state?.claims ?? []).filter((claim) => claimIds.has(claim.id)).map((claim) => claim.sourceId),
+    ...(state?.mapNodes ?? []).filter((node) => claimIds.has(node.id) && node.sourceId).map((node) => node.sourceId as string),
+  ]);
+  return sourceIds.size || state?.activeSourceIds.length || 0;
+}
 
 export default function WorkshopPage() {
   const [state, setState] = useState<PersistedWorkshop | null>(null);
@@ -250,7 +264,9 @@ function StyleSheet({ style, busy, onClose, onPost }: { style?: PersistedWorksho
 }
 
 function OutputsView({ state, onOpenOutput }: { state: PersistedWorkshop | null; onOpenOutput: (id: string) => void }) {
-  const evidenceCount = state?.assetPlan?.evidenceClaimIds.length ?? state?.claims?.length ?? 0;
+  const outputs = [...(state?.outputs ?? [])].sort((left, right) => left.type === right.type
+    ? right.createdAt.localeCompare(left.createdAt)
+    : left.type === "deck" ? -1 : 1);
   const generatedImages = state?.imageBatch?.panels.filter((panel) => panel.state === "generated").length ?? 0;
   const failedImages = state?.imageBatch?.panels.filter((panel) => panel.state === "failed").length ?? 0;
   const ready = Boolean(state?.briefApproved && state.style && !state.style.stale);
@@ -262,10 +278,16 @@ function OutputsView({ state, onOpenOutput }: { state: PersistedWorkshop | null;
       {(state?.outputs.length ?? 0) === 0 && !state?.imageBatch && <StateMessage state="empty" title="Create your first Outputs">Turn this Brief into a presentation, infographic, image set, and Storyboard.</StateMessage>}
       {partial && !needsUpdate && <StateMessage state="partial" title="Some Outputs are ready">Review what is finished, then update Outputs to complete the set.</StateMessage>}
       {needsUpdate && <StateMessage state="needs-update" title="Outputs need an update">Your Sources, Brief, or Style changed. Update Outputs before sharing them.</StateMessage>}
-      <section className="output-grid">{state?.outputs.map((output) => <EntityCardAction className={`output-card ${output.stale ? "needs-update" : ""}`} key={output.id} aria-label={`Open ${outputTitle(output.type)}`} onClick={() => onOpenOutput(output.id)}><div className="artifact-preview" data-domain-ui="artifact-preview"><iframe title={`${output.type} preview`} sandbox="allow-same-origin" src={`/api/workshop/artifacts/${output.id}`} /></div><div className="output-card-body"><div>{output.stale && <Status tone="waiting">Needs update</Status>}<h2>{outputTitle(output.type)}</h2><p>{output.claimIds?.length ?? evidenceCount} cited claims</p></div></div></EntityCardAction>)}
-      {state?.videoState === "rendered" && <EntityCardAction className="output-card" aria-label="Open Demo video" onClick={() => onOpenOutput("video")}><div className="artifact-preview" data-domain-ui="artifact-preview"><video muted src="/api/workshop/artifacts/video" /></div><div className="output-card-body"><div><h2>Demo video</h2><p>Based on the approved Storyboard</p></div></div></EntityCardAction>}</section>
-      {state?.imageBatch && <Carousel className="image-set"><div>{generatedImages !== state.imageBatch.panels.length && <Status tone="waiting">Images not created yet</Status>}<h2>Image set</h2><p>{generatedImages ? `${generatedImages} of ${state.imageBatch.panels.length} images created` : `${state.imageBatch.panels.length} planned images in one style`}</p></div><CarouselRow>{state.imageBatch.panels.map((panel, index) => <div className={`image-tile ${panel.state === "generated" ? "generated" : ""}`} data-domain-ui="image-tile" key={panel.id} style={{ "--tile": index } as CSSProperties}>{panel.state === "generated" && <img alt="" src={`/api/workshop/artifacts/${panel.id}`} />}<span>{String(index + 1).padStart(2, "0")}</span><small>{panel.state === "planned" ? "Planned" : panel.state === "generated" ? "Ready" : panel.state === "failed" ? "Couldn't create" : "Needs update"}</small></div>)}</CarouselRow></Carousel>}
-      {(state?.storyboard.panels.length ?? 0) > 0 && <Card className="storyboard-summary"><div><h2>Storyboard</h2><p>{state?.storyboardApproved ? "Approved for video" : "Review before video"}</p></div><CarouselRow>{state?.storyboard.panels.map((panel, index) => <div className="film-frame" data-domain-ui="film-frame" key={panel.id}><span>{index + 1}</span><strong>{panel.title}</strong><small>{panel.durationSeconds}s</small></div>)}</CarouselRow></Card>}
+      <section className="output-grid">{outputs.map((output) => {
+        const versions = outputs.filter((item) => item.type === output.type).length;
+        const version = outputVersion(output, state?.outputs ?? []);
+        const sources = outputSourceCount(output, state);
+        const name = `${outputTitle(output.type)}${versions > 1 ? `, version ${version}` : ""}`;
+        return <EntityCardAction className={`output-card ${output.stale ? "needs-update" : ""}`} key={output.id} aria-label={`Open ${name}`} onClick={() => onOpenOutput(output.id)}><div className="artifact-preview" data-domain-ui="artifact-preview"><iframe title={`${name} preview`} sandbox="allow-same-origin" src={`/api/workshop/artifacts/${output.id}`} /></div><div className="output-card-body"><h2>{outputTitle(output.type)}</h2><div className="output-meta"><span>{outputType(output.type)} · Version {version}</span><Status tone={output.stale ? "waiting" : "current"}>{output.stale ? "Needs update" : "Up to date"}</Status><span>{sources} {sources === 1 ? "source" : "sources"}</span></div></div></EntityCardAction>;
+      })}
+      {state?.videoState === "rendered" && <EntityCardAction className="output-card" aria-label="Open Demo video" onClick={() => onOpenOutput("video")}><div className="artifact-preview" data-domain-ui="artifact-preview"><video muted src="/api/workshop/artifacts/video" /></div><div className="output-card-body"><h2>Demo video</h2><div className="output-meta"><span>Video</span><Status>Up to date</Status><span>{state?.activeSourceIds.length ?? 0} sources · Approved Storyboard</span></div></div></EntityCardAction>}</section>
+      {state?.imageBatch && <Carousel className="image-set"><div>{generatedImages !== state.imageBatch.panels.length && <Status tone="waiting">Images not created yet</Status>}<h2>Image set</h2><p>{generatedImages ? `${generatedImages} of ${state.imageBatch.panels.length} images · ${state?.activeSourceIds.length ?? 0} sources` : `${state.imageBatch.panels.length} planned images · ${state?.activeSourceIds.length ?? 0} sources`}</p></div><CarouselRow>{state.imageBatch.panels.map((panel, index) => <div className={`image-tile ${panel.state === "generated" ? "generated" : ""}`} data-domain-ui="image-tile" key={panel.id} style={{ "--tile": index } as CSSProperties}>{panel.state === "generated" && <img alt="" src={`/api/workshop/artifacts/${panel.id}`} />}<span>{String(index + 1).padStart(2, "0")}</span><small>{panel.state === "planned" ? "Planned" : panel.state === "generated" ? "Ready" : panel.state === "failed" ? "Couldn't create" : "Needs update"}</small></div>)}</CarouselRow></Carousel>}
+      {(state?.storyboard.panels.length ?? 0) > 0 && <Card className="storyboard-summary"><div><h2>Storyboard</h2><p>{state?.storyboardApproved ? "Approved for video" : "Review before video"} · {state?.activeSourceIds.length ?? 0} sources</p></div><CarouselRow>{state?.storyboard.panels.map((panel, index) => <div className="film-frame" data-domain-ui="film-frame" key={panel.id}><span>{index + 1}</span><strong>{panel.title}</strong><small>{panel.durationSeconds}s</small></div>)}</CarouselRow></Card>}
     </>}
   </article>;
 }
