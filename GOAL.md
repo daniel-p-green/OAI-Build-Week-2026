@@ -373,7 +373,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Instrument and display time from first transcript segment to first rendered output.
 - [ ] Produce the Devpost description, README narrative, deck, thumbnails, storyboard, narration, and video as one traced WorkshopLM Output set. The recorded fixture now builds and verifies a 12-asset `partial` Output set with source locators, file hashes, and an input fingerprint; close this only after the provider-backed media and final submission video replace the explicitly recorded fallbacks.
 - [ ] Include real UI evidence and the raw-transcript reveal. The production UI now implements and captures the responsive `Show original` before/after surface with fixture evidence. On July 15, `pnpm demo:capture-draft` recorded the complete reveal in a reviewable 37.76-second fixture walkthrough; close only after the dated contemporaneous founder brainstorm and final recorded footage replace that fixture.
-- [ ] Make the public video the canonical judge path: show the live seam, one plugin widget moment, both approval gates, editable control, provenance, and the raw brainstorm → finished submission reveal in under three minutes. The repeatable capture now proves the two gates, semantic edit, source trace, local render, and reveal as one 12-beat sequence; it intentionally excludes the separately recorded host doorway and provider-backed media.
+- [ ] Make the public video the canonical judge path: show the live seam, one plugin widget moment, both approval gates, editable control, provenance, and the raw brainstorm → finished submission reveal in under three minutes. The repeatable capture now proves the two gates, semantic edit, source trace, local render, and reveal as one 12-beat sequence. The evidence-gated paper edit fixes the final target at 2:42 across ten shots and fail-closes on every missing provider, founder, host, Codex, or final-export input; it intentionally remains a draft until those artifacts exist.
 - [ ] Keep all judge-facing claims proportional to captured evidence. The current Devpost draft, demo script, evidence audit, and `submission/CLAIM-LEDGER.md` are reconciled to the July 15 proof floor; close only after the final video, Devpost entry, screenshots, release tag, and submitted links pass the same gate.
 - [ ] Produce a public YouTube demo under three minutes with clear audio.
 - [ ] Complete repository, README, Codex collaboration, GPT-5.6, judge-access, and Devpost materials.
@@ -400,6 +400,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [Plugin research and adoption map](research/plugins/README.md)
 - [Current UI screenshot gallery](outputs/workshoplm-current-ui/README.md)
 - [Repeatable fixture walkthrough draft](outputs/demo-recording-draft/manifest.json)
+- [Evidence-gated 2:42 demo edit plan](outputs/demo-film-plan/README.md)
 - [Comprehensive WorkshopLM project overview deck](outputs/workshoplm-project-overview.pptx)
 - [Traced submission Output-set builder and verifier](apps/worker/src/submission-package.ts)
 - [Live-provider authorization and recovery runbook](docs/planning/2026-07-15-live-provider-authorization.md)

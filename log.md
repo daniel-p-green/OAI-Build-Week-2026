@@ -3986,3 +3986,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Obtain provider authorization, run and inspect the live Map/image/narration path, and recapture only the affected media beats.
 - Record the dated founder brainstorm, the real Codex doorway, final narration, and the edited public video under three minutes.
 - Capture the required `/feedback` Session ID from a surface that exposes it; it remains unavailable here and is not inferred.
+
+---
+
+## 2026-07-15 03:42 CT — The final film gained an evidence-gated paper edit
+
+**Area:** Demo editorial architecture / claim gating / final-export verification
+
+### Changed
+
+- Added `submission/demo-film-plan.json` as the machine-readable 2:42 paper edit: ten contiguous shots, 291 narration words, every required judge moment, all twelve recorded fixture beats, and the exact external inputs still needed.
+- Added `pnpm demo:film:verify` to validate timeline continuity, runtime below the 2:55 internal ceiling, narration density, public title/thumbnail trademark hygiene, source-footage hashes, required moments, declared shot state, and missing evidence.
+- Added `pnpm demo:film:verify-final` as a fail-closed publication gate. It additionally requires a `final` plan, no blocked shots or missing evidence, and an edited MP4 with both video and audio streams inside the runtime ceiling.
+- Added deterministic edit-readiness JSON and Markdown reports under `outputs/demo-film-plan/` and documented the replacement workflow in the public demo script.
+
+### Verified
+
+- The first verifier run exposed only 157 narration words across 2:42, an editorial pace of 58 words per minute. The plan was rewritten and the verifier now enforces a 100–155 words-per-minute window; the current 291-word script passes at 107.8 words per minute.
+- Draft verification passed all timeline, pacing, trademark, required-moment, capture-beat, and source-hash checks. It maps twelve fixture beats into ten shots and reports five ready shots, five blocked shots, and ten exact missing evidence files including the final export.
+- Two consecutive draft runs produced identical report hashes: `9fa5eec793cc2959f1c47a84a0e02b308706f1618bc758d1cb637b69a6bd584b` for JSON and `a5d46cff8565dd038322a41b581746c333686ce2c53be41407a021515abb6e5c` for Markdown.
+- Final-mode verification exited 1 as designed and named five blocked shots and ten missing evidence files. It did not convert a valid fixture walkthrough into a false final-video claim.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; web tests remained 11/11 and worker tests remained 46/46.
+- `pnpm demo:e2e` passed all six recorded gates with two source-traceable Outputs, six planned image panels, five Storyboard panels, and a local MP4. `git diff --check` passed.
+- No paid provider request was made.
+
+### Decisions
+
+- The final film is an evidence assembly problem, not an informal editing checklist. Every provider, founder, host, and Codex shot now has a named intake path and cannot become ready merely through copy changes.
+- The film target remains 2:42 with a 2:55 hard internal ceiling, leaving five seconds of platform-encoding safety below the public three-minute rule.
+- The narration now names Realtime, GPT-5.6, GPT Image 2, OpenAI voice, HyperFrames, and Codex only inside shots that remain blocked until their matching evidence exists.
+
+### Open items
+
+- Supply and inspect the ten named evidence inputs, update the five blocked shots only after those files exist, assemble the final MP4, and pass `pnpm demo:film:verify-final`.
+- The provider-spend, founder recording, host footage, and `/feedback` Session ID gates remain open; no unsupported claim was upgraded.
+- Codex Session ID: unavailable on this surface; not inferred.

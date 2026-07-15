@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "sourceCapturedAt": "2026-07-15T08:31:14.633Z",
+  "mode": "draft",
+  "planStatus": "draft",
+  "finalReady": false,
+  "timeline": {
+    "durationSeconds": 162,
+    "maxDurationSeconds": 175,
+    "shots": 10,
+    "narrationWords": 291,
+    "narrationWordsPerMinute": 107.8
+  },
+  "capture": {
+    "status": "fixture-draft",
+    "durationSeconds": 37.76,
+    "sha256": "26c898f24bc0b643225e6abac69483d958b609a31200504e9797d57c3d7be8f7",
+    "referencedBeats": 12
+  },
+  "finalVideo": {
+    "exists": false
+  },
+  "readyShots": [
+    "promise",
+    "evidence-and-control",
+    "brief-approval",
+    "style",
+    "storyboard-approval"
+  ],
+  "blockedShots": [
+    "codex-doorway",
+    "capture-and-shape",
+    "outputs",
+    "render-and-trace",
+    "meta-reveal"
+  ],
+  "missingEvidence": [
+    {
+      "shotId": "codex-doorway",
+      "label": "Legible Codex host footage opening the correct local Workshop",
+      "path": "outputs/demo-film-inputs/codex-doorway.mov",
+      "exists": false
+    },
+    {
+      "shotId": "capture-and-shape",
+      "label": "Honestly dated founder-brainstorm recording",
+      "path": "outputs/demo-film-inputs/founder-brainstorm.mov",
+      "exists": false
+    },
+    {
+      "shotId": "capture-and-shape",
+      "label": "Founder-brainstorm transcript used by the recorded Workshop",
+      "path": "outputs/demo-film-inputs/founder-brainstorm.txt",
+      "exists": false
+    },
+    {
+      "shotId": "capture-and-shape",
+      "label": "Inspected Realtime microphone-turn evidence",
+      "path": "artifacts/live/realtime-turn.json",
+      "exists": false
+    },
+    {
+      "shotId": "capture-and-shape",
+      "label": "Sanitized GPT-5.6 live-run evidence",
+      "path": "artifacts/live/provider-run.json",
+      "exists": false
+    },
+    {
+      "shotId": "outputs",
+      "label": "Inspected six-image GPT Image 2 gallery capture",
+      "path": "outputs/demo-film-inputs/provider-image-gallery.mov",
+      "exists": false
+    },
+    {
+      "shotId": "outputs",
+      "label": "Sanitized live-provider run evidence",
+      "path": "artifacts/live/provider-run.json",
+      "exists": false
+    },
+    {
+      "shotId": "render-and-trace",
+      "label": "Audibly inspected provider-narrated render",
+      "path": "outputs/demo-film-inputs/provider-narrated-video.mp4",
+      "exists": false
+    },
+    {
+      "shotId": "meta-reveal",
+      "label": "Primary eligible Codex feedback Session ID record",
+      "path": "artifacts/submission/primary-session.json",
+      "exists": false
+    },
+    {
+      "shotId": "final-export",
+      "label": "Final edited MP4 with video and audio streams",
+      "path": "outputs/demo-film-final/workshoplm-demo.mp4",
+      "exists": false
+    }
+  ]
+}

@@ -15,6 +15,8 @@
     "demo:render": "tsx scripts/run-worker-render.ts",
     "demo:thumbnail": "node scripts/render-thumbnail.mjs",
     "demo:capture-draft": "pnpm --filter @workshoplm/web capture:demo",
+    "demo:film:verify": "tsx scripts/verify-demo-film.ts",
+    "demo:film:verify-final": "tsx scripts/verify-demo-film.ts --final",
     "submission:build": "tsx scripts/submission-output-set.ts build",
     "submission:verify": "tsx scripts/submission-output-set.ts verify",
     "plugin:inspect": "pnpm --filter @workshoplm/plugin-mcp test",

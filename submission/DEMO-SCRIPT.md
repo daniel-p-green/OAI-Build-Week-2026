@@ -66,3 +66,21 @@ This production-build command resets an isolated sanitized recording root, captu
 - `outputs/demo-recording-draft/original-reveal.png` as final-beat proof.
 
 The draft is screen-only fixture footage, not the final submission video. It deliberately keeps planned-image and deterministic-narration disclosures and omits the separately recorded Codex doorway. After live provider evidence exists, rerun the same capture against the provider-backed fixture and replace only the shots whose claim gates changed.
+
+## Evidence-gated edit plan
+
+Run the draft verifier before editing:
+
+```bash
+pnpm demo:film:verify
+```
+
+`submission/demo-film-plan.json` is the machine-readable paper edit. It fixes the intended runtime at 2:42 across ten contiguous shots, maps all twelve fixture beats into the film, checks narration density, and names the exact external evidence required by each unfinished shot. Its report is written to `outputs/demo-film-plan/`.
+
+The final export gate is intentionally separate:
+
+```bash
+pnpm demo:film:verify-final
+```
+
+That command must fail until every shot is marked ready, every named evidence file exists, the plan status is `final`, and `outputs/demo-film-final/workshoplm-demo.mp4` has both video and audio streams with a verified duration no longer than 2:55. Do not bypass the failure by removing evidence entries; replace blocked inputs with inspected artifacts and update their shot state.
