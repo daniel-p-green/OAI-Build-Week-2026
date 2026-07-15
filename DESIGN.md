@@ -22,10 +22,10 @@ Sources, Style, source evidence, creation controls, jobs, versions, and technica
 
 WorkshopLM has two coordinated native surfaces:
 
-1. **ChatGPT task** — conversation, voice, questions, reasoning, and plugin commands.
+1. **Codex task** — conversation, questions, reasoning, and plugin commands; voice enters through the Workshop's capture control.
 2. **In-app browser Workshop** — Sources, Map, Brief, Style, Outputs, Storyboard, Video, and exact source evidence.
 
-The browser contains no second chat transcript or general chat composer. ChatGPT remains the conversation surface. The final demo voice path is a narrow capture-only Realtime control inside `Add source`; it records a transcript Source and disappears when the sheet closes.
+The browser contains no second chat transcript or general chat composer. Codex remains the verified conversation surface. The final demo voice path is a narrow capture-only Realtime control inside `Add source`; it records a transcript Source and disappears when the sheet closes. ChatGPT Work parity is not part of the verified hackathon surface.
 
 The inline plugin widget is a single-purpose doorway. It shows Workshop title, source count, current outcome/status, and at most two actions: one primary `Open workshop` action and one optional contextual secondary action. It has no tabs, nested navigation, or duplicate composer.
 

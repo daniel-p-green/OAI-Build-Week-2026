@@ -20,7 +20,7 @@ Status: **draft**
 - **outputs:** Sanitized live-provider run evidence — `artifacts/live/provider-run.json` — Evidence file is missing or empty.
 - **render-and-trace:** Audibly inspected provider-narrated render — `outputs/demo-film-inputs/provider-narrated-video.mp4` — Evidence file is missing or empty.
 - **meta-reveal:** Primary eligible Codex feedback Session ID record — `artifacts/submission/primary-session.json` — Evidence file is missing or empty.
-- **meta-reveal:** Verified non-partial final submission Output set — `.workshoplm/acceptance/generated/submission-output-set-v1/manifest.json` — Submission status is partial, not ready.
+- **meta-reveal:** Verified non-partial final submission Output set — `.workshoplm/acceptance/generated/submission-output-set-v1/manifest.json` — Evidence file is missing or empty.
 - **final-export:** Final edited MP4 with video and audio streams — `outputs/demo-film-final/workshoplm-demo.mp4`
 
 ## Edit sequence

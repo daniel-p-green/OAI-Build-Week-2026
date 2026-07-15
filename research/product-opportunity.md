@@ -1,6 +1,6 @@
 # Product opportunity and hackathon strategy
 
-> Architecture update, 2026-07-13: ChatGPT Work/Codex now owns Conversation/voice through the unified WorkshopLM plugin; the in-app browser owns the visual Sources/Map/Studio GUI. Native voice/task sync is primary and custom Realtime is fallback-only. See root `DESIGN.md`, `GOAL.md`, and the approved technical spec for current implementation truth.
+> Host-boundary update, 2026-07-15: Codex desktop/CLI owns conversation and plugin commands; the in-app browser owns the visual Sources/Map/Outputs GUI; WorkshopLM's capture-only Realtime control owns voice. The installed classic ChatGPT app does not expose the unified local plugin, so ChatGPT Work parity is not claimed. See root `DESIGN.md`, `GOAL.md`, and the approved technical spec for current implementation truth.
 
 Updated: 2026-07-13
 

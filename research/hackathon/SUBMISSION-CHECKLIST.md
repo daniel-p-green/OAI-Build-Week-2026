@@ -71,7 +71,7 @@ WorkshopLM is a local plugin/developer-tool experience. Keep these concise and s
 - [x] Supported platforms
 - [x] Test path that does not require rebuilding from scratch
 - [x] Sanitized fixture or inspection path
-- [x] Public-claim ledger distinguishes proven Codex support from unverified ChatGPT Work support
+- [x] Public-claim ledger identifies Codex desktop/CLI as the verified host and keeps ChatGPT Work out of current product claims
 
 ## Final live verification
 

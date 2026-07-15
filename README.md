@@ -90,7 +90,7 @@ export WORKSHOPLM_DATA_ROOT="/absolute/path/to/OAI-Build-Week-2026/.workshoplm/l
 
 The plugin forwards only that explicit local path to its stdio server. It does not upload the Workshop, scan arbitrary folders, or assume an installed cache shares the source checkout. Run the fixture or live-operator preflight before trying grounded `search` and `fetch`.
 
-Verified installation surface: the Codex CLI marketplace flow on macOS. Fresh Codex tasks have activated the bundled skill and called `workshop_list → search → fetch` against the sanitized local evidence. The write-capable stdio tools and loopback service path pass isolated contract and end-to-end tests; ChatGPT Work invocation remains unverified and must not be inferred from Codex proof. Refresh the installed plugin after a public update before testing new behavior.
+Verified installation surface: Codex CLI/Desktop on macOS with the local in-app browser. Fresh Codex tasks have activated the bundled skill and called `workshop_list → search → fetch` against sanitized local evidence; the write-capable stdio tools and loopback service path pass isolated contract and end-to-end tests. The separately installed classic ChatGPT app exposes the legacy `Work with Apps` list, not a WorkshopLM or unified local-plugin surface, so ChatGPT Work support is not claimed. Refresh the installed plugin after a public update before testing new behavior.
 
 ## Architecture
 

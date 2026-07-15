@@ -14,7 +14,7 @@ The product should borrow NotebookLM's legible Sources / Chat / Studio model, Po
 
 This is more defensible than “NotebookLM with more models” or “Canva in a chat.” Both NotebookLM and Canva already cover broad generation and conversational editing.
 
-Current architecture: ChatGPT Work/Codex is the Conversation/voice host; the WorkshopLM unified plugin supplies workflow skills, local tools, and optional app/MCP sources; the in-app browser supplies the strong visual Sources/Map/Studio GUI. Root [`DESIGN.md`](../DESIGN.md), [`GOAL.md`](../GOAL.md), and the approved technical spec are authoritative when earlier research translations differ.
+Current verified architecture: Codex desktop/CLI is the conversation and plugin host; WorkshopLM supplies workflow skills, local tools, and optional app/MCP sources; the in-app browser supplies the visual Sources/Map/Outputs GUI; voice uses WorkshopLM's capture-only Realtime control. The installed classic ChatGPT app does not expose the unified local plugin, so Work parity is not claimed. Root [`DESIGN.md`](../DESIGN.md), [`GOAL.md`](../GOAL.md), and the approved technical spec are authoritative when earlier research translations differ.
 
 ## Research files
 

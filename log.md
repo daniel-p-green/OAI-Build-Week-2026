@@ -5924,3 +5924,51 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Replace the remaining four amber shots with their named final evidence.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 18:32 CT — Spike E closes on the verified Codex host boundary
+
+**Area:** Plugin / Host integration / Claim integrity
+
+### Changed
+
+- Audited both locally installed OpenAI desktop applications without sending a chat message or making a provider call. `/Applications/ChatGPT.app` is the Codex desktop app (`com.openai.codex`, `26.707.72221`, build `5307`) with tasks, plugin infrastructure, and the in-app browser. `/Applications/ChatGPT for Mac.app` is the classic ChatGPT app (`com.openai.chat`, `1.2026.183`, build `1783607847`) and exposed only the legacy `Work with Apps` list; no WorkshopLM or unified local-plugin surface was present.
+- Removed and reinstalled WorkshopLM after discovering the live plugin cache was still on `0.1.2`. `codex plugin list` now reports `workshoplm@workshoplm-local` installed and enabled at `0.1.3`.
+- Closed Spike E through its designed fallback and updated the goal, plan, design contract, README, research routing notes, evidence audit, and claim ledger: Codex desktop/CLI plus the local in-app browser is the supported executable host. ChatGPT Work parity is not a current claim or completion dependency, and hosting will not be added merely to force parity.
+- Added the sanitized machine-readable host record at `artifacts/spikes/plugin-supported-host-2026-07-15.json`. No screenshots or private ChatGPT conversation content were retained in the repository.
+
+### Verified
+
+- Repository and installed-cache SHA-256 hashes match for `.codex-plugin/plugin.json`, `.app.json`, `.mcp.json`, `skills/workshoplm/SKILL.md`, and `packages/plugin-mcp/dist/server.js`.
+- Started the installed `0.1.3` stdio MCP server directly against `.workshoplm/acceptance`. `initialize` returned WorkshopLM `0.1.3`; `tools/list` returned all eleven read/write tools; `workshop_list` returned `WorkshopLM Build Week`; `search("editable production system")` ranked `chunk-2026259e182a-2` first; and exact `fetch` returned that same `Sanitized fixture · chunk 02` plus verified claim `claim-2026259e182a-1-1`.
+- This milestone used the sanitized local fixture only. It made zero paid OpenAI/provider calls and does not prove behavior in a future ChatGPT Work build.
+
+### Decisions
+
+- A current host boundary is more useful and more honest than keeping an unverifiable parity item open. The product remains local and judge-ready through its already-verified Codex doorway.
+- Future Work support may be re-tested when an installed Work surface actually exposes the unified local plugin, but it is not required for this hackathon build.
+
+### Open items
+
+- Run the repository-wide check, deterministic demo acceptance, and film verifier after this documentation/evidence reconciliation.
+- Product-runtime provider evidence, professional `Send`/`Revise`, founder/Realtime capture, the final public video, and `/feedback` Session ID remain open under `GOAL.md`.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 18:35 CT — Host-boundary reconciliation passes acceptance
+
+**Area:** Verification / Integration
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages, including 15 web tests, 84 worker tests, seven plugin-MCP tests, and the provider-independent domain, production, UI, and spike suites.
+- `pnpm demo:e2e` passed the deterministic seam with all six gates true, one grounded source, the deck and infographic outputs, six image panels, five Storyboard panels, a current rendered Video artifact, and its build trace.
+- `pnpm demo:film:verify` passed the draft-film contract at 162 seconds. Six shots remain evidence-ready and four remain visibly blocked only on the already-recorded founder/provider/final-submission evidence gates.
+- `git diff --check` passed before staging.
+
+### Open items
+
+- The supported plugin host is now settled. Remaining blockers are product/provider/submission evidence, not ChatGPT Work parity.
+- Codex Session ID: unavailable on this surface; not inferred.
