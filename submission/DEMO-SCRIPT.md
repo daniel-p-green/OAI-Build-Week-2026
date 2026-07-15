@@ -49,3 +49,20 @@ Every answer must point to an inspected artifact in `log.md`. A missing or ambig
 4. Capture and timestamp the raw founder brainstorm; label it truthfully as a current recording.
 5. Reset the sanitized fixture, rehearse the complete seam, and capture the required widget moment.
 6. Record the first full take, edit to 2:40–2:45, and reject any export longer than 2:55.
+
+## Repeatable fixture draft
+
+Run the browser capture before each recording session:
+
+```bash
+pnpm demo:capture-draft
+```
+
+This production-build command resets an isolated sanitized recording root, captures the real Map → Sources → source trace → Brief approval → Style → Outputs → Storyboard edit → Storyboard approval → local render → original-brainstorm reveal path at 1200×800, and writes:
+
+- `outputs/demo-recording-draft/workshoplm-fixture-walkthrough.webm`;
+- `outputs/demo-recording-draft/manifest.json` with exact beat timings, hashes, stream metadata, final gate state, and limitations;
+- `outputs/demo-recording-draft/contact-sheet.png` for quick editorial review;
+- `outputs/demo-recording-draft/original-reveal.png` as final-beat proof.
+
+The draft is screen-only fixture footage, not the final submission video. It deliberately keeps planned-image and deterministic-narration disclosures and omits the separately recorded Codex doorway. After live provider evidence exists, rerun the same capture against the provider-backed fixture and replace only the shots whose claim gates changed.

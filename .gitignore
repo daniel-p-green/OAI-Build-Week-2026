@@ -9,6 +9,7 @@ dist/
 .DS_Store
 workshoplm-desktop.png
 .workshoplm/
+.workshoplm-recording-draft/
 .env
 .env.local
 artifacts/spikes/**/*.json

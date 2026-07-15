@@ -14,6 +14,7 @@
     "demo:live": "tsx scripts/live-operator.ts",
     "demo:render": "tsx scripts/run-worker-render.ts",
     "demo:thumbnail": "node scripts/render-thumbnail.mjs",
+    "demo:capture-draft": "pnpm --filter @workshoplm/web capture:demo",
     "submission:build": "tsx scripts/submission-output-set.ts build",
     "submission:verify": "tsx scripts/submission-output-set.ts verify",
     "plugin:inspect": "pnpm --filter @workshoplm/plugin-mcp test",

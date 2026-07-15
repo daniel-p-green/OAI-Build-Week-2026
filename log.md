@@ -3950,3 +3950,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Obtain explicit provider-spend authorization matching the runbook statement before running the nine-request benchmark, twelve-request live operator, or one-minute Realtime capture.
 - Inspect benchmark routing evidence before changing GPT-5.6 defaults, then inspect the live Map, six images, five narration clips, terminal run record, and narrated MP4 before upgrading claims.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 03:33 CT — The full fixture walkthrough became repeatable film evidence
+
+**Area:** Demo capture / editorial proof / meta-demo recording loop
+
+### Changed
+
+- Added `pnpm demo:capture-draft`, which resets an isolated sanitized data root, production-builds the web app, and records the real browser flow at 1200×800 without touching Daniel's working data.
+- Recorded twelve timed beats in one continuous path: editable grounded Map, source scope, exact source trace, semantic edit, Brief approval, Style intent, Output creation, Output evidence, Storyboard edit, Storyboard approval, local video render, and the original-brainstorm reveal.
+- Added a stable WebM, contact sheet, final reveal frame, and machine-readable manifest containing hashes, stream metadata, final gate state, beat timings, and four explicit limitations.
+- Documented the capture command and replacement boundary in `submission/DEMO-SCRIPT.md` so later provider-backed recording changes only the shots whose evidence gates have actually changed.
+
+### Verified
+
+- `pnpm demo:capture-draft` passed against a production Next build and produced a 37.76-second VP8 WebM at 1200×800 with twelve recorded beats.
+- The manifest records both approvals as persisted, the video state as `rendered`, four active sources, two Outputs, six image panels, and five Storyboard panels.
+- The video SHA-256 is `26c898f24bc0b643225e6abac69483d958b609a31200504e9797d57c3d7be8f7`; the contact sheet is `a07f04aa7131b044c2cd6dcd9f18a5fb0c12ffbcf88c75edc817e0200800ab94`; and the final reveal frame is `7e5cf63c81a9d9ba3ef406d95f5f603cfd2490f691ec144f9829cf040385f30f`.
+- Visual inspection of the contact sheet confirmed the sequence remains legible across Map, Sources, Brief, Outputs, Storyboard, and render states. The final frame keeps the rendered video visible beside the honestly labeled original transcript and its five resulting Outputs.
+- The first capture attempt correctly failed on a stale source label; the second exposed an unreliable hidden-text assertion after Map save. The final capture uses the current visible label and proves the persisted semantic edit through the Workshop API before continuing.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; web tests remained 11/11 and worker tests remained 46/46.
+- `pnpm demo:e2e` passed all six recorded gates with two source-traceable Outputs, six planned image panels, five Storyboard panels, and a local MP4.
+- No paid provider request was made.
+
+### Decisions
+
+- This artifact is a screen-only editorial draft, not the public submission video. It must not be used to claim live GPT Image 2, provider narration, Realtime capture, or a native ChatGPT integration.
+- The deterministic fixture remains valuable because it proves the film's complete interaction grammar before scarce live media and founder footage are introduced.
+- The real Codex/plugin doorway stays a separate host-surface shot; the automated browser capture does not simulate it.
+
+### Open items
+
+- Obtain provider authorization, run and inspect the live Map/image/narration path, and recapture only the affected media beats.
+- Record the dated founder brainstorm, the real Codex doorway, final narration, and the edited public video under three minutes.
+- Capture the required `/feedback` Session ID from a surface that exposes it; it remains unavailable here and is not inferred.

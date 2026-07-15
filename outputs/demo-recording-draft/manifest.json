@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "status": "fixture-draft",
+  "disclosure": "Sanitized recorded fixture. No paid provider calls. Placeholder narration remains disclosed in the product state.",
+  "capturedAt": "2026-07-15T08:31:14.633Z",
+  "viewport": {
+    "width": 1200,
+    "height": 800
+  },
+  "video": {
+    "relativePath": "workshoplm-fixture-walkthrough.webm",
+    "sha256": "26c898f24bc0b643225e6abac69483d958b609a31200504e9797d57c3d7be8f7",
+    "durationSeconds": 37.76,
+    "streams": [
+      {
+        "codec_name": "vp8",
+        "codec_type": "video",
+        "width": 1200,
+        "height": 800
+      }
+    ]
+  },
+  "reviewImages": [
+    {
+      "relativePath": "contact-sheet.png",
+      "sha256": "a07f04aa7131b044c2cd6dcd9f18a5fb0c12ffbcf88c75edc817e0200800ab94"
+    },
+    {
+      "relativePath": "original-reveal.png",
+      "sha256": "7e5cf63c81a9d9ba3ef406d95f5f603cfd2490f691ec144f9829cf040385f30f"
+    }
+  ],
+  "beats": [
+    {
+      "id": "map",
+      "label": "Grounded editable Map",
+      "startMs": 768,
+      "endMs": 2971
+    },
+    {
+      "id": "sources",
+      "label": "Contemporaneous fixture brainstorm and source scope",
+      "startMs": 2971,
+      "endMs": 5246
+    },
+    {
+      "id": "source-trace",
+      "label": "Map claim to exact source excerpt",
+      "startMs": 5271,
+      "endMs": 7114
+    },
+    {
+      "id": "map-edit",
+      "label": "Edit a semantic claim before approval",
+      "startMs": 7135,
+      "endMs": 8674
+    },
+    {
+      "id": "brief-approval",
+      "label": "First gate: approve the Brief",
+      "startMs": 8705,
+      "endMs": 10954
+    },
+    {
+      "id": "style",
+      "label": "Apply exact professional Style and intent",
+      "startMs": 10954,
+      "endMs": 12833
+    },
+    {
+      "id": "create-outputs",
+      "label": "Create the traced Output set",
+      "startMs": 12851,
+      "endMs": 15569
+    },
+    {
+      "id": "output-evidence",
+      "label": "Follow a presentation back to its source",
+      "startMs": 15569,
+      "endMs": 17429
+    },
+    {
+      "id": "storyboard-edit",
+      "label": "Edit the Storyboard before rendering",
+      "startMs": 17509,
+      "endMs": 19568
+    },
+    {
+      "id": "storyboard-approval",
+      "label": "Second gate: approve the Storyboard",
+      "startMs": 19568,
+      "endMs": 21220
+    },
+    {
+      "id": "video-render",
+      "label": "Render the approved Storyboard locally",
+      "startMs": 21220,
+      "endMs": 34785
+    },
+    {
+      "id": "original-reveal",
+      "label": "Reveal the original thought beside the finished work",
+      "startMs": 34785,
+      "endMs": 37839
+    }
+  ],
+  "finalState": {
+    "briefApproved": true,
+    "storyboardApproved": true,
+    "videoState": "rendered",
+    "sources": 4,
+    "outputs": 2,
+    "imagePanels": 6,
+    "storyboardPanels": 5
+  },
+  "limitations": [
+    "This is automated browser footage for editorial review, not the final public demo.",
+    "The image set is planned fixture media, not GPT Image 2 output.",
+    "The local video uses disclosed deterministic fallback narration, not provider TTS.",
+    "The required Codex plugin-doorway shot must be recorded separately from the real host surface."
+  ]
+}
