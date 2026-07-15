@@ -54,6 +54,9 @@ importers:
 
   apps/worker:
     dependencies:
+      '@workshoplm/ai':
+        specifier: workspace:*
+        version: link:../../packages/ai
       '@workshoplm/domain':
         specifier: workspace:*
         version: link:../../packages/domain

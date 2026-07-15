@@ -1,13 +1,13 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 23:06 CT
+Last updated: 2026-07-14 23:11 CT
 
 ## Status
 
 **Active phase:** Live demo proof — provider-backed outputs, operator run, and submission assets
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
 **Current gate:** The official-component rebuild is complete, and the isolated live-operator preflight now builds the approved sanitized Workshop without spend. The next proof bar requires explicit paid-call authorization: run the GPT-5.6 benchmark, create the real GPT Image 2 image set and approved-storyboard narration, inspect the results, and use them in the judge-facing submission. Do not reopen the shell or product language unless a visual or usability test finds a regression.
-**Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found` for this account even though the current public model page describes it as a Sol alias. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. The live operator now has a claim-validated structured-output adapter for the selected grounded-graph route, but no request has run. The current model catalog labels `gpt-4o-mini-tts` deprecated while the current speech guide still recommends it; verify the actual live response before recording. Do not claim live product use or change per-operation defaults before these checks.
+**Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found` for this account even though the current public model page describes it as a Sol alias. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. The benchmark and live grounded-Map adapter now share a tested parser for both top-level and nested Responses text, but no request has run. The current model catalog labels `gpt-4o-mini-tts` deprecated while the current speech guide still recommends it; verify the actual live response before recording. Do not claim live product use or change per-operation defaults before these checks.
 **Known host risk:** The July 14 host-sync verification is credential-blocked, so it does not prove native task or voice-turn persistence. The designed capture-only fallback remains active; Spike A stays open until the end-of-day decision deadline or a separately authorized live host check.
 
 **Hard schedule gates:**
@@ -294,6 +294,7 @@ Use NotebookLM's screenshots as behavioral evidence, then express the result in 
 - [x] Create a sanitized local demo fixture that requires no private connector and makes video capture deterministic.
 - [x] Create a bounded live operator path on sample sources for recording the real demo seam.
   - 2026-07-14: `pnpm demo:live` passed its isolated no-spend preflight with two approvals, two traced outputs, six planned GPT Image 2 requests, five planned TTS requests, and zero provider calls. Paid execution remains unrun.
+- [x] Share and test Responses text extraction across the GPT-5.6 benchmark and live grounded-Map adapter so nested `output[].content[]` payloads cannot be mis-scored as empty.
 
 ### 6. Capture
 

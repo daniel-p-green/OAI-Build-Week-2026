@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { responsesOutputText } from "@workshoplm/ai/responses";
 import { applyGroundedMapProposal, readWorkshopState, type GroundedMapProposal, type WorkshopState } from "./workshop-service.js";
 
 export type Gpt56Model = "gpt-5.6-sol" | "gpt-5.6-terra" | "gpt-5.6-luna";
@@ -47,15 +48,6 @@ const groundedMapSchema = {
   },
 } as const;
 
-function responseText(payload: unknown): string {
-  if (!payload || typeof payload !== "object") throw new Error("Responses API returned an invalid payload.");
-  const candidate = payload as { output_text?: unknown; output?: Array<{ content?: Array<{ type?: string; text?: unknown }> }> };
-  if (typeof candidate.output_text === "string" && candidate.output_text.trim()) return candidate.output_text;
-  const text = candidate.output?.flatMap((item) => item.content ?? []).find((content) => content.type === "output_text" && typeof content.text === "string")?.text;
-  if (typeof text !== "string" || !text.trim()) throw new Error("Responses API did not return structured text output.");
-  return text;
-}
-
 function redact(value: string): string {
   return value.replace(/sk-[A-Za-z0-9_-]+/g, "[redacted]").replace(/Bearer\s+[^\s]+/gi, "Bearer [redacted]").slice(0, 500);
 }
@@ -82,7 +74,8 @@ export async function generateGroundedMapWithGpt56(root: string, config: OpenAiR
     }),
   });
   if (!response.ok) throw new Error(`Responses API returned HTTP ${response.status}: ${redact(await response.text())}`);
-  const output = responseText(await response.json());
+  const output = responsesOutputText(await response.json());
+  if (!output) throw new Error("Responses API did not return structured text output.");
   let proposal: GroundedMapProposal;
   try { proposal = JSON.parse(output) as GroundedMapProposal; }
   catch { throw new Error("GPT-5.6 returned invalid grounded Map JSON."); }

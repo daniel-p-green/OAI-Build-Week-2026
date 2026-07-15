@@ -3191,3 +3191,35 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Generate and inspect the real provider-backed image set after explicit spend authorization, then close the visual Outputs-gallery item if the results meet the locked contract.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 23:11 CT — GPT-5.6 benchmark and live Map now share Responses parsing
+
+**Area:** OpenAI integration / benchmark integrity
+
+### Changed
+
+- Added a typed, reusable Responses text parser in `@workshoplm/ai` that accepts both the SDK-style top-level `output_text` convenience field and the raw REST `output[].content[]` shape.
+- Moved the live grounded-Map adapter onto the shared parser and exported the parser through the workspace package boundary.
+- Fixed the nine-request GPT-5.6 benchmark so valid nested Responses output is scored instead of silently becoming a false zero. A successful response without text now records an explicit error rather than looking like a low-quality model result.
+- Added deterministic parser coverage for top-level text, split nested text fragments, refusals/non-text output, blank output, and invalid payloads.
+
+### Verified
+
+- `pnpm --filter @workshoplm/ai test` passed the routing-policy and Responses-parser suites.
+- `pnpm --filter @workshoplm/worker test` passed 34/34, including nested structured Responses output and active-source citation rejection.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages.
+- `pnpm demo:e2e` passed the complete recorded seam with all six gates true, five storyboard panels, two source-traceable outputs, and the rendered-video gate.
+- `pnpm demo:live` passed the isolated no-spend preflight and reported the planned 1 Map, 6 image, 5 narration, and 9 benchmark requests with `paidCallsMade: false`.
+- `pnpm demo:live -- --execute` without `WORKSHOPLM_LIVE_OPENAI=1` failed closed before any provider call, as required.
+
+### Decisions
+
+- Raw Responses parsing belongs in the shared AI boundary, not separately in each caller. Benchmarks and production must interpret the same provider payload the same way.
+- No benchmark result may score missing text as model quality without also identifying the missing-output condition.
+
+### Open items
+
+- The shared parser is provider-independent proof only. GPT-5.6 structured-output compatibility, quality, latency, and usage remain unverified until explicit spend authorization allows the live run.
+- Codex Session ID: unavailable on this surface; not inferred.
