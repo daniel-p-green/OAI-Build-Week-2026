@@ -295,6 +295,40 @@ test("a failed website review keeps the Map usable and offers all safe Style fal
   await expect(page.getByText("Couldn't review this website")).toHaveCount(0);
 });
 
+test("editing a saved Company Style is presented and submitted as a new version", async ({ page }) => {
+  await page.request.post("/api/workshop", { data: { action: "approveBrief" } });
+  let current = await (await page.request.get("/api/workshop")).json();
+  if (!current.style) {
+    await page.request.post("/api/workshop", { data: { action: "lockManualStyle", manualStyle: { name: "WorkshopLM editorial", accent: "#0285FF", ink: "#0D0D0D", paper: "#FFFFFF", intentProfile: "client_facing_pitch" } } });
+    current = await (await page.request.get("/api/workshop")).json();
+  }
+  const posted: Record<string, unknown>[] = [];
+  const libraryEntry = { ...current.style, id: current.style.libraryId, familyId: current.style.libraryFamilyId, revision: current.style.libraryRevision ?? 1, createdAt: "2026-07-15T14:00:00.000Z", updatedAt: "2026-07-15T14:00:00.000Z" };
+  delete libraryEntry.version;
+  delete libraryEntry.libraryId;
+  delete libraryEntry.libraryFamilyId;
+  delete libraryEntry.libraryRevision;
+  delete libraryEntry.lockedAt;
+  delete libraryEntry.stale;
+  await page.route("**/api/workshop*", async (route) => {
+    if (route.request().method() === "GET" && route.request().url().includes("view=styles")) return route.fulfill({ json: { styles: [libraryEntry] } });
+    if (route.request().method() === "GET") return route.fulfill({ json: current });
+    posted.push(route.request().postDataJSON() as Record<string, unknown>);
+    return route.fulfill({ json: { ...current, style: { ...current.style, libraryRevision: (current.style.libraryRevision ?? 1) + 1 } } });
+  });
+
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "View brief" }).click();
+  await expect(page.getByText(new RegExp(`${current.style.name} · Version ${current.style.libraryRevision ?? 1}`))).toBeVisible();
+  await page.getByRole("button", { name: "Edit" }).click();
+  const sheet = page.getByRole("dialog", { name: "Style" });
+  await sheet.getByRole("textbox", { name: "Accent" }).fill("#6644AA");
+  await sheet.getByRole("button", { name: "Save new version" }).click();
+  await expect.poll(() => posted.at(-1)?.action).toBe(current.style.source === "website" ? "lockWebsiteStyle" : "lockManualStyle");
+  await expect.poll(() => (posted.at(-1)?.manualStyle as Record<string, unknown>)?.accent).toBe("#6644AA");
+});
+
 test.describe("completed Workshop judge path", () => {
   test.beforeAll(() => {
     const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");

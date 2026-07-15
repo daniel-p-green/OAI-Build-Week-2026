@@ -129,6 +129,42 @@ it("reuses one saved Style across Workshops without coupling their versions", as
   expect(listStyleLibrary(root)[0]).toMatchObject({ intentProfile: "client_facing_pitch" });
   await rm(root, { recursive: true, force: true });
 });
+it("creates immutable Company Style revisions and applies them explicitly across Workshops", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-style-revisions-"));
+  const firstWorkshop = readWorkshopState(root);
+  const first = lockManualStyle({ name: "Client system", accent: "#1155AA", ink: "#111111", paper: "#F0EFEA", intentProfile: "client_facing_pitch" }, root);
+  expect(first.style).toMatchObject({ libraryRevision: 1, libraryFamilyId: expect.stringMatching(/^style-/) });
+
+  const secondWorkshop = createWorkshop("Weekly client update", root);
+  await ingestSource({ title: "Client evidence", origin: "Fixture", text: "The client approved a weekly leadership update." }, root);
+  applyWorkshopAction("approveBrief", root);
+  const reused = applyStyleLibrary(first.style!.libraryId!, undefined, root);
+  const withDeck = await generateOutput("deck", root);
+  expect(withDeck.style).toMatchObject({ libraryRevision: 1, accent: "#1155AA" });
+  expect(withDeck.outputs[0]).toMatchObject({ stale: false });
+
+  selectWorkshop(firstWorkshop.id, root);
+  const revised = lockManualStyle({ name: "Client system", accent: "#AA3355", ink: "#111111", paper: "#F0EFEA", intentProfile: "client_facing_pitch" }, root);
+  expect(revised.style).toMatchObject({ libraryFamilyId: first.style!.libraryFamilyId, libraryRevision: 2, accent: "#AA3355" });
+  expect(revised.style!.libraryId).not.toBe(first.style!.libraryId);
+  expect(await readFile(join(root, revised.designArtifact!.markdownPath), "utf8")).toContain("Company Style revision: 2");
+  expect(JSON.parse(await readFile(join(root, revised.designArtifact!.tokensPath), "utf8"))).toMatchObject({ libraryFamilyId: first.style!.libraryFamilyId, libraryRevision: 2 });
+  expect(listStyleLibrary(root)).toMatchObject([{ id: revised.style!.libraryId, familyId: first.style!.libraryFamilyId, revision: 2, accent: "#AA3355" }]);
+
+  const unchanged = readWorkshopState(root, secondWorkshop.id);
+  expect(unchanged.style).toMatchObject({ libraryId: reused.style!.libraryId, libraryRevision: 1, accent: "#1155AA" });
+  expect(unchanged.outputs[0]).toMatchObject({ stale: false });
+
+  selectWorkshop(secondWorkshop.id, root);
+  const applied = applyStyleLibrary(revised.style!.libraryId!, undefined, root);
+  expect(applied.style).toMatchObject({ libraryRevision: 2, accent: "#AA3355" });
+  expect(applied.outputs[0]).toMatchObject({ stale: true });
+  expect(applied.storyboardApproved).toBe(false);
+  const database = new DatabaseSync(join(root, "data", "workshoplm.sqlite"));
+  expect((database.prepare("SELECT count(*) AS count FROM style_library").get() as { count: number }).count).toBe(2);
+  database.close();
+  await rm(root, { recursive: true, force: true });
+});
 it("marks existing work stale when a different saved Style is applied", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-style-library-stale-"));
   await ingestSource({ title: "Evidence", origin: "Fixture", text: "A saved Style change must update the client deck." }, root);

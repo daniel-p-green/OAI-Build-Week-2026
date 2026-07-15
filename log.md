@@ -5400,3 +5400,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Manual local asset paths still retain legacy behavior; selected remote website assets have the stronger verified contract.
 - Professional send-it review, own-material live timing, provider-backed voice/Map/Image/Speech evidence, and the final public video remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 15:30 CT — Company Style edits become explicit immutable revisions
+
+**Area:** Product / Company Styles / Versioning / Trust
+
+### Changed
+
+- Saving an edit to an existing Company Style now creates an immutable family revision with a new record and stable Version number instead of overwriting the prior library row.
+- The Style Library returns only the latest revision for normal selection while retaining older records for Workshops that still reference them.
+- Existing Workshops keep their prior Style snapshot and current Outputs. Applying the latest revision is an explicit action and invokes the existing dependency contract so presentation, infographic, Images, Storyboard, narration, and Video become `Needs update` where applicable.
+- The Brief summary and saved Style choices show the active Version. Editing copy now says `Save new version`, making the consequence clear before submission.
+- `DESIGN.md` and its executable token file record both the Workshop-local Style version and reusable Company Style family revision.
+
+### Verified
+
+- Worker tests passed all 80 cases across eight files. The new cross-Workshop test creates Version 1, reuses it in another Workshop with a current deck, creates Version 2, proves the other Workshop remains byte-for-byte on Version 1, then explicitly applies Version 2 and observes the deck become stale.
+- The same test proves both immutable revision rows remain in SQLite while the normal Style Library returns only Version 2, and verifies revision metadata in `DESIGN.md` and its token file.
+- Web unit tests passed all 15 cases across four files. The production browser suite passed all 22 tests after a clean `.next-playwright` rebuild; its new interaction test reads the current Version, edits Accent, uses `Save new version`, and verifies the exact Style-save request.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages after restoring the tracked default Next type reference. `pnpm demo:e2e` passed all six recorded-fixture gates.
+- `pnpm submission:build` produced the expected truthful 17-asset partial set with four provider limitations; `pnpm submission:verify` returned valid, not stale, and not tampered. `git diff --check` passed.
+
+### Decisions
+
+- Company Style versioning is copy-on-write. A reusable brand system may advance without retroactively changing professional work already sent or under review.
+- The everyday library stays simple by showing the latest revision only; old revisions remain addressable through the Workshop snapshots that use them rather than becoming a new history-management UI.
+- Applying a newer revision is the user's explicit declaration that downstream work should be regenerated.
+
+### Open items
+
+- The quiet `How WorkshopLM works` return entry, accessibility closure, and the real-public-website in-app-browser run remain open Company Style/onboarding work.
+- Manual local asset paths retain legacy behavior; selected remote website assets use the stronger verified asset contract.
+- Professional send-it review, own-material live timing, provider-backed voice/Map/Image/Speech evidence, and the final public video remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
