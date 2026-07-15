@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 01:20 CT
+Last updated: 2026-07-15 01:27 CT
 
 ## Status
 
@@ -311,8 +311,8 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Spike C: six-image batch manifest, locked reference, and selective regeneration contract; live image generation remains opt-in and unrun.
 - [x] Spike D: local HyperFrames CLI health check, validated three-scene composition, disclosed narration fixture, and rendered MP4.
 - [ ] Spike E: locally install the unified plugin, invoke its skill, call its stdio MCP tools, and record actual Work/Codex surface support.
-  - Codex tool proof is complete: installed `workshoplm@workshoplm-local` version `0.1.2` matches the repository bundle, and fresh task `019f6448-5a04-7753-b585-e156aec9f1b6` called `workshop_list → search → fetch` against the sanitized fixture without confirmation after the read-only annotation repair.
-  - Keep this open: the current machine's unusually large installation exceeded Codex's initial 2% skill-list budget and omitted `$workshoplm`, and ChatGPT Work invocation remains unverified. The read-only host also withheld `workshop_render_video`, so no unauthorized write occurred.
+  - Codex skill and tool proof is complete: an isolated plugin-only Codex profile installed enabled `workshoplm@workshoplm-local` version `0.1.2`, task `019f6474-bb34-7bf1-8ed0-65527e91b224` explicitly activated and read `$workshoplm`, then called `workshop_list → search → fetch` against the sanitized acceptance fixture. It fetched `Sanitized fixture · chunk 01` with one linked verified claim; installed manifest, skill, and server hashes matched the current worktree.
+  - Keep this open: ChatGPT Work invocation remains unverified. The isolated proof was read-only, and the prior read-only host withheld `workshop_render_video`, so no unauthorized write occurred. Do not infer Work parity or a confirmed write interaction from the Codex proof.
 - [x] Activate and verify the designed capture-only fallback for the unproven native task/voice synchronization spike; live Realtime transport remains separately unverified.
 
 ### 5. Repository and platform foundation

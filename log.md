@@ -3549,3 +3549,35 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Conduct five independent first-time orientation reviews and repair any critical navigation failure before recording.
 - Run and inspect the authorized live GPT-5.6, GPT Image 2, Realtime microphone, and TTS paths before upgrading provider claims.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 01:27 CT — WorkshopLM skill activated from an isolated Codex profile
+
+**Area:** Plugin host / skill discovery / grounded MCP read path
+
+### Changed
+
+- Created an ephemeral Codex home and installed only the current local `workshoplm@workshoplm-local` plugin. The normal Codex installation and its large skill catalog were not modified.
+- Ran two read-only disposable tasks with `$workshoplm` named explicitly. The first proved skill discovery but used the default fixture, whose source cards had no indexed chunks; its search and fetch attempts correctly returned no grounded evidence. The second bound the same plugin to the deterministic acceptance fixture and completed the full read path.
+- Added `artifacts/spikes/plugin-skill-activation-2026-07-15.json` with sanitized host, plugin, hash, task, skill, tool, evidence, and limitation fields.
+
+### Verified
+
+- The isolated plugin list contained exactly one enabled plugin: `workshoplm@workshoplm-local` version `0.1.2`.
+- SHA-256 matched the isolated installed manifest, WorkshopLM skill, and distributed MCP server to their current worktree files.
+- Codex task `019f6474-bb34-7bf1-8ed0-65527e91b224` announced use of the named skill, read its installed `SKILL.md`, and called only the WorkshopLM read tools `workshop_list`, `search`, and `fetch` after skill activation.
+- `search("traced deck")` returned one grounded chunk. `fetch` returned `Judges need a traced deck, infographic, image batch, storyboard, and narrated video.` at `Sanitized fixture · chunk 01` with one linked verified claim.
+- The task ran with a read-only sandbox and attempted zero WorkshopLM writes. Its final structured result reported `skill_used: true` and the exact three read tools.
+
+### Decisions
+
+- The previous global-catalog omission no longer blocks the Codex skill claim. A clean profile proves that the plugin packages a discoverable and executable `$workshoplm` skill alongside its MCP server.
+- Spike E remains open because ChatGPT Work has not been invoked. Codex proof cannot establish Work parity, and the read-only run does not establish write-tool confirmation behavior.
+- Disposable task IDs `019f6473-6e74-7a82-a796-7851c9eec1ad` and `019f6474-bb34-7bf1-8ed0-65527e91b224` are recorded as host-proof tasks, not as the missing primary Devpost `/feedback` Session ID.
+
+### Open items
+
+- Test the available ChatGPT Work surface explicitly and record whether it can activate the skill and call the local stdio server.
+- Keep the judge-facing plugin claim Codex-specific until that Work proof exists.
+- Codex Session ID: unavailable on this surface; not inferred.

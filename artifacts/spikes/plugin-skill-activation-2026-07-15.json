@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-07-15T06:26:41Z",
+  "surface": "Codex CLI isolated plugin-only profile",
+  "sandbox": "read-only",
+  "plugin": {
+    "id": "workshoplm@workshoplm-local",
+    "version": "0.1.2",
+    "installed": true,
+    "enabled": true,
+    "manifestSha256": "ad95f322cae261022aa3f4e461593728c90e6268f5dec048f774249c8d7b8ec9",
+    "skillSha256": "5eb128dce02df73132f83d84bb509e846c54518f80456c5f6d0de0c2b5164ec5",
+    "serverSha256": "69b097f7f1f7dd5d2916fc3d573e144e469a1af6b2ad63d92d6349d8f22da664",
+    "installedHashesMatchWorktree": true
+  },
+  "codexTaskId": "019f6474-bb34-7bf1-8ed0-65527e91b224",
+  "skill": {
+    "requestedAs": "$workshoplm",
+    "available": true,
+    "read": true,
+    "followed": true
+  },
+  "tools": [
+    "workshop_list",
+    "search",
+    "fetch"
+  ],
+  "result": {
+    "workshopTitle": "WorkshopLM Build Week",
+    "query": "traced deck",
+    "fetchedText": "Judges need a traced deck, infographic, image batch, storyboard, and narrated video.",
+    "fetchedLocator": "Sanitized fixture · chunk 01",
+    "linkedClaimCount": 1
+  },
+  "writesAttempted": 0,
+  "limitations": [
+    "This proves the installed WorkshopLM skill and bundled MCP read tools on Codex CLI, not ChatGPT Work.",
+    "No write-classified WorkshopLM tool was exposed or called in this read-only proof.",
+    "The Codex task ID is not a Devpost /feedback Session ID."
+  ]
+}
