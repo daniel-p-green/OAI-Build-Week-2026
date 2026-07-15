@@ -1,12 +1,14 @@
 {
-  "name": "WorkshopLM",
-  "description": "Optional compact status and evidence-trace widgets for the local Workshop.",
-  "dependencies": {
-    "granola": { "optional": true },
-    "google-drive": { "optional": true }
-  },
-  "widgets": [
-    { "name": "workshop-status", "path": "./packages/plugin-mcp/dist/widgets/status.html" },
-    { "name": "workshop-trace", "path": "./packages/plugin-mcp/dist/widgets/trace.html" }
-  ]
+  "apps": {
+    "granola": {
+      "id": "asdk_app_697761cab6f48191b5ed345919a3ce8b",
+      "optional": true,
+      "category": "Meeting notes"
+    },
+    "google_drive": {
+      "id": "connector_5f3c8c41a1e54ad7a76272c89e2554fa",
+      "optional": true,
+      "category": "Company docs"
+    }
+  }
 }

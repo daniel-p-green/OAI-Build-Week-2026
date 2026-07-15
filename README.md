@@ -29,7 +29,7 @@ The repository currently provides a local-first deterministic seam with:
 - independent brief and storyboard approval gates, stale propagation, retry, and queued-render cancellation;
 - source-traceable presentation and infographic previews plus editable PowerPoint handoffs with claim locators and source notes;
 - a versioned local HyperFrames Video render with per-scene provenance for the approved sanitized Storyboard fixture;
-- a unified `0.1.2` plugin whose stdio tools search and fetch grounded local evidence and route authorized workflow writes through the same loopback Workshop API;
+- a unified `0.1.3` plugin whose stdio tools search and fetch grounded local evidence, route authorized workflow writes through the same loopback Workshop API, and declare Granola and Google Drive as optional host-provided source apps using the current plugin manifest contract;
 - a responsive Apps in ChatGPT-aligned interface where the current Presentation is the hero Output and supporting work remains one interaction away.
 
 This is active Build Week work, not a claim that every locked capability is complete. Native ChatGPT durable voice synchronization is not supported in this build. Paid GPT-5.6 reasoning, live GPT Image 2 rendering, a provider-backed Realtime microphone turn, provider narration, and the final public demo remain unproven or in progress. The recorded path uses labeled deterministic fallbacks where provider behavior has not been demonstrated. See [GOAL.md](GOAL.md) for the exact completion definition and [log.md](log.md) for dated evidence.

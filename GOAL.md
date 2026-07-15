@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 16:36 CT
+Last updated: 2026-07-15 16:42 CT
 
 ## Status
 
@@ -517,6 +517,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [ ] Spike E: locally install the unified plugin, invoke its skill, call its stdio MCP tools, and record actual Work/Codex surface support.
   - Codex skill and tool proof is complete: an isolated plugin-only Codex profile installed enabled `workshoplm@workshoplm-local` version `0.1.2`, task `019f6474-bb34-7bf1-8ed0-65527e91b224` explicitly activated and read `$workshoplm`, then called `workshop_list → search → fetch` against the sanitized acceptance fixture. It fetched `Sanitized fixture · chunk 01` with one linked verified claim; installed manifest, skill, and server hashes matched the current worktree.
   - Fresh Codex desktop proof is also complete: task `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324` activated the installed skill and called `workshop_list → search → fetch`, returning `chunk-seed-design`, verified claim `claim-seed-design-system`, and locator `Design · Map`. The root browser doorway returned HTTP 200 and rendered the current Map in the Codex in-app browser with no new console errors. The installed `0.1.2` package was refreshed and its tool hash matches the worktree.
+  - 2026-07-15 current-manifest correction: version `0.1.3` replaces the obsolete local `widgets`/`dependencies` `.app.json` shape with the current unified `apps` map and registered optional Granola and Google Drive IDs. Dead compact-widget HTML was removed because the full GUI belongs in the loopback in-app browser. `codex plugin add` accepted and installed `0.1.3`; repository and installed manifest, app-contract, server, and skill hashes match. Fresh Codex task `019f67b9-177b-7250-a3cf-84d87774b14b` called `workshop_list → search → fetch` and returned one verified exact chunk from the sanitized fixture. The skill was omitted from that task only because Daniel's global installation exceeded the host's two-percent skill-context budget; prior isolated and desktop activation evidence remains valid because the skill bytes are unchanged.
   - Keep this open only for ChatGPT Work invocation. Both Codex proofs were read-only and no paid provider call occurred. Do not infer Work parity, a confirmed plugin write interaction, or a `/feedback` Session ID from the task IDs.
 - [x] Activate and verify the designed capture-only fallback for the unproven native task/voice synchronization spike; live Realtime transport remains separately unverified.
 

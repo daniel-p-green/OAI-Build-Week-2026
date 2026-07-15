@@ -5581,8 +5581,6 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Provider-backed voice/Map/Image/Speech evidence, final founder recording, public links, and Codex in-app-browser proof remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
 
----
-
 ## 2026-07-15 16:36 CT — Image set becomes a grounded professional review loop
 
 **Area:** Product / Image review / Selective regeneration / Trust
@@ -5617,3 +5615,41 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Put the external-use deck in front of its intended professional audience for a cold `Send`/`Revise` decision.
 - Provider-backed voice/Map/Image/Speech evidence, final founder recording, public links, and Codex in-app-browser proof remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 16:42 CT — Unified plugin manifest catches up to the current host contract
+
+**Area:** Plugin / Codex host / Optional source apps / Installation proof
+
+### Changed
+
+- Audited WorkshopLM against the currently installed Granola, OpenAI Developers, Sites, and Data Analytics plugin manifests rather than relying on the older local plugin plan.
+- Found that WorkshopLM's `.app.json` still used unsupported `widgets` and `dependencies` keys and referenced compact HTML files that were never copied into the built MCP package. That shape could not honestly represent the new unified app architecture.
+- Replaced it with the current `apps` map: Granola (`asdk_app_697761cab6f48191b5ed345919a3ce8b`) and Google Drive (`connector_5f3c8c41a1e54ad7a76272c89e2554fa`) are explicit optional host-provided source apps with clear categories.
+- Removed the unused compact status/trace HTML. WorkshopLM's strong visual GUI remains the local full-screen browser Workshop; the plugin is the skill, grounded MCP tool set, optional app relationships, and loopback doorway.
+- Bumped the unified plugin and MCP server to `0.1.3`, rebuilt the distributable server, refreshed the real installed plugin, and updated the README's verified slice.
+
+### Verified
+
+- `codex plugin list --json` reports `workshoplm@workshoplm-local` version `0.1.3` installed and enabled from the local marketplace.
+- Installed and repository SHA-256 hashes match for the plugin manifest, `.app.json`, built MCP server, and skill. The complete evidence record is `artifacts/spikes/plugin-unified-manifest-2026-07-15.json`.
+- All seven plugin contract, tool, and stdio-server tests passed. The contract test now rejects a return of the obsolete `widgets` or `dependencies` shape and pins the two optional app IDs.
+- A second `codex plugin add workshoplm@workshoplm-local --json` refresh confirmed the installed `0.1.3` bundle no longer contains either dead widget file. `pnpm check` passed lint, typecheck, and tests across all 13 packages, and `pnpm demo:e2e` kept all six deterministic acceptance gates green.
+- Fresh ephemeral Codex task `019f67b9-177b-7250-a3cf-84d87774b14b` loaded the `0.1.3` MCP server and successfully called `workshop_list → search → fetch`. It returned Workshop `WorkshopLM Build Week`, source `source-2026259e182a`, chunk `chunk-2026259e182a-2`, locator `Sanitized fixture · chunk 02`, and evidence state `verified`.
+- That fresh task did not activate `$workshoplm`: the host reported that Daniel's global installation exceeded the two-percent skill-context budget and omitted 304 skill descriptions. The installed skill hash is unchanged from the previously successful isolated and Codex desktop activations; this run is recorded as current tool proof, not new skill proof.
+- No OpenAI provider request or paid generation occurred.
+
+### Decisions
+
+- `.app.json` declares relationships to registered host apps; it is not a registry for arbitrary local widget HTML.
+- The visual product remains one full-screen local Workshop in the Codex/ChatGPT in-app browser. A second compact pseudo-interface would weaken both the product boundary and host compatibility.
+- Spike E stays open only for an actual ChatGPT Work invocation. Current Codex success does not prove Work parity.
+
+### Open items
+
+- Invoke the installed package from ChatGPT Work and record the actual supported tools, optional source apps, and loopback-browser behavior without inferring parity from Codex.
+- Record one provider-verified Realtime voice turn, obtain explicit request authorization, and run the provider-backed Map, image, and narration path.
+- Put the external-use deck in front of its intended professional audience for a cold `Send`/`Revise` decision.
+- ChatGPT Work proof, provider-backed media, final founder recording, public links, and the Devpost `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; ephemeral task ID above is not substituted.
