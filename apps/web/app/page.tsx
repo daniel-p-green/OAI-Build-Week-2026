@@ -32,6 +32,8 @@ type ObjectView = "map" | "brief" | "outputs" | "storyboard" | "output";
 type Sheet = "workshops" | "sources" | "evidence" | "add-source" | "style" | "original" | "help" | null;
 type WorkshopSummary = { id: string; title: string; sources: number; outputs: number; updatedAt: string; active: boolean };
 type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string; permission: "private" | "sanitized" | "shareable" };
+type EvidenceTarget = { sourceId?: string; claimId?: string; locator?: string };
+type EvidenceSelection = { excerpt: string; locator: string };
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
 type MapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
 type FontAvailability = "system" | "user_confirmed" | "unverified";
@@ -121,6 +123,7 @@ export default function WorkshopPage() {
   const [sheet, setSheet] = useState<Sheet>(null);
   const [selectedNodeId, setSelectedNodeId] = useState("");
   const [selectedSource, setSelectedSource] = useState<SourceItem | null>(null);
+  const [selectedEvidence, setSelectedEvidence] = useState<EvidenceSelection | null>(null);
   const [selectedPanelId, setSelectedPanelId] = useState("");
   const [selectedOutputId, setSelectedOutputId] = useState("");
   const [notice, setNotice] = useState<{ message: string; tone: "status" | "error" } | null>(null);
@@ -196,7 +199,7 @@ export default function WorkshopPage() {
       if (!response.ok) throw new Error(next.error ?? "That action did not work");
       setState(next);
       if (body.action === "createWorkshop" || body.action === "selectWorkshop") {
-        setView("map"); setSelectedNodeId(""); setSelectedSource(null); setSelectedPanelId(""); setSelectedOutputId(""); closeSheet();
+        setView("map"); setSelectedNodeId(""); setSelectedSource(null); setSelectedEvidence(null); setSelectedPanelId(""); setSelectedOutputId(""); closeSheet();
       }
       if (body.action === "lockManualStyle" || body.action === "lockWebsiteStyle" || body.action === "applyStyleLibrary") void reloadStyleLibrary();
       void reloadWorkshops();
@@ -246,9 +249,14 @@ export default function WorkshopPage() {
     window.setTimeout(() => returnFocusRef.current?.focus(), 0);
   }
 
-  function showSource(sourceId?: string) {
-    const source = state?.sourceItems.find((item) => item.id === sourceId) ?? state?.sourceItems[0] ?? null;
-    if (source) openSheet("evidence", source);
+  function showSource(target: EvidenceTarget = {}) {
+    const claim = state?.claims?.find((item) => item.id === target.claimId)
+      ?? state?.claims?.find((item) => item.sourceId === target.sourceId && item.locator === target.locator)
+      ?? state?.claims?.find((item) => item.sourceId === target.sourceId);
+    const source = state?.sourceItems.find((item) => item.id === (target.sourceId ?? claim?.sourceId)) ?? state?.sourceItems[0] ?? null;
+    if (!source) return;
+    setSelectedEvidence({ excerpt: claim?.text ?? source.excerpt, locator: claim?.locator ?? target.locator ?? source.locator });
+    openSheet("evidence", source);
   }
 
   async function createOutputs() {
@@ -314,7 +322,7 @@ export default function WorkshopPage() {
 
       {sheet === "workshops" && <WorkshopsSheet workshops={workshops} busy={busy} onClose={closeSheet} onSelect={(workshopId) => { void post({ action: "selectWorkshop", workshopId }); }} onCreate={(title) => post({ action: "createWorkshop", title }).then(Boolean)} onHelp={() => setSheet("help")} />}
       {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} onClose={closeSheet} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
-      {sheet === "evidence" && selectedSource && <EvidenceSheet source={selectedSource} onClose={closeSheet} onShowMap={() => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === selectedSource.id)?.id ?? ""); openView("map"); }} />}
+      {sheet === "evidence" && selectedSource && <EvidenceSheet source={selectedSource} evidence={selectedEvidence} onClose={closeSheet} onShowMap={() => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === selectedSource.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "add-source" && <AddSourceSheet onClose={() => setSheet("sources")} onPost={post} />}
       {sheet === "style" && <StyleSheet style={state?.style} analysisSuggestion={state?.onboarding.styleAnalysis?.status === "ready" ? state.onboarding.styleAnalysis.suggestion : undefined} defaultIntent={state?.onboarding.outcome} library={styleLibrary} busy={busy} onClose={closeSheet} onPost={post} onAnalyzeWebsite={analyzeWebsiteStyle} />}
       {sheet === "original" && <OriginalRevealSheet state={state} onClose={closeSheet} />}
@@ -392,7 +400,7 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
   </FullScreenShell>;
 }
 
-function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShowSource, onAddSource, onDismissOrientation, onReviewStyle, onRetryStyle, onUseDefaultStyle }: { state: PersistedWorkshop | null; selectedNode?: MapNode; busy: boolean; onSelect: (id: string) => void; onSync: (nodes: Pick<MapNode, "id" | "title" | "x" | "y" | "width" | "height">[]) => void; onUndo: () => void; onShowSource: (sourceId?: string) => void; onAddSource: () => void; onDismissOrientation: () => void; onReviewStyle: () => void; onRetryStyle: (url: string) => void; onUseDefaultStyle: () => void }) {
+function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShowSource, onAddSource, onDismissOrientation, onReviewStyle, onRetryStyle, onUseDefaultStyle }: { state: PersistedWorkshop | null; selectedNode?: MapNode; busy: boolean; onSelect: (id: string) => void; onSync: (nodes: Pick<MapNode, "id" | "title" | "x" | "y" | "width" | "height">[]) => void; onUndo: () => void; onShowSource: (target?: EvidenceTarget) => void; onAddSource: () => void; onDismissOrientation: () => void; onReviewStyle: () => void; onRetryStyle: (url: string) => void; onUseDefaultStyle: () => void }) {
   const sources = (state?.sourceItems ?? []).filter((source) => state?.activeSourceIds.includes(source.id));
   const nodes = (state?.mapNodes ?? []).filter((node) => !node.sourceId || state?.activeSourceIds.includes(node.sourceId));
   const relatedSourceId = (node: MapNode, index: number) => node.sourceId ?? sources[index % Math.max(1, sources.length)]?.id;
@@ -408,8 +416,8 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
     <div className="map-caption" data-domain-ui="map-caption"><span>{nodes.length} ideas · Drag to organize · Double-click to edit</span>{canUndo && <Button variant="secondary" size="small" disabled={busy} onClick={onUndo}>Undo</Button>}</div>
     {!state?.onboarding.mapOrientationDismissed && <Card className="map-orientation"><div><strong>Your Map is ready.</strong><p>Shape the ideas, approve the Brief, then create branded Outputs. Use Show source to trace any factual point back to the material behind it.</p></div><Button variant="secondary" size="small" onClick={onDismissOrientation}>Got it</Button></Card>}
     {!state?.style && analysis && <Card className="style-analysis-status" role="status"><div><strong>{analysis.status === "reviewing" ? `Reviewing ${analysisDomain}…` : analysis.status === "ready" ? "Company style ready to review" : "Couldn't review this website"}</strong><p>{analysis.status === "reviewing" ? "Keep shaping the Map while WorkshopLM checks the public visual foundation." : analysis.status === "ready" ? "Review the suggested colors, type, and brand assets before creating Outputs." : analysis.error ?? "Try again or continue with a clean professional Style."}</p></div><div className="button-row">{analysis.status === "ready" && <Button variant="secondary" size="small" onClick={onReviewStyle}>Review style</Button>}{analysis.status === "error" && <><Button variant="secondary" size="small" disabled={busy} onClick={() => onRetryStyle(analysis.url)}>Try again</Button><Button variant="secondary" size="small" onClick={onReviewStyle}>Set manually</Button><Button variant="secondary" size="small" disabled={busy} onClick={onUseDefaultStyle}>Use a clean default</Button></>}</div></Card>}
-    <ExcalidrawMap nodes={nodes} sources={sources} edges={state?.mapEdges ?? []} selectedNodeId={selectedNode?.id} onSelectNode={onSelect} onShowSource={(sourceId) => onShowSource(sourceId)} onSync={onSync} />
-    {selectedNode && <ClaimInspector node={selectedNode} source={source} busy={busy} onClose={() => onSelect("")} onSave={(title) => onSync([{ id: selectedNode.id, title, x: selectedNode.x, y: selectedNode.y, width: selectedNode.width, height: selectedNode.height }])} onShowSource={() => onShowSource(selectedSourceId)} />}
+    <ExcalidrawMap nodes={nodes} sources={sources} edges={state?.mapEdges ?? []} selectedNodeId={selectedNode?.id} onSelectNode={onSelect} onShowSource={(sourceId) => onShowSource({ sourceId })} onSync={onSync} />
+    {selectedNode && <ClaimInspector node={selectedNode} source={source} busy={busy} onClose={() => onSelect("")} onSave={(title) => onSync([{ id: selectedNode.id, title, x: selectedNode.x, y: selectedNode.y, width: selectedNode.width, height: selectedNode.height }])} onShowSource={() => onShowSource({ sourceId: selectedSourceId, claimId: selectedNode.id, locator: selectedNode.locator })} />}
   </div>;
 }
 
@@ -424,7 +432,7 @@ function frameSection(markdown: string | undefined, heading: string) {
   return markdown.match(new RegExp(`## ${heading}\\n([\\s\\S]*?)(?=\\n## |$)`))?.[1]?.trim() ?? "";
 }
 
-function BriefView({ state, onChooseStyle, onShowSource }: { state: PersistedWorkshop | null; onChooseStyle: () => void; onShowSource: (sourceId?: string) => void }) {
+function BriefView({ state, onChooseStyle, onShowSource }: { state: PersistedWorkshop | null; onChooseStyle: () => void; onShowSource: (target?: EvidenceTarget) => void }) {
   const outcome = frameSection(state?.frame?.markdown, "Outcome") || "Turn raw thinking into finished work.";
   const evidence = frameSection(state?.frame?.markdown, "Evidence").split("\n").map((line) => line.replace(/^[-*]\s*/, "").trim()).filter(Boolean);
   const proof = frameSection(state?.frame?.markdown, "Production proof");
@@ -436,7 +444,7 @@ function BriefView({ state, onChooseStyle, onShowSource }: { state: PersistedWor
       <h1>{outcome}</h1>
       {evidence.length > 0 && <section className="brief-section"><h2>Evidence</h2><ul>{evidence.map((item) => <li key={item}>{item}</li>)}</ul></section>}
       {proof && <section className="brief-section"><h2>Success looks like</h2><p>{proof}</p></section>}
-      <div className="citation-row">{state?.claims?.slice(0, 3).map((claim) => <Token key={claim.id} onClick={() => onShowSource(claim.sourceId)}>{claim.locator}</Token>)}</div>
+      <div className="citation-row">{state?.claims?.slice(0, 3).map((claim) => <Token key={claim.id} onClick={() => onShowSource({ sourceId: claim.sourceId, claimId: claim.id, locator: claim.locator })}>{claim.locator}</Token>)}</div>
       <section className="style-summary" aria-label="Style"><div className="style-summary-copy"><small>Style</small><strong>{locked ? `${state?.style?.name} · Version ${state?.style?.libraryRevision ?? 1}` : "Not selected"}</strong></div><div className="palette-preview compact" data-domain-ui="palette-preview"><i style={{ background: state?.style?.accent ?? "#0285FF" }} /><i style={{ background: state?.style?.ink ?? "#0D0D0D" }} /><i style={{ background: state?.style?.paper ?? "#FFFFFF" }} /></div>{locked && <Button variant="secondary" size="small" onClick={onChooseStyle}>Edit</Button>}</section>
     </Card>
   </article>;
@@ -538,7 +546,7 @@ function imagePanelCopy(prompt: string, index: number) {
   return { role, idea };
 }
 
-function FocusedOutputView({ state, outputId, busy, onShowSource, onShowOriginal, onRequestReplacement }: { state: PersistedWorkshop | null; outputId: string; busy: boolean; onShowSource: (sourceId?: string) => void; onShowOriginal: () => void; onRequestReplacement: (panelId: string) => Promise<void> }) {
+function FocusedOutputView({ state, outputId, busy, onShowSource, onShowOriginal, onRequestReplacement }: { state: PersistedWorkshop | null; outputId: string; busy: boolean; onShowSource: (target?: EvidenceTarget) => void; onShowOriginal: () => void; onRequestReplacement: (panelId: string) => Promise<void> }) {
   const output = state?.outputs.find((item) => item.id === outputId);
   const isVideo = outputId === "video" || outputId.startsWith("video-v");
   const video = isVideo ? (outputId === "video" ? state?.videos?.find((item) => !item.stale) : state?.videos?.find((item) => item.id === outputId)) : undefined;
@@ -548,16 +556,17 @@ function FocusedOutputView({ state, outputId, busy, onShowSource, onShowOriginal
   const detail = output
     ? `${outputType(output.type)} · Version ${outputVersion(output, state?.outputs ?? [])} · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`
     : isImages ? `${state?.imageBatch?.panels.length ?? 0} images · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}` : `Video · Version ${video?.version ?? 1} · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`;
-  const sourceId = state?.claims?.find((claim) => output?.claimIds?.includes(claim.id))?.sourceId;
+  const outputClaim = output?.claimIds?.map((claimId) => state?.claims?.find((claim) => claim.id === claimId)).find(Boolean);
   const href = `/api/workshop/artifacts/${outputId}`;
   if (!output && (!isVideo || !video) && !isImages) return <div className="state-surface"><StateMessage state="error" title="Couldn't open Output">Return to Outputs and try opening it again.</StateMessage></div>;
   if (isImages) return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail} · One shared Style</p>{state?.imageBatch?.stale && <Status tone="waiting">Needs update</Status>}</div></div><div className="focused-image-grid" data-domain-ui="image-review-grid">{state?.imageBatch?.panels.map((panel, index) => {
     const { role, idea } = imagePanelCopy(panel.prompt, index);
     const status = panel.state === "generated" ? "Ready" : panel.state === "failed" ? "Couldn't create" : panel.state === "selected_for_regeneration" ? "Replacement requested" : "Planned";
     const preview = <div className={`focused-image-preview ${panel.state}`} data-domain-ui="image-tile">{panel.state === "generated" ? <img alt={`${role}: ${idea}`} src={`/api/workshop/artifacts/${panel.id}`} /> : <span>{String(index + 1).padStart(2, "0")}</span>}</div>;
-    return <section className="focused-image-card" key={panel.id} aria-label={role}>{panel.state === "generated" ? <a href={`/api/workshop/artifacts/${panel.id}`} target="_blank" rel="noreferrer" aria-label={`Open ${role}`}>{preview}</a> : preview}<div className="focused-image-caption"><strong>{role}</strong><Status tone={panel.state === "generated" ? "current" : "waiting"}>{status}</Status></div><p>{idea}</p><div className="focused-image-actions"><Button variant="secondary" size="small" onClick={() => onShowSource(panel.evidence[0]?.sourceId)}>Show source</Button>{panel.state !== "planned" && <Button variant="secondary" size="small" disabled={busy || panel.state === "selected_for_regeneration"} onClick={() => { void onRequestReplacement(panel.id); }}>{panel.state === "selected_for_regeneration" ? "Requested" : "Request replacement"}</Button>}</div></section>;
+    const evidence = panel.evidence[0];
+    return <section className="focused-image-card" key={panel.id} aria-label={role}>{panel.state === "generated" ? <a href={`/api/workshop/artifacts/${panel.id}`} target="_blank" rel="noreferrer" aria-label={`Open ${role}`}>{preview}</a> : preview}<div className="focused-image-caption"><strong>{role}</strong><Status tone={panel.state === "generated" ? "current" : "waiting"}>{status}</Status></div><p>{idea}</p><div className="focused-image-actions"><Button variant="secondary" size="small" onClick={() => onShowSource({ sourceId: evidence?.sourceId, claimId: evidence?.claimId, locator: evidence?.locator })}>Show source</Button>{panel.state !== "planned" && <Button variant="secondary" size="small" disabled={busy || panel.state === "selected_for_regeneration"} onClick={() => { void onRequestReplacement(panel.id); }}>{panel.state === "selected_for_regeneration" ? "Requested" : "Request replacement"}</Button>}</div></section>;
   })}</div></article>;
-  return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail}</p>{(output?.stale || video?.stale) && <Status tone="waiting">Needs update</Status>}</div><div className="button-row">{isVideo ? <Button size="small" onClick={onShowOriginal}>Show original</Button> : <Button size="small" onClick={() => onShowSource(sourceId)}>Show source</Button>}{output?.editableRelativePath && <ButtonLink variant="secondary" size="small" href={`${href}?format=editable`}>Download PowerPoint</ButtonLink>}<ButtonLink variant="secondary" size="small" href={href} target="_blank" rel="noreferrer">{isVideo ? "Open video" : "Open preview"}</ButtonLink></div></div><div className={`focused-output-preview ${isVideo ? "video-preview" : ""}`} data-domain-ui="artifact-preview">{isVideo ? <video controls src={href} /> : <iframe title={title} sandbox="allow-same-origin" src={href} />}</div></article>;
+  return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail}</p>{(output?.stale || video?.stale) && <Status tone="waiting">Needs update</Status>}</div><div className="button-row">{isVideo ? <Button size="small" onClick={onShowOriginal}>Show original</Button> : <Button size="small" onClick={() => onShowSource({ sourceId: outputClaim?.sourceId, claimId: outputClaim?.id, locator: outputClaim?.locator })}>Show source</Button>}{output?.editableRelativePath && <ButtonLink variant="secondary" size="small" href={`${href}?format=editable`}>Download PowerPoint</ButtonLink>}<ButtonLink variant="secondary" size="small" href={href} target="_blank" rel="noreferrer">{isVideo ? "Open video" : "Open preview"}</ButtonLink></div></div><div className={`focused-output-preview ${isVideo ? "video-preview" : ""}`} data-domain-ui="artifact-preview">{isVideo ? <video controls src={href} /> : <iframe title={title} sandbox="allow-same-origin" src={href} />}</div></article>;
 }
 
 function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | null; onClose: () => void }) {
@@ -587,7 +596,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   </SideSheet>;
 }
 
-function StoryboardView({ storyboard, imageBatch, approved, panel, busy, onSelect, onPost, onShowSource }: { storyboard?: PersistedWorkshop["storyboard"]; imageBatch?: PersistedWorkshop["imageBatch"]; approved: boolean; panel?: PersistedWorkshop["storyboard"]["panels"][number]; busy: boolean; onSelect: (id: string) => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onShowSource: (sourceId?: string) => void }) {
+function StoryboardView({ storyboard, imageBatch, approved, panel, busy, onSelect, onPost, onShowSource }: { storyboard?: PersistedWorkshop["storyboard"]; imageBatch?: PersistedWorkshop["imageBatch"]; approved: boolean; panel?: PersistedWorkshop["storyboard"]["panels"][number]; busy: boolean; onSelect: (id: string) => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onShowSource: (target?: EvidenceTarget) => void }) {
   const [title, setTitle] = useState(panel?.title ?? "");
   const [narration, setNarration] = useState(panel?.narration ?? "");
   useEffect(() => { if (panel) { setTitle(panel.title); setNarration(panel.narration); } }, [panel]);
@@ -599,7 +608,7 @@ function StoryboardView({ storyboard, imageBatch, approved, panel, busy, onSelec
     <h1 className="visually-hidden">Storyboard</h1>
     <p className="storyboard-meta"><Status tone={approved ? "current" : "waiting"}>{approved ? "Approved" : "Ready for review"}</Status><span>{storyboard?.panels.length ?? 0} panels · {duration} seconds</span></p>
     <CarouselRow className="storyboard-strip">{(storyboard?.panels ?? []).map((item, index) => <button type="button" key={item.id} className={`film-frame ${item.id === panel?.id ? "selected" : ""}`} data-domain-ui="film-frame" style={{ "--panel": index } as CSSProperties} onClick={() => onSelect(item.id)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{item.title}</strong><small>{item.durationSeconds}s</small></button>)}</CarouselRow>
-    {panel && <Card className="panel-editor"><div className={`panel-visual ${image ? "has-image" : ""}`} data-domain-ui="panel-visual" style={{ "--panel": Math.max(0, storyboard?.panels.findIndex((item) => item.id === panel.id) ?? 0) } as CSSProperties}>{image && <img alt="" src={`/api/workshop/artifacts/${image.id}`} />}<div className="panel-visual-copy"><small>{image ? "Bound image" : "Style preview"}</small><span>{panel.title}</span><p>{panel.narration}</p></div></div><div className="panel-fields"><Input label="Panel title" value={title} onChange={(event) => setTitle(event.target.value)} /><TextArea label="Narration" value={narration} onChange={(event) => setNarration(event.target.value)} /><div className="button-row">{dirty && <Button variant="secondary" disabled={busy || !title.trim() || !narration.trim()} onClick={() => { void onPost({ action: "updateStoryboardPanel", panel: { id: panel.id, title: title.trim(), narration: narration.trim(), durationSeconds: panel.durationSeconds } }); }}>Save</Button>}<Button variant="secondary" size="small" onClick={() => onShowSource(panel.evidence[0]?.sourceId)}>Show source</Button></div></div></Card>}
+    {panel && <Card className="panel-editor"><div className={`panel-visual ${image ? "has-image" : ""}`} data-domain-ui="panel-visual" style={{ "--panel": Math.max(0, storyboard?.panels.findIndex((item) => item.id === panel.id) ?? 0) } as CSSProperties}>{image && <img alt="" src={`/api/workshop/artifacts/${image.id}`} />}<div className="panel-visual-copy"><small>{image ? "Bound image" : "Style preview"}</small><span>{panel.title}</span><p>{panel.narration}</p></div></div><div className="panel-fields"><Input label="Panel title" value={title} onChange={(event) => setTitle(event.target.value)} /><TextArea label="Narration" value={narration} onChange={(event) => setNarration(event.target.value)} /><div className="button-row">{dirty && <Button variant="secondary" disabled={busy || !title.trim() || !narration.trim()} onClick={() => { void onPost({ action: "updateStoryboardPanel", panel: { id: panel.id, title: title.trim(), narration: narration.trim(), durationSeconds: panel.durationSeconds } }); }}>Save</Button>}<Button variant="secondary" size="small" onClick={() => { const evidence = panel.evidence[0]; onShowSource({ sourceId: evidence?.sourceId, claimId: evidence?.claimId, locator: evidence?.locator }); }}>Show source</Button></div></div></Card>}
   </article>;
 }
 
@@ -631,8 +640,8 @@ function SourcesSheet({ sources, activeIds, selected, onClose, onSelect, onToggl
   return <SideSheet title="Sources" onClose={onClose}><div className="sheet-heading"><p>{activeIds.length} of {sources.length} selected</p><Button variant="secondary" onClick={onAdd}><PlusIcon /> Add source</Button></div><ListGroup>{sources.map((source) => <ListRow className={active?.id === source.id ? "source-row selected" : "source-row"} key={source.id}><Checkbox aria-label={`Use ${source.title}`} checked={activeIds.includes(source.id)} onChange={() => onToggle(source.id)} /><ListRowAction onClick={() => onSelect(source)}><FileIcon label={source.type} /><span><strong>{source.title}</strong><small>{source.origin} · {source.claimCount} claims</small></span></ListRowAction></ListRow>)}</ListGroup>{active && <Card className="source-preview"><strong>{active.title}</strong><p>“{active.excerpt}”</p><small>{active.locator}</small><Button variant="secondary" size="small" onClick={() => onShowMap(active)}>Show on map</Button></Card>}</SideSheet>;
 }
 
-function EvidenceSheet({ source, onClose, onShowMap }: { source: SourceItem; onClose: () => void; onShowMap: () => void }) {
-  return <SideSheet title="Source" onClose={onClose}><blockquote className="evidence-quote">“{source.excerpt}”</blockquote><p className="source-locator">{source.locator}</p><dl className="evidence-meta"><dt>Source</dt><dd>{source.title}</dd><dt>Origin</dt><dd>{source.origin}</dd></dl><Button onClick={onShowMap}>Show on map</Button></SideSheet>;
+function EvidenceSheet({ source, evidence, onClose, onShowMap }: { source: SourceItem; evidence: EvidenceSelection | null; onClose: () => void; onShowMap: () => void }) {
+  return <SideSheet title="Source" onClose={onClose}><blockquote className="evidence-quote">“{evidence?.excerpt ?? source.excerpt}”</blockquote><p className="source-locator">{evidence?.locator ?? source.locator}</p><dl className="evidence-meta"><dt>Source</dt><dd>{source.title}</dd><dt>Origin</dt><dd>{source.origin}</dd></dl><Button onClick={onShowMap}>Show on map</Button></SideSheet>;
 }
 
 function AddSourceSheet({ onClose, onPost }: { onClose: () => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null> }) {

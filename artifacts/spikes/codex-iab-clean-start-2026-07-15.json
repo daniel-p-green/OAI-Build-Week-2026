@@ -1,0 +1,50 @@
+{
+  "capturedAt": "2026-07-15T17:01:00-05:00",
+  "host": "Codex in-app browser",
+  "surface": "http://127.0.0.1:3001/",
+  "dataRoot": ".workshoplm/iab-clean-start-2026-07-15",
+  "viewport": {
+    "width": 1280,
+    "horizontalOverflow": false
+  },
+  "path": [
+    "Client pitch",
+    "Use a clean default for now",
+    "Add pasted meeting notes",
+    "Build my Map",
+    "Approve brief",
+    "Create outputs",
+    "Open Presentation",
+    "Show source"
+  ],
+  "result": {
+    "sources": 1,
+    "verifiedClaims": 6,
+    "mapIdeas": 1,
+    "presentationVersions": 1,
+    "infographicVersions": 1,
+    "plannedImages": 6,
+    "storyboardPanels": 5,
+    "elapsedToFirstMapMs": 8820,
+    "elapsedToFirstOutputsMs": 37961,
+    "consoleWarningsOrErrors": 0,
+    "exactTrace": {
+      "claim": "WorkshopLM organizes messy thinking into a grounded Map, then creates an editable deck with every factual claim linked to its exact source",
+      "locator": "Pasted notes · chunk 01"
+    }
+  },
+  "defectsFoundAndFixed": [
+    "The output-created status message overlapped the presentation's primary Show source action.",
+    "Output source trace showed a generic truncated source excerpt instead of the exact claim used by the artifact."
+  ],
+  "verification": {
+    "codexBrowser": "passed after fixes",
+    "productionBrowser": "27 of 27 tests passed",
+    "providerCallsMade": false
+  },
+  "limitations": [
+    "Timing includes automated interaction and deliberate waits; it is not an uncoached professional benchmark.",
+    "The run used deterministic local grounding and rendering, not paid provider-backed generation.",
+    "The run proves Codex in-app-browser behavior, not ChatGPT Work parity."
+  ]
+}

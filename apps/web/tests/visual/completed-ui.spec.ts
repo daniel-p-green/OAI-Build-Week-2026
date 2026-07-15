@@ -1044,3 +1044,38 @@ test("a new professional reaches the real Map through the durable first-use path
   const state = await (await page.request.get("/api/workshop")).json();
   expect(state).toMatchObject({ title: "Acme leadership update", onboarding: { step: "complete", outcome: "board_deck", mapOrientationDismissed: true }, style: { name: "Clean professional", intentProfile: "board_deck" }, sources: 1 });
 });
+
+test("fresh Outputs keep the primary source trace clear and reveal the exact claim", async ({ page }) => {
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  const selected = await page.request.post("/api/workshop", { data: { action: "selectWorkshop", workshopId: "workshop-build-week" } });
+  expect(selected.ok()).toBeTruthy();
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+  const readyState = await (await page.request.get("/api/workshop")).json();
+  const partialState = { ...readyState, outputs: readyState.outputs.slice(0, 1), imageBatch: undefined, assetPlan: undefined, storyboard: { ...readyState.storyboard, panels: [] } };
+  await page.route("**/api/workshop", async (route) => route.request().method() === "GET"
+    ? route.fulfill({ json: partialState })
+    : route.fulfill({ json: readyState }));
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "View brief" }).click();
+  await page.getByRole("button", { name: "View outputs" }).click();
+  await page.getByRole("button", { name: "Update outputs" }).click();
+  await expect(page.getByRole("status")).toContainText("Outputs created");
+  const heroPresentation = page.locator('.output-grid [data-output-role="hero"]');
+  await expect(heroPresentation).toHaveCount(1);
+  await heroPresentation.click();
+
+  const notice = page.getByRole("status");
+  const showSource = page.getByRole("button", { name: "Show source" });
+  const [noticeBox, sourceBox] = await Promise.all([notice.boundingBox(), showSource.boundingBox()]);
+  expect(noticeBox).not.toBeNull();
+  expect(sourceBox).not.toBeNull();
+  expect(noticeBox!.y + noticeBox!.height <= sourceBox!.y || sourceBox!.y + sourceBox!.height <= noticeBox!.y).toBeTruthy();
+
+  const deck = readyState.outputs.filter((output: { type: string }) => output.type === "deck").at(-1);
+  const claim = readyState.claims.find((item: { id: string }) => item.id === deck.claimIds[0]);
+  await showSource.click();
+  const source = page.getByRole("dialog", { name: "Source" });
+  await expect(source).toContainText(claim.text);
+  await expect(source).toContainText(claim.locator);
+});

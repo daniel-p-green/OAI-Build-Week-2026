@@ -5653,3 +5653,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Put the external-use deck in front of its intended professional audience for a cold `Send`/`Revise` decision.
 - ChatGPT Work proof, provider-backed media, final founder recording, public links, and the Devpost `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; ephemeral task ID above is not substituted.
+
+---
+
+## 2026-07-15 17:01 CT — Clean-start path passes in the actual Codex browser
+
+**Area:** Host UX / Source trust / First-run verification
+
+### Changed
+
+- Ran an isolated first-use Workshop inside the actual Codex in-app browser from outcome selection through a grounded Map, approved Brief, editable presentation, and source trace.
+- Moved transient success/error notices to the bottom-center snackbar position after the live host showed the output-created message covering the presentation's primary `Show source` action.
+- Replaced generic source-level evidence with claim-aware evidence selection across Map, Brief citations, focused presentation and infographic, image review, and Storyboard. The Source sheet now shows the exact claim text and chunk locator used by the selected work.
+- Made focused Outputs preserve the artifact's claim order so the presentation trace opens on its lead grounded claim rather than the first matching claim in global Source order.
+- Added a production-browser regression that recreates fresh Outputs, verifies the status message does not overlap `Show source`, and requires the exact artifact claim plus locator in the Source sheet.
+
+### Verified
+
+- The isolated Codex-browser path completed Client pitch → clean Style → pasted notes → Map → Brief → Outputs in 37,961 ms of controlled agent interaction, including deliberate waits; the first Map appeared in 8,820 ms. This is scripted host proof, not uncoached timing.
+- The final Codex-browser Source sheet showed the complete lead claim, `WorkshopLM organizes messy thinking into a grounded Map, then creates an editable deck with every factual claim linked to its exact source`, with locator `Pasted notes · chunk 01`.
+- The final 1280px Codex-browser surface had no horizontal overflow and no captured console warnings or errors. The evidence record is `artifacts/spikes/codex-iab-clean-start-2026-07-15.json`.
+- Web typecheck and all 15 component/API contract tests passed. The production build and all 27 browser tests passed at desktop, compact, and mobile widths. The three evidence snapshots were intentionally refreshed after visual inspection because they now show the exact selected claim rather than a generic Source excerpt.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. `pnpm demo:e2e` passed all six deterministic acceptance gates with the rendered local Video and build trace intact.
+- No OpenAI provider request or paid generation occurred.
+
+### Decisions
+
+- `Show source` means the exact claim and locator used by the current artifact, not merely the correct Source document. Source-level fallback remains only for controls that have no more specific evidence edge.
+- Host proof may close the Codex in-app-browser clean-start item, but it does not close ChatGPT Work parity, live-provider behavior, or uncoached professional validation.
+- A transient success message may confirm work, but it may never cover the next primary action.
+
+### Open items
+
+- Invoke the installed package from ChatGPT Work and record actual surface support without inferring parity from Codex.
+- Record one provider-verified Realtime turn, obtain explicit request authorization, and run the provider-backed Map, image, and narration path.
+- Put the external-use deck in front of its intended professional audience for a cold `Send`/`Revise` decision.
+- Provider-backed media, final founder recording, public links, and the Devpost `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
