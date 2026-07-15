@@ -324,6 +324,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Scaffold the pnpm/Turborepo monorepo.
 - [x] Create `apps/web`, `apps/worker`, and focused shared packages.
 - [x] Create the unified plugin manifest, WorkshopLM skill, local MCP server, and compact status/trace widget with tested persisted-fixture tools.
+  - 2026-07-15: replaced summary-only plugin write acknowledgements with the real loopback Workshop API. Source import now normalizes and grounds the supplied URL, PDF, or bounded text file; Brief and Storyboard approvals reject stale requested versions; output tools persist real deck/image-plan/Storyboard state; render queues the real leased worker job; and trace resolves durable claim→chunk→source edges. An isolated no-provider run completed import → exact Map approval → deck/images/Storyboard → exact Storyboard approval → queued render with 59 indexed chunks and four deck evidence edges.
 - [x] Establish linting, type checking, tests, deterministic local fixture reset, and fail-closed live-provider environment validation.
 - [ ] Record every participating Codex `/feedback` Session ID, or the explicit reason it is unavailable, and designate the primary integrator session from actual build evidence.
 - [x] Configure local SQLite WAL persistence boundaries, atomic filesystem artifact storage, and idempotent leased local jobs.

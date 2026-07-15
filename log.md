@@ -4340,3 +4340,37 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - The completion audit continues. Plugin write tools still need to be checked against the same real-service boundary; provider media, Realtime microphone proof, founder footage, final video, `/feedback`, and submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 06:01 CT — Plugin writes now execute the real Workshop service
+
+**Area:** Unified plugin / local service boundary / approval integrity
+
+### Changed
+
+- Replaced plugin write stubs that incremented counts, flipped approval booleans, or returned `accepted` without invoking WorkshopLM production behavior.
+- Routed sanctioned source URLs, PDFs, and bounded text files through the real local `/api/workshop` ingestion actions. File paths are resolved locally, remote app hosts are rejected, and no source contents leave the loopback service.
+- Added current `map-rN` and `storyboard-vN` tokens to plugin list/open results. Brief approval, Storyboard approval, and rendering reject missing or stale requested versions before dispatching any mutation.
+- Routed deck/infographic, image-plan, Storyboard, and Video requests through their real service actions. Storyboard creation materializes its asset plan when necessary; Video remains blocked until the current Storyboard is approved.
+- Replaced the empty trace stub with artifact lookup that returns persisted claim IDs and exact claim→chunk→source locators, plus a Video build-trace reference when present.
+
+### Verified
+
+- Plugin tests passed 7/7, including a loopback service double proving stale `map-r99` is rejected without dispatch and the valid Brief → Storyboard → render sequence persists through the service. Plugin typecheck and build passed.
+- A separate isolated real-app run imported one local Markdown source through `workshop_add_source`, yielding 4 Sources, 59 FTS chunks, and 84 claims; approved exact `map-r1`; persisted `deck-v1` with four claim edges; created six image panels and `storyboard-v2`; approved exact `storyboard-v2`; and queued one real `render_video` job.
+- `workshop_get_trace(deck-v1)` returned four exact claim→chunk→source edges from the persisted artifact. The main demo fixture was not mutated and no provider request or paid call occurred.
+- The installed `0.1.2` package was refreshed after the proof; its final privacy-safe build records local text origins by filename rather than absolute path and has worktree `dist/tools.js` SHA-256 `6ba337e03dc737970abf44e1f45d8f1c5dc2c094517e4c0ac4e0b697fad2ecbe`.
+- `pnpm check` passed across all 13 packages. `pnpm demo:e2e` passed all six gates, and the rebuilt 15-asset `partial` submission set verified `valid: true`, `stale: false`, and `tampered: false`.
+
+### Decisions
+
+- Plugin write tools are commands into the same local service as the visual Workshop, not a second implementation of business state.
+- The loopback URL is explicitly restricted to local HTTP and bounded by a 15-second command timeout. A stopped app returns a visible tool error instead of silently acknowledging work.
+- Version tokens are part of the approval contract. The conversational host must approve the version it actually inspected, matching the visual product's two deliberate gates.
+
+### Open items
+
+- Capture an actual Codex write invocation only when a safe isolated fixture is active. Do not mutate the main fixture merely to strengthen a claim.
+- Multi-Workshop creation and switching still need completion-audit review; provider media, Realtime proof, founder footage, final video, `/feedback`, and submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -40,6 +40,48 @@ export type WorkshopState = {
     groundedClaims: number;
     sourceChunks?: WorkshopChunk[];
     claims?: WorkshopClaim[];
+    graphState?: string;
+    frame?: {
+        stale: boolean;
+        version: number;
+    };
+    style?: {
+        stale: boolean;
+        version: number;
+    };
+    assetPlan?: {
+        stale: boolean;
+        version: number;
+    };
+    storyboard?: {
+        stale: boolean;
+        version: number;
+        panels?: Array<{
+            claimIds?: string[];
+        }>;
+    };
+    outputs?: Array<{
+        id: string;
+        claimIds: string[];
+        stale: boolean;
+    }>;
+    videos?: Array<{
+        id: string;
+        claimIds: string[];
+        stale: boolean;
+        buildTrace?: {
+            htmlPath: string;
+            dataPath: string;
+        };
+    }>;
+    imageBatch?: {
+        id: string;
+        stale: boolean;
+        panels: Array<{
+            id: string;
+            state: string;
+        }>;
+    };
     updatedAt: string;
 };
 export type ToolResult = {
