@@ -1,12 +1,12 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 21:43 CT
+Last updated: 2026-07-14 21:58 CT
 
 ## Status
 
-**Active phase:** P0 interface correction — official components, professional layout, and plain language
+**Active phase:** P0 interface proof — official component states, visual regression, and accessibility
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
-**Current gate:** P0 interface correction. The judge-visible UI is not complete until every shell primitive is implemented through the official Apps in ChatGPT system or a documented composition of its primitives, all visible language passes the plain-language contract below, and rendered-state tests prove the result. No founder approval is required to execute this correction.
+**Current gate:** The reusable official UI layer, professional layout, and plain-language migration are implemented. P0 remains open until automated computed-state checks, the complete screenshot matrix, keyboard-only approvals, 200% zoom, and full visible-copy snapshots prove the implementation. No founder approval is required to finish this proof pass.
 **Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found`. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. It must run before claiming live product use or changing per-operation defaults.
 **Known host risk:** The July 14 host-sync verification is credential-blocked, so it does not prove native task or voice-turn persistence. The designed capture-only fallback remains active; Spike A stays open until the end-of-day decision deadline or a separately authorized live host check.
 
@@ -191,24 +191,24 @@ The primary integrator selects and justifies these without separate founder appr
 
 Completion means implementation fidelity, not visual resemblance:
 
-- [ ] Turn `packages/ui` into the real WorkshopLM UI layer with tested exports for `FullScreenShell`, `NavigationHeader`, `Button`, `IconButton`, `Token`, `Checkbox`, `Input`, `TextArea`, `Card`, `ListGroup`, `ListRow`, `EntityCard`, `Carousel`, and `CarouselRow`.
+- [x] Turn `packages/ui` into the real WorkshopLM UI layer with tested exports for `FullScreenShell`, `NavigationHeader`, `Button`, `IconButton`, `Token`, `Checkbox`, `Input`, `TextArea`, `Card`, `ListGroup`, `ListRow`, `EntityCard`, `Carousel`, and `CarouselRow`.
 - [ ] Implement each primitive from its recorded Figma node, variants, typography, spacing, state, radius, border, shadow, and icon source. Form controls must inherit the verified SF Pro web stack and match hover, pressed, focus, disabled, selected, checked, and error states.
-- [ ] Replace every ordinary HTML control and shell container in the judged path with the reusable UI layer. Domain interactions such as Map nodes, evidence edges, charts, slide media, image tiles, and storyboard imagery may stay custom, but their controls and containers may not.
-- [ ] Replace text glyphs and improvised symbols with the verified official iconography. Every IconButton must have an accessible name and visible tooltip where its meaning is not obvious.
-- [ ] When the library has no ready-made component, add a named WorkshopLM composite only after documenting its recipe in the Figma inventory. A composite may arrange official primitives and spacing tokens; it may not introduce independent chrome tokens, control geometry, typography, shadows, or interaction behavior.
-- [ ] Remove dead MVP shell CSS and isolate allowed domain rendering so no legacy selector can override official component states. The full application cascade must contain no retired structural color, radius, type, shadow, or spacing value outside explicitly documented generated-media exceptions.
-- [ ] Correct the known audit failures: 44px source Token versus the verified 42px reference, non-inheriting button fonts, legacy green locked-Style shadow, native checkbox appearance, glyph Back/Close icons, unmapped Brief/Storyboard actions and fields, the unmapped approval receipt, and missing current-object identity on mobile.
-- [ ] Add one inventory-backed exception manifest for custom domain rendering. Any custom judge-visible class absent from that manifest fails conformance.
+- [x] Replace every ordinary HTML control and shell container in the judged path with the reusable UI layer. Domain interactions such as Map nodes, evidence edges, charts, slide media, image tiles, and storyboard imagery may stay custom, but their controls and containers may not.
+- [x] Replace text glyphs and improvised symbols with the verified official iconography. Every IconButton must have an accessible name and visible tooltip where its meaning is not obvious.
+- [x] When the library has no ready-made component, add a named WorkshopLM composite only after documenting its recipe in the Figma inventory. A composite may arrange official primitives and spacing tokens; it may not introduce independent chrome tokens, control geometry, typography, shadows, or interaction behavior.
+- [x] Remove dead MVP shell CSS and isolate allowed domain rendering so no legacy selector can override official component states. The full application cascade must contain no retired structural color, radius, type, shadow, or spacing value outside explicitly documented generated-media exceptions.
+- [x] Correct the known audit failures: 44px source Token versus the verified 42px reference, non-inheriting button fonts, legacy green locked-Style shadow, native checkbox appearance, glyph Back/Close icons, unmapped Brief/Storyboard actions and fields, the unmapped approval receipt, and missing current-object identity on mobile.
+- [x] Add one inventory-backed exception manifest for custom domain rendering. Any custom judge-visible class absent from that manifest fails conformance.
 
 #### P0 professional layout and language
 
 Use NotebookLM's screenshots as behavioral evidence, then express the result in the official OpenAI system:
 
-- [ ] Keep one stable orientation frame: Workshop name and current object at top left, Sources in one consistent location, one focused center object, and one primary next action. Do not reintroduce persistent workflow tabs or a duplicate browser chat.
-- [ ] Make Sources feel as immediate as NotebookLM: one labeled count opens the source list; selection is directly visible; one click from any citation reveals the exact source excerpt and locator; closing it returns focus to the originating claim.
-- [ ] Make Outputs behave like NotebookLM's useful Studio history without copying its panel: each output is a recognizable named object with a real preview, type, freshness, source coverage, and one obvious open action. Creation controls do not compete with the output history.
-- [ ] Preserve the professional control advantage: Map editing, brief approval, style selection, storyboard editing, and storyboard approval remain visible only when relevant. The user sees two blocking approvals—Brief and Storyboard—not internal gate machinery.
-- [ ] Replace judge-visible copy using this canonical dictionary:
+- [x] Keep one stable orientation frame: Workshop name and current object at top left, Sources in one consistent location, one focused center object, and one primary next action. Do not reintroduce persistent workflow tabs or a duplicate browser chat.
+- [x] Make Sources feel as immediate as NotebookLM: one labeled count opens the source list; selection is directly visible; one click from any citation reveals the exact source excerpt and locator; closing it returns focus to the originating claim.
+- [x] Make Outputs behave like NotebookLM's useful Studio history without copying its panel: each output is a recognizable named object with a real preview, type, freshness, source coverage, and one obvious open action. Creation controls do not compete with the output history.
+- [x] Preserve the professional control advantage: Map editing, brief approval, style selection, storyboard editing, and storyboard approval remain visible only when relevant. The user sees two blocking approvals—Brief and Storyboard—not internal gate machinery.
+- [x] Replace judge-visible copy using this canonical dictionary:
 
 | Current or internal wording | Required user-facing wording |
 | --- | --- |
@@ -231,17 +231,17 @@ Use NotebookLM's screenshots as behavioral evidence, then express the result in 
 | `Prepare render` | `Create video` |
 | `Current` / `Stale` | `Up to date` / `Needs update` |
 
-- [ ] Audit every visible string. Labels identify the object; buttons state the result of clicking them; helper text explains only a consequence the user would not reasonably know. Use sentence case, avoid redundant subtitles, keep primary actions to roughly three words, and never expose implementation terms in the default view.
+- [x] Audit every visible string. Labels identify the object; buttons state the result of clicking them; helper text explains only a consequence the user would not reasonably know. Use sentence case, avoid redundant subtitles, keep primary actions to roughly three words, and never expose implementation terms in the default view.
 - [ ] Pass a five-second orientation test on Map, Brief, Outputs, Storyboard, Sources, and mobile: a first-time professional can answer `Where am I?`, `What is this based on?`, and `What should I do next?` without opening another surface.
 
 #### P0 proof before completion
 
-- [ ] Add structural tests that fail for unmapped interactive elements, raw shell controls, glyph icons, unapproved tokens, or custom chrome outside the exception manifest.
+- [x] Add structural tests that fail for unmapped interactive elements, raw shell controls, glyph icons, unapproved tokens, or custom chrome outside the exception manifest.
 - [ ] Add computed-style assertions for the exact official geometry and type of the core primitives in every interaction state.
 - [ ] Add screenshot regression coverage for reset and completed fixtures at 1200×800, 1024×768, and 390×844 across Map, Sources, evidence, Brief/Style, Outputs, Storyboard, and focused output viewer.
 - [ ] Verify keyboard-only completion of both approval paths, focus return after drawers, visible focus, WCAG AA contrast, reduced motion, screen-reader names, 200% zoom, and no horizontal overflow.
 - [ ] Run a copy inventory test that snapshots every judge-visible label and rejects the retired/internal vocabulary above outside technical Details.
-- [ ] Complete a manual Figma-to-runtime reconciliation table with source node, code component, rendered measurement, state coverage, and screenshot evidence. Only then may the two reopened compliance items be checked again.
+- [x] Complete a manual Figma-to-runtime reconciliation table with source node, code component, rendered measurement, state coverage, and screenshot evidence. Only then may the two reopened compliance items be checked again.
 
 ### 3. Specification and implementation plan
 

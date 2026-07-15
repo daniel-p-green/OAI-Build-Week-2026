@@ -1,1 +1,22 @@
-{ "name": "@workshoplm/ui", "private": true, "type": "module", "scripts": { "build": "node -e \"\"", "lint": "node -e \"\"", "typecheck": "node -e \"\"", "test": "node -e \"\"" } }
+{
+  "name": "@workshoplm/ui",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./styles.css": "./src/styles.css"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "lint": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "react": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "react": "^19.1.0"
+  }
+}

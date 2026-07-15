@@ -1,45 +1,47 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { OAI_UI_COMPONENTS, OAI_UI_SOURCE, OAI_UI_TOKENS } from "./oai-ui-contract";
+import { DOMAIN_UI_EXCEPTIONS, OAI_UI_COMPONENTS, OAI_UI_SOURCE } from "@workshoplm/ui";
 
 const root = resolve(process.cwd(), "../..");
 const page = readFileSync(resolve(process.cwd(), "app/page.tsx"), "utf8");
-const css = readFileSync(resolve(process.cwd(), "app/official-ui.css"), "utf8");
+const appCss = readFileSync(resolve(process.cwd(), "app/globals.css"), "utf8");
+const ui = readFileSync(resolve(root, "packages/ui/src/index.tsx"), "utf8");
+const uiCss = readFileSync(resolve(root, "packages/ui/src/styles.css"), "utf8");
 const inventory = readFileSync(resolve(root, OAI_UI_SOURCE.inventory), "utf8");
 
-describe("official Apps in ChatGPT UI contract", () => {
-  it("pins the inspected Figma source and core component ids", () => {
-    expect(OAI_UI_SOURCE.fileKey).toBe("jVilV9akIrMbbpl8sUqC6K");
+describe("official Apps in ChatGPT UI implementation", () => {
+  it("pins every reusable shell family to the inspected Figma inventory", () => {
     for (const id of Object.values(OAI_UI_COMPONENTS)) expect(inventory).toContain(`\`${id}\``);
-  });
-
-  it("uses only the verified light-mode foundation values in application chrome", () => {
-    for (const token of Object.values(OAI_UI_TOKENS)) expect(css.toLowerCase()).toContain(token.toLowerCase());
-    for (const retired of ["#10a37f", "#7356b8", "#9a650f", "#f7f7f8", "#ececf1"]) {
-      expect(css.toLowerCase()).not.toContain(retired);
+    for (const component of ["FullScreenShell", "NavigationHeader", "Button", "IconButton", "Token", "Checkbox", "Input", "TextArea", "Card", "ListGroup", "ListRow", "EntityCard", "Carousel", "CarouselRow"]) {
+      expect(ui).toContain(`function ${component}`);
     }
   });
 
-  it("maps every judge-visible shell family to an official component", () => {
-    for (const name of [
-      "Full screen",
-      "Navigation/Header",
-      "Button",
-      "IconButton",
-      "Token",
-      "Checkbox",
-      "Input",
-      "TextArea",
-      "Card",
-      "ListGroup",
-      "ListRow",
-      "EntityCard / Media or map",
-      "Carousel",
-      "CarouselRow",
-    ]) {
-      expect(page).toContain(`data-oai-component=\"${name}\"`);
+  it("uses official primitives for ordinary controls and marks raw domain interactions", () => {
+    const rawControls = [...page.matchAll(/<(button|input|textarea)\b[^>]*>/g)].map((match) => match[0]);
+    expect(rawControls.length).toBeGreaterThan(0);
+    for (const control of rawControls) expect(control).toContain("data-domain-ui=");
+    expect(page).not.toMatch(/[>\s][‹×][<\s]/);
+  });
+
+  it("limits custom rendered surfaces to the reviewed exception manifest", () => {
+    const used = [...page.matchAll(/data-domain-ui="([^"]+)"/g)].map((match) => match[1]);
+    for (const name of used) expect(DOMAIN_UI_EXCEPTIONS).toContain(name as typeof DOMAIN_UI_EXCEPTIONS[number]);
+  });
+
+  it("removes retired shell tokens from the complete application cascade", () => {
+    const cascade = `${uiCss}\n${appCss}`.toLowerCase();
+    for (const retired of ["#10a37f", "#7356b8", "#9a650f", "#f7f7f8", "#ececf1"]) expect(cascade).not.toContain(retired);
+    expect(uiCss).toContain("height: 42px");
+    expect(uiCss).toContain("height: 36px");
+    expect(uiCss).toContain("border-radius: 24px");
+  });
+
+  it("keeps internal product language out of visible copy", () => {
+    for (const retired of ["Grounding this Workshop", "Evidence becomes structure", "Production contract", "Visual contract", "Lock one coherent system", "Lock Style v1", "Update Style v1", "Coherent delivery package", "One system. Every format.", "Generate package", "Refresh package", "Open package", "Illuminate path on Map", "Highlight on Map", "Provider render pending", "Editable before the expensive step", "Prepare render"]) {
+      expect(page).not.toContain(retired);
     }
+    for (const required of ["Approve brief", "Create outputs", "Show source", "Show on map", "Create video"]) expect(page).toContain(required);
   });
 });
-

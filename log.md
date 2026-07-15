@@ -2925,3 +2925,44 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Reviewed the revised `GOAL.md` for the prior false-completion state, the known runtime failures, NotebookLM translation boundary, explicit copy dictionary, executable implementation sequence, and completion evidence.
 - This milestone changes the source-of-truth goal and does not claim that the P0 rebuild itself is implemented.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 21:58 CT — Official component layer and plain-language judge path implemented
+
+**Area:** Design system / frontend / professional UX
+
+### Changed
+
+- Replaced the no-op `packages/ui` package with a real React UI layer exporting `FullScreenShell`, `NavigationHeader`, `Button`, `IconButton`, `Token`, `Checkbox`, `Input`, `TextArea`, `Card`, `ListGroup`, `ListRow`, `EntityCard`, `Carousel`, and `CarouselRow`.
+- Removed the legacy `official-ui.css` override strategy and replaced the duplicated MVP cascade with one application-layout stylesheet plus the package-owned official component stylesheet. The retired green/violet/amber shell colors and competing control geometry no longer exist in the application cascade.
+- Migrated the judged Map, Sources, Brief/Style, Outputs, and Storyboard path to the reusable layer. Only the inventoried domain surfaces—Map nodes/edges, generated previews, image tiles, and storyboard imagery—retain custom rendering.
+- Retrieved the official 24px chevron-left, close, and plus assets from Figma nodes `2105:819`, `2105:904`, and `2105:886` and implemented their exact paths. Glyph Back/Close symbols are gone.
+- Documented the Source sheet, Evidence sheet, Claim inspector, and Approval summary as primitive-only compositions because the official library's Inspector remains “Coming soon.” Status is plain official caption text, not an invented pill.
+- Rewrote visible product language around familiar objects and outcomes: `Sources`, `Map`, `Brief`, `Outputs`, `Storyboard`, `Approve brief`, `Create outputs`, `Show source`, `Show on map`, and `Create video`. Internal gate, contract, package, provenance, and render wording is absent from the default interface.
+- Added structural conformance tests for reusable exports, inspected Figma ids, raw controls, exact icons, retired cascade tokens, the domain exception manifest, and retired product language.
+- Added the implementation reconciliation record at `research/ui-figma-runtime-reconciliation-2026-07-14.md` and a permanent screenshot set under `research/screenshots/workshoplm/p0-official-ui/`.
+
+### Verified
+
+- `pnpm --filter @workshoplm/web build` passed.
+- `pnpm check` passed lint, typecheck, and tests in all thirteen packages. The new UI package passed 3 tests; web conformance passed 5 tests; worker retained 28 passing tests.
+- `pnpm demo:e2e` passed the complete recorded seam with all six gate flags true, two rendered HTML outputs, five planned assets, five storyboard panels, and a rendered video artifact.
+- Live browser computed styles matched the inspected references: Button 36px / 8px 16px / 999px / SF Pro 14/20; Token 42px / 12px 16px / 25px / SF Pro 13/18; Card 24px / .5px 15% ink; Input 42px / SF Pro 14/20; Checkbox 18px with `appearance:none` and the official checked ink.
+- Live visual review covered Map at 1024×768, Brief/Style, Outputs, and Storyboard at 1200×800, and Map/Sources at 390×844. The first mobile run exposed a 421px header inside a 390px viewport; the header was corrected and rechecked at an exact 390px document width with the current object still visible.
+- Keyboard focus displayed the official 2px blue focus ring, and closing Sources returned focus to the source-count control.
+- Compared the live screens directly with the stored NotebookLM populated-Studio reference. WorkshopLM preserves fixed identity, immediate source scope, one focused center object, durable output history, and exact source reveal while using the official OpenAI visual system and a professional production workflow.
+
+### Decisions
+
+- NotebookLM remains behavioral reference, not visual source. The official OpenAI Figma file remains the exclusive chrome/component source.
+- The rebuilt interface uses no persistent tabs and no duplicate chat. ChatGPT owns conversation; WorkshopLM shows one professional object and one next action.
+- This milestone closes the implementation and language portion of the correction, but does not close P0 proof. The remaining automated state, screenshot, full-copy, keyboard-approval, and zoom checks stay open in `GOAL.md`.
+
+### Open items
+
+- Add automated computed-style coverage across every interaction state.
+- Complete reset/completed screenshot regression for evidence and focused-output states at all three viewports.
+- Verify keyboard-only completion of both approval paths, WCAG AA, reduced motion, and 200% browser zoom.
+- Snapshot every judge-visible label, not only the retired-language allowlist.
+- Codex Session ID: unavailable on this surface; not inferred.

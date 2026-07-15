@@ -74,7 +74,10 @@ Component-specific mobile/card typography is also verified: Card header `17/23`,
 | Component | Figma source | Verified implementation facts | WorkshopLM use |
 | --- | --- | --- | --- |
 | Button | set `2:465`, key `d7098df…`; inspected instance `7:104094` | primary/secondary/destructive/sec-destructive; large/small; 36px primary, `8px 16px`, 4px gap, 999px radius, `14/20`, primary `#0D0D0D` | every labeled action |
-| IconButton | Desktop Web component | icon-only action with accessible label | Back, close, dismiss |
+| IconButton | Desktop Web component; iconography page `2100:26850` | icon-only action with accessible label; exact 24px icon assets | Back, close, dismiss |
+| Chevron left icon | `2105:819` | exact `icon / chevron-left-lg` path from Figma asset | Back |
+| Close icon | `2105:904` | exact `icon / x, crossed` path from Figma asset | Close and dismiss |
+| Plus icon | `2105:886` | exact `icon / plus-lg, 18px, add` path from Figma asset | Add source |
 | SegmentedControl | set `6:20104`, key `7dd52a…` | large round 44px, 4px padding, 999px radius, secondary background | mutually exclusive view choices when needed |
 | Token | set `2:373`, key `b623…` | 42px, `12px 16px`, 8px gap, 25px radius, 10% ink stroke, `13/18` | citation and source-scope tokens |
 | Checkbox | set `5:34676`, key `2b762…` | checked/indeterminate/hover/press/inactive; label `16/28` | active source scope |
@@ -102,6 +105,19 @@ Component-specific mobile/card typography is also verified: Card header `17/23`,
 
 The library labels Inspector as “Coming soon.” WorkshopLM therefore composes its contextual evidence panel from verified Full screen columns, Card, Input, Button, and ListRow primitives; it does not claim a shipped official Inspector component.
 
+## WorkshopLM composites
+
+The official library does not ship a finished Inspector. WorkshopLM uses only these named compositions for missing product-specific surfaces:
+
+| Composite | Official recipe | No new chrome |
+| --- | --- | --- |
+| `SourceSheet` | Full screen side column + Sidebar desktop header + IconButton + Button + ListGroup/ListRow + Checkbox + Card | Uses the official white surface, 10% divider, spacing scale, and primitive interaction states. |
+| `EvidenceSheet` | Full screen content column + Sidebar desktop header + IconButton + caption/body type + Button | The excerpt and locator are content; there is no invented inspector control family. |
+| `ClaimInspector` | Card + IconButton + Input + Button + caption/body type | Map-specific content sits inside official primitives. |
+| `ApprovalSummary` | Card + caption/body type + Button | Current state is plain official caption text, not a badge or custom pill. |
+
+Map nodes, provenance edges, generated previews, image tiles, and storyboard imagery remain domain content. Their surrounding controls and containers use the official primitives above.
+
 ## Judge-visible mapping
 
 | WorkshopLM surface | Required official composition |
@@ -120,4 +136,4 @@ The library labels Inspector as “Coming soon.” WorkshopLM therefore composes
 
 ## Conformance rule
 
-`apps/web/app/oai-ui-contract.ts` is the machine-readable allowlist. `apps/web/app/oai-ui-contract.test.ts` verifies the official token values, required source identifiers, and judge-visible markup mappings. A new shell primitive may not land until its exact Figma source is added here and to the contract. Domain-only drawing must be marked as such and may not leak its custom visual language into application chrome.
+`packages/ui/src/contract.ts` is the machine-readable allowlist. `apps/web/app/oai-ui-contract.test.ts` verifies the official token values, required source identifiers, reusable component exports, plain-language boundary, and judge-visible custom-domain manifest. A new shell primitive may not land until its exact Figma source is added here and to the contract. Domain-only drawing must be marked as such and may not leak its custom visual language into application chrome.

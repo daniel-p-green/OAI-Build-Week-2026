@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import "@workshoplm/ui/styles.css";
 import "./globals.css";
-import "./official-ui.css";
 
 export const metadata: Metadata = {
   title: "WorkshopLM",
