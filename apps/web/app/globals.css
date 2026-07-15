@@ -58,6 +58,16 @@ button { -webkit-tap-highlight-color: transparent; }
 .sheet-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .sheet-heading p, .sheet-intro { margin: 0; color: #5d5d5d; font-size: 14px; line-height: 20px; }
 .sheet-intro { margin-bottom: 16px; }
+.realtime-capture { display: grid; gap: 14px; padding: 18px; }
+.realtime-capture-copy { display: grid; gap: 4px; }
+.realtime-capture-copy h3 { margin: 0; font-size: 17px; line-height: 23px; letter-spacing: -.35px; }
+.realtime-capture-copy p, .realtime-capture-status p { margin: 0; color: #5d5d5d; font-size: 14px; line-height: 20px; }
+.realtime-capture-status { display: grid; gap: 10px; }
+.realtime-capture-status blockquote { max-height: 144px; margin: 0; padding: 12px; overflow: auto; border-radius: 12px; background: #f3f3f3; font-size: 14px; line-height: 20px; }
+.realtime-capture-status .capture-error { color: #e02e2a; }
+.recording-dot { width: 8px; height: 8px; display: inline-block; margin-right: 7px; border-radius: 999px; background: #e02e2a; }
+.source-divider { display: flex; align-items: center; gap: 10px; margin: 18px 0; color: #8f8f8f; font-size: 12px; line-height: 16px; }
+.source-divider::before, .source-divider::after { height: 1px; flex: 1; background: rgba(13,13,13,.05); content: ""; }
 .source-row { padding-left: 12px; padding-right: 12px; }
 .source-row.selected { background: #f3f3f3; }
 .source-row .oai-list-row-action > span { min-width: 0; display: grid; gap: 2px; }

@@ -1,14 +1,14 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 00:17 CT
+Last updated: 2026-07-15 00:30 CT
 
 ## Status
 
 **Active phase:** P0 interface simplification, then live demo proof
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
-**Current gate:** The P0 screen-composition and language rebuild is implemented and passes the full repository checks, recorded demo seam, and final three-width visual suite. The remaining interface completion gates are five independent first-time orientation reviews and provider-backed GPT Image 2 gallery media. Provider media may proceed in isolated files; do not record the final demo until the review gate is complete and any critical navigation finding is repaired.
+**Current gate:** The P0 screen-composition and language rebuild plus bounded Realtime capture UI are implemented and pass the full repository checks, recorded demo seam, and final three-width visual suite. The remaining interface completion gates are five independent first-time orientation reviews and provider-backed GPT Image 2 gallery media. The Realtime transport is ready for its first provider-backed microphone turn but is not yet live-verified. Provider media may proceed in isolated files; do not record the final demo until the review gate is complete and any critical navigation finding is repaired.
 **Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found` for this account even though the current public model page describes it as a Sol alias. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. The benchmark and live grounded-Map adapter now share a tested parser for both top-level and nested Responses text, but no request has run. The current model catalog labels `gpt-4o-mini-tts` deprecated while the current speech guide still recommends it; verify the actual live response before recording. Do not claim live product use or change per-operation defaults before these checks.
-**Known host risk:** The July 14 host-sync verification is credential-blocked and the decision deadline has passed, so the capture-only `gpt-realtime-2.1` fallback is the final demo voice path. Native task and voice-turn persistence remain unproven and must not be claimed. The durable fallback transcript boundary is implemented; the live WebRTC transport still requires provider-backed verification before recording.
+**Known host risk:** The July 14 host-sync verification is credential-blocked and the decision deadline has passed, so the capture-only `gpt-realtime-2.1` fallback is the final demo voice path. Native task and voice-turn persistence remain unproven and must not be claimed. The server-minted ephemeral session route, browser WebRTC control, final-transcript reducer, durable Source boundary, and provider event provenance are implemented and tested; one provider-backed microphone turn still must be captured and inspected before recording.
 
 **Hard schedule gates:**
 
@@ -78,7 +78,7 @@ WorkshopLM borrows NotebookLM's strongest orientation patterns, then expresses t
 
 `Apps in ChatGPT · OpenAI Official (Community)` is the only source for product chrome. Use verified primitives, variables, text styles, effects, icons, spacing, and display-mode templates from the recorded Figma inventory. If a needed pattern is absent, build a named WorkshopLM composite from those primitives and document its recipe before implementation. Never invent a parallel button, card, field, sheet, token, icon, type, radius, shadow, or interaction system. Custom visuals are allowed only for WorkshopLM's work itself: Map geometry, evidence paths, generated media, charts, slide previews, image tiles, and storyboard frames.
 
-All primary language is plain, professional, and action-first. Object names are `Workshop`, `Sources`, `Map`, `Brief`, `Style`, `Outputs`, `Storyboard`, and `Video`. Primary actions are `Add source`, `Show source`, `Show on map`, `Approve brief`, `Choose style`, `Create outputs`, `Approve storyboard`, and `Create video`. Supporting actions may use `Back`, `Close`, `Edit`, `Save`, `Retry`, `Cancel`, and `Open`. States are limited to `Draft`, `Ready for review`, `Approved`, `In progress`, `Ready`, `Needs update`, and `Couldn't create`. Technical terms such as gate, contract, package, artifact, provenance, render, Visual DNA, model ID, version ID, `FRAME.md`, and `DESIGN.md` appear only in technical Details or exported files.
+All primary language is plain, professional, and action-first. Object names are `Workshop`, `Sources`, `Map`, `Brief`, `Style`, `Outputs`, `Storyboard`, and `Video`. Primary actions are `Add source`, `Record voice`, `Add transcript`, `Show source`, `Show on map`, `Approve brief`, `Choose style`, `Create outputs`, `Approve storyboard`, and `Create video`. Supporting actions may use `Back`, `Close`, `Edit`, `Save`, `Retry`, `Cancel`, and `Open`. States are limited to `Draft`, `Ready for review`, `Approved`, `In progress`, `Ready`, `Needs update`, and `Couldn't create`. Technical terms such as gate, contract, package, artifact, provenance, render, Visual DNA, model ID, version ID, `FRAME.md`, and `DESIGN.md` appear only in technical Details or exported files.
 
 ## Locked decisions
 
@@ -332,6 +332,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Ingest local text/PDF files, safe public URLs, and sanitized meeting material.
 - [x] Normalize local and connected-app/MCP sources for grounded `search`/`fetch` retrieval.
 - [ ] Persist a live voice turn through the final capture-only `gpt-realtime-2.1` path and its existing durable transcript/source contract; native ChatGPT task/account turn linkage remains an explicitly unsupported future path.
+  - The server-minted ephemeral credential route, direct browser WebRTC session, capture-only VAD configuration, final transcript reducer, private Source persistence, and provider item/event provenance are implemented and tested. Keep this open until an inspected live microphone turn proves the provider path.
 - [x] Extract candidate goals, audience, claims, constraints, and unresolved questions from grounded claims with source locators.
 - [x] Preserve claim-level evidence locators and source permissions.
 
@@ -396,6 +397,8 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [Current UI screenshot gallery](outputs/workshoplm-current-ui/README.md)
 - [Comprehensive WorkshopLM project overview deck](outputs/workshoplm-project-overview.pptx)
 - [Traced submission Output-set builder and verifier](apps/worker/src/submission-package.ts)
+- [Realtime voice capture UI](apps/web/app/realtime-capture.tsx)
+- [Server-only Realtime client-secret boundary](apps/web/app/api/realtime/realtime-server.ts)
 - [Product opportunity](research/product-opportunity.md)
 - [Workflow map](research/workflow-map.md)
 - [NotebookLM live user-flow map](research/notebooklm-user-flow.md)

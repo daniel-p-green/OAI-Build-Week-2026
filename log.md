@@ -3394,3 +3394,42 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Implement and verify the server-minted ephemeral Realtime session plus browser WebRTC capture against the existing `captureFallbackTranscript` boundary.
 - Record the first live voice capture before filming the final demo.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 00:30 CT — Bounded Realtime voice capture implemented and verified without spend
+
+**Area:** Voice capture / browser WebRTC / transcript provenance / interface
+
+### Changed
+
+- Added a server-only `POST /api/realtime/token` boundary that fails closed unless `WORKSHOPLM_LIVE_OPENAI=1` and `OPENAI_API_KEY` are present, then requests a one-minute ephemeral Realtime client secret without exposing the standard API key to the browser.
+- Configured `gpt-realtime-2.1` as a capture-only session with `gpt-realtime-whisper` input transcription, server VAD, and both automatic response creation and interruption disabled.
+- Added a bounded `Record voice` card inside the existing `Add source` sheet. It connects through browser WebRTC, shows recording and transcript-review states, and requires final provider transcript events before `Add transcript` becomes eligible.
+- Added a deterministic reducer for Realtime transcript delta, completed, failed, and error events. Completed transcripts retain provider item and event IDs; an empty manual buffer commit is ignored rather than shown as a capture failure.
+- Extended durable transcript provenance with an explicit `fixture` or `webrtc` transport. Only WebRTC captures with non-empty provider item/event evidence count as live voice in the submission Output set; older persisted transcripts are safely backfilled as fixtures.
+- Documented `RealtimeCapture` as a WorkshopLM composite made only from the official Card, Button, secondary Button, and body/status text primitives. Added responsive Add Source screenshots at 1200×800, 1024×768, and 390×844.
+
+### Verified
+
+- Official OpenAI Realtime WebRTC guidance and API reference support the chosen boundary: a server mints the ephemeral client secret, the browser sends SDP directly to `/v1/realtime/calls`, and final input transcription arrives through `conversation.item.input_audio_transcription.completed` events.
+- Web tests passed 10/10, including server fail-closed behavior, exact capture-only session configuration, standard-key non-disclosure, incomplete-secret rejection, transcript assembly, provider evidence retention, and transcript errors.
+- Worker tests passed 38/38, including fixture-versus-WebRTC provenance and rejection of incomplete provider item/event evidence.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages.
+- `pnpm demo:e2e` passed the recorded Capture → Map → Brief → Outputs → Storyboard → Video seam with all six gates true.
+- `pnpm demo:live` passed the no-spend preflight with `paidCallsMade: false`; no provider call or credit spend occurred in this increment.
+- `pnpm submission:verify` returned `valid: true`, `stale: false`, and `tampered: false`. Its limitations now explicitly say that fixture/imported transcript text is not live voice evidence.
+- The production Next build passed and exposed `/api/realtime/token` as a dynamic server route. The visual suite passed 10/10 without baseline changes, including the Add Source composition at all three widths and a fail-closed browser path when live capture is disabled.
+- Inspected the three new Add Source screenshots. The capture control remains contextual, uses one dominant action, does not add a composer or permanent toolbar, and preserves the text-source fallback on desktop and mobile.
+
+### Decisions
+
+- This increment proves the implementation and fail-closed behavior, not provider success. The live Capture checkbox remains open until an actual microphone turn is captured, persisted, and inspected with provider evidence.
+- A deterministic demo transcript remains useful for replay, but it is permanently labeled `fixture`; it cannot upgrade the submission package to live voice.
+- Standard OpenAI credentials stay on the Next.js server. The browser receives only the ephemeral Realtime secret required for its direct WebRTC connection.
+
+### Open items
+
+- Run one authorized provider-backed microphone turn and inspect the durable transcript, private Source, item/event IDs, and downstream grounding before final recording.
+- Complete the five independent first-time orientation reviews before filming.
+- Codex Session ID: unavailable on this surface; not inferred.

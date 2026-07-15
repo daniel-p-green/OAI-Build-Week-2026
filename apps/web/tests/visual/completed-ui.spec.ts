@@ -44,6 +44,11 @@ test("reset fixture is calm and responsive", async ({ page }) => {
     await expectScreen(page, `${viewport.name}-reset-map`);
     await page.getByRole("button", { name: /sources$/ }).click();
     await expectScreen(page, `${viewport.name}-reset-sources`);
+    await page.getByRole("button", { name: "Add source" }).click();
+    await expect(page.getByRole("dialog", { name: "Add source" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Record voice" })).toBeVisible();
+    await expectScreen(page, `${viewport.name}-add-source`);
+    await closeDialog(page, "Add source");
     await closeDialog(page, "Sources");
   }
 
@@ -61,6 +66,17 @@ test("reset fixture is calm and responsive", async ({ page }) => {
 
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+});
+
+test("voice capture is bounded inside Add source and fails closed without live opt-in", async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto("/");
+  await page.getByRole("button", { name: /sources$/ }).click();
+  await page.getByRole("button", { name: "Add source" }).click();
+  await page.getByRole("button", { name: "Record voice" }).click();
+  await expect(page.locator(".capture-error")).toContainText("Live OpenAI capture is disabled");
+  await expect(page.getByRole("dialog", { name: "Add source" })).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Title" })).toBeVisible();
 });
 
 test.describe("completed Workshop judge path", () => {

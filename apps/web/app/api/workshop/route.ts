@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { applyMapOperation, applyWorkshopAction, approveSketch, approveVisualDna, cancelVideoRender, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, extractWorkshopCandidates, generateAssetPlan, generateOutput, generateStoryboard, ingestPdfFile, ingestSource, ingestUrl, lockManualStyle, lockWebsiteStyle, readWorkshopState, selectImagePanelForRegeneration, setActiveSourceScope, syncMapCanvas, type CanvasNodePatch, type ManualStyleInput, type SourceIngestion, undoMapOperation, updateStoryboardPanel } from "../../../../worker/src/workshop-service";
+import { applyMapOperation, applyWorkshopAction, approveSketch, approveVisualDna, cancelVideoRender, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, extractWorkshopCandidates, generateAssetPlan, generateOutput, generateStoryboard, ingestPdfFile, ingestSource, ingestUrl, lockManualStyle, lockWebsiteStyle, readWorkshopState, selectImagePanelForRegeneration, setActiveSourceScope, syncMapCanvas, type CanvasNodePatch, type ManualStyleInput, type RealtimeCaptureEvidence, type SourceIngestion, undoMapOperation, updateStoryboardPanel } from "../../../../worker/src/workshop-service";
 
 export const runtime = "nodejs";
 type Action = "approveBrief" | "lockManualStyle" | "lockWebsiteStyle" | "createSketch" | "approveSketch" | "createVisualDna" | "approveVisualDna" | "approveStoryboard" | "renderVideo" | "cancelVideoRender" | "ingestSource" | "captureFallbackTranscript" | "ingestUrl" | "ingestPdfFile" | "extractCandidates" | "setActiveSourceScope" | "mapOperation" | "syncMapCanvas" | "undoMapOperation" | "generateAssetPlan" | "generateOutput" | "generateStoryboard" | "createImageBatch" | "regenerateImagePanel" | "updateStoryboardPanel";
-type RequestBody = { action?: Action; source?: SourceIngestion; text?: string; url?: string; filePath?: string; permission?: "private" | "sanitized" | "shareable"; sourceIds?: string[]; panelId?: string; operation?: unknown; canvasNodes?: CanvasNodePatch[]; outputType?: "deck" | "infographic"; manualStyle?: ManualStyleInput; panel?: { id: string; title: string; narration: string; durationSeconds: number } };
+type RequestBody = { action?: Action; source?: SourceIngestion; text?: string; capture?: RealtimeCaptureEvidence; url?: string; filePath?: string; permission?: "private" | "sanitized" | "shareable"; sourceIds?: string[]; panelId?: string; operation?: unknown; canvasNodes?: CanvasNodePatch[]; outputType?: "deck" | "infographic"; manualStyle?: ManualStyleInput; panel?: { id: string; title: string; narration: string; durationSeconds: number } };
 
 export async function GET() { return NextResponse.json(readWorkshopState()); }
 
@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json() as RequestBody;
     if (!body.action) return NextResponse.json({ error: "action is required" }, { status: 400 });
     if (body.action === "ingestSource") { if (!body.source) return NextResponse.json({ error: "source is required" }, { status: 400 }); return NextResponse.json(await ingestSource(body.source)); }
-    if (body.action === "captureFallbackTranscript") { if (!body.text) return NextResponse.json({ error: "text is required" }, { status: 400 }); return NextResponse.json(await captureFallbackTranscript(body.text)); }
+    if (body.action === "captureFallbackTranscript") { if (!body.text) return NextResponse.json({ error: "text is required" }, { status: 400 }); return NextResponse.json(await captureFallbackTranscript(body.text, undefined, body.capture)); }
     if (body.action === "ingestUrl") { if (!body.url) return NextResponse.json({ error: "url is required" }, { status: 400 }); return NextResponse.json(await ingestUrl(body.url)); }
     if (body.action === "ingestPdfFile") { if (!body.filePath) return NextResponse.json({ error: "filePath is required" }, { status: 400 }); return NextResponse.json(await ingestPdfFile(body.filePath, undefined, body.permission)); }
     if (body.action === "extractCandidates") return NextResponse.json(extractWorkshopCandidates());

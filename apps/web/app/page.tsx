@@ -26,6 +26,7 @@ import {
   Token,
 } from "@workshoplm/ui";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { RealtimeCapture } from "./realtime-capture";
 
 type ObjectView = "map" | "brief" | "outputs" | "storyboard" | "output";
 type Sheet = "sources" | "evidence" | "add-source" | "style" | null;
@@ -316,7 +317,7 @@ function EvidenceSheet({ source, onClose, onShowMap }: { source: SourceItem; onC
 function AddSourceSheet({ onClose, onPost }: { onClose: () => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null> }) {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
-  return <SideSheet title="Add source" onClose={onClose}><p className="sheet-intro">Paste material you are allowed to use.</p><Input label="Title" value={title} onChange={(event) => setTitle(event.target.value)} /><TextArea label="Text" value={text} onChange={(event) => setText(event.target.value)} /><Button disabled={!title.trim() || !text.trim()} onClick={() => { void onPost({ action: "ingestSource", source: { title, origin: "Local note", text, permission: "sanitized" } }).then((next) => next && onClose()); }}>Add source</Button></SideSheet>;
+  return <SideSheet title="Add source" onClose={onClose}><RealtimeCapture onSave={async (transcript, capture) => Boolean(await onPost({ action: "captureFallbackTranscript", text: transcript, capture }).then((next) => { if (next) onClose(); return next; }))} /><div className="source-divider"><span>or paste text</span></div><p className="sheet-intro">Paste material you are allowed to use.</p><Input label="Title" value={title} onChange={(event) => setTitle(event.target.value)} /><TextArea label="Text" value={text} onChange={(event) => setText(event.target.value)} /><Button disabled={!title.trim() || !text.trim()} onClick={() => { void onPost({ action: "ingestSource", source: { title, origin: "Local note", text, permission: "sanitized" } }).then((next) => next && onClose()); }}>Add source</Button></SideSheet>;
 }
 
 function Status({ children, tone = "current" }: { children: ReactNode; tone?: "current" | "waiting" }) {

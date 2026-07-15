@@ -78,7 +78,8 @@ function assertBuildable(state: WorkshopState, root: string): SubmissionInputSna
 
 export function submissionLimitations(state: WorkshopState): string[] {
   const limitations: string[] = [];
-  if (!state.transcriptSegments.length) limitations.push("The recorded fixture starts from an imported brainstorm source; no durable voice transcript is present.");
+  const providerVoice = state.transcriptSegments.some((segment) => segment.transport === "webrtc" && segment.provider?.model === "gpt-realtime-2.1" && segment.provider.transcriptionModel === "gpt-realtime-whisper" && segment.provider.itemIds.length > 0 && segment.provider.eventIds.length > 0);
+  if (!providerVoice) limitations.push("No provider-verified WebRTC voice transcript is present; fixture or imported transcript text is not treated as live voice evidence.");
   if (!state.aiRuns.length) limitations.push("The recorded fixture uses the deterministic grounded Map path; no live GPT-5.6 reasoning run is present.");
   const generatedImages = state.imageBatch?.panels.filter((panel) => panel.state === "generated" && panel.provenance?.model === "gpt-image-2").length ?? 0;
   const imageCount = state.imageBatch?.panels.length ?? 0;

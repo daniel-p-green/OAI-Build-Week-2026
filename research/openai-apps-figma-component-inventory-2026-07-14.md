@@ -119,6 +119,7 @@ The official library does not ship a finished Inspector. WorkshopLM uses only th
 | `ListRowAction` | ListRow typography/media anatomy + Button keyboard/focus behavior | The source title region is a transparent row action inside ListRow; it introduces no new fill, border, shadow, radius family, or type scale. |
 | `EntityCardAction` | EntityCard / Media or map + Button keyboard/focus behavior | Makes the entire visual Output card the open action without adding a second button, border, shadow, radius, or type family. |
 | `SideSheet` | Full screen side column + Sidebar desktop header `2123:26990` + IconButton | Reusable temporary layer for Sources, Evidence, Add source, and Style; content is composed only from mapped primitives. |
+| `RealtimeCapture` | Card + Button + secondary Button + body/status text | Bounded voice capture inside Add source. It exposes connection, recording, transcript review, error, and save states without adding a composer, permanent toolbar, new control family, or independent visual token. |
 | `StateMessage` | Card `2004:22170` + heading/body typography + optional Button | Empty, loading, partial, error, and needs-update messages share one calm composition; the optional action is always an official Button. |
 
 Map nodes, provenance edges, generated previews, image tiles, and storyboard imagery remain domain content. Their surrounding controls and containers use the official primitives above.
