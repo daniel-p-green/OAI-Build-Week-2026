@@ -23,6 +23,6 @@ export default defineConfig({
     url: "http://127.0.0.1:3103",
     reuseExistingServer: false,
     timeout: 30_000,
-    env: { WORKSHOPLM_DATA_ROOT: "../../.workshoplm-visual-test" },
+    env: { WORKSHOPLM_DATA_ROOT: "../../.workshoplm-visual-test", WORKSHOPLM_NEXT_DIST_DIR: ".next-playwright" },
   },
 });

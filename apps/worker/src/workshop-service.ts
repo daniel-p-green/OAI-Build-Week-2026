@@ -53,7 +53,8 @@ export type WorkshopNarration = { storyboardVersion: number; disclosure: "AI-gen
 export type WorkshopAiRun = { id: string; operation: "grounded_graph"; model: "gpt-5.6-sol" | "gpt-5.6-terra" | "gpt-5.6-luna"; inputClaimIds: string[]; outputSha256: string; requestId?: string; createdAt: string };
 export type GroundedMapProposal = { nodes: { id: string; title: string; body: string; evidenceState: "grounded" | "derived"; evidenceClaimIds: string[]; x: number; y: number }[]; edges: WorkshopMapEdge[] };
 export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; artifactPath: string; claimIds: string[]; stale: boolean; createdAt: string };
-export type WorkshopVideo = { id: string; version: number; storyboardVersion: number; styleVersion: number; visualDnaVersion?: number; imageBatchId?: string; relativePath: string; provenancePath: string; artifactPath: string; sha256: string; byteCount: number; claimIds: string[]; stale: boolean; createdAt: string };
+export type WorkshopBuildTraceRecord = { htmlPath: string; dataPath: string; htmlSha256: string; dataSha256: string; milestoneCount: number; commitCount: number; taskIds: string[] };
+export type WorkshopVideo = { id: string; version: number; storyboardVersion: number; styleVersion: number; visualDnaVersion?: number; imageBatchId?: string; relativePath: string; provenancePath: string; artifactPath: string; sha256: string; byteCount: number; claimIds: string[]; buildTrace: WorkshopBuildTraceRecord; stale: boolean; createdAt: string };
 export type RenderedVideoInput = Omit<WorkshopVideo, "id" | "version" | "stale" | "createdAt">;
 export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
 export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string; permission?: WorkshopSource["permission"] };
@@ -96,6 +97,15 @@ export function resolveWorkshopArtifact(id: string, root?: string): { path: stri
     const path = resolve(dataRoot, video.relativePath);
     if (!path.startsWith(`${resolve(dataRoot)}/`)) return undefined;
     return { path, contentType: "video/mp4" };
+  }
+  if (id === "build-trace" || id.startsWith("build-trace-v")) {
+    const video = id === "build-trace"
+      ? [...state.videos].reverse().find((candidate) => !candidate.stale)
+      : state.videos.find((candidate) => `build-trace-v${candidate.version}` === id);
+    if (!video?.buildTrace) return undefined;
+    const path = resolve(dataRoot, video.buildTrace.htmlPath);
+    if (!path.startsWith(`${resolve(dataRoot)}/`)) return undefined;
+    return { path, contentType: "text/html; charset=utf-8" };
   }
   const image = state.imageBatch?.panels.find((panel) => panel.id === id && panel.state === "generated" && panel.relativePath);
   if (image?.relativePath) {
@@ -480,6 +490,7 @@ export function recordRenderedVideo(input: RenderedVideoInput, root?: string): W
   if (!current.style || current.style.stale) throw new Error("A rendered Video requires a current Style.");
   if (input.storyboardVersion !== current.storyboard.version || input.styleVersion !== current.style.version) throw new Error("Rendered Video inputs do not match the current Storyboard and Style versions.");
   if (input.visualDnaVersion !== current.visualDna?.version || input.imageBatchId !== current.imageBatch?.id) throw new Error("Rendered Video visual inputs do not match the current Workshop.");
+  if (!input.buildTrace.htmlPath || !input.buildTrace.dataPath || !/^[a-f0-9]{64}$/.test(input.buildTrace.htmlSha256) || !/^[a-f0-9]{64}$/.test(input.buildTrace.dataSha256)) throw new Error("Rendered Video build trace is incomplete.");
   const expectedClaimIds = [...new Set(current.storyboard.panels.flatMap((panel) => panel.claimIds))].sort();
   if ([...new Set(input.claimIds)].sort().join("|") !== expectedClaimIds.join("|")) throw new Error("Rendered Video claim IDs do not match the approved Storyboard.");
   const version = current.videos.reduce((highest, video) => Math.max(highest, video.version), 0) + 1;

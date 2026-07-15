@@ -29,7 +29,11 @@ async function buildableWorkshop() {
   const videoArtifact = { relativePath: "artifacts/test/workshoplm-demo", sha256: createHash("sha256").update(videoBytes).digest("hex"), byteCount: videoBytes.byteLength, mimeType: "video/mp4" };
   await writeFile(join(root, provenancePath), `${JSON.stringify(buildWorkshopVideoProvenance(readWorkshopState(root), videoArtifact), null, 2)}\n`);
   const state = readWorkshopState(root);
-  recordRenderedVideo({ storyboardVersion: state.storyboard.version, styleVersion: state.style!.version, visualDnaVersion: state.visualDna?.version, imageBatchId: state.imageBatch?.id, relativePath: videoPath, provenancePath, artifactPath: videoArtifact.relativePath, sha256: videoArtifact.sha256, byteCount: videoArtifact.byteCount, claimIds: [...new Set(state.storyboard.panels.flatMap((panel) => panel.claimIds))] }, root);
+  const buildTracePath = join("generated", "workshoplm-demo-v1.build-trace.html");
+  const buildTraceDataPath = join("generated", "workshoplm-demo-v1.build-trace.json");
+  await writeFile(join(root, buildTracePath), "<h1>How this submission was built</h1>");
+  await writeFile(join(root, buildTraceDataPath), '{"schemaVersion":1}\n');
+  recordRenderedVideo({ storyboardVersion: state.storyboard.version, styleVersion: state.style!.version, visualDnaVersion: state.visualDna?.version, imageBatchId: state.imageBatch?.id, relativePath: videoPath, provenancePath, artifactPath: videoArtifact.relativePath, sha256: videoArtifact.sha256, byteCount: videoArtifact.byteCount, claimIds: [...new Set(state.storyboard.panels.flatMap((panel) => panel.claimIds))], buildTrace: { htmlPath: buildTracePath, dataPath: buildTraceDataPath, htmlSha256: createHash("sha256").update("<h1>How this submission was built</h1>").digest("hex"), dataSha256: createHash("sha256").update('{"schemaVersion":1}\n').digest("hex"), milestoneCount: 1, commitCount: 1, taskIds: [] } }, root);
   return root;
 }
 
@@ -50,6 +54,9 @@ describe("submission Output set", () => {
     expect(built.outputSet.assets.filter((asset) => asset.type === "thumbnail")).toHaveLength(3);
     expect(built.outputSet.assets.map((asset) => asset.type)).toEqual(expect.arrayContaining(["devpost_description", "readme_narrative", "deck", "infographic", "image_manifest", "storyboard", "narration", "video", "evidence"]));
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "VIDEO-PROVENANCE.json", mimeType: "application/json", provenance: "video_render" }));
+    expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "BUILD-TRACE.html", mimeType: "text/html", provenance: "source_trace" }));
+    expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "BUILD-TRACE.json", mimeType: "application/json", provenance: "source_trace" }));
+    expect(built.outputSet.assets).toHaveLength(15);
     await expect(readFile(join(built.manifestPath, "..", "DEVPOST.md"), "utf8")).resolves.toContain("No live GPT-5.6 run is claimed");
     await expect(readFile(join(built.manifestPath, "..", "STORYBOARD.md"), "utf8")).resolves.toContain("Sanitized fixture · chunk 01");
     await expect(verifySubmissionOutputSet(root, built.manifestPath)).resolves.toEqual({ valid: true, stale: false, tampered: false, issues: [] });

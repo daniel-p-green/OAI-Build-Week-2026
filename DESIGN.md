@@ -186,6 +186,8 @@ For the meta-demo, the focused Video replaces `Show source` with one secondary `
 
 Every rendered Video writes an immutable, version-specific MP4 and machine-readable provenance sidecar. Its persisted record pins the Storyboard, Style, Visual DNA, image batch, claims, content-addressed artifact, byte count, and creation time. For each timed scene the sidecar records the approved Storyboard panel, durable claim/source/chunk edge, exact locator and excerpt, bound image ID/version/hash, and narration hash/provider when present. Upstream edits mark prior records stale without deleting or redirecting them; the latest current version alone backs the canonical Video alias and submission package. The sidecar travels with the traced submission Output set and stays under technical evidence rather than becoming another primary Video control.
 
+The same render emits a version-specific build record in human-readable HTML and machine-readable JSON. It is derived from the actual Workshop state, append-only `log.md`, and Build Week Git history at render time: transcript excerpts, active Source locators and permissions, Map size, approved Brief/Style/Storyboard versions, hashed current Outputs, Video hash, elapsed time, logged milestones, available Codex task IDs, provider-backed evidence counts, and explicit limitations. It is available contextually from `Show original → How this was built`, never as a permanent tab or primary workflow action, and both files travel in the verified submission Output set.
+
 ## Components and geometry
 
 - Primary buttons: verified Button large, 36px height, 8px 16px padding, 4px content gap, 999px radius, ink fill, and 14/20 medium label.

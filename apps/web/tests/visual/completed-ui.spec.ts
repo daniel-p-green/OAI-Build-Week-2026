@@ -683,6 +683,7 @@ test("reduced motion, contrast, and 200 percent logical zoom remain usable", asy
 test("the local render becomes a real Video preview and the next action", async ({ page }) => {
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   const repository = resolve(process.cwd(), "../..");
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
   execFileSync("pnpm", ["exec", "tsx", "apps/web/tests/visual/seed-video.ts", root], { cwd: repository, stdio: "pipe" });
 
   for (const viewport of viewports) {
@@ -717,6 +718,13 @@ test("the local render becomes a real Video preview and the next action", async 
       video.currentTime = 0.1;
       await seeked;
     });
+    await page.getByRole("button", { name: "Show original" }).click();
+    const buildTrace = page.getByRole("link", { name: "How this was built" });
+    await expect(buildTrace).toHaveAttribute("href", "/api/workshop/artifacts/build-trace-v1");
+    const traceResponse = await page.request.get("/api/workshop/artifacts/build-trace-v1");
+    expect(traceResponse.ok()).toBeTruthy();
+    expect(await traceResponse.text()).toContain("How this submission was built");
+    await closeDialog(page, "Original brainstorm");
     await expectScreen(page, `${viewport.name}-video-viewer`);
   }
 });

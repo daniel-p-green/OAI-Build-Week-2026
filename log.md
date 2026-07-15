@@ -4235,3 +4235,41 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Generate and inspect the authorized provider-backed images, narration, Realtime turn, and GPT-5.6 Map; then render the next immutable Video version and verify its persisted record and per-scene sidecar contain the live hashes.
 - Founder recording, host footage, primary Session ID, final edit, public upload, and Devpost submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 05:27 CT — Every Video now carries the submission's build record
+
+**Area:** Meta-demo provenance / submission packaging / production-browser verification
+
+### Changed
+
+- Added an immutable HTML and JSON build record to every rendered Video version. The record is generated from the current Workshop, append-only build log, and Build Week Git history at render time rather than from hand-authored marketing copy.
+- Traced the sanitized brainstorm or durable transcript through active Source titles, locators, and permissions; Map size; approved Brief, Style, asset-plan, Storyboard, and image-batch versions; hashed current Outputs; and the final Video hash.
+- Added measured transcript-to-first-Output time, logged milestones, Build Week commits, available Codex task IDs, provider-evidence counts, and explicit limitations. The fixture correctly records zero Realtime, GPT-5.6, GPT Image 2, and narration evidence and does not present task IDs as the required `/feedback` Session ID.
+- Added `How this was built` contextually inside the existing `Show original` sheet. It appears only when the selected current Video owns a build record and adds no tab, rail, or primary workflow action.
+- Added `BUILD-TRACE.html` and `BUILD-TRACE.json` to the verified submission set, raising the recorded package from 13 to 15 assets. Packaging rejects missing, escaped, or hash-mismatched build records.
+- Isolated production-browser builds under `.next-playwright` so parallel local Next processes cannot corrupt the generated chunks used by the acceptance suite. The visual command normalizes Next's generated type reference afterward so ordinary development continues to use `.next`.
+
+### Verified
+
+- Worker typecheck passed and all 53 worker tests passed, including build-record generation, stable artifact routing, persisted hashes, package inclusion, and manifest integrity.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. The web suite passed 11/11 and the domain suite passed 13/13.
+- `pnpm demo:e2e` passed all six recorded gates and proved the current immutable Video owns readable HTML and JSON build-record files.
+- `pnpm submission:build` produced 15 assets with honest `partial` status. `pnpm submission:verify` reported `valid: true`, `stale: false`, `tampered: false`.
+- The full isolated production-browser suite passed 17/17. At desktop, compact, and mobile widths, `Show original` exposed the version-specific build-record link and its live route returned `How this submission was built`.
+- The generated JSON was inspected for source and Output hashes, zero provider counts, explicit limitations, and absence of local absolute paths or API-key patterns. `pnpm demo:film:verify` remained honestly `draft` with five ready shots, five blocked shots, and ten missing live/final inputs.
+- `git diff --check` passed. No paid provider request was made.
+
+### Decisions
+
+- “How this was built” is now a render-time product artifact, not a checked documentation claim. Historical Videos retain their original record even when later inputs mark them `Needs update`.
+- The product-facing reveal stays simple. The original brainstorm and five resulting Outputs remain the visual story; detailed build evidence is one contextual secondary link.
+- Commit history is labeled `Build Week commit history`, not `Codex-produced`, because Git alone cannot prove each commit's authoring path. Codex task IDs are recorded separately and bounded honestly.
+- Compatible contract addition: every new `WorkshopVideo` requires a hashed build-record pair. Older stored Videos without it remain readable but cannot back a new submission package.
+
+### Open items
+
+- Provider-backed images, narration, GPT-5.6 reasoning, and one inspected Realtime microphone turn remain unproved and intentionally show as zero in the build record.
+- Founder brainstorm recording, Codex doorway footage, primary `/feedback` Session ID, final edited Video, public upload, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

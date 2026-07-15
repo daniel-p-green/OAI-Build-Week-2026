@@ -18,7 +18,7 @@ Audit date: 2026-07-15 CT. This is a current-state audit, not a completion claim
 | GPT-4o mini TTS narration | Local placeholder tones are disclosed; no provider TTS artifact/provenance. | Open |
 | Fresh ChatGPT Work-surface plugin proof | Codex skill/tool proof exists, but no Work-surface invocation or write-confirmation evidence exists. | Open |
 | Original pre-code brainstorm | No authentic pre-code artifact found in the checkout. A new dated founder-brainstorm recording may serve as a truthful demo source, but cannot be described as pre-code evidence. | Open; cannot backfill |
-| Recorded submission Output set | A 12-asset set has source locators, hashes, an input fingerprint, and integrity verification; its manifest is explicitly `partial` because provider images, narration, and final public video are absent. | Proven partial |
+| Recorded submission Output set | A 15-asset set has source locators, hashes, an input fingerprint, per-scene Video provenance, and immutable HTML/JSON build records; its manifest is explicitly `partial` because provider images, narration, and final public video are absent. | Proven partial |
 | Public video and YouTube | Timed evidence-gated recording script, local render, and thumbnails exist; no final public recording/upload. | Open |
 | Devpost form and `/feedback` Session ID | Draft copy exists; external form and session ID unavailable on this surface. | Open |
 | Repository license | Root `LICENSE` contains MIT; public `main` was verified with GitHub CLI. | Proven |

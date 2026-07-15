@@ -49,10 +49,12 @@ if (video.state !== "succeeded" || !(await stat(resolve(root, "generated", "work
 const finalState = readWorkshopState(root);
 if (!finalState.imageBatch || finalState.imageBatch.panels.length !== 6) throw new Error("recorded fixture did not preserve the planned coherent image set");
 if (finalState.videos.length !== 1 || finalState.videos[0]?.stale || !(await stat(resolve(root, finalState.videos[0].relativePath))).isFile()) throw new Error("recorded fixture did not preserve one current immutable Video version");
+const buildTrace = finalState.videos[0]?.buildTrace;
+if (!buildTrace || !(await stat(resolve(root, buildTrace.htmlPath))).isFile() || !(await stat(resolve(root, buildTrace.dataPath))).isFile()) throw new Error("recorded fixture did not preserve the Video build trace");
 const finalGates = deriveGates({ transcriptSegments: 2, boardApprovedCurrent: true, briefCurrent: finalState.briefApproved, styleLockedCurrent: Boolean(finalState.style && !finalState.style.stale), storyboardApprovedCurrent: finalState.storyboardApproved, videoRenderedCurrent: finalState.videoState === "rendered" });
 if (!finalGates.video_rendered) throw new Error("video-rendered gate was not recorded");
 
-console.log(JSON.stringify({ mode: "recorded-fixture", status: "passed", grounding: answer.citations.length, gates: finalGates, outputs: finalState.outputs.map((output) => output.relativePath), imagePanels: finalState.imageBatch.panels.length, assetPlanItems: assetPlan.items.length, storyboardPanels: generatedStoryboard.panels.length, videoArtifact: video.artifact?.relativePath, elapsed: "deterministic" }));
+console.log(JSON.stringify({ mode: "recorded-fixture", status: "passed", grounding: answer.citations.length, gates: finalGates, outputs: finalState.outputs.map((output) => output.relativePath), imagePanels: finalState.imageBatch.panels.length, assetPlanItems: assetPlan.items.length, storyboardPanels: generatedStoryboard.panels.length, videoArtifact: video.artifact?.relativePath, buildTrace: buildTrace.htmlPath, elapsed: "deterministic" }));
 }
 
 main().catch((error: unknown) => { console.error(error); process.exitCode = 1; });

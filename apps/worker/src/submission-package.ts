@@ -65,8 +65,9 @@ function assertBuildable(state: WorkshopState, root: string): SubmissionInputSna
   if (state.videoState !== "rendered") throw new Error("Submission packaging requires a rendered Video.");
   const video = currentVideo(state);
   if (!video || video.storyboardVersion !== state.storyboard.version || video.styleVersion !== state.style.version || video.imageBatchId !== state.imageBatch.id) throw new Error("Submission packaging requires a Video rendered from the current approved inputs.");
+  if (!video.buildTrace) throw new Error("Submission packaging requires the rendered Video's build trace.");
   if (!state.outputs.some((output) => output.type === "deck" && !output.stale) || !state.outputs.some((output) => output.type === "infographic" && !output.stale)) throw new Error("Submission packaging requires current presentation and infographic Outputs.");
-  if (!inside(root, resolve(root, video.relativePath)) || !inside(root, resolve(root, video.provenancePath))) throw new Error("Video path escaped the Workshop data root.");
+  if (![video.relativePath, video.provenancePath, video.buildTrace.htmlPath, video.buildTrace.dataPath].every((path) => inside(root, resolve(root, path)))) throw new Error("Video evidence path escaped the Workshop data root.");
   return {
     graphRevision: graphRevision(state),
     briefVersion: state.frame.version,
@@ -150,8 +151,13 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   const video = currentVideo(state)!;
   const videoPath = resolve(dataRoot, video.relativePath);
   const videoProvenancePath = resolve(dataRoot, video.provenancePath);
+  const buildTracePath = resolve(dataRoot, video.buildTrace.htmlPath);
+  const buildTraceDataPath = resolve(dataRoot, video.buildTrace.dataPath);
   await stat(videoPath);
   await stat(videoProvenancePath);
+  await stat(buildTracePath);
+  await stat(buildTraceDataPath);
+  if (sha256(await readFile(buildTracePath)) !== video.buildTrace.htmlSha256 || sha256(await readFile(buildTraceDataPath)) !== video.buildTrace.dataSha256) throw new Error("Rendered Video build trace does not match its persisted hashes.");
   const packageRoot = resolve(options.outputDirectory ?? join(dataRoot, "generated", "submission-output-set-v1"));
   if (!inside(dataRoot, packageRoot)) throw new Error("Submission package must stay inside the Workshop data root.");
   await rm(packageRoot, { recursive: true, force: true });
@@ -182,6 +188,8 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   }
   await copyFile(videoPath, join(packageRoot, "workshoplm-demo.mp4"));
   await copyFile(videoProvenancePath, join(packageRoot, "VIDEO-PROVENANCE.json"));
+  await copyFile(buildTracePath, join(packageRoot, "BUILD-TRACE.html"));
+  await copyFile(buildTraceDataPath, join(packageRoot, "BUILD-TRACE.json"));
 
   const thumbnail = options.renderThumbnail ?? renderThumbnail;
   const duration = state.storyboard.panels.reduce((total, panel) => total + panel.durationSeconds, 0);
@@ -215,6 +223,8 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   assets.push(await assetFor(packageRoot, "narration", "NARRATION.md", "text/markdown", claimIds, sourceLocators, "narration"));
   assets.push(await assetFor(packageRoot, "video", "workshoplm-demo.mp4", "video/mp4", claimIds, sourceLocators, "video_render"));
   assets.push(await assetFor(packageRoot, "evidence", "VIDEO-PROVENANCE.json", "application/json", claimIds, sourceLocators, "video_render"));
+  assets.push(await assetFor(packageRoot, "evidence", "BUILD-TRACE.html", "text/html", claimIds, sourceLocators, "source_trace"));
+  assets.push(await assetFor(packageRoot, "evidence", "BUILD-TRACE.json", "application/json", claimIds, sourceLocators, "source_trace"));
   assets.push(await assetFor(packageRoot, "evidence", "EVIDENCE.md", "text/markdown", claimIds, sourceLocators, "source_trace"));
   if (state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version) for (const [index, panel] of state.narration.panels.entries()) assets.push(await assetFor(packageRoot, "narration", `narration/panel-${index + 1}${extname(panel.relativePath) || ".wav"}`, "audio/wav", claimIds, sourceLocators, "narration"));
   for (const [index, panel] of generatedPanels.entries()) assets.push(await assetFor(packageRoot, "image", `images/panel-${index + 1}${extname(panel.relativePath!) || ".png"}`, "image/png", claimIds, sourceLocators, "workshop_output"));

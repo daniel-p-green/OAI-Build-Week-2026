@@ -3,6 +3,7 @@ import { copyFile, mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
 import { storeArtifact, type StoredArtifact } from "./artifacts/local-artifact-store.js";
+import { writeWorkshopBuildTrace } from "./build-trace.js";
 import { openLocalDatabase } from "./db/client.js";
 import { migrate } from "./db/migrate.js";
 import { finishJob, leaseNext } from "./queue.js";
@@ -103,9 +104,10 @@ export async function executeOne(root: string, run: RunCommand = defaultRun) : P
     const artifact = await storeArtifact(root, versionName, await readFile(output), "video/mp4");
     const provenancePath = join(videoDirectory, `${versionName}.provenance.json`);
     await writeFile(provenancePath, `${JSON.stringify(buildWorkshopVideoProvenance(state, artifact), null, 2)}\n`);
+    const buildTrace = await writeWorkshopBuildTrace(state, root, { id: `video-v${nextVersion}`, version: nextVersion, sha256: artifact.sha256, byteCount: artifact.byteCount });
     await copyFile(output, join(root, "generated", "workshoplm-demo.mp4"));
     await copyFile(provenancePath, join(root, "generated", "workshoplm-demo.provenance.json"));
-    recordRenderedVideo({ storyboardVersion: state.storyboard.version, styleVersion: state.style!.version, visualDnaVersion: state.visualDna?.version, imageBatchId: state.imageBatch?.id, relativePath: relative(root, output), provenancePath: relative(root, provenancePath), artifactPath: artifact.relativePath, sha256: artifact.sha256, byteCount: artifact.byteCount, claimIds: [...new Set(state.storyboard.panels.flatMap((panel) => panel.claimIds))] }, root);
+    recordRenderedVideo({ storyboardVersion: state.storyboard.version, styleVersion: state.style!.version, visualDnaVersion: state.visualDna?.version, imageBatchId: state.imageBatch?.id, relativePath: relative(root, output), provenancePath: relative(root, provenancePath), artifactPath: artifact.relativePath, sha256: artifact.sha256, byteCount: artifact.byteCount, claimIds: [...new Set(state.storyboard.panels.flatMap((panel) => panel.claimIds))], buildTrace }, root);
     finishJob(db, job.id, "succeeded"); return { jobId: job.id, state: "succeeded", artifact };
   } catch (caught) { const error = caught instanceof Error ? caught.message : "Unknown render failure"; const retrying = job.attempts < 2; finishJob(db, job.id, retrying ? "retrying" : "failed", error); setVideoState(retrying ? "queued" : "blocked", root); return { jobId: job.id, state: "failed", error }; }
 }

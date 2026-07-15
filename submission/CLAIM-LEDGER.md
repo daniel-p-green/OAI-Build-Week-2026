@@ -19,7 +19,8 @@ Use this ledger before recording, editing the Devpost entry, or publishing scree
 | Local-first judge path | “The sanitized fixture runs without an account, private connector, paid API call, or judge-supplied credits.” | `demo:reset`, `demo:e2e`, and submission build/verify commands | Provider-backed production remains a separate gated path. |
 | Unified Codex plugin | “An isolated Codex profile activated the packaged `$workshoplm` skill and used its read-only MCP tools to search and fetch grounded evidence.” | `artifacts/spikes/plugin-skill-activation-2026-07-15.json` | This proves Codex CLI only, not ChatGPT Work or write confirmation. |
 | Codex contribution | “Codex accelerated implementation and verification across the monorepo, local state, plugin, UI, worker, and evidence path.” | Dated commits; `log.md`; package checks and acceptance records | Do not substitute a disposable task ID for the required `/feedback` Session ID. |
-| Current verification floor | “The current recorded build passes checks across 13 packages, 11 web contract/unit tests, 15 production-route browser tests, six acceptance gates, and submission integrity verification.” | Latest `pnpm check`, production-route Playwright, `pnpm demo:e2e`, and `pnpm submission:verify` entries in `log.md` | Re-run before final publication; counts may change as tests are added. |
+| Self-build trace | “Every rendered Video carries a build record from the raw transcript and grounded Sources through approved inputs, hashed Outputs, Build Week commits, and honest provider limitations.” | Version-specific `BUILD-TRACE.html` and `BUILD-TRACE.json`; Video build-trace hashes; submission manifest | The recorded fixture must keep zero live-provider counts visible until provider evidence exists. |
+| Current verification floor | “The current recorded build passes checks across 13 packages, 11 web contract/unit tests, 17 production-route browser tests, six acceptance gates, and submission integrity verification.” | Latest `pnpm check`, production-route Playwright, `pnpm demo:e2e`, and `pnpm submission:verify` entries in `log.md` | Re-run before final publication; counts may change as tests are added. |
 
 ## Claims that remain gated
 
@@ -32,7 +33,7 @@ Use this ledger before recording, editing the Devpost entry, or publishing scree
 | ChatGPT Work support | Fresh Work-surface activation and local tool-call evidence | Keep the supported-host claim Codex-specific. |
 | Plugin doorway footage | A captured, legible Codex-side opening of the local Workshop that matches the final cut | Do not imply the web app alone proves plugin integration. |
 | Original pre-code brainstorm | An authentic dated pre-code artifact | It cannot be backfilled. A new recording must be called a contemporaneous founder brainstorm. |
-| Final self-produced submission | Provider-backed final Devpost copy, README narrative, deck, thumbnails, Storyboard, narration, and video in one verified Output set | Describe the current 12-asset set as `partial` and recorded-fixture based. |
+| Final self-produced submission | Provider-backed final Devpost copy, README narrative, deck, thumbnails, Storyboard, narration, and video in one verified Output set | Describe the current 15-asset set as `partial` and recorded-fixture based. |
 | Public judge experience | Final under-three-minute public YouTube video, logged-out verification, stable release tag, and working submitted links | Keep all drafts and local recordings labeled as drafts. |
 
 ## Final publication gate

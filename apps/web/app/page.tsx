@@ -54,7 +54,7 @@ type PersistedWorkshop = {
   storyboard: { version: number; stale: boolean; panels: { id: string; title: string; narration: string; durationSeconds: number; claimIds: string[]; evidence: { claimId?: string; sourceId: string; chunkId?: string; locator: string }[]; imagePanelId?: string; imagePanelVersion?: number; approved: boolean; stale: boolean }[] };
   imageBatch?: { id: string; stale: boolean; panels: { id: string; version: number; prompt: string; state: "planned" | "selected_for_regeneration" | "generated" | "failed"; relativePath?: string }[] };
   outputs: { id: string; type: "deck" | "infographic"; stale: boolean; artifactPath: string; claimIds?: string[]; createdAt: string }[];
-  videos: { id: string; version: number; storyboardVersion: number; styleVersion: number; relativePath: string; provenancePath: string; artifactPath: string; claimIds: string[]; stale: boolean; createdAt: string }[];
+  videos: { id: string; version: number; storyboardVersion: number; styleVersion: number; relativePath: string; provenancePath: string; artifactPath: string; claimIds: string[]; buildTrace?: { htmlPath: string; dataPath: string; htmlSha256: string; dataSha256: string; milestoneCount: number; commitCount: number; taskIds: string[] }; stale: boolean; createdAt: string }[];
 };
 
 const VIEW_TITLES: Record<ObjectView, string> = { map: "Map", brief: "Brief", outputs: "Outputs", storyboard: "Storyboard", output: "Output" };
@@ -395,12 +395,13 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   const elapsedSeconds = state?.firstTranscriptAt && state.firstRenderedOutputAt
     ? Math.max(0, Math.round((Date.parse(state.firstRenderedOutputAt) - Date.parse(state.firstTranscriptAt)) / 1000))
     : null;
+  const currentVideo = [...(state?.videos ?? [])].reverse().find((video) => !video.stale);
   const deliverables = [
     { title: "Presentation", detail: `${state?.outputs.filter((output) => output.type === "deck").length ?? 0} version${state?.outputs.filter((output) => output.type === "deck").length === 1 ? "" : "s"}` },
     { title: "Infographic", detail: `${state?.outputs.filter((output) => output.type === "infographic").length ?? 0} version${state?.outputs.filter((output) => output.type === "infographic").length === 1 ? "" : "s"}` },
     { title: "Image set", detail: `${state?.imageBatch?.panels.length ?? 0} ${state?.imageBatch?.panels.every((panel) => panel.state === "generated") ? "ready" : "planned"} images` },
     { title: "Storyboard", detail: `${state?.storyboard.panels.length ?? 0} editable panels` },
-    { title: "Demo video", detail: state?.videos?.some((video) => !video.stale) ? `Version ${state.videos.find((video) => !video.stale)!.version} ready` : state?.videos?.length ? `${state.videos.length} saved · Needs update` : "Not created yet" },
+    { title: "Demo video", detail: currentVideo ? `Version ${currentVideo.version} ready` : state?.videos?.length ? `${state.videos.length} saved · Needs update` : "Not created yet" },
   ];
 
   return <SideSheet title="Original brainstorm" className="original-reveal" onClose={onClose}>
@@ -408,6 +409,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
     <Card className="original-transcript"><small>Before · {sourceKind}</small><blockquote>“{original}”</blockquote>{sourceLocator && <p className="source-locator">{sourceLocator}</p>}</Card>
     <div className="original-result"><small>After</small><h3>Became five connected Outputs</h3>{elapsedSeconds !== null && <p>{elapsedSeconds} seconds from first transcript to first rendered Output</p>}</div>
     <ListGroup>{deliverables.map((item) => <ListRow className="original-output-row" key={item.title}><FileIcon /><span><strong>{item.title}</strong><small>{item.detail}</small></span></ListRow>)}</ListGroup>
+    {currentVideo?.buildTrace && <ButtonLink variant="secondary" href={`/api/workshop/artifacts/build-trace-v${currentVideo.version}`} target="_blank" rel="noreferrer">How this was built</ButtonLink>}
   </SideSheet>;
 }
 
