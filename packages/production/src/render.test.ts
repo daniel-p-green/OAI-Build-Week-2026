@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { renderDeck, renderInfographic, writeRenderedArtifact } from "./render.js";
 
-const brief = { workshopTitle: "WorkshopLM", version: "brief-v1", style: { accent: "#1668E3", ink: "#171816", paper: "#F4F2EC", fonts: ["Arial", "Arial"], intent: "client_facing_pitch" as const }, blocks: [
+const brief = { workshopTitle: "WorkshopLM", version: "brief-v1", style: { accent: "#1668E3", ink: "#171816", paper: "#F4F2EC", fonts: ["Arial", "Arial"], intent: "client_facing_pitch" as const, name: "WorkshopLM", logoData: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAEAQH/6X8XWQAAAABJRU5ErkJggg==" }, blocks: [
   { id: "claim-1", heading: "A traced claim", body: "Evidence remains inspectable.", citations: ["meeting · 12:41"] },
   { id: "claim-2", heading: "A second proof point", body: "The layout adapts to the role of the content.", citations: ["brief · section 2"] },
   { id: "claim-3", heading: "The recommendation", body: "Move from understanding to finished work.", citations: ["strategy · recommendation"] },
@@ -17,6 +17,8 @@ describe("production renderers", () => {
     expect(deck).toContain('class="slide statement"');
     expect(deck).toContain('class="slide split"');
     expect(deck).toContain('class="slide recommendation"');
+    expect(deck).toContain('class="brand-logo"');
+    expect(deck).toContain("WorkshopLM · Organizer brief");
     expect(renderInfographic(brief)).toContain("Source-defensible brief");
   });
   it("writes an inspectable preview and an editable PowerPoint deck", async () => {

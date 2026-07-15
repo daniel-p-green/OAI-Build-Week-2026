@@ -4,6 +4,7 @@ import { dirname, join } from "node:path";
 
 type PptxSlide = {
   background: { color: string };
+  addImage: (options: Record<string, unknown>) => unknown;
   addShape: (shape: string, options: Record<string, unknown>) => unknown;
   addText: (text: string, options: Record<string, unknown>) => unknown;
   addNotes: (notes: string) => unknown;
@@ -28,6 +29,8 @@ export type RenderBrief = {
     paper: string;
     fonts?: readonly string[];
     intent?: "client_facing_pitch" | "board_deck" | "internal_workshop";
+    name?: string;
+    logoData?: string;
   };
   blocks: readonly RenderBlock[];
 };
@@ -43,6 +46,8 @@ const escapeHtml = (value: string) => value.replaceAll("&", "&amp;").replaceAll(
 const pptxColor = (value: string) => value.replace(/^#/, "").toUpperCase();
 const headingFont = (brief: RenderBrief) => brief.style.fonts?.[0] || "Arial";
 const bodyFont = (brief: RenderBrief) => brief.style.fonts?.[1] || brief.style.fonts?.[0] || "Arial";
+const deckLabel = (brief: RenderBrief) => `${brief.style.name ?? "Workshop"} · ${brief.style.intent === "board_deck" ? "Leadership brief" : brief.style.intent === "internal_workshop" ? "Team workshop" : "Organizer brief"}`;
+const deckSummary = (brief: RenderBrief) => brief.blocks[0]?.body || brief.blocks[0]?.heading || "A grounded brief with every factual claim connected to its source.";
 const slideLayout = (block: RenderBlock, index: number, count: number): SlideLayout => block.layout ?? (index === 0 ? "statement" : index === count - 1 ? "recommendation" : index % 2 ? "split" : "proof");
 
 function shell(title: string, brief: RenderBrief, body: string) {
@@ -50,7 +55,7 @@ function shell(title: string, brief: RenderBrief, body: string) {
   const text = escapeHtml(bodyFont(brief));
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>${escapeHtml(title)}</title><style>
   :root{--accent:${brief.style.accent};--ink:${brief.style.ink};--paper:${brief.style.paper};--muted:color-mix(in srgb,var(--ink) 56%,var(--paper));--line:color-mix(in srgb,var(--ink) 15%,var(--paper));--heading:'${heading}',Arial,sans-serif;--body:'${text}',Arial,sans-serif}
-  *{box-sizing:border-box}html{background:#e8e8e5}body{margin:0;color:var(--ink);font-family:var(--body);background:#e8e8e5}.deck{display:grid;gap:28px;padding:28px}.slide{position:relative;overflow:hidden;width:min(1280px,calc(100vw - 56px));aspect-ratio:16/9;margin:auto;background:var(--paper);padding:6.4%;box-shadow:0 18px 52px rgba(0,0,0,.12)}.slide:after{content:attr(data-page);position:absolute;right:4.8%;bottom:4%;font-size:11px;color:var(--muted)}.cover{display:flex;flex-direction:column;justify-content:flex-end;background:var(--ink);color:var(--paper)}.cover:before{content:'';position:absolute;width:38%;aspect-ratio:1;border-radius:50%;background:var(--accent);right:-10%;top:-25%}.eyebrow{position:relative;color:var(--accent);font:700 11px/1 var(--body);letter-spacing:.14em;text-transform:uppercase}.cover .eyebrow{color:var(--paper);opacity:.72}.title{position:relative;font:500 clamp(38px,5.1vw,76px)/.98 var(--heading);letter-spacing:-.04em;max-width:88%;margin:22px 0}.subtitle{position:relative;max-width:62%;font-size:18px;line-height:1.45;color:color-mix(in srgb,var(--paper) 72%,transparent)}.slide h2{font:500 clamp(28px,3.7vw,56px)/1.02 var(--heading);letter-spacing:-.035em;margin:18px 0 28px;max-width:86%}.slide p{font-size:clamp(16px,1.55vw,23px);line-height:1.45;margin:0}.statement{display:flex;flex-direction:column;justify-content:center}.statement h2{font-size:clamp(38px,4.6vw,70px)}.statement .body{max-width:68%;border-left:5px solid var(--accent);padding-left:24px}.split{display:grid;grid-template-columns:30% 1fr;gap:8%;align-items:center}.split .number{font:500 clamp(100px,15vw,220px)/.8 var(--heading);color:var(--accent);letter-spacing:-.08em}.proof{display:grid;grid-template-columns:1fr 36%;gap:8%;align-items:end}.proof .proof-card{align-self:stretch;border-radius:4px;background:var(--ink);color:var(--paper);padding:30px;display:flex;flex-direction:column;justify-content:flex-end}.proof .proof-card strong{font:500 26px/1.15 var(--heading)}.recommendation{background:var(--accent);color:var(--paper);display:flex;flex-direction:column;justify-content:center}.recommendation .eyebrow,.recommendation .cite{color:var(--paper)}.recommendation h2{font-size:clamp(40px,5vw,76px);max-width:92%}.cite{position:absolute;left:6.4%;bottom:4%;max-width:78%;font-size:10px!important;line-height:1.3!important;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.infographic{width:min(920px,calc(100vw - 48px));margin:24px auto;background:var(--paper);padding:64px;box-shadow:0 18px 52px rgba(0,0,0,.12)}.infographic .title{font-size:58px}.block{display:grid;grid-template-columns:44px 1fr;border-top:1px solid var(--line);padding:26px 0;gap:18px}.block-number{color:var(--accent);font-weight:700}.block h2{font:500 26px/1.1 var(--heading);margin:0 0 8px}.block .cite{position:static;margin-top:12px!important;white-space:normal}
+  *{box-sizing:border-box}html{background:#e8e8e5}body{margin:0;color:var(--ink);font-family:var(--body);background:#e8e8e5}.deck{display:grid;gap:28px;padding:28px}.slide{position:relative;overflow:hidden;width:min(1280px,calc(100vw - 56px));aspect-ratio:16/9;margin:auto;background:var(--paper);padding:6.4%;box-shadow:0 18px 52px rgba(0,0,0,.12)}.slide:after{content:attr(data-page);position:absolute;right:4.8%;bottom:4%;font-size:11px;color:var(--muted)}.cover{display:flex;flex-direction:column;justify-content:flex-end;background:var(--ink);color:var(--paper)}.cover:before{content:'';position:absolute;width:38%;aspect-ratio:1;border-radius:50%;background:var(--accent);right:-10%;top:-25%}.brand-logo{position:absolute;left:6.4%;top:6.4%;width:auto;height:64px;max-width:160px;object-fit:contain}.eyebrow{position:relative;color:var(--accent);font:700 11px/1 var(--body);letter-spacing:.14em;text-transform:uppercase}.cover .eyebrow{color:var(--paper);opacity:.72}.title{position:relative;font:500 clamp(38px,5.1vw,76px)/.98 var(--heading);letter-spacing:-.04em;max-width:88%;margin:22px 0}.subtitle{position:relative;max-width:68%;font-size:18px;line-height:1.45;color:color-mix(in srgb,var(--paper) 72%,transparent)}.slide h2{font:500 clamp(28px,3.7vw,56px)/1.02 var(--heading);letter-spacing:-.035em;margin:18px 0 28px;max-width:86%}.slide p{font-size:clamp(16px,1.55vw,23px);line-height:1.45;margin:0}.statement{display:flex;flex-direction:column;justify-content:center}.statement h2{font-size:clamp(38px,4.6vw,70px)}.statement .body{max-width:68%;border-left:5px solid var(--accent);padding-left:24px}.split{display:grid;grid-template-columns:30% 1fr;gap:8%;align-items:center}.split .number{font:500 clamp(100px,15vw,220px)/.8 var(--heading);color:var(--accent);letter-spacing:-.08em}.proof{display:grid;grid-template-columns:1fr 36%;gap:8%;align-items:end}.proof .proof-card{align-self:stretch;border-radius:4px;background:var(--ink);color:var(--paper);padding:30px;display:flex;flex-direction:column;justify-content:flex-end}.proof .proof-card strong{font:500 26px/1.15 var(--heading)}.recommendation{background:var(--accent);color:var(--paper);display:flex;flex-direction:column;justify-content:center}.recommendation .eyebrow,.recommendation .cite{color:var(--paper)}.recommendation h2{font-size:clamp(40px,5vw,76px);max-width:92%}.cite{position:absolute;left:6.4%;bottom:4%;max-width:78%;font-size:10px!important;line-height:1.3!important;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.infographic{width:min(920px,calc(100vw - 48px));margin:24px auto;background:var(--paper);padding:64px;box-shadow:0 18px 52px rgba(0,0,0,.12)}.infographic .title{font-size:58px}.block{display:grid;grid-template-columns:44px 1fr;border-top:1px solid var(--line);padding:26px 0;gap:18px}.block-number{color:var(--accent);font-weight:700}.block h2{font:500 26px/1.1 var(--heading);margin:0 0 8px}.block .cite{position:static;margin-top:12px!important;white-space:normal}
   @media print{html,body{background:white}.deck{display:block;padding:0}.slide{width:100vw;height:100vh;box-shadow:none;break-after:page}.infographic{box-shadow:none;margin:0;width:auto}}@media(max-width:720px){.deck{padding:12px;gap:12px}.slide{width:calc(100vw - 24px);padding:7%}.split,.proof{display:flex;flex-direction:column;align-items:stretch;justify-content:center}.split .number{font-size:72px}.proof .proof-card{display:none}.cite{max-width:72%}}
   </style></head><body>${body}</body></html>`;
 }
@@ -59,7 +64,8 @@ function citationText(block: RenderBlock) { return block.citations.length ? `Sou
 function citationData(block: RenderBlock) { return block.citations.length ? ` data-source="${escapeHtml(block.citations.join(" | "))}"` : ""; }
 
 export function renderDeck(brief: RenderBrief): string {
-  const cover = `<section class="slide cover" data-page="01"><div class="eyebrow">${escapeHtml(brief.version)} · Source-defensible presentation</div><h1 class="title">${escapeHtml(brief.workshopTitle)}</h1><p class="subtitle">A grounded narrative built from the approved Brief, with every factual claim kept connected to its source.</p></section>`;
+  const logo = brief.style.logoData ? `<img class="brand-logo" alt="" src="${escapeHtml(brief.style.logoData)}">` : "";
+  const cover = `<section class="slide cover" data-page="01">${logo}<div class="eyebrow">${escapeHtml(deckLabel(brief))}</div><h1 class="title">${escapeHtml(brief.workshopTitle)}</h1><p class="subtitle">${escapeHtml(deckSummary(brief))}</p></section>`;
   const slides = brief.blocks.map((block, index) => {
     const layout = slideLayout(block, index, brief.blocks.length);
     const page = String(index + 2).padStart(2, "0");
@@ -99,9 +105,10 @@ export async function writeEditableDeck(path: string, brief: RenderBrief): Promi
 
   const cover = pptx.addSlide(); cover.background = { color: ink };
   cover.addShape(pptx.ShapeType.ellipse, { x: 9.8, y: -2.1, w: 5.5, h: 5.5, fill: { color: accent }, line: { color: accent } });
-  cover.addText(`${brief.version.toUpperCase()}  ·  SOURCE-DEFENSIBLE PRESENTATION`, { x: 0.75, y: 4.75, w: 7.6, h: 0.25, fontFace: bodyFont(brief), fontSize: 9, bold: true, color: paper, charSpacing: 1.6, margin: 0 });
+  if (brief.style.logoData) cover.addImage({ data: brief.style.logoData, x: 0.75, y: 0.62, w: 0.56, h: 0.68 });
+  cover.addText(deckLabel(brief).toUpperCase(), { x: 0.75, y: 4.75, w: 7.6, h: 0.25, fontFace: bodyFont(brief), fontSize: 9, bold: true, color: paper, charSpacing: 1.6, margin: 0 });
   cover.addText(brief.workshopTitle, { x: 0.72, y: 5.12, w: 10.7, h: 1.15, fontFace: headingFont(brief), fontSize: 42, bold: false, color: paper, margin: 0, breakLine: false, fit: "shrink" });
-  cover.addText("A grounded narrative built from the approved Brief, with every factual claim kept connected to its source.", { x: 0.75, y: 6.38, w: 7.3, h: 0.42, fontFace: bodyFont(brief), fontSize: 12, color: paper, transparency: 22, margin: 0, fit: "shrink" });
+  cover.addText(deckSummary(brief), { x: 0.75, y: 6.38, w: 7.8, h: 0.42, fontFace: bodyFont(brief), fontSize: 12, color: paper, transparency: 22, margin: 0, fit: "shrink" });
   addPptxFooter(cover, brief, undefined, 1);
 
   brief.blocks.forEach((block, index) => {

@@ -1,0 +1,71 @@
+{
+  "recordedAt": "2026-07-15T12:06:00-05:00",
+  "kind": "external-professional-deck-candidate",
+  "workshop": "AI Collective chapter launch briefing",
+  "privacy": "shareable sources only",
+  "sources": [
+    {
+      "title": "GenAI Collective Chapter Startup FAQ.pdf",
+      "origin": "Local PDF",
+      "claims": 58
+    },
+    {
+      "title": "The AI Collective Newsletter",
+      "origin": "https://newsletter.aicollective.com/",
+      "claims": 63,
+      "retrievedAt": "2026-07-15T12:05:00-05:00"
+    }
+  ],
+  "sourceNormalization": {
+    "websiteClaimsBeforeRepair": 5179,
+    "websiteClaimsAfterRepair": 63,
+    "scriptLeakCountAfterRepair": 0,
+    "pdfHardWrapsReflowed": true,
+    "incompleteColonClaimsRejected": true
+  },
+  "narrative": [
+    {
+      "role": "statement",
+      "claimId": "claim-bb80dd1be045-4-1",
+      "heading": "Become a go-to resource",
+      "locator": "Local PDF · GenAI Collective Chapter Startup FAQ.pdf · chunk 05"
+    },
+    {
+      "role": "commitment",
+      "claimId": "claim-bb80dd1be045-29-2",
+      "heading": "Your events are financially sustainable",
+      "locator": "Local PDF · GenAI Collective Chapter Startup FAQ.pdf · chunk 30"
+    },
+    {
+      "role": "proof",
+      "claimId": "claim-60bb5377e97a-78-1",
+      "heading": "180+ chapters across 40+ countries",
+      "locator": "https://newsletter.aicollective.com/ · chunk 79"
+    },
+    {
+      "role": "recommendation",
+      "claimId": "claim-60bb5377e97a-80-3",
+      "heading": "Start a chapter in your city",
+      "locator": "https://newsletter.aicollective.com/ · chunk 81"
+    }
+  ],
+  "style": {
+    "name": "AI Collective",
+    "accent": "#FF640D",
+    "ink": "#171717",
+    "paper": "#FAF8F3",
+    "intentProfile": "client_facing_pitch",
+    "officialLogoEmbedded": true
+  },
+  "outputs": {
+    "htmlSha256": "217b36d2b453a9af602723a4cdd990c69dd10043286ef523a35fa600342a4680",
+    "pptxSha256": "2f8df7e87092679b16a70f6e16eadf29518d528bddc73b0ca3e289cf7a8f60bc",
+    "pdfSha256": "913d9abe82cd06fa0d16d8a7aca604ded4eec1985c8085be062ed59da5ab66ba",
+    "slides": 5,
+    "pageSize": "16:9",
+    "pptxArchive": "passed",
+    "libreOfficeRoundTrip": "passed",
+    "visualInspection": "passed-no-observed-overflow-or-raw-implementation-labels"
+  },
+  "boundary": "This is the first privacy-safe candidate intended for a real professional audience. It is ready for cold review but has not received an external send-or-revise judgment and is not externally approved."
+}

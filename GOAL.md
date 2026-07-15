@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 11:45 CT
+Last updated: 2026-07-15 12:08 CT
 
 ## Status
 
@@ -385,6 +385,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [ ] Raise the presentation from a deterministic proof artifact to the professional send-it bar: varied layouts chosen by content type, strong typographic hierarchy, exact Style tokens, unobtrusive citations, and an editable PowerPoint-world export. Verify it against real external content and a cold visual review; passing generation tests alone is insufficient.
   - 2026-07-15: the first production-quality renderer pass is implemented. HTML previews now use cover, statement, split, evidence, and recommendation layouts; every slide carries a quiet source line; exact palette and licensed-font tokens flow from Style; and each deck also produces an editable `.pptx` with claim/source notes. The in-app browser preview and a LibreOffice round-trip of the five-slide acceptance deck were visually inspected without overflow, archive errors, or console errors. Keep this item open until a genuinely external professional deliverable is produced and cold-reviewed at the full send-it bar.
   - 2026-07-15 dogfood zero: three real WorkshopLM strategy and research documents initially produced source-order headings, raw Markdown, and file paths. The deck planner now rejects metadata/table fragments, selects statement → risk → proof → recommendation evidence, derives concise headings, and uses professional source labels on-slide while retaining exact locators in HTML data and PowerPoint notes. The repaired five-slide `.pptx` passed archive, LibreOffice, and visual inspection. This is internal dogfood, not the required external audience or cold send-or-revise review.
+  - 2026-07-15 dogfood one candidate: WorkshopLM ingested the shareable AI Collective chapter-startup FAQ plus the current public newsletter and produced a five-slide organizer brief with the official logo, exact palette, current 180+ chapter proof, concise citations, responsive HTML, and an editable `.pptx`. The first run exposed 5,179 script-derived web claims, PDF hard-wrap fragments, irrelevant proof selection, ignored logos, internal cover language, and duplicated headings; all were repaired in the product. The final PowerPoint passed archive validation, a five-page LibreOffice round trip, and visual inspection. The package in `outputs/dogfood-ai-collective-chapter-brief/` is ready for cold review. Keep this item open until a real professional returns `Send` or names the first required revision.
 - [x] Generate a source-traceable infographic.
 - [ ] Generate and evaluate a coherent GPT Image 2 batch.
   - 2026-07-15: the production batch now creates a 512×512 style-derived reference board, hashes and versions it with the approved Visual DNA, sends the same bytes and locked direction through `/v1/images/edits` for all six panels and selective retries, and refuses provider dispatch if the reference or sibling contract drifts. Keep this open until the six real images are generated and visually inspected as one set.

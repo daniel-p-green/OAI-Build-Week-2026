@@ -2718,8 +2718,6 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
----
-
 ## 2026-07-14 17:32 CT — Official Figma library made the exclusive UI system
 
 **Area:** Product design system / implementation boundary
@@ -4537,6 +4535,42 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Complete the weekly rhythm by verifying new meeting → refreshed Map and Brief → regenerated deck with the reused Style and intact claim trace as one live scenario.
 - Produce a genuinely external professional deck and obtain a cold send-or-revise judgment.
+- Live GPT-5.6 Map reasoning, six GPT Image 2 outputs, provider narration, and one Realtime microphone turn remain spend-gated and unproved.
+- Founder footage, primary `/feedback` Session ID, final edit, public upload, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 12:08 CT — First external-use deck candidate repairs the real source-to-slide boundary
+
+**Area:** Product quality / Grounding / Deliver / Dogfood one / Testing
+
+### Changed
+
+- Ran WorkshopLM against two privacy-safe sources outside the Build Week project: the AI Collective chapter-startup FAQ PDF and the current public AI Collective Newsletter page. The first generated deck failed the send-it test before styling: naive webpage ingestion produced 5,179 claims from scripts and configuration, layout-preserving PDF extraction broke bullets across hard line wraps, and the planner selected an unrelated `91%` article claim.
+- Replaced tag stripping with readable HTML extraction that removes scripts, styles, templates, frames, SVG internals, and navigation; decodes entities; keeps structural paragraph boundaries; and uses the actual page title. The same current page now yields 63 readable claims with zero known script leaks.
+- Added PDF layout reflow for wrapped paragraphs, bullet boundaries, numbered steps, page breaks, and zero-width characters. Incomplete colon-ending fragments are no longer eligible as slide claims.
+- Made deck planning topic-aware, content-role-aware, and source-context-aware. Current public web evidence is favored for quantitative proof, while explicit action language wins the recommendation. The final story is local leadership value → sustainable organizer commitment → current 180+ chapter proof → `Start a chapter in your city`.
+- Embedded an explicitly configured local logo into both HTML and PowerPoint, replaced WorkshopLM-internal cover language with the Style name and Intent Profile, shortened filename and webpage citations without losing exact locators, and removed duplicated heading text from slide bodies.
+- Packaged the resulting HTML, editable PowerPoint, LibreOffice PDF, five rendered review slides, a cold-review prompt, and hashes in `outputs/dogfood-ai-collective-chapter-brief/`. It is labeled ready for review, not externally approved.
+
+### Verified
+
+- The final `.pptx` passed `unzip -t`, contains five slide XML files plus five source-trace note slides, opened through LibreOffice, converted to a five-page 16:9 PDF, and rendered without observed overflow or raw implementation labels. The official AI Collective mark is present in the browser preview and editable PowerPoint cover.
+- The final artifact hashes are HTML `217b36d2b453a9af602723a4cdd990c69dd10043286ef523a35fa600342a4680`, PowerPoint `2f8df7e87092679b16a70f6e16eadf29518d528bddc73b0ca3e289cf7a8f60bc`, and PDF `913d9abe82cd06fa0d16d8a7aca604ded4eec1985c8085be062ed59da5ab66ba`.
+- `pnpm check` passed across all 13 packages. Worker passed 62/62 tests, web 13/13, and production 3/3. `pnpm demo:e2e` passed all six gates. The rebuilt 16-asset submission set verified `valid: true`, `stale: false`, and `tampered: false` while remaining honestly `partial` for live-provider media.
+- Structured evidence is recorded in `artifacts/spikes/external-deck-dogfood-2026-07-15.json`.
+
+### Decisions
+
+- A source is not safe to ground merely because it is public HTML. Readable-content extraction is part of the evidence boundary; script/config text must never compete with user-visible claims.
+- The deck planner may use a source title as topic context for local documents, but broad web-page titles do not make every article claim relevant. Current web sources receive a proof preference only after claim-level topic relevance and content quality checks.
+- Exact locators remain in HTML data and PowerPoint notes. Visible citations use a concise professional source label so trust does not become visual clutter.
+
+### Open items
+
+- Obtain a real cold `Send` or `Revise` judgment from someone outside the project. The candidate is external-use work, but no external person has reviewed or shipped it yet.
+- Complete the weekly add-meeting → refreshed Map and Brief → regenerated deck scenario with the reused Style and intact trace.
 - Live GPT-5.6 Map reasoning, six GPT Image 2 outputs, provider narration, and one Realtime microphone turn remain spend-gated and unproved.
 - Founder footage, primary `/feedback` Session ID, final edit, public upload, and Devpost submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.

@@ -3,7 +3,7 @@ import { lookup } from "node:dns/promises";
 import { execFile as execFileCallback } from "node:child_process";
 import { mkdirSync, writeFileSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, basename, join, resolve } from "node:path";
+import { dirname, basename, extname, isAbsolute, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { deflateSync } from "node:zlib";
@@ -333,7 +333,33 @@ export function applyGroundedMapProposal(proposal: GroundedMapProposal, run: Omi
   const aiRun: WorkshopAiRun = { id: `ai-run-grounded-graph-${Date.now()}`, operation: "grounded_graph", model: run.model, inputClaimIds: [...new Set(proposal.nodes.flatMap((node) => node.evidenceClaimIds))], outputSha256: run.outputSha256, requestId: run.requestId, createdAt };
   return write({ ...current, graphState: serializeGraphState(graph, history), mapNodes: mapNodesFor(graph, []), mapEdges: mapEdgesFor(graph), aiRuns: [...current.aiRuns, aiRun], frame: current.frame ? { ...current.frame, stale: true } : undefined, sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: createdAt }, root);
 }
-function normalizeSourceText(text: string) { return text.replace(/\r\n?/g, "\n").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim(); }
+function normalizeSourceText(text: string) { return text.replace(/[\u200B-\u200D\uFEFF]/g, "").replace(/\r\n?/g, "\n").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim(); }
+function decodeHtmlText(text: string) {
+  const named: Record<string, string> = { amp: "&", apos: "'", gt: ">", hellip: "…", laquo: "«", ldquo: "“", lsquo: "‘", lt: "<", mdash: "—", nbsp: " ", ndash: "–", quot: '"', raquo: "»", rdquo: "”", rsquo: "’" };
+  return text.replace(/&(?:#(\d+)|#x([0-9a-f]+)|([a-z]+));/gi, (entity, decimal: string | undefined, hex: string | undefined, name: string | undefined) => {
+    const codePoint = decimal ? Number.parseInt(decimal, 10) : hex ? Number.parseInt(hex, 16) : undefined;
+    if (codePoint !== undefined && Number.isFinite(codePoint) && codePoint > 0 && codePoint <= 0x10ffff) return String.fromCodePoint(codePoint);
+    return name ? named[name.toLowerCase()] ?? entity : entity;
+  });
+}
+function readableHtmlText(html: string) {
+  const withoutNonContent = html
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<(script|style|noscript|template|svg|canvas|iframe)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, " ")
+    .replace(/<nav\b[^>]*>[\s\S]*?<\/nav\s*>/gi, " ")
+    .replace(/<li\b[^>]*>/gi, "\n\n• ")
+    .replace(/<br\s*\/?>|<\/(?:address|article|aside|blockquote|dd|div|dl|dt|figcaption|figure|footer|h[1-6]|header|main|ol|p|pre|section|table|tbody|td|th|thead|tr|ul)\s*>/gi, "\n\n")
+    .replace(/<[^>]+>/g, " ");
+  return normalizeSourceText(decodeHtmlText(withoutNonContent).replace(/\s*\n\s*/g, "\n"));
+}
+export function normalizePdfLayoutText(text: string) {
+  const paragraphs = text
+    .replace(/\f/g, "\n\n")
+    .replace(/\n[ \t]*(?=(?:[●•▪◦]|\d+[.)])\s*)/g, "\n\n")
+    .replace(/[ \t]+(?=[●•▪◦]\s*)/g, "\n\n")
+    .replace(/:\s+(?=\d+[.)]\s+)/g, ":\n\n");
+  return normalizeSourceText(paragraphs).split(/\n\n+/).map((paragraph) => paragraph.replace(/\n+/g, " ").replace(/\s+/g, " ").trim()).filter(Boolean).join("\n\n");
+}
 function sourceClaimCount(text: string) { return Math.max(1, text.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean).length); }
 function chunksFor(text: string, sourceId: string, hash: string, origin: string): WorkshopChunk[] { return text.split(/\n\n+/).flatMap((paragraph) => paragraph.match(/.{1,700}(?:\s|$)/g) ?? [paragraph]).filter(Boolean).map((chunk, ordinal) => ({ id: `chunk-${hash.slice(0, 12)}-${ordinal + 1}`, sourceId, text: chunk.trim(), locator: `${origin} · chunk ${String(ordinal + 1).padStart(2, "0")}`, ordinal })); }
 function claimsFor(chunks: WorkshopChunk[], hash: string): WorkshopClaim[] { return chunks.flatMap((chunk) => chunk.text.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean).map((text, index) => ({ id: `claim-${hash.slice(0, 12)}-${chunk.ordinal}-${index + 1}`, sourceId: chunk.sourceId, chunkId: chunk.id, text, evidenceState: "verified" as const, locator: chunk.locator }))); }
@@ -400,12 +426,13 @@ async function fetchPublicText(rawUrl: string, fetchImpl: typeof fetch = fetch) 
 }
 export async function ingestUrl(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch): Promise<WorkshopState> {
   const { url, text } = await fetchPublicText(rawUrl, fetchImpl);
-  return ingestSource({ title: url.hostname, origin: url.toString(), type: "WEB", text: text.replace(/<[^>]+>/g, " "), permission: "shareable" }, root);
+  const title = decodeHtmlText(text.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1]?.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() ?? "") || url.hostname;
+  return ingestSource({ title, origin: url.toString(), type: "WEB", text: readableHtmlText(text), permission: "shareable" }, root);
 }
 export async function ingestPdfFile(filePath: string, root?: string, permission: WorkshopSource["permission"] = "sanitized"): Promise<WorkshopState> {
   if (!filePath.toLowerCase().endsWith(".pdf")) throw new Error("Local PDF ingestion requires a .pdf file.");
   let stdout: string; try { ({ stdout } = await execFile("pdftotext", ["-layout", filePath, "-"], { maxBuffer: 1_000_000 })); } catch { throw new Error("PDF text extraction failed. Use a readable text-based PDF or provide extracted text."); }
-  const text = normalizeSourceText(stdout); if (!text) throw new Error("PDF contains no extractable text."); return ingestSource({ title: basename(filePath), origin: `Local PDF · ${basename(filePath)}`, type: "PDF", text, permission }, root);
+  const text = normalizePdfLayoutText(stdout); if (!text) throw new Error("PDF contains no extractable text."); return ingestSource({ title: basename(filePath), origin: `Local PDF · ${basename(filePath)}`, type: "PDF", text, permission }, root);
 }
 function htmlAttribute(tag: string, name: string) { const match = tag.match(new RegExp(`\\b${name}\\s*=\\s*(?:"([^"]*)"|'([^']*)'|([^\\s>]+))`, "i")); return match?.[1] ?? match?.[2] ?? match?.[3]; }
 function normalizeHex(value: string) { const upper = value.toUpperCase(); return upper.length === 4 ? `#${upper[1]}${upper[1]}${upper[2]}${upper[2]}${upper[3]}${upper[3]}` : upper; }
@@ -520,8 +547,8 @@ type DeckRole = "statement" | "split" | "proof" | "recommendation";
 const deckRoles: readonly DeckRole[] = ["statement", "split", "proof", "recommendation"];
 const roleSignals: Record<DeckRole, RegExp> = {
   statement: /\b(turns?|becomes?|helps?|delivers?|enables?|creates?|outcome|promise|from\b.+\bto)\b/i,
-  split: /\b(problem|cost|friction|weakness|fails?|failure|dies?|gap|bottleneck|disconnected|slow)\b/i,
-  proof: /\b(evidence|source|trace|trust|verified|data|measure|claim|citation|grounded|defend)\b/i,
+  split: /\b(problem|cost|friction|weakness|fails?|failure|dies?|gap|bottleneck|disconnected|slow|expect(?:ed|ations?)|mandates?|requirements?|requires?|commit(?:ment|ting)?|hours?|frequency|sustainable)\b/i,
+  proof: /\b(evidence|source|trace|trust|verified|data|measure|claim|citation|grounded|defend|global|countries|organizers?|members?|worldwide)\b/i,
   recommendation: /\b(should|must|recommend|start|make|prioriti[sz]e|focus|ship|use|adopt|next)\b/i,
 };
 function prose(text: string) {
@@ -529,21 +556,31 @@ function prose(text: string) {
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
     .replace(/^\s{0,3}#{1,6}\s+/gm, "")
     .replace(/^\s*[-*+]\s+(?:\[[ xX]\]\s*)?/gm, "")
+    .replace(/^\s*[●•▪◦]\s*/gm, "")
     .replace(/[*_`~]/g, "")
     .replace(/<[^>]+>/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 }
-function deckCandidateScore(text: string, role: DeckRole, raw: string, sourcePriority: number) {
+const deckTopicStopwords = new Set(["about", "brief", "briefing", "client", "deck", "leadership", "presentation", "strategy", "the", "this", "with", "workshop"]);
+function deckTopicTerms(title: string) { return prose(title).toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((term) => term.length >= 4 && !deckTopicStopwords.has(term)); }
+function deckCandidateScore(text: string, role: DeckRole, raw: string, sourcePriority: number, topicTerms: string[], topicContext: string, sourceType: WorkshopSource["type"] | undefined) {
   const words = text.split(/\s+/).filter(Boolean).length;
-  if (/^\s*(?:\||#{1,6}\s)/.test(raw) || words < 4 || text.length < 24 || /^(?:md|json|tsx?|html)\b|^(?:date|status|last (updated|refreshed)|at a glance|hackathon|track|deadline|source|version)\b\s*:?/i.test(text)) return Number.NEGATIVE_INFINITY;
+  if (/^\s*(?:\||#{1,6}\s)/.test(raw) || /:\s*$/.test(text) || words < 4 || text.length < 24 || /^(?:md|json|tsx?|html)\b|^(?:date|status|last (updated|refreshed)|at a glance|hackathon|track|deadline|source|version)\b\s*:?/i.test(text)) return Number.NEGATIVE_INFINITY;
   let score = roleSignals[role].test(text) ? 12 : 0;
   if (words >= 8 && words <= 34) score += 6;
   else if (words <= 48) score += 2;
   if (/\b(is|are|lives?|turns?|becomes?|helps?|keeps?|makes?|needs?|requires?|produces?|preserves?|reduces?|improves?|remains?|links?|traces?)\b/i.test(text)) score += 3;
   if (/\b(because|so that|without|faster|rather than|instead|only if|while)\b/i.test(text)) score += 2;
-  if (/\b(professional|client|leadership|deliverable|ship|standards|workflow|trust|defend|grounded|brand(?:ed)?)\b/i.test(text)) score += 4;
+  if (/\b(professional|client|leadership|leader|resource|impact|visibility|deliverable|ship|standards|workflow|trust|defend|grounded|brand(?:ed)?)\b/i.test(text)) score += 4;
+  const topicOverlap = topicTerms.filter((term) => topicContext.toLowerCase().includes(term)).length;
+  score += Math.min(16, topicOverlap * 8);
+  if (topicTerms.length && !topicOverlap) score -= 12;
   if (role === "proof" && /\bexact\s+source\b/i.test(text)) score += 4;
+  if (role === "proof" && /\b\d[\d,+.%]*\b/.test(text)) score += 8;
+  if (role === "proof" && sourceType === "WEB") score += 12;
+  if (role === "recommendation" && /\b(start|should|must|recommend|next|begin|adopt|prioriti[sz]e)\b/i.test(text)) score += 10;
+  if (role === "recommendation" && /\b(start|launch|begin)\s+(?:a|the|your)\s+(?:chapter|project|program|workshop|pilot|team|deck)\b/i.test(text)) score += 12;
   if (role === "recommendation" && /\b(deck|output|deliverable|diagram|image|storyboard|video)\b/i.test(text)) score += 5;
   score += sourcePriority;
   if (/https?:\/\/|\.(md|json|tsx?|html)\b|\/Users\//i.test(text)) score -= 8;
@@ -551,28 +588,56 @@ function deckCandidateScore(text: string, role: DeckRole, raw: string, sourcePri
   return score;
 }
 function selectDeckClaims(state: WorkshopState) {
-  const candidates = activeClaimsFor(state).map((claim, order) => ({ claim, order, raw: claim.text, text: prose(claim.text), sourcePriority: Math.max(0, state.activeSourceIds.length - state.activeSourceIds.indexOf(claim.sourceId)) }));
+  const topicTerms = deckTopicTerms(state.title);
+  const candidates = activeClaimsFor(state).map((claim, order) => {
+    const source = state.sourceItems.find((candidate) => candidate.id === claim.sourceId);
+    return { claim, order, raw: claim.text, text: prose(claim.text), sourceType: source?.type, topicContext: source?.type === "WEB" ? claim.text : `${claim.text} ${source?.title ?? ""}`, sourcePriority: Math.max(0, state.activeSourceIds.length - state.activeSourceIds.indexOf(claim.sourceId)) };
+  });
   const used = new Set<string>();
   return deckRoles.flatMap((role) => {
     const ranked = candidates
       .filter((candidate) => !used.has(candidate.claim.id))
-      .map((candidate) => ({ ...candidate, roleMatch: roleSignals[role].test(candidate.text), score: deckCandidateScore(candidate.text, role, candidate.raw, candidate.sourcePriority) }))
+      .map((candidate) => ({ ...candidate, roleMatch: roleSignals[role].test(candidate.text), score: deckCandidateScore(candidate.text, role, candidate.raw, candidate.sourcePriority, topicTerms, candidate.topicContext, candidate.sourceType) }))
       .filter((candidate) => Number.isFinite(candidate.score))
-      .sort((left, right) => Number(right.roleMatch) - Number(left.roleMatch) || right.score - left.score || left.order - right.order);
+      .sort((left, right) => right.score - left.score || Number(right.roleMatch) - Number(left.roleMatch) || left.order - right.order);
     const selected = ranked[0];
     if (!selected) return [];
     used.add(selected.claim.id);
     return [{ ...selected, role }];
   });
 }
-function deckHeading(text: string) {
+function deckHeading(text: string, role: DeckRole) {
+  if (role === "recommendation") {
+    const action = text.match(/\b(?:start|launch|begin)\s+(?:a|the|your)\s+(?:chapter|project|program|workshop|pilot|team|deck)(?:\s+(?:in|for|with)\s+[^,.;]+)?/i)?.[0];
+    if (action) return action.charAt(0).toUpperCase() + action.slice(1);
+  }
   const clause = text.split(/\s*[—–]\s*|[;:]\s|,\s+(?=(?:but|because|while|which|with|without|so)\b)|\s+(?=(?:using|through|that)\b)/i)[0]?.trim() ?? text;
   return outputHeading(clause.length >= 24 ? clause : text);
+}
+function deckBody(text: string, heading: string) {
+  if (heading.endsWith("…") || !text.toLowerCase().startsWith(heading.toLowerCase())) return text;
+  return text.slice(heading.length).replace(/^\s*[:—–-]\s*/, "").trim();
+}
+function displaySourceTitle(title: string) {
+  const clean = title.replace(/\.(?:pdf|docx?|pptx?|txt)$/i, "").trim();
+  const segments = clean.split(/\s+[|·]\s+/).map((segment) => segment.trim()).filter(Boolean);
+  const selected = segments.length > 1 ? segments.at(-1)! : clean;
+  return selected.length > 58 ? `${selected.slice(0, 57).trimEnd()}…` : selected;
 }
 function citationLabel(state: WorkshopState, sourceId: string, locator: string) {
   const source = state.sourceItems.find((candidate) => candidate.id === sourceId);
   const position = locator.split(" · ").at(-1);
-  return [source?.title ?? "Source", position].filter(Boolean).join(" · ");
+  return [displaySourceTitle(source?.title ?? "Source"), position].filter(Boolean).join(" · ");
+}
+async function embeddedLocalLogo(logos: string[], root: string) {
+  const contentTypes: Record<string, string> = { ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".svg": "image/svg+xml", ".webp": "image/webp" };
+  for (const logo of logos) {
+    if (/^https?:\/\//i.test(logo)) continue;
+    const path = isAbsolute(logo) ? logo : resolve(root, logo); const contentType = contentTypes[extname(path).toLowerCase()];
+    if (!contentType) continue;
+    try { const bytes = await readFile(path); if (bytes.length > 2_000_000) continue; return `data:${contentType};base64,${bytes.toString("base64")}`; } catch { continue; }
+  }
+  return undefined;
 }
 export async function generateOutput(type: "deck" | "infographic", root?: string): Promise<WorkshopState> {
   const current = readWorkshopState(root);
@@ -580,14 +645,13 @@ export async function generateOutput(type: "deck" | "infographic", root?: string
   if (!current.style || current.style.stale) throw new Error("Output generation requires a locked current style.");
   const dataRoot = root ?? repositoryDataRoot(); const selectedClaims = selectDeckClaims(current);
   const blocks = selectedClaims.length ? selectedClaims.map(({ claim, text, role }) => {
-    const chunk = current.sourceChunks.find((candidate) => candidate.id === claim.chunkId);
-    const cleanChunk = prose(chunk?.text ?? "");
-    const heading = deckHeading(text);
-    const body = text !== heading ? text : cleanChunk && cleanChunk !== text ? cleanChunk : text;
+    const heading = deckHeading(text, role);
+    const body = deckBody(text, heading);
     return { id: claim.id, heading, body: outputBody(body), citations: [claim.locator], citationLabel: citationLabel(current, claim.sourceId, claim.locator), layout: role };
   }) : current.mapNodes.filter((node) => node.kind === "grounded").slice(0, 4).map((node, index, all) => ({ id: node.id, heading: outputHeading(prose(node.title)), body: outputBody(prose(node.body)), citations: [node.locator], layout: index === 0 ? "statement" as const : index === all.length - 1 ? "recommendation" as const : index % 2 ? "split" as const : "proof" as const }));
   const outputId = `${type}-v${current.outputs.filter((output) => output.type === type).length + 1}`;
-  const rendered = await writeRenderedArtifact(dataRoot, current.id === defaultWorkshopId ? outputId : `${current.id}/${outputId}`, type, { workshopTitle: current.title, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper, fonts: current.style.licensedFonts, intent: current.style.intentProfile }, blocks });
+  const logoData = await embeddedLocalLogo(current.style.logos, dataRoot);
+  const rendered = await writeRenderedArtifact(dataRoot, current.id === defaultWorkshopId ? outputId : `${current.id}/${outputId}`, type, { workshopTitle: current.title, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper, fonts: current.style.licensedFonts, intent: current.style.intentProfile, name: current.style.name, logoData }, blocks });
   const stored = await storeArtifact(dataRoot, `${current.id}-${outputId}`, Buffer.from(await readFile(join(dataRoot, rendered.relativePath))), "text/html");
   const editableStored = rendered.editableRelativePath ? await storeArtifact(dataRoot, `${current.id}-${outputId}-editable`, Buffer.from(await readFile(join(dataRoot, rendered.editableRelativePath))), "application/vnd.openxmlformats-officedocument.presentationml.presentation") : undefined;
   const createdAt = new Date().toISOString();
