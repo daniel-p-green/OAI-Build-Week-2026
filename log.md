@@ -3223,3 +3223,35 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - The shared parser is provider-independent proof only. GPT-5.6 structured-output compatibility, quality, latency, and usage remain unverified until explicit spend authorization allows the live run.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 23:23 CT — Interface completion gate reopened around simplicity
+
+**Area:** Product design / goal reconciliation / judge-visible UI
+
+### Changed
+
+- Revised `GOAL.md` so the official Apps in ChatGPT primitive layer is treated as a foundation, not proof that the composed interface is finished.
+- Reopened the screen-composition, plain-language, screenshot, accessibility, and final conformance gates.
+- Added explicit screen contracts for the shared frame, Map, Sources/Evidence, Brief/Style, Outputs, Storyboard, focused Output, and system states.
+- Locked the missing-pattern rule: document an official-primitive recipe in the Figma inventory, implement the named composite in `packages/ui`, add it to the allowlist and tests, and only then use it in the app.
+- Reduced the visible vocabulary to eight product objects, eight primary actions, seven supporting actions, and seven states. Raw Markdown, `FRAME.md`, `DESIGN.md`, provider/queue terms, IDs, and version mechanics are confined to technical Details or export.
+
+### Verified
+
+- Recompared NotebookLM's stable Sources/Chat/Studio and populated-output screenshots with WorkshopLM's current Map, Brief, Outputs, and Storyboard screenshots.
+- The current Map already demonstrates the right one-object direction, but the Brief exposes raw `FRAME.md`, Style remains a competing permanent panel, Outputs repeat status and card actions, and Storyboard reveals a dense filmstrip, editor, source action, approval action, and approval summary simultaneously.
+- Re-read the verified Figma inventory. The required screen recipes can be built from the existing `FullScreenShell`, `NavigationHeader`, `Button`, `IconButton`, `Token`, `Card`, `ListGroup`, `ListRow`, `EntityCard`, `Carousel`, and `CarouselRow` primitives; missing product-specific behavior must use documented composites rather than new chrome.
+
+### Decisions
+
+- Preserve every implemented capability; simplify simultaneous exposure through progressive disclosure.
+- Borrow NotebookLM's orientation behaviors—stable identity, immediate source scope, durable output history, and one-click citations—without copying its permanent three-column layout or Google visual language.
+- The final demo cannot be recorded until the revised screen contracts, copy inventory, responsive screenshots, component reconciliation, and first-time orientation checks pass.
+
+### Open items
+
+- Implement the reopened P0 screen-by-screen checklist before treating the UI as final.
+- Provider-backed image and narration proof remains separately open and may proceed without changing the UI files.
+- Codex Session ID: unavailable on this surface; not inferred.

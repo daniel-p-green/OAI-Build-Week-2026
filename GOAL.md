@@ -1,12 +1,12 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 23:11 CT
+Last updated: 2026-07-14 23:23 CT
 
 ## Status
 
-**Active phase:** Live demo proof — provider-backed outputs, operator run, and submission assets
+**Active phase:** P0 interface simplification, then live demo proof
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
-**Current gate:** The official-component rebuild is complete, and the isolated live-operator preflight now builds the approved sanitized Workshop without spend. The next proof bar requires explicit paid-call authorization: run the GPT-5.6 benchmark, create the real GPT Image 2 image set and approved-storyboard narration, inspect the results, and use them in the judge-facing submission. Do not reopen the shell or product language unless a visual or usability test finds a regression.
+**Current gate:** The official primitive layer is implemented, but the judge-visible interface is not final. The July 14 screenshot review found screen-composition and language regressions: raw `FRAME.md` content is exposed, Style competes with the Brief as a permanent panel, repeated status/actions make Outputs feel busy, and the Storyboard reveals too many controls at once. Complete and verify the P0 screen-by-screen simplification below before recording the final demo. Provider work may proceed in isolated files, but provider media does not make an overcomplicated interface complete.
 **Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found` for this account even though the current public model page describes it as a Sol alias. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. The benchmark and live grounded-Map adapter now share a tested parser for both top-level and nested Responses text, but no request has run. The current model catalog labels `gpt-4o-mini-tts` deprecated while the current speech guide still recommends it; verify the actual live response before recording. Do not claim live product use or change per-operation defaults before these checks.
 **Known host risk:** The July 14 host-sync verification is credential-blocked, so it does not prove native task or voice-turn persistence. The designed capture-only fallback remains active; Spike A stays open until the end-of-day decision deadline or a separately authorized live host check.
 
@@ -45,7 +45,7 @@ This goal is not complete when the architecture, shell, mocks, or isolated model
 8. `How this was built` traces the real submission from raw brainstorm through Sources, Map, Brief, Style, Outputs, build evidence, and measured time to first output.
 9. The public demo video is under three minutes and shows the real flow clearly enough that judges do not need to install the local plugin.
 10. The repository passes the documented checks, the live demo is recorded from the intended surface, and every judge-facing claim matches captured evidence.
-11. The judge-visible interface uses reusable implementations of the verified Apps in ChatGPT components, and a first-time professional can identify the current object, source scope, and next action within five seconds.
+11. Every judge-visible control and container comes from the verified Apps in ChatGPT inventory or a documented WorkshopLM composite made only from those primitives. A first-time professional can identify the current object, source scope, and next action within five seconds, without seeing internal file names, IDs, implementation terms, or duplicate controls.
 
 All items above are committed scope for this hackathon version. Fallbacks may change implementation mechanics, but may not silently remove the user-visible capability they preserve.
 
@@ -72,10 +72,13 @@ WorkshopLM borrows NotebookLM's strongest orientation patterns, then expresses t
 3. **The work owns the screen.** There are no persistent workflow tabs, three-column dashboard, duplicate chat, generic inspector, or always-open output rail. Drawers and sheets appear only when needed.
 4. **One obvious next action.** Each screen has at most one visually dominant action. The two blocking actions are `Approve brief` and `Approve storyboard`; video creation comes only after storyboard approval.
 5. **Outputs look like work, not records.** Every Output has a recognizable name, real preview, source coverage, freshness, and one obvious open action. Creation controls never compete with the Output history.
+6. **Progressive disclosure is structural.** The default screen shows the current work, its source count, and the next action. Style settings, evidence, versions, source management, technical details, and secondary actions open only when requested or when they block progress.
+7. **Status earns its space.** Show a state only when it changes what the user can or should do. Do not repeat `Approved`, `Up to date`, source counts, or version labels across the header, body, and cards.
+8. **The product renders work, not source files.** Brief and Style are readable product views. `FRAME.md`, `DESIGN.md`, raw Markdown syntax, artifact paths, model names, IDs, hashes, and version mechanics remain available only under technical Details or export.
 
 `Apps in ChatGPT · OpenAI Official (Community)` is the only source for product chrome. Use verified primitives, variables, text styles, effects, icons, spacing, and display-mode templates from the recorded Figma inventory. If a needed pattern is absent, build a named WorkshopLM composite from those primitives and document its recipe before implementation. Never invent a parallel button, card, field, sheet, token, icon, type, radius, shadow, or interaction system. Custom visuals are allowed only for WorkshopLM's work itself: Map geometry, evidence paths, generated media, charts, slide previews, image tiles, and storyboard frames.
 
-All primary language is plain, professional, and action-first. Object names are `Workshop`, `Sources`, `Map`, `Brief`, `Style`, `Outputs`, `Storyboard`, and `Video`. Primary actions are `Add source`, `Show source`, `Show on map`, `Approve brief`, `Choose style`, `Create outputs`, `Approve storyboard`, and `Create video`. Technical terms such as gate, contract, package, artifact, provenance, render, Visual DNA, model ID, and version ID appear only in technical Details or generated file contents.
+All primary language is plain, professional, and action-first. Object names are `Workshop`, `Sources`, `Map`, `Brief`, `Style`, `Outputs`, `Storyboard`, and `Video`. Primary actions are `Add source`, `Show source`, `Show on map`, `Approve brief`, `Choose style`, `Create outputs`, `Approve storyboard`, and `Create video`. Supporting actions may use `Back`, `Close`, `Edit`, `Save`, `Retry`, `Cancel`, and `Open`. States are limited to `Draft`, `Ready for review`, `Approved`, `In progress`, `Ready`, `Needs update`, and `Couldn't create`. Technical terms such as gate, contract, package, artifact, provenance, render, Visual DNA, model ID, version ID, `FRAME.md`, and `DESIGN.md` appear only in technical Details or exported files.
 
 ## Locked decisions
 
@@ -180,14 +183,14 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Lock exactly two approval moments for the product and three-minute demo: brief and storyboard.
 - [x] Audit the live MVP against NotebookLM and the official Apps in ChatGPT UI guidance; record the simplification direction in `research/ui-ux-simplification-audit-2026-07-14.md`.
 - [x] Supersede both the persistent three-rail/six-tab MVP and the interim three-tab concept with one current object, an optional Workshop switcher outside the active Workshop, and progressive disclosure in `DESIGN.md`.
-- [x] Implement the simplified OpenAI-aligned shell: official tokens and type, one current-object canvas, contextual Sources/evidence sheets, and no persistent tabs, generic Library drawer, or host strip.
-- [x] Move Style into Brief settings; move Sketch and Storyboard into Outputs; move Trace into citation/Details drawers.
+- [ ] Finish the simplified OpenAI-aligned shell: keep the verified official primitive layer, but rebuild the screen compositions around one current object, contextual Sources/evidence sheets, and no persistent tabs, generic Library drawer, host strip, or permanent secondary panel.
+- [ ] Move Style behind a compact Brief summary and an on-demand sheet; keep Sketch and Storyboard inside Outputs; keep source trace and technical data in contextual source/Details sheets.
 - [ ] Complete the visual Outputs gallery with real presentation, infographic, image-set, storyboard, and video previews.
   - 2026-07-14: persisted deck and infographic HTML now render as real gallery previews and the completed local MP4 is served as a playable preview. Image generation still has only a planned manifest, not provider image bytes; keep this item open.
-- [x] Remove raw artifact paths, internal IDs, absent trace stages, and gate implementation language from normal UI while preserving them under Details.
-- [x] Make each screen expose no more than five immediate actions and exactly one visually dominant next action when a gate is ready.
+- [ ] Remove raw Markdown, artifact paths, internal IDs, version mechanics, absent trace stages, and gate implementation language from normal UI while preserving them under Details or export.
+- [ ] Make each screen expose no more than three labeled actions in the default viewport and exactly one visually dominant next action when progress is possible. Hide actions that do not apply to the current state.
 - [x] Add frontend tests for progressive disclosure, contextual citations, two approval bars, visual output previews, and suppression of incomplete provenance rows.
-- [x] Re-verify the simplified UI at 1200×800, 1024×768, and mobile review width; capture fresh screenshots for the demo storyboard.
+- [ ] Re-verify the final simplified UI at 1200×800, 1024×768, and 390×844; capture a replacement screenshot set for the demo storyboard.
 - [x] Adopt the six NotebookLM legibility gains as implementation acceptance criteria: instant explanation, stable geography, tangible source scope, real output previews, calm first run, and one-click citations.
 - [x] Capture a privacy-safe live UI gallery covering the reset and complete recorded fixtures, including Map, Sources, citation, Brief, Style, Outputs, Storyboard, focused Output, and mobile states.
 - [x] Rebuild the judge path around the official Apps in ChatGPT boundary: ChatGPT owns Conversation; the full-screen Workshop owns only Map, source trace, Brief, Style, Outputs, and Storyboard interactions.
@@ -198,14 +201,16 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Inventory the exact components, variables, styles, icons, and display-mode templates in `Apps in ChatGPT · OpenAI Official (Community)` from an editable Figma design-file copy; record names and source identifiers without inference.
 - [x] Replace every approximated or custom WorkshopLM shell component and style with real reusable implementations of verified assets or documented compositions from the official Figma library. Permit custom rendering only for domain content such as Map geometry and generated artifact media. `data-oai-component` attributes and final-cascade CSS overrides do not satisfy this item.
 - [x] Replace the string-presence UI test with conformance checks that cover every judge-visible element, the full CSS cascade, rendered computed styles, interaction states, responsive layouts, icons, and accessibility behavior.
-- [x] Capture a fresh final screenshot set for the rebuilt Map, source trace, Brief/Style, Outputs, Storyboard, and mobile Evidence outline.
-- [x] Add frontend regression coverage for the six rebuilt states, including a duplicate-artifact assertion and one-dominant-action checks.
-- [x] Verify keyboard focus order, WCAG AA contrast, reduced motion, and 200% zoom on the rebuilt judge path.
+- [ ] Capture a fresh final screenshot set for the simplified Map, source trace, Brief/Style, Outputs, Storyboard, focused Output, and mobile review path.
+- [ ] Update frontend regression coverage for every simplified state, including duplicate-artifact, one-dominant-action, hidden-unavailable-action, and no-raw-internal-language assertions.
+- [ ] Re-verify keyboard focus order, WCAG AA contrast, reduced motion, and 200% zoom after the screen-composition rebuild.
   - 2026-07-14: the production UI passed at a real 600×800 Chrome viewport, the exact CSS-pixel reflow equivalent of 200% on a 1200px-wide browser, with no horizontal overflow. The automated browser boundary did not expose its native zoom-menu value, so no claim is made that the browser chrome itself was inspected at `200%`.
 
 #### P0 official-component rebuild
 
 Completion means implementation fidelity, not visual resemblance:
+
+The reusable primitive foundation below is verified and remains complete. It does **not** prove that the current screen composition, information hierarchy, or language is finished; those gates are reopened in the next two sections.
 
 - [x] Turn `packages/ui` into the real WorkshopLM UI layer with tested exports for `FullScreenShell`, `NavigationHeader`, `Button`, `IconButton`, `Token`, `Checkbox`, `Input`, `TextArea`, `Card`, `ListGroup`, `ListRow`, `EntityCard`, `Carousel`, and `CarouselRow`.
 - [x] Implement each primitive from its recorded Figma node, variants, typography, spacing, state, radius, border, shadow, and icon source. Form controls must inherit the verified SF Pro web stack and match hover, pressed, focus, disabled, selected, checked, and error states.
@@ -220,11 +225,11 @@ Completion means implementation fidelity, not visual resemblance:
 
 Use NotebookLM's screenshots as behavioral evidence, then express the result in the official OpenAI system:
 
-- [x] Keep one stable orientation frame: Workshop name and current object at top left, Sources in one consistent location, one focused center object, and one primary next action. Do not reintroduce persistent workflow tabs or a duplicate browser chat.
-- [x] Make Sources feel as immediate as NotebookLM: one labeled count opens the source list; selection is directly visible; one click from any citation reveals the exact source excerpt and locator; closing it returns focus to the originating claim.
-- [x] Make Outputs behave like NotebookLM's useful Studio history without copying its panel: each output is a recognizable named object with a real preview, type, freshness, source coverage, and one obvious open action. Creation controls do not compete with the output history.
-- [x] Preserve the professional control advantage: Map editing, brief approval, style selection, storyboard editing, and storyboard approval remain visible only when relevant. The user sees two blocking approvals—Brief and Storyboard—not internal gate machinery.
-- [x] Replace judge-visible copy using this canonical dictionary:
+- [ ] Keep one stable orientation frame: Workshop name and current object at top left, Sources in one consistent location, one focused center object, and one primary next action. Do not reintroduce persistent workflow tabs or a duplicate browser chat.
+- [ ] Make Sources feel as immediate as NotebookLM: one labeled count opens the source list; selection is directly visible; one click from any citation reveals the exact source excerpt and locator; closing it returns focus to the originating claim.
+- [ ] Make Outputs behave like NotebookLM's useful Studio history without copying its panel: each output is a recognizable named object with a real preview, type, freshness, source coverage, and one obvious open action. Creation controls do not compete with the output history.
+- [ ] Preserve the professional control advantage through progressive disclosure: Map editing, Brief approval, Style selection, Storyboard editing, and Storyboard approval appear only when relevant. The user sees two blocking approvals—Brief and Storyboard—not internal gate machinery.
+- [ ] Replace judge-visible copy using this canonical dictionary:
 
 | Current or internal wording | Required user-facing wording |
 | --- | --- |
@@ -246,19 +251,45 @@ Use NotebookLM's screenshots as behavioral evidence, then express the result in 
 | `Editable before the expensive step` | `Review before video` or remove |
 | `Prepare render` | `Create video` |
 | `Current` / `Stale` | `Up to date` / `Needs update` |
+| `FRAME.md` / raw Markdown | formatted `Brief`; file name only under Details or export |
+| `DESIGN.md` / `Visual DNA` | `Style`; technical name only under Details or export |
+| `Brief approved` / `Style in use` repeated in cards | show `Approved` or `Current` once, only when it affects the next action |
+| `Save` on an unchanged form | hide until the user changes something |
+| `Update outputs` while outputs are current | hide; show only when an input `Needs update` |
+| repeated `Open` and `Show source` buttons in the gallery | make the output card open; move source trace into the focused Output |
 
-- [x] Audit every visible string. Labels identify the object; buttons state the result of clicking them; helper text explains only a consequence the user would not reasonably know. Use sentence case, avoid redundant subtitles, keep primary actions to roughly three words, and never expose implementation terms in the default view.
-- [x] Pass a five-second orientation test on Map, Brief, Outputs, Storyboard, Sources, and mobile: a first-time professional can answer `Where am I?`, `What is this based on?`, and `What should I do next?` without opening another surface.
+- [ ] Audit every visible string. Labels identify the object; buttons state the result of clicking them; helper text explains only a consequence the user would not reasonably know. Use sentence case, avoid redundant subtitles and marketing copy, keep primary actions to two or three words, and never expose implementation terms in the default view.
+- [ ] Pass a five-second orientation test on Map, Brief, Outputs, Storyboard, Sources, and mobile: a first-time professional can answer `Where am I?`, `What is this based on?`, and `What should I do next?` without opening another surface.
+
+#### P0 screen-by-screen simplification
+
+Use the NotebookLM screenshots for orientation behavior and the official Apps in ChatGPT inventory for every piece of chrome. Preserve all implemented capability; reduce only simultaneous exposure.
+
+- [ ] **Shared frame:** use `FullScreenShell` + `NavigationHeader`; show Workshop, current object, one `{n} sources` control, and at most one primary action. Back appears only for a nested object. A compact Workshop/current-object identity is allowed; workflow breadcrumbs, stage navigation, duplicate page titles, and persistent side rails are not.
+- [ ] **Map:** let the source → claim → decision relationships own the canvas. Open one `ClaimInspector` only after selection. Show `Approve brief` when reviewable or `View brief` when approved; do not add a second approval card or repeated state block to the default canvas.
+- [ ] **Sources and evidence:** use `SourceSheet` and `EvidenceSheet` as temporary layers. Source selection stays visible and reversible. A citation opens the exact excerpt and locator in one click, then returns focus to the originating claim when closed.
+- [ ] **Brief and Style:** render the Brief as a readable executive document, never raw Markdown. Show Style as one compact summary row or card; `Choose style` opens the fields in a sheet. Do not keep a Style editor beside the Brief. Show `Create outputs` only after Brief and Style are ready.
+- [ ] **Outputs:** use media-first `EntityCard`/`Carousel` compositions. The card itself opens the Output; source trace lives inside the focused Output. Show `Create outputs` for an empty state, `Update outputs` only when inputs need update, and `View storyboard` only when a Storyboard exists. Do not repeat freshness or source counts when they do not change a decision.
+- [ ] **Storyboard:** use one `CarouselRow` filmstrip, one large selected panel, and one contextual editor. `Save` appears only when dirty. `Approve storyboard` is the only dominant action before approval; `Create video` replaces it after approval. Secondary source trace opens on demand.
+- [ ] **Focused Output:** give the work maximum space. Keep Back/Close, title, and only the relevant edit/export/source actions. Technical Details stay collapsed.
+- [ ] **States:** design empty, loading, partial, error, ready, and needs-update states with the same official primitives. Each state names what happened and the single best next action; it never exposes provider or queue internals.
+
+#### P0 component derivation rule
+
+- [ ] Before adding any judge-visible pattern that is absent from the official inventory, document a named composite in `research/openai-apps-figma-component-inventory-2026-07-14.md` with its exact official primitive recipe and Figma sources.
+- [ ] Implement that composite in `packages/ui`, add it to the machine-readable allowlist, test its states and responsive behavior, and only then use it in `apps/web`.
+- [ ] Do not create page-local buttons, inputs, sheets, cards, badges, pills, menus, tabs, icons, type styles, radii, shadows, spacing values, or interaction states. Custom rendering remains limited to Map geometry, evidence paths, charts, and generated media inside official containers.
+- [ ] Maintain a screen-to-component reconciliation table for Shared frame, Map, Sources, Evidence, Brief, Style, Outputs, Storyboard, and focused Output. Any unmapped judge-visible element blocks completion.
 
 #### P0 proof before completion
 
-- [x] Add structural tests that fail for unmapped interactive elements, raw shell controls, glyph icons, unapproved tokens, or custom chrome outside the exception manifest.
-- [x] Add computed-style assertions for the exact official geometry and type of the core primitives in every interaction state.
-- [x] Add screenshot regression coverage for reset and completed fixtures at 1200×800, 1024×768, and 390×844 across Map, Sources, evidence, Brief/Style, Outputs, Storyboard, and focused output viewer.
-- [x] Verify keyboard-only completion of both approval paths, focus return after drawers, visible focus, WCAG AA contrast, reduced motion, screen-reader names, 200% zoom, and no horizontal overflow.
-  - Both approvals, focus return, visible focus, core token contrast, reduced motion, role/name queries, a real 600px Chrome viewport equivalent to 200% on a 1200px screen, and no overflow pass. Native browser zoom-menu chrome is outside the automation surface and is not claimed as inspected.
-- [x] Run a copy inventory test that snapshots every judge-visible label and rejects the retired/internal vocabulary above outside technical Details.
-- [x] Complete a manual Figma-to-runtime reconciliation table with source node, code component, rendered measurement, state coverage, and screenshot evidence. Only then may the two reopened compliance items be checked again.
+- [ ] Update structural tests so they fail for unmapped interactive elements, raw shell controls, glyph icons, unapproved tokens, page-local chrome, or custom chrome outside the exception manifest.
+- [ ] Re-run computed-style assertions for exact official geometry and typography in every interaction state used by the redesigned screens.
+- [ ] Replace screenshot baselines for reset and completed fixtures at 1200×800, 1024×768, and 390×844 across Map, Sources, Evidence, Brief/Style, Outputs, Storyboard, and focused Output.
+- [ ] Verify keyboard-only completion of both approval paths, focus return after sheets, visible focus, WCAG AA contrast, reduced motion, screen-reader names, 200% zoom, and no horizontal overflow.
+- [ ] Run a copy inventory test that snapshots every judge-visible label and rejects retired/internal vocabulary outside technical Details and exported files.
+- [ ] Complete a manual Figma-to-runtime reconciliation table with source node, code component, rendered measurement, state coverage, and screenshot evidence for the final compositions.
+- [ ] Conduct five independent first-time review passes: each reviewer must identify the current object, source scope, and next action within five seconds on every primary screen, with zero critical navigation failures.
 
 ### 3. Specification and implementation plan
 
