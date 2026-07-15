@@ -3617,3 +3617,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Capture and inspect authorized live GPT-5.6, GPT Image 2, Realtime microphone, and provider-narration artifacts before selecting their demo lines.
 - Capture the Codex doorway, contemporaneous founder brainstorm, representative `/feedback` Session ID, final public video, release tag, and logged-out submitted links.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 01:44 CT — Finished Video gained the raw-brainstorm reveal
+
+**Area:** Meta-demo / focused Video / responsive product UI / screenshot evidence
+
+### Changed
+
+- Added one contextual `Show original` action to the focused Video. It replaces the generic source action only for Video and opens the original brainstorm beside the finished work without adding a tab, rail, destination, or permanent panel.
+- Built `OriginalReveal` exclusively from the official `SideSheet`, `Card`, body/caption text, `ListGroup`, `ListRow`, and `FileIcon` primitives. The composite is documented in `DESIGN.md`; the implementation adds no new primitive or design-system exception.
+- The reveal reads the first durable transcript when one exists. A WebRTC segment is labeled `Realtime transcript`; a deterministic segment is labeled `Recorded fixture transcript`; absence of either falls back to an explicit `Sanitized source excerpt`. Fixture text can never appear as live voice evidence.
+- Added an After list for the presentation, infographic, image set, Storyboard, and Video with real counts and current states, plus measured first-transcript-to-first-Output time when both timestamps exist.
+- Replaced the stale screenshot-gallery index, which still described the discarded tabbed/Library MVP, with 30 links to the authoritative production-route screenshots for ten current screens at desktop, compact, and mobile widths. The older numbered PNGs are retained and labeled as pre-simplification archive evidence.
+
+### Verified
+
+- The first web-unit run failed because `OriginalReveal` was incorrectly marked as custom domain rendering. Removed that marker instead of expanding the exception allowlist; the UI contract then passed 10/10 and proves the reveal is ordinary chrome composed from approved primitives.
+- The production Next build passed. The no-update visual suite passed 12/12, including the new focused Video → `Show original` path, exact transcript-state label, five resulting Outputs, 102-second fixture timing, focus return, and current snapshots at 1200×800, 1024×768, and 390×844.
+- Visually inspected all three original-reveal screenshots at native resolution. Desktop and compact keep the finished Video visible beside the before/after sheet; mobile becomes a readable linear sequence with all five Outputs visible.
+- All 30 links in the current UI gallery resolve to real screenshot files.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; worker tests remained 38/38 and web unit tests remained 10/10.
+- `pnpm demo:e2e` passed all six recorded gates with two rendered Outputs, six planned image panels, five Storyboard panels, and a local MP4.
+- `pnpm submission:build` rebuilt the 12-asset `partial` set with all provider limitations intact; `pnpm submission:verify` returned `valid: true`, `stale: false`, and `tampered: false`.
+
+### Decisions
+
+- The mic-drop reveal belongs on the finished Video, not in primary navigation. This preserves the simple Capture → Map → Brief → Outputs → Storyboard path while making the meta-demo one click away at the exact moment it matters.
+- `Show original` is more precise than `How this was built` for the product-facing moment. Commits, logs, model operations, and technical evidence remain a separate provenance concern rather than crowding the emotional before/after reveal.
+- The raw-transcript goal remains open. The surface and fixture evidence are implemented, but a dated contemporaneous founder recording and final real footage still must replace the fixture before the submission claim can close.
+
+### Open items
+
+- Capture the dated founder brainstorm and persist its real transcript so the final reveal uses that source rather than the deterministic fixture.
+- Complete five independent first-time orientation reviews before recording; repair any critical finding.
+- Run and inspect the authorized live GPT-5.6, GPT Image 2, Realtime microphone, and provider narration paths before upgrading their claims.
+- Codex Session ID: unavailable on this surface; not inferred.

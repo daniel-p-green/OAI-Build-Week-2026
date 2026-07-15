@@ -174,15 +174,15 @@ Use a contact-sheet layout with one dominant selected image and five coherent co
 
 Use a horizontal filmstrip above a large selected-panel editor. Every panel displays duration, claim/source badges, narration state, and stale status. The second and final blocking action reads `Approve storyboard & render` only when every required panel is current.
 
-### 8. Provenance / trace
+### 8. Source evidence and original reveal
 
-Trace is a contextual evidence drawer opened from a citation or `Why this?` control. It answers “why is this here?” and displays only the complete available chain:
+`Show source` opens the contextual Source sheet from a factual claim. It answers “why is this here?” and displays only the complete available chain:
 
 ```text
 source locator → evidence chunk → claim → Map node → brief block → output block
 ```
 
-For the meta-demo, a `How WorkshopLM built this` view adds the raw task transcript, `GOAL.md`, dated log/commits, model operations, generated assets, and elapsed time without exposing unrelated local machine data.
+For the meta-demo, the focused Video replaces `Show source` with one secondary `Show original` action. It opens the `OriginalReveal` composite beside the finished Video so the before/after relationship is visible without adding navigation or another permanent panel. `OriginalReveal` is composed only from the official `SideSheet`, `Card`, body/caption text, `ListGroup`, `ListRow`, and `FileIcon` primitives. It shows the first durable transcript when present, otherwise an explicitly labeled sanitized source excerpt; it never upgrades fixture text into live voice evidence. Its After list names the presentation, infographic, image set, Storyboard, and Video with honest current states. Technical build evidence remains separate from this product-facing reveal.
 
 ## Components and geometry
 

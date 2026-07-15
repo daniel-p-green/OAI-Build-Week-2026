@@ -1,34 +1,30 @@
 # Current WorkshopLM UI gallery
 
-Captured from the live local app on 2026-07-14 using an isolated Next.js build directory and the real WorkshopLM API route.
+The authoritative screenshots are captured from the production Next.js route by the visual acceptance suite. They use the deterministic local fixture and cover the current no-tabs interface at desktop (`1200×800`), compact (`1024×768`), and mobile (`390×844`) widths.
 
-The gallery deliberately includes two fixture states:
+## Core journey
 
-- the reset fixture for first-run, source, approval, editing, Library, and responsive states;
-- the recorded acceptance fixture for real deck, infographic, storyboard, and rendered-video output states.
+| Screen | Desktop | Compact | Mobile |
+| --- | --- | --- | --- |
+| Map | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-map.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-map.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-map.png) |
+| Sources | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-sources.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-sources.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-sources.png) |
+| Source evidence | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-evidence.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-evidence.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-evidence.png) |
+| Add source and voice | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-add-source.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-add-source.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-add-source.png) |
+| Brief | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-brief.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-brief.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-brief.png) |
+| Style | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-style.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-style.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-style.png) |
+| Outputs | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-outputs.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-outputs.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-outputs.png) |
+| Focused Output | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-output-viewer.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-output-viewer.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-output-viewer.png) |
+| Storyboard | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-storyboard.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-storyboard.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-storyboard.png) |
+| Original brainstorm reveal | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-original-reveal.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-original-reveal.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-original-reveal.png) |
 
-## Screens
+## Product states
 
-1. `01-map.png` — focused Map home
-2. `02-sources.png` — active source scope
-3. `03-source-detail.png` — source excerpt and locator
-4. `04-capture-transcript.png` — narrow capture-only fallback
-5. `05-library-before-brief.png` — progressive Library before approval
-6. `06-workshop-details.png` — contextual details
-7. `07-claim-evidence.png` — selected Map claim
-8. `08-citation-source.png` — one-click claim-to-source evidence
-9. `09-edit-map.png` — Excalidraw editing state
-10. `10-library.png` — phase-grouped Workshop Library
-11. `11-approved-brief.png` — approved FRAME.md view
-12. `12-style-locked.png` — inline style contract
-13. `13-output-library.png` — Library after style lock
-14. `14-outputs.png` — empty/creation Outputs state
-15. `15-storyboard.png` — editable storyboard
-16. `16-storyboard-citation.png` — storyboard-to-source evidence
-17. `17-approved-storyboard.png` — second approval complete
-18. `18-mobile-map.png` — mobile evidence outline
-19. `19-mobile-sources.png` — mobile source scope
-20. `20-real-output-gallery.png` — real rendered output previews; also exposes the current duplicate-card defect
+The same suite records empty, loading, partial, error, `Needs update`, and reset states at all three widths. Run:
 
-The screenshots are evidence of fixture-backed UI behavior. They do not prove paid GPT-5.6, GPT Image 2, Realtime, or TTS execution.
+```bash
+pnpm --filter @workshoplm/web test:visual
+```
 
+The numbered PNG files retained in this directory are a July 14 pre-simplification archive. They show the discarded tabbed/Library MVP and are not evidence of the current interface.
+
+These screenshots prove fixture-backed product behavior and responsive composition. They do not prove live GPT-5.6 product reasoning, GPT Image 2 generation, a provider-backed Realtime microphone turn, provider narration, or ChatGPT Work support.

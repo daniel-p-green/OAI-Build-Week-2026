@@ -30,7 +30,7 @@ import { RealtimeCapture } from "./realtime-capture";
 import { ExcalidrawMap } from "./excalidraw-map";
 
 type ObjectView = "map" | "brief" | "outputs" | "storyboard" | "output";
-type Sheet = "sources" | "evidence" | "add-source" | "style" | null;
+type Sheet = "sources" | "evidence" | "add-source" | "style" | "original" | null;
 type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string; permission: "private" | "sanitized" | "shareable" };
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
 type MapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
@@ -40,6 +40,9 @@ type PersistedWorkshop = {
   briefApproved: boolean;
   storyboardApproved: boolean;
   videoState: "blocked" | "queued" | "rendering" | "rendered";
+  transcriptSegments?: { id: string; origin: "chatgpt" | "realtime_fallback"; transport: "fixture" | "webrtc"; text: string; capturedAt: string }[];
+  firstTranscriptAt?: string;
+  firstRenderedOutputAt?: string;
   sourceItems: SourceItem[];
   activeSourceIds: string[];
   claims?: { id: string; sourceId: string; chunkId: string; text: string; locator: string }[];
@@ -192,13 +195,14 @@ export default function WorkshopPage() {
         {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
         {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} />}
         {loadState === "ready" && view === "storyboard" && <StoryboardView storyboard={state?.storyboard} approved={Boolean(state?.storyboardApproved)} panel={selectedPanel} busy={busy} onSelect={setSelectedPanelId} onPost={post} onShowSource={showSource} />}
-        {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} onShowSource={showSource} />}
+        {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} onShowSource={showSource} onShowOriginal={() => openSheet("original")} />}
       </section>
 
       {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} onClose={closeSheet} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "evidence" && selectedSource && <EvidenceSheet source={selectedSource} onClose={closeSheet} onShowMap={() => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === selectedSource.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "add-source" && <AddSourceSheet onClose={() => setSheet("sources")} onPost={post} />}
       {sheet === "style" && <StyleSheet style={state?.style} busy={busy} onClose={closeSheet} onPost={post} />}
+      {sheet === "original" && <OriginalRevealSheet state={state} onClose={closeSheet} />}
     </FullScreenShell>
   );
 }
@@ -292,14 +296,39 @@ function OutputsView({ state, onOpenOutput }: { state: PersistedWorkshop | null;
   </article>;
 }
 
-function FocusedOutputView({ state, outputId, onShowSource }: { state: PersistedWorkshop | null; outputId: string; onShowSource: (sourceId?: string) => void }) {
+function FocusedOutputView({ state, outputId, onShowSource, onShowOriginal }: { state: PersistedWorkshop | null; outputId: string; onShowSource: (sourceId?: string) => void; onShowOriginal: () => void }) {
   const output = state?.outputs.find((item) => item.id === outputId);
   const isVideo = outputId === "video";
   const title = output ? outputTitle(output.type) : "Demo video";
   const sourceId = state?.claims?.find((claim) => output?.claimIds?.includes(claim.id))?.sourceId;
   const href = isVideo ? "/api/workshop/artifacts/video" : `/api/workshop/artifacts/${outputId}`;
   if (!output && !isVideo) return <div className="state-surface"><StateMessage state="error" title="Couldn't open Output">Return to Outputs and try opening it again.</StateMessage></div>;
-  return <article className="focused-output"><h1 className="visually-hidden">{title}</h1><div className="focused-output-heading">{output?.stale && <Status tone="waiting">Needs update</Status>}<div className="button-row"><Button variant="secondary" size="small" onClick={() => onShowSource(sourceId)}>Show source</Button><ButtonLink variant="secondary" size="small" href={href} target="_blank" rel="noreferrer">Open</ButtonLink></div></div><div className="focused-output-preview" data-domain-ui="artifact-preview">{isVideo ? <video controls src={href} /> : <iframe title={title} sandbox="allow-same-origin" src={href} />}</div></article>;
+  return <article className="focused-output"><h1 className="visually-hidden">{title}</h1><div className="focused-output-heading">{output?.stale && <Status tone="waiting">Needs update</Status>}<div className="button-row">{isVideo ? <Button variant="secondary" size="small" onClick={onShowOriginal}>Show original</Button> : <Button variant="secondary" size="small" onClick={() => onShowSource(sourceId)}>Show source</Button>}<ButtonLink variant="secondary" size="small" href={href} target="_blank" rel="noreferrer">Open</ButtonLink></div></div><div className="focused-output-preview" data-domain-ui="artifact-preview">{isVideo ? <video controls src={href} /> : <iframe title={title} sandbox="allow-same-origin" src={href} />}</div></article>;
+}
+
+function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | null; onClose: () => void }) {
+  const segment = state?.transcriptSegments?.[0];
+  const source = state?.sourceItems.find((item) => /brainstorm|transcript/i.test(item.title)) ?? state?.sourceItems[0];
+  const original = segment?.text ?? source?.excerpt ?? "No brainstorm transcript is attached to this Workshop yet.";
+  const sourceKind = segment ? (segment.transport === "webrtc" ? "Realtime transcript" : "Recorded fixture transcript") : "Sanitized source excerpt";
+  const sourceLocator = segment ? new Date(segment.capturedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : source?.locator;
+  const elapsedSeconds = state?.firstTranscriptAt && state.firstRenderedOutputAt
+    ? Math.max(0, Math.round((Date.parse(state.firstRenderedOutputAt) - Date.parse(state.firstTranscriptAt)) / 1000))
+    : null;
+  const deliverables = [
+    { title: "Presentation", detail: `${state?.outputs.filter((output) => output.type === "deck").length ?? 0} version${state?.outputs.filter((output) => output.type === "deck").length === 1 ? "" : "s"}` },
+    { title: "Infographic", detail: `${state?.outputs.filter((output) => output.type === "infographic").length ?? 0} version${state?.outputs.filter((output) => output.type === "infographic").length === 1 ? "" : "s"}` },
+    { title: "Image set", detail: `${state?.imageBatch?.panels.length ?? 0} ${state?.imageBatch?.panels.every((panel) => panel.state === "generated") ? "ready" : "planned"} images` },
+    { title: "Storyboard", detail: `${state?.storyboard.panels.length ?? 0} editable panels` },
+    { title: "Demo video", detail: state?.videoState === "rendered" ? "Local MP4 ready" : "Not created yet" },
+  ];
+
+  return <SideSheet title="Original brainstorm" className="original-reveal" onClose={onClose}>
+    <p className="sheet-intro">The finished submission started with this.</p>
+    <Card className="original-transcript"><small>Before · {sourceKind}</small><blockquote>“{original}”</blockquote>{sourceLocator && <p className="source-locator">{sourceLocator}</p>}</Card>
+    <div className="original-result"><small>After</small><h3>Became five connected Outputs</h3>{elapsedSeconds !== null && <p>{elapsedSeconds} seconds from first transcript to first rendered Output</p>}</div>
+    <ListGroup>{deliverables.map((item) => <ListRow className="original-output-row" key={item.title}><FileIcon /><span><strong>{item.title}</strong><small>{item.detail}</small></span></ListRow>)}</ListGroup>
+  </SideSheet>;
 }
 
 function StoryboardView({ storyboard, approved, panel, busy, onSelect, onPost, onShowSource }: { storyboard?: PersistedWorkshop["storyboard"]; approved: boolean; panel?: PersistedWorkshop["storyboard"]["panels"][number]; busy: boolean; onSelect: (id: string) => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onShowSource: (sourceId?: string) => void }) {

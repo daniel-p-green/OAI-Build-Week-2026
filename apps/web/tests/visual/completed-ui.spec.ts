@@ -293,6 +293,40 @@ test("Outputs preserve recognizable version history and source coverage", async 
   await expect(page.locator('.output-card iframe[title$="preview"]')).toHaveCount(3);
 });
 
+test("finished Video reveals the original brainstorm without adding navigation", async ({ page }) => {
+  const readyState = await (await page.request.get("/api/workshop")).json();
+  const revealState = {
+    ...readyState,
+    videoState: "rendered",
+    transcriptSegments: [{ id: "fixture-brainstorm", origin: "realtime_fallback", transport: "fixture", text: "Okay, this is rough, but I want the judge to see a messy idea turn into the actual finished submission without losing where anything came from.", capturedAt: "2026-07-15T06:30:00.000Z" }],
+    firstTranscriptAt: "2026-07-15T06:30:00.000Z",
+    firstRenderedOutputAt: "2026-07-15T06:31:42.000Z",
+  };
+  await page.route("**/api/workshop", async (route) => route.request().method() === "GET"
+    ? route.fulfill({ json: revealState })
+    : route.continue());
+
+  for (const viewport of viewports) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto("/");
+    await page.getByRole("button", { name: "View brief" }).click();
+    await page.getByRole("button", { name: "View outputs" }).click();
+    await page.getByRole("button", { name: "Open Demo video" }).click();
+    await expect(page.getByRole("button", { name: "Show source" })).toHaveCount(0);
+    const reveal = page.getByRole("button", { name: "Show original" });
+    await reveal.click();
+    const sheet = page.getByRole("dialog", { name: "Original brainstorm" });
+    await expect(sheet).toContainText("Before · Recorded fixture transcript");
+    await expect(sheet).toContainText("Became five connected Outputs");
+    await expect(sheet).toContainText("102 seconds from first transcript to first rendered Output");
+    await expect(sheet.getByText("Presentation", { exact: true })).toBeVisible();
+    await expect(sheet.getByText("Demo video", { exact: true })).toBeVisible();
+    await expectScreen(page, `${viewport.name}-original-reveal`);
+    await closeDialog(page, "Original brainstorm");
+    await expect(reveal).toBeFocused();
+  }
+});
+
 test("core primitive computed styles and states match the official reference", async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
