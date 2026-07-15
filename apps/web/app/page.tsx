@@ -5,11 +5,9 @@ import {
   Button,
   ButtonLink,
   Card,
-  Carousel,
   CarouselRow,
   Checkbox,
   CloseIcon,
-  EntityCard,
   EntityCardAction,
   FileIcon,
   FullScreenShell,
@@ -191,7 +189,7 @@ export default function WorkshopPage() {
   const visibleSourceCount = view === "output" && selectedOutput
     ? outputSourceCount(selectedOutput, state)
     : sourceCount;
-  const currentTitle = view === "output" ? (selectedOutput ? outputTitle(selectedOutput.type) : "Demo video") : VIEW_TITLES[view];
+  const currentTitle = view === "output" ? (selectedOutput ? outputTitle(selectedOutput.type) : selectedOutputId === "images" ? "Image set" : "Demo video") : VIEW_TITLES[view];
   const backTarget: ObjectView | null = view === "map" ? null : view === "brief" ? "map" : view === "outputs" ? "brief" : "outputs";
 
   return (
@@ -225,7 +223,7 @@ export default function WorkshopPage() {
         {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
         {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onAddSource={() => openSheet("add-source")} />}
         {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
-        {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} />}
+        {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} />}
         {loadState === "ready" && view === "storyboard" && <StoryboardView storyboard={state?.storyboard} approved={Boolean(state?.storyboardApproved)} panel={selectedPanel} busy={busy} onSelect={setSelectedPanelId} onPost={post} onShowSource={showSource} />}
         {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} onShowSource={showSource} onShowOriginal={() => openSheet("original")} />}
       </section>
@@ -333,7 +331,7 @@ function StyleSheet({ style, busy, onClose, onPost, onAnalyzeWebsite }: { style?
   </SideSheet>;
 }
 
-function OutputsView({ state, onOpenOutput }: { state: PersistedWorkshop | null; onOpenOutput: (id: string) => void }) {
+function OutputsView({ state, onOpenOutput, onOpenStoryboard }: { state: PersistedWorkshop | null; onOpenOutput: (id: string) => void; onOpenStoryboard: () => void }) {
   const outputs = [...(state?.outputs ?? [])].sort((left, right) => left.type === right.type
     ? right.createdAt.localeCompare(left.createdAt)
     : left.type === "deck" ? -1 : 1);
@@ -355,9 +353,9 @@ function OutputsView({ state, onOpenOutput }: { state: PersistedWorkshop | null;
         const name = `${outputTitle(output.type)}${versions > 1 ? `, version ${version}` : ""}`;
         return <EntityCardAction className={`output-card ${output.stale ? "needs-update" : ""}`} key={output.id} aria-label={`Open ${name}`} onClick={() => onOpenOutput(output.id)}><div className="artifact-preview" data-domain-ui="artifact-preview"><iframe title={`${name} preview`} sandbox="allow-same-origin" src={`/api/workshop/artifacts/${output.id}`} /></div><div className="output-card-body"><h2>{outputTitle(output.type)}</h2><div className="output-meta"><span>{outputType(output.type)} · Version {version}</span><Status tone={output.stale ? "waiting" : "current"}>{output.stale ? "Needs update" : "Up to date"}</Status><span>{sources} {sources === 1 ? "source" : "sources"}</span></div></div></EntityCardAction>;
       })}
+      {state?.imageBatch && <EntityCardAction className={`output-card ${state.imageBatch.stale ? "needs-update" : ""}`} aria-label="Open Image set" onClick={() => onOpenOutput("images")}><div className="artifact-preview image-contact-sheet" data-domain-ui="artifact-preview">{state.imageBatch.panels.map((panel, index) => <div className={`image-tile ${panel.state === "generated" ? "generated" : ""}`} data-domain-ui="image-tile" key={panel.id} style={{ "--tile": index } as CSSProperties}>{panel.state === "generated" && <img alt="" src={`/api/workshop/artifacts/${panel.id}`} />}<span>{String(index + 1).padStart(2, "0")}</span></div>)}</div><div className="output-card-body"><h2>Image set</h2><div className="output-meta"><span>{state.imageBatch.panels.length} images</span><Status tone={state.imageBatch.stale || failedImages ? "waiting" : generatedImages === state.imageBatch.panels.length ? "current" : "waiting"}>{state.imageBatch.stale ? "Needs update" : failedImages ? "Incomplete" : generatedImages === state.imageBatch.panels.length ? "Up to date" : "Planned"}</Status><span>{state?.activeSourceIds.length ?? 0} sources</span></div></div></EntityCardAction>}
+      {(state?.storyboard.panels.length ?? 0) > 0 && <EntityCardAction className={`output-card ${state?.storyboard.stale ? "needs-update" : ""}`} aria-label="Open Storyboard" onClick={onOpenStoryboard}><div className="artifact-preview storyboard-card-preview" data-domain-ui="artifact-preview">{state?.storyboard.panels.slice(0, 6).map((panel, index) => <div className="storyboard-card-frame" key={panel.id} style={{ "--panel": index } as CSSProperties}><span>{String(index + 1).padStart(2, "0")}</span><strong>{panel.title}</strong></div>)}</div><div className="output-card-body"><h2>Storyboard</h2><div className="output-meta"><span>{state?.storyboard.panels.length ?? 0} panels</span><Status tone={state?.storyboard.stale ? "waiting" : "current"}>{state?.storyboard.stale ? "Needs update" : state?.storyboardApproved ? "Approved" : "Ready for review"}</Status><span>{state?.activeSourceIds.length ?? 0} sources</span></div></div></EntityCardAction>}
       {state?.videoState === "rendered" && <EntityCardAction className="output-card" aria-label="Open Demo video" onClick={() => onOpenOutput("video")}><div className="artifact-preview" data-domain-ui="artifact-preview"><video muted src="/api/workshop/artifacts/video" /></div><div className="output-card-body"><h2>Demo video</h2><div className="output-meta"><span>Video</span><Status>Up to date</Status><span>{state?.activeSourceIds.length ?? 0} sources · Approved Storyboard</span></div></div></EntityCardAction>}</section>
-      {state?.imageBatch && <Carousel className="image-set"><div>{generatedImages !== state.imageBatch.panels.length && <Status tone="waiting">Images not created yet</Status>}<h2>Image set</h2><p>{generatedImages ? `${generatedImages} of ${state.imageBatch.panels.length} images · ${state?.activeSourceIds.length ?? 0} sources` : `${state.imageBatch.panels.length} planned images · ${state?.activeSourceIds.length ?? 0} sources`}</p></div><CarouselRow>{state.imageBatch.panels.map((panel, index) => <div className={`image-tile ${panel.state === "generated" ? "generated" : ""}`} data-domain-ui="image-tile" key={panel.id} style={{ "--tile": index } as CSSProperties}>{panel.state === "generated" && <img alt="" src={`/api/workshop/artifacts/${panel.id}`} />}<span>{String(index + 1).padStart(2, "0")}</span><small>{panel.state === "planned" ? "Planned" : panel.state === "generated" ? "Ready" : panel.state === "failed" ? "Couldn't create" : "Needs update"}</small></div>)}</CarouselRow></Carousel>}
-      {(state?.storyboard.panels.length ?? 0) > 0 && <Card className="storyboard-summary"><div><h2>Storyboard</h2><p>{state?.storyboardApproved ? "Approved for video" : "Review before video"} · {state?.activeSourceIds.length ?? 0} sources</p></div><CarouselRow>{state?.storyboard.panels.map((panel, index) => <div className="film-frame" data-domain-ui="film-frame" key={panel.id}><span>{index + 1}</span><strong>{panel.title}</strong><small>{panel.durationSeconds}s</small></div>)}</CarouselRow></Card>}
     </>}
   </article>;
 }
@@ -365,14 +363,19 @@ function OutputsView({ state, onOpenOutput }: { state: PersistedWorkshop | null;
 function FocusedOutputView({ state, outputId, onShowSource, onShowOriginal }: { state: PersistedWorkshop | null; outputId: string; onShowSource: (sourceId?: string) => void; onShowOriginal: () => void }) {
   const output = state?.outputs.find((item) => item.id === outputId);
   const isVideo = outputId === "video";
-  const title = output ? outputTitle(output.type) : "Demo video";
+  const isImages = outputId === "images";
+  const title = output ? outputTitle(output.type) : isImages ? "Image set" : "Demo video";
   const sourceCount = output ? outputSourceCount(output, state) : state?.activeSourceIds.length ?? 0;
   const detail = output
     ? `${outputType(output.type)} · Version ${outputVersion(output, state?.outputs ?? [])} · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`
-    : `Video · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`;
+    : isImages ? `${state?.imageBatch?.panels.length ?? 0} images · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}` : `Video · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`;
   const sourceId = state?.claims?.find((claim) => output?.claimIds?.includes(claim.id))?.sourceId;
   const href = isVideo ? "/api/workshop/artifacts/video" : `/api/workshop/artifacts/${outputId}`;
-  if (!output && !isVideo) return <div className="state-surface"><StateMessage state="error" title="Couldn't open Output">Return to Outputs and try opening it again.</StateMessage></div>;
+  if (!output && !isVideo && !isImages) return <div className="state-surface"><StateMessage state="error" title="Couldn't open Output">Return to Outputs and try opening it again.</StateMessage></div>;
+  if (isImages) return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail}</p>{state?.imageBatch?.stale && <Status tone="waiting">Needs update</Status>}</div><Button size="small" onClick={() => onShowSource()}>Show source</Button></div><div className="focused-image-grid" data-domain-ui="image-review-grid">{state?.imageBatch?.panels.map((panel, index) => {
+    const content = <><div className={`focused-image-preview ${panel.state}`} data-domain-ui="image-tile">{panel.state === "generated" ? <img alt={`Image ${index + 1}: ${panel.prompt}`} src={`/api/workshop/artifacts/${panel.id}`} /> : <span>{String(index + 1).padStart(2, "0")}</span>}</div><div className="focused-image-caption"><strong>Image {index + 1}</strong><Status tone={panel.state === "generated" ? "current" : "waiting"}>{panel.state === "generated" ? "Ready" : panel.state === "failed" ? "Couldn't create" : panel.state === "selected_for_regeneration" ? "Needs update" : "Planned"}</Status></div></>;
+    return panel.state === "generated" ? <a className="focused-image-card" href={`/api/workshop/artifacts/${panel.id}`} target="_blank" rel="noreferrer" key={panel.id} aria-label={`Open image ${index + 1}`}>{content}</a> : <div className="focused-image-card" key={panel.id}>{content}</div>;
+  })}</div></article>;
   return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail}</p>{output?.stale && <Status tone="waiting">Needs update</Status>}</div><div className="button-row">{isVideo ? <Button size="small" onClick={onShowOriginal}>Show original</Button> : <Button size="small" onClick={() => onShowSource(sourceId)}>Show source</Button>}<ButtonLink variant="secondary" size="small" href={href} target="_blank" rel="noreferrer">{isVideo ? "Open video" : "Open file"}</ButtonLink></div></div><div className={`focused-output-preview ${isVideo ? "video-preview" : ""}`} data-domain-ui="artifact-preview">{isVideo ? <video controls src={href} /> : <iframe title={title} sandbox="allow-same-origin" src={href} />}</div></article>;
 }
 

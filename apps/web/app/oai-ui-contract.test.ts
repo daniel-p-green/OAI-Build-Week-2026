@@ -49,7 +49,7 @@ describe("official Apps in ChatGPT UI implementation", () => {
     for (const retired of ["Grounding this Workshop", "Evidence becomes structure", "Approve as brief", "Approve map as brief", "Production contract", "Visual contract", "Lock one coherent system", "Lock Style v1", "Update Style v1", "Coherent delivery package", "One system. Every format.", "Generate package", "Refresh package", "Open package", "Illuminate path on Map", "Highlight on Map", "Provider render pending", "Editable before the expensive step", "Prepare render", "FRAME.md", "DESIGN.md", "Visual DNA", "Brief approved", "Style in use", "Storyboard approved", "Approval needed", "In use"]) {
       expect(page).not.toContain(retired);
     }
-    for (const required of ["Approve brief", "Choose style", "Website", "Set manually", "Client pitch", "Board presentation", "Team workshop", "Add brand details", "Use this style", "Update style", "Create outputs", "Update outputs", "View outputs", "Show source", "Show on map", "Images not created yet", "Review before video", "Create video", "View video", "Open file", "Open video", "Up to date", "Needs update"]) expect(page).toContain(required);
+    for (const required of ["Approve brief", "Choose style", "Website", "Set manually", "Client pitch", "Board presentation", "Team workshop", "Add brand details", "Use this style", "Update style", "Create outputs", "Update outputs", "View outputs", "Show source", "Show on map", "Image set", "Ready for review", "Create video", "View video", "Open file", "Open video", "Up to date", "Needs update"]) expect(page).toContain(required);
     expect(page).not.toMatch(/>\s*(Current|Stale|Trace)\s*</);
   });
 

@@ -54,6 +54,7 @@ export const OAI_UI_TOKENS = {
 export const DOMAIN_UI_EXCEPTIONS = [
   "artifact-preview",
   "film-frame",
+  "image-review-grid",
   "image-tile",
   "map-canvas",
   "map-caption",

@@ -4094,3 +4094,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - After explicit spend authorization, run the provider-backed six-image batch, inspect palette, lighting, composition, subject continuity, and obvious defects as one contact sheet, then selectively regenerate only failed panels if needed.
 - Provider narration, Realtime microphone evidence, founder recording, host footage, Session ID, and final public film remain open under the existing evidence gates.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 04:16 CT — All five deliverables became one quiet Output gallery
+
+**Area:** Product UX / Outputs / responsive visual review
+
+### Changed
+
+- Replaced the mixed Outputs composition—primary presentation cards followed by separate image and Storyboard carousels—with one responsive official media-card grid for Presentation, Infographic, Image set, Storyboard, and Video.
+- Added compact contact-sheet and storyboard previews inside those cards while keeping provider-planned images explicitly labeled.
+- Made Image set a first-class focused object. Opening it shows six panels in a three-column desktop or two-column compact/mobile review grid, one `Show source` action, honest per-panel state, and a direct file link only when genuine image bytes exist.
+- Kept Storyboard's existing editor as its focused object and routed the new Storyboard card directly there. No tab, drawer, or persistent navigation layer was added.
+- Added `image-review-grid` to the explicit domain-surface exception list while retaining official FullScreen, NavigationHeader, EntityCardAction, Button, status text, and spacing/color primitives around it.
+
+### Verified
+
+- The production-route visual suite passed 15/15 at 1200×800, 1024×768, and 390×844, including the complete judge path, partial and needs-update states, keyboard behavior, reduced motion, contrast, and 200 percent logical zoom.
+- New image-review baselines were rendered and visually inspected at all three widths. Their SHA-256 values are `2b9263aa6ebc7d87c7deb017e49ca3feb311041043d3e7e755d289325dedffd7` (desktop), `f1639f5ca706e97ba6d44992e03a8525329e0530fd0cb788c1503eda87140656` (compact), and `2dc146853a7b9970692f75a699b6d439dc5f79cd1fd66f0ddb0f497f55caa850` (mobile).
+- Visual inspection confirmed one gallery hierarchy, legible card previews, an uncluttered six-up desktop review, and a usable two-column mobile review with no horizontal overflow.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; web contract/unit tests remained 11/11 and the UI contract remained 3/3.
+- `pnpm demo:e2e` passed the recorded six-gate seam. `pnpm demo:film:verify` remained correctly in draft mode because the provider gallery footage is still missing.
+- No paid provider request was made.
+
+### Decisions
+
+- Output type should not determine visual importance. Every promised deliverable now starts from the same gallery hierarchy and opens its own focused review surface.
+- The focused image review is a domain surface grounded inside official media-card and control primitives; it is not a new reusable shell family or an exception for ordinary controls.
+- Planned panels remain visibly planned. A polished empty contact sheet does not count as real GPT Image 2 preview evidence.
+
+### Open items
+
+- Run and inspect the authorized GPT Image 2 batch, then capture the same gallery and focused review with real provider bytes before closing visual completion.
+- Provider narration, Realtime microphone evidence, founder recording, host footage, Session ID, and final public film remain open under the existing evidence gates.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -159,14 +159,15 @@ After Brief approval and Style selection, Outputs becomes the durable history of
 
 - `Create outputs` creates the selected types from the same Brief, Style, and source scope.
 - Presentation and infographic versions remain visible newest-first with a real preview, type, version, freshness, source coverage, and one card-level open action.
-- Image set, Storyboard, and Video summaries expose source coverage and honest readiness without competing with primary history.
+- Presentation, infographic, image set, Storyboard, and Video are peers in one responsive card grid. None is demoted into a secondary rail or carousel.
+- Image set and Storyboard cards use compact domain previews inside the official media-card boundary; each opens its one focused review surface.
 - `Needs update` and partial messages appear only when they change the next action; current, stale, failed, and partial work remains visible without internal paths.
-- A focused factual Output uses `Show source`; the focused Video uses `Show original` for the meta-demo before/after reveal.
+- A focused factual Output and the focused image set use `Show source`; the focused Video uses `Show original` for the meta-demo before/after reveal.
 - Provider-planned images remain explicitly labeled until genuine provider bytes exist.
 
 ### 6. Image batch
 
-Use a compact contact sheet for six visually coherent panels. Each tile says `Planned`, `Ready`, `Needs update`, or `Couldn't create`. Shared Style, references, palette, and selective regeneration belong in a contextual inspector; regenerating one panel may not disturb sibling IDs or versions.
+The Outputs card uses a compact contact sheet for six visually coherent panels. Opening it replaces the gallery with a calm six-up review surface: three columns on wide desktop and two on compact/mobile. Each tile says `Planned`, `Ready`, `Needs update`, or `Couldn't create`; a ready tile opens its real image file. Shared Style, references, palette, and selective regeneration remain batch state rather than new permanent UI. Regenerating one panel may not disturb sibling IDs or versions.
 
 ### 7. Storyboard
 

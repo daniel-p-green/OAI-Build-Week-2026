@@ -210,7 +210,14 @@ test.describe("completed Workshop judge path", () => {
       await expectScreen(page, `${viewport.name}-output-viewer`);
       await page.getByRole("button", { name: "Back to Outputs" }).click();
 
-      await page.getByRole("button", { name: "View storyboard" }).click();
+      await page.getByRole("button", { name: "Open Image set" }).click();
+      await expect(page.getByRole("heading", { name: "Image set" })).toBeVisible();
+      await expect(page.locator('[data-domain-ui="image-review-grid"] [data-domain-ui="image-tile"]')).toHaveCount(6);
+      await expect(page.getByText("6 images · 3 sources", { exact: true })).toBeVisible();
+      await expectScreen(page, `${viewport.name}-image-set`);
+      await page.getByRole("button", { name: "Back to Outputs" }).click();
+
+      await page.getByRole("button", { name: "Open Storyboard" }).click();
       await expectPrimaryActions(page, 1);
       await expect(page.getByRole("button", { name: "Save" })).toHaveCount(0);
       await expectScreen(page, `${viewport.name}-storyboard`);
