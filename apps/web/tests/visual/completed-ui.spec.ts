@@ -259,6 +259,10 @@ test.describe("completed Workshop judge path", () => {
       await expect(page.getByRole("heading", { name: "Infographic" })).toHaveCount(1);
       await expect(page.getByRole("heading", { name: "Image set" })).toHaveCount(1);
       await expect(page.getByRole("heading", { name: "Storyboard" })).toHaveCount(1);
+      const outputCards = page.locator(".output-grid .output-card");
+      await expect(outputCards.first()).toHaveAttribute("data-output-role", "hero");
+      await expect(outputCards.first().getByRole("heading", { name: "Presentation" })).toBeVisible();
+      await expect(page.locator('.output-grid [data-output-role="hero"]')).toHaveCount(1);
       await expect(page.getByRole("button", { name: "Show source" })).toHaveCount(0);
       await expectPreviewFramesReady(page);
       await expectScreen(page, `${viewport.name}-outputs`);

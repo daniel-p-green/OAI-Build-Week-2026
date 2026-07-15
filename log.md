@@ -4892,3 +4892,35 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - A representative professional still needs to return `Send` or name the first blocking revision. Internal visual inspection does not close that gate.
 - Provider-backed Map reasoning, GPT Image 2 panels, narration, and one Realtime microphone turn remain unproved; final video and submission publication remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 13:34 CT — Outputs now lead with the professional wedge
+
+**Area:** Product strategy / Outputs hierarchy / Responsive verification
+
+### Changed
+
+- Corrected the mismatch between the professional product strategy and the Outputs gallery: the newest Presentation now owns the single full-width hero position instead of appearing as one equal card among five deliverables.
+- Preserved Infographic, Image set, Storyboard, and Video as supporting Outputs in workflow order, with no new tabs, labels, controls, navigation, or product concepts.
+- Kept the implementation inside the approved `EntityCardAction` and artifact-preview composition; the hierarchy is expressed through the existing media-card grid rather than new chrome.
+- Added a browser assertion that exactly one hero Output exists and that it is the Presentation.
+
+### Verified
+
+- Inspected the production desktop, compact, and mobile Outputs screenshots. Desktop leads with a large, real presentation preview; compact and mobile retain the same first-item priority without horizontal overflow or extra interaction cost.
+- The strict production Playwright suite passed 18/18 scenarios after refreshing the affected Outputs, partial, stale, and completed-video baselines.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; web passed 15/15 unit and contract tests.
+- `pnpm demo:e2e` passed all six recorded-fixture gates through rendered Video.
+
+### Decisions
+
+- The wedge should be obvious from composition, not from a badge explaining product strategy. The deck receives more visual weight while every supporting Output remains directly accessible.
+- Only the newest Presentation is the hero. Older versions remain visible history but must not compete with the current deliverable.
+
+### Open items
+
+- Provider image bytes are still required to finish the visual gallery; the Image set remains honestly planned.
+- The external deck still needs a representative professional's `Send` or first blocking revision.
+- Provider-backed Map, image, narration, and Realtime evidence plus final founder footage and public submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
