@@ -1,11 +1,12 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 14:06 CT
+Last updated: 2026-07-15 14:29 CT
 
 ## Status
 
-**Active phase:** Professional deck send-it quality, then live demo proof
+**Active phase:** First-use onboarding and reusable Company Styles, then professional send-it quality and live demo proof
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
+**Next increment:** Complete the remaining Company Style review contract: nonblocking reload-safe website analysis, explicit palette/type roles, safe local brand-asset selection, failure fallbacks, and the quiet `How WorkshopLM works` return entry. The durable Welcome → Company Style → Sources → Map → first editable Presentation path is implemented and production-browser verified without changing returning or judge-fixture routes.
 **Current gate:** The P0 screen-composition and canonical-language rebuild, bounded Realtime capture UI, constrained semantic Excalidraw Map, version-aware Outputs history, contextual original-brainstorm reveal, usable Style selection, and completed Storyboard-to-Video handoff are implemented. The root design system is reconciled to that exact no-tabs interface and now has a regression test against legacy vocabulary and actions. Style now analyzes a public website's page and linked stylesheets for reviewable name, palette, font, and brand-asset candidates; the professional can correct every finding before `Use this style` persists the website-sourced `DESIGN.md` tokens. Exact manual rules remain available, Client pitch, Board presentation, and Team workshop persist as Intent Profiles, and secondary brand details remain collapsed until requested. Adding a new meeting now expands the Map, invalidates the approved Brief and current downstream work, preserves the reusable Style, and makes one reapproval plus `Update outputs` produce a new deck version traced to the new Source; stale history remains visible without making the new version appear stale. While a local render is queued or rendering, the browser silently refreshes the Workshop; once it succeeds, `View video` replaces the obsolete creation action and the real local MP4 appears in Outputs and a responsive focused player. Every successful render now becomes an immutable `Video · Version N` record with its own MP4, provenance sidecar, source-traceable build record, input versions, hashes, and stable routes; upstream changes keep prior versions visible as `Needs update` rather than overwriting or hiding them. The generated build record follows raw transcript → active Sources → Map → approved Brief and Style → hashed Outputs → Video, then appends actual logged milestones, Build Week commits, available Codex task IDs, provider-evidence counts, elapsed time, and honest limitations. It appears only after `Show original` and ships as HTML and JSON inside the verified submission set. The Map persists direct movement, resizing, and text edits through typed graph history, exposes source trace, and restores each operation through WorkshopLM Undo; its native Excalidraw product chrome is suppressed so the official Apps in ChatGPT shell remains the only surrounding interface system. Outputs now preserve real previews and version history with type, freshness, and source coverage while keeping creation in the single header action; the newest Presentation owns the one full-width hero position and supporting outputs follow in workflow order. Focused Outputs preserve the artifact-specific source count, title, type, and version; `Show source` is the one dominant action and the external action names the file or video it opens. The focused Video exposes one `Show original` action that keeps the finished work visible beside an honestly labeled transcript or sanitized excerpt and its five resulting Outputs. Storyboard panels now bind the exact image-panel ID and version reviewed on screen; version-changing image regeneration revokes approval, and the local renderer stages those same bytes for HyperFrames. Five independent cold review passes now identify the current object, source scope, and next action on Map, Brief, Outputs, Storyboard, Sources, and focused Outputs at the verified widths with no critical navigation failure. A repeatable production-browser capture now records that complete fixture seam as a 37.76-second, 12-beat editorial draft with review images, hashes, exact gate state, and explicit non-provider limitations. Judge-facing drafts use the canonical product language and an evidence-gated claim ledger, but final publication remains open until the provider-backed footage, host doorway, founder recording, narration, and public links exist. The remaining visual completion gate is provider-backed GPT Image 2 gallery media. The Realtime transport is ready for its first provider-backed microphone turn but is not yet live-verified.
 **Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found` for this account even though the current public model page describes it as a Sol alias. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. The benchmark refuses to start without an explicit request ceiling of at least nine. The live operator separately refuses to start without an explicit ceiling of at least twelve and shares one concurrency-safe counter across its GPT-5.6 Map, six GPT Image 2 panels, and five narration clips. A state-preserving `--retry-failed` preflight selects only missing image and narration panels, retains successful hashes and request provenance, skips the completed Map and source setup, and requires a new ceiling sized to the remaining requests. Retry is evidence-bound to a durable paid `partial` or post-Map `failed` run whose SHA-256 fingerprint matches the exact persisted reasoning, image, narration, Storyboard, and Video evidence; it refuses no-spend preflight state, stale or fabricated records, completed runs, and initial Map failures. Normal preflight cannot erase reusable paid state, and intentional discard requires `--reset-paid-state`; the former unsafe `--keep` path also fails closed. Every authorized attempt terminates in `.workshoplm/live-operator-run.json` with stage, request usage, sanitized errors, completed provenance, panel failures, state fingerprint, and the exact retry command. The dated cost envelope estimates the nine-request benchmark below $0.04, six medium square GPT Image 2 outputs at $0.318 plus prompt input, the Sol Map output at no more than $0.066, and a 60-second capture-only transcription at $0.017. The current public pricing page does not publish a `gpt-4o-mini-tts` dollar rate, so narration remains the named pricing uncertainty; the worker now rejects any panel above the documented 4,096-character Speech API input limit before dispatch. Use the recommended $5 project budget or alert as an operating envelope, not as a proven hard cutoff, and still require exact request authorization. The benchmark and live grounded-Map adapter share a tested parser for both top-level and nested Responses text, but no paid request has run. The current model catalog labels `gpt-4o-mini-tts` deprecated while the current speech guide still recommends it; verify the actual live response before recording. Do not claim live product use or change per-operation defaults before these checks.
 **Known host risk:** The July 14 host-sync verification is credential-blocked and the decision deadline has passed, so the capture-only `gpt-realtime-2.1` fallback is the final demo voice path. Native task and voice-turn persistence remain unproven and must not be claimed. The server-minted ephemeral session route, browser WebRTC control, final-transcript reducer, durable Source boundary, and provider event provenance are implemented and tested; one provider-backed microphone turn still must be captured and inspected before recording.
@@ -111,6 +112,152 @@ These gates measure replacement value, not implementation breadth. Automated che
 - [ ] Dogfood one: an external-use deliverable is reviewed by its intended professional audience and either ships or generates a concrete revision.
 - [ ] Three to five uncoached representative professionals start from empty Workshops with their own material; every stall becomes a tracked product defect.
 - [ ] Graduation: one person outside the project uses WorkshopLM twice without being asked to return.
+
+## Locked first-use onboarding and Company Style contract
+
+This is the next implementation increment. The product already proves the downstream production seam; this contract closes the gap between opening an empty installation and understanding how to reach that seam without coaching.
+
+### Outcome and completion bar
+
+A new professional should be able to open WorkshopLM, state what they are making, create or select a reusable Company Style, add their own material, and reach a useful grounded Map without learning the internal architecture. Company Style analysis may run beside source ingestion and Map creation, but a reviewed saved Style is required before Outputs. The user should understand the permanent workflow from one short orientation on the real Map.
+
+The memorable first-use moment is: the professional chooses an outcome, enters the company or client website, adds the messy meeting or source material, and sees a grounded Map while WorkshopLM reports that the Company Style is ready to review.
+
+This onboarding is complete only when a fresh local data root passes the empty-Workshop browser path, the company URL produces visibly reviewable exact hex colors and font candidates, a selected Company Style is reused by a second Workshop, orientation state survives reload, and all existing acceptance/demo paths remain green.
+
+### Locked product decisions
+
+- Support multiple reusable **Company Styles**. A consultant may use their own identity for one Workshop and a client's identity for another. One Style may be the default, but no single global identity is assumed.
+- Keep the Workshop outcome separate from reusable company identity. `Client pitch`, `Board presentation`, and `Team workshop` belong to the Workshop; changing the outcome does not rewrite the Company Style.
+- Offer **Use a clean default for now**. It removes first-use friction, but the user must still have a saved Company Style—website-derived, manual, reused, or clean default—before `Create outputs` becomes available.
+- A company website entered for Style analysis is brand evidence only. It never becomes a factual Source unless the user separately adds it through `Add source`.
+- Saving Company Style is mutable setup, not approval. The only blocking approvals remain `Approve brief` and `Approve storyboard`.
+- Existing Workshops, the deterministic judge fixture, and returning users with durable state must open exactly where they did before. Onboarding appears only for a genuinely fresh installation or a newly created empty Workshop that has not completed setup.
+- Use the current Style Library as the implementation foundation. Do not introduce organization accounts, Canva connectors, remote brand management, template administration, or a parallel product shell.
+
+### First-run flow
+
+#### 1. Welcome and outcome
+
+The first screen uses the existing WorkshopLM/OpenAI component system and one dominant action. It says `Turn raw thinking into finished work.` and asks `What are you making?`
+
+- Present three outcome choices: `Client pitch`, `Board presentation`, and `Team workshop`.
+- Ask for the Workshop name after the outcome is chosen; offer a useful generated default and permit correction.
+- Do not ask for output formats, model choices, audience taxonomies, tutorial preferences, or technical configuration.
+- The primary action advances to Company Style setup. Back preserves entered state.
+
+#### 2. Start the Company Style
+
+The primary path asks for `Company website` and offers `Find my company style`. The supporting copy states that WorkshopLM will suggest colors, type, and brand assets for review and will not add the website to Sources.
+
+Alternative paths are:
+
+- `Use a saved style` when the Style Library is non-empty;
+- `Set it manually` for exact brand rules or a blocked website;
+- `Use a clean default for now` for users without a website or brand system.
+
+Submitting a website begins analysis and moves the user to source intake without waiting for a fake progress experience. Source ingestion and Map creation remain usable while analysis runs. Show only honest task states: `Reviewing company.com…`, `Company style ready to review`, `Couldn't review this website`, and `{Name} style saved`. No invented percentages or simulated stages.
+
+#### 3. Add the thinking
+
+Reuse one unified Source surface rather than separate mode cards. It supports:
+
+- `Record voice`;
+- pasted meeting notes or transcript;
+- a public content URL;
+- an absolute local PDF path.
+
+Use short outcome-specific examples only when they help the user choose material. Keep the company Style URL visually and semantically separate from factual Source scope. With one valid Source, enable `Build my Map`. Source ingestion errors stay on this surface with a useful retry or correction.
+
+#### 4. First Map orientation
+
+Land on the real editable Map as soon as it is useful. Show one dismissible orientation card, not a hotspot tour:
+
+> Your Map is ready. Shape the ideas, approve the Brief, then create branded Outputs. Use Show source to trace any factual point back to the material behind it.
+
+The card has one `Got it` action, dismisses durably, and is available later through a quiet `How WorkshopLM works` entry. It must not obscure the Map, the Source count, or `Approve brief` at the recorded desktop and compact sizes.
+
+If Company Style analysis is incomplete, show its quiet status without blocking Map edits or Brief approval. When results are ready, expose one `Review style` action. If analysis fails, offer `Try again`, `Set manually`, and `Use a clean default` without failing the Workshop.
+
+#### 5. Review Company Style
+
+Use a focused review surface large enough to judge the result; do not expose raw arrays of URLs or a cramped settings form. The surface says `We found this on {domain}. Keep what is right.` and includes:
+
+- **Identity:** editable Company Style name and the analyzed domain.
+- **Brand assets:** visual candidates labeled `Likely logo`, `Wordmark`, `Icon`, or `Other`; the user selects a primary asset, removes false positives, or adds an authorized replacement. Never call a heuristic match the official logo before selection.
+- **Colors:** visual swatches with editable, normalized six-digit uppercase hex values. Assign explicit roles: `Accent`, `Text`, `Background`, and optional `Supporting`. A detected list without roles is insufficient.
+- **Type:** visible heading and body samples. Candidates are assigned to `Heading` or `Body` and labeled `Detected`, `Available`, or `Needs font file`. Detection never implies installation or licensing. Always show the actual fallback that Outputs will use.
+- **Preview:** a small representative title/statement/evidence composition using the current logo, palette, and type choices. Changes update the preview immediately.
+- **Additional guidance:** collapsed by default; contains authorized image references, negative rules, and concise usage guidance. Voice/tone inference is not required for this increment.
+- **Authorization:** make clear that the user is responsible for rights to selected assets and fonts. Do not represent a detected remote font file as licensed.
+
+The dominant action is `Save company style`. The saved result becomes a reusable Style Library entry and may be selected as the default. Do not use `Approve`, `Lock`, `Visual DNA`, `DESIGN.md`, or other internal language in this surface.
+
+#### 6. Brief-to-Outputs boundary
+
+If the Brief is approved and Company Style is saved/current, show its compact logo, palette, and typography summary with `Edit`, then enable `Create outputs`.
+
+If the Brief is approved but Company Style review is unfinished, the primary action becomes `Review style`. Do not create Outputs from unreviewed candidates. The Style requirement blocks only Outputs; it never blocks Sources, Map editing, or Brief approval.
+
+#### 7. First Outputs orientation
+
+After the first successful Output set, show one dismissible cue:
+
+> Your presentation is ready. Show source traces a claim back to its material. The Storyboard is your second and final approval before Video.
+
+Offer `Open presentation` and `Got it`. Do not create a separate tutorial area or repeat the explanation after dismissal.
+
+### Reuse, versioning, and persistence
+
+- A Company Style stores a durable name, source kind and URL when applicable, palette roles, typography roles and availability, selected local brand assets, references, negative rules, analysis summary, and timestamps.
+- Applying a Company Style to a Workshop creates or updates that Workshop's versioned Style snapshot. A Workshop pins the exact saved Company Style revision it uses.
+- Editing a reusable Company Style creates a new revision. Existing Workshops do not silently change. A user explicitly applies the new revision; normal `Needs update` propagation then applies to dependent work.
+- The selected outcome/Intent Profile is stored on the Workshop, not inside reusable company identity. Applying the same Company Style to a board presentation and client pitch preserves the brand while changing the output intent.
+- Store only user-selected brand assets in the local data root. Validate media type, size, dimensions, SVG safety, and content before persistence. Outputs use the local copy and hash; they never hotlink remote website assets.
+- Persist first-use state separately from approval state: welcome completion, Map-orientation dismissal, Outputs-orientation dismissal, default Company Style, and current setup status. Do not encode onboarding as another approval or infer it from unrelated output artifacts.
+- Migrate existing local state as onboarding-complete. A clean fixture reset may explicitly choose whether it exercises the canonical demo Workshop or the clean-start onboarding fixture; the two must not contaminate each other.
+
+### Website analysis truth and safety boundaries
+
+- Reuse the existing deterministic public-website analyzer and its private-network, redirect, credential, and content-size protections. It already reads the page and bounded linked stylesheets, extracts exact color candidates, finds font-family candidates, and discovers likely brand assets.
+- Improve candidate ranking and review metadata only as required by the visible contract. Do not add a headless browser, web crawler, external connector, or unbounded site traversal for this increment.
+- CSS variables, `rgb`, `hsl`, opacity, dark mode, utility colors, favicons, partner marks, and footer marks can create false positives. Every result is a candidate until reviewed.
+- Dynamic, authenticated, bot-blocked, malformed, or brand-light websites must fail gracefully into manual or clean-default setup.
+- Do not download or execute remote scripts. Do not silently fetch arbitrary font binaries. Never expose local-network state through website analysis.
+- Analysis progress and errors must be real. A partially successful scan may show useful candidates with a concise warning; it must not claim a complete official brand kit.
+
+### Minimal implementation surface
+
+Prefer additive changes around the existing Workshop service and Style Library:
+
+- extend Workshop creation/setup with the chosen outcome and durable onboarding metadata;
+- extend website Style suggestions with candidate roles, selection, evidence/availability metadata, and an honest analysis status;
+- extend saved Style Library entries with reviewed color/type roles and validated local asset records;
+- reuse `analyzeWebsiteStyle`, `lockWebsiteStyle`, `lockManualStyle`, `applyStyleLibrary`, and existing source-ingestion actions where their contracts remain truthful;
+- keep analysis concurrency small and deterministic. It may be implemented as an observable local task or a reload-safe request flow, but a refresh must either restore the result/status or offer an explicit retry without corrupting the Workshop;
+- preserve `canCreateOutputs = briefApproved && currentStyleExists && !currentStyleIsStale` as the meaningful delivery boundary;
+- retain `briefApproved` and `storyboardApproved` as the only approval state.
+
+Do not refactor unrelated rendering, plugin, graph, queue, or submission systems unless a directly exercised onboarding dependency requires a small compatible change.
+
+### Acceptance and test gate
+
+- [x] A fresh local data root opens the Welcome flow; existing Workshops and the judge fixture bypass it without state loss or changed default routes.
+- [x] Outcome and Workshop name persist across Back, reload, and completion; outcome remains Workshop-specific when a Company Style is reused.
+- [ ] Entering a company URL starts bounded analysis without adding that URL to Sources or blocking source ingestion and Map creation.
+- [ ] A deterministic website fixture proves linked-CSS extraction, exact normalized hex values, font candidates, likely assets, editable corrections, palette roles, typography roles, and analysis findings.
+- [ ] Company Style review displays visual asset candidates, actual swatches and hex values, heading/body samples, font availability/licensing truth, and a responsive live preview.
+- [ ] Selected remote brand assets are validated, copied locally, hashed, and used by generated work; unselected or invalid assets never enter Outputs.
+- [ ] Scan failure, no useful findings, dynamic-site failure, invalid URL, redirect abuse, private-network targets, unsafe SVG/media, and unavailable fonts each have tested safe behavior and a usable manual/default fallback.
+- [x] `Use a clean default for now` creates a real saved reusable Style and never bypasses the Brief or Storyboard approval gates.
+- [x] A second Workshop can select the first Workshop's Company Style in one action while choosing a different outcome.
+- [ ] Editing a Company Style creates a revision and never silently changes existing Workshops; explicitly applying the revision produces correct downstream `Needs update` behavior.
+- [ ] Map and Outputs orientation appear once, dismiss durably, remain accessible later, and do not obscure the permanent next action.
+- [x] Exactly two blocking approval actions remain visible and enforced: `Approve brief` and `Approve storyboard`.
+- [ ] Keyboard, focus, labels, error announcements, contrast, reduced motion, and responsive behavior pass at the current desktop, compact, and mobile verification widths.
+- [x] Add focused service/domain tests, API/route tests, component tests, clean-start production-browser tests, existing-workshop regression coverage, and one complete onboarding-to-first-Output acceptance path.
+- [x] Run and record the narrow suites first, then `pnpm check`, the production-route browser suite, `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify`. Update screenshot baselines only after inspecting intentional changes.
+- [ ] Inspect the finished clean-start path in the Codex in-app browser with a real public website and representative source material. Record elapsed time to first Map and first editable deck without upgrading that single run into uncoached professional validation.
 
 ## Locked interface contract
 
@@ -390,6 +537,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Normalize local and connected-app/MCP sources for grounded `search`/`fetch` retrieval.
 - [ ] Persist a live voice turn through the final capture-only `gpt-realtime-2.1` path and its existing durable transcript/source contract; native ChatGPT task/account turn linkage remains an explicitly unsupported future path.
   - The server-minted ephemeral credential route, direct browser WebRTC session, capture-only VAD configuration, final transcript reducer, private Source persistence, and provider item/event provenance are implemented and tested. Keep this open until an inspected live microphone turn proves the provider path.
+  - 2026-07-15 final-run handoff: the no-spend live preflight now exposes `providerVoiceReady` and withholds its paid command until a verified WebRTC turn exists. After the turn is added in the local app, normal preflight preserves its exact transcript and provider item/event IDs through the clean rebuild; paid execution refuses before GPT-5.6, Image, or Speech dispatch if it is still absent.
 - [x] Extract candidate goals, audience, claims, constraints, and unresolved questions from grounded claims with source locators.
 - [x] Preserve claim-level evidence locators and source permissions.
 
@@ -443,6 +591,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Instrument and display time from first transcript segment to first rendered output.
 - [ ] Produce the Devpost description, README narrative, deck, thumbnails, storyboard, narration, and video as one traced WorkshopLM Output set. The recorded fixture now builds and verifies a 17-asset `partial` Output set with editable presentation and infographic files, source locators, file hashes, an input fingerprint, the rendered Video's per-scene provenance sidecar, and immutable HTML/JSON build trace; close this only after the provider-backed media and final submission video replace the explicitly recorded fallbacks.
   - 2026-07-15 claim reconciliation: removed the unsupported `WorkshopLM built itself` shortcut and separated the two proven layers: Codex built WorkshopLM from the goal file; WorkshopLM produced a traced 17-asset partial fixture. The demo gate now permits `final self-produced submission` only when the final copy, deck, thumbnail, Storyboard, narration, and public Video verify as one non-partial Output set. The current manifest remains honestly `partial`, validates without stale or tampered assets, and records zero provider images, GPT-5.6 product reasoning, live voice, or narration.
+  - 2026-07-15 readiness integrity: `ready` now requires complete verified WebRTC, GPT-5.6, six-panel GPT Image 2, and panel-complete OpenAI narration evidence. Packaging recomputes the rendered MP4, image, and narration hashes from disk and semantically rebuilds the expected per-scene Video provenance; changed media or a changed provenance sidecar fails before a manifest can be emitted.
 - [ ] Include real UI evidence and the raw-transcript reveal. The production UI now implements and captures the responsive `Show original` before/after surface with fixture evidence. On July 15, `pnpm demo:capture-draft` recorded the complete reveal in a reviewable 37.76-second fixture walkthrough; close only after the dated contemporaneous founder brainstorm and final recorded footage replace that fixture.
 - [ ] Make the public video the canonical judge path: show the live seam, one plugin widget moment, both approval gates, editable control, provenance, and the raw brainstorm → finished submission reveal in under three minutes. The repeatable capture now proves the two gates, semantic edit, source trace, local render, and reveal as one 12-beat sequence. The evidence-gated paper edit fixes the final target at 2:42 across ten shots and fail-closes on every missing provider, founder, host, Codex, or final-export input; it intentionally remains a draft until those artifacts exist.
   - 2026-07-15 semantic finality gate: the film verifier no longer treats an existing partial submission manifest as evidence for the `WorkshopLM produced the final submission` reveal. The meta shot now requires a dedicated `final-submission-output-set` moment and semantically checks that the manifest status is `ready` with zero limitations. The current draft correctly reports the file as present but unsatisfied because its status is `partial`; final verification still fails with five blocked shots and eleven missing or unsatisfied evidence items.

@@ -2718,8 +2718,6 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
----
-
 ## 2026-07-15 12:43 CT — Office-hours guidance captured in hackathon notes
 
 **Area:** Research / Submission
@@ -5147,4 +5145,118 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - The normal twelve-request live run remains unexecuted pending explicit spend authorization.
 - The single latest-run record is sufficient for the current bounded operator path; a multi-attempt historical ledger remains unnecessary unless more than one paid run must be retained for judge evidence.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 14:13 CT — Realtime voice now survives the final paid-run handoff
+
+**Area:** Realtime / Live operator / Submission readiness
+
+### Changed
+
+- Added one canonical extractor for complete provider-verified WebRTC turns: exact `gpt-realtime-2.1` transport, `gpt-realtime-whisper` transcription, non-empty text, and matched non-empty provider item/event IDs.
+- The live operator now snapshots those verified turns before its clean rebuild, re-ingests their exact text and provider provenance, and uses them as the transcript/source input for GPT-5.6 and downstream work.
+- No-spend preflight now reports `providerVoiceReady`, `providerVoiceTurns`, a concrete voice-capture action, and no paid `nextCommand` while voice evidence is absent.
+- Normal paid execution refuses before any GPT-5.6, GPT Image 2, or Speech request when verified voice is absent. `--reset-paid-state` deliberately discards preserved voice along with the rest of the clean operator state.
+- Submission readiness now reuses the same strict WebRTC evidence definition instead of a looser duplicate check.
+
+### Submission integrity added in the same pass
+
+- `ready` now requires a hashed GPT-5.6 grounded-graph run, all six exact-reference GPT Image 2 panels with recorded file hashes, and one unique current OpenAI narration clip for every Storyboard panel.
+- Packaging recomputes the MP4, image, and narration hashes from disk before copying them.
+- Packaging parses the Video provenance sidecar and compares it with a freshly rebuilt expected per-scene provenance object from the current approved Storyboard, Style, image bindings, narration hashes, claims, and Sources.
+- A changed sidecar or changed provider media now fails before `manifest.json` can be emitted.
+
+### Verified
+
+- Worker tests passed 75 cases across eight files, including verified-Realtime extraction, complete-ready provider evidence, incomplete narration, and tampered Video provenance.
+- The no-spend preflight first returned `providerVoiceReady: false`, `providerVoiceTurns: 0`, and `nextCommand: null`.
+- A paid-shaped command with a test key and twelve-request ceiling refused before provider dispatch because voice was absent.
+- A synthetic local WebRTC-evidence turn was used only to test preservation: the next preflight returned `providerVoiceReady: true`, preserved one turn through the clean rebuild, and printed the bounded paid command. `--reset-paid-state` then removed that synthetic state; the current operator root is honestly back to `providerVoiceReady: false`.
+- `pnpm submission:build` produced the expected 17-asset `partial` fixture with the same four explicit provider limitations; `pnpm submission:verify` returned valid, not stale, and not tampered.
+- `pnpm check` passed all 13 packages and `pnpm demo:e2e` passed all six recorded gates.
+
+### Decisions
+
+- Realtime cannot remain a disconnected demo clip. The voice turn that judges see must be the same durable Source that the paid Map and outputs consume.
+- The paid media run should not be allowed to succeed into a package that can never become `ready`; voice eligibility is therefore a pre-spend gate.
+- A manifest hash is insufficient when source media or its provenance sidecar can be altered before packaging. The package builder enforces persisted hashes and semantic provenance before it creates the manifest.
+
+### Open items
+
+- A real microphone turn remains unrecorded. The current preflight now tells the operator exactly how to produce it and will not expose the paid command until it exists.
+- The twelve-request GPT-5.6/Image/TTS run and human media review remain authorization-gated.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 14:08 CT — First-use onboarding and Company Styles are implementation-locked
+
+**Area:** Product / Onboarding / Style / Testing plan
+
+### Changed
+
+- Added the complete welcome and new-user setup contract to `GOAL.md`: outcome selection, Workshop naming, nonblocking company-website analysis, unified source intake, first-Map orientation, visual Company Style review, Brief-to-Outputs enforcement, and first-Outputs orientation.
+- Locked multiple reusable Company Styles plus a clean-default escape hatch. Company identity is reusable; Client pitch, Board presentation, and Team workshop remain Workshop-specific.
+- Defined the visible Company Style review around selected logo candidates, exact editable hex colors with semantic roles, heading/body font candidates with availability and licensing truth, a live preview, and collapsed supporting guidance.
+- Defined persistence, revision, migration, local-asset, SSRF/media safety, failure fallback, accessibility, responsive, regression, browser, and end-to-end acceptance requirements.
+
+### Verified
+
+- Re-read the current implementation: website analysis already inspects the public page and bounded linked stylesheets, extracts normalized color candidates, font-family candidates, and likely logo/icon URLs; the Style Library already reuses saved Styles across Workshops.
+- Compared the contract with current official Canva Brand Kit patterns and Google's Pomelli/NotebookLM first-use patterns. The selected design keeps Canva-like reusable brand structure, Pomelli-like website analysis, and NotebookLM-like speed to the first useful grounded object.
+- `git diff --check -- GOAL.md` passed after the implementation contract was added.
+
+### Decisions
+
+- A company website entered for Style analysis never enters factual Source scope automatically.
+- Company Style saving is setup, not a third approval. Only Brief and Storyboard remain blocking approvals.
+- Website analysis should run without blocking source ingestion or Map work; reviewed Style remains mandatory before Outputs.
+- Existing Workshops and the judge fixture migrate as onboarding-complete so this increment cannot hijack established demo routes.
+
+### Open items
+
+- Implement every open onboarding acceptance item in the new dedicated GPT-5.6 Terra High task, including inspected in-app-browser proof and the full regression suite.
+- Real uncoached professional use remains a separate human validation gate after deterministic clean-start testing passes.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 14:29 CT — The durable first-use path reaches real finished work
+
+**Area:** Product / Onboarding / Company Styles / Browser verification
+
+### Changed
+
+- A genuinely fresh local data root now opens a Welcome flow instead of silently presenting the seeded Build Week fixture. Existing persisted Workshops and the explicitly seeded visual/judge fixture migrate or open as onboarding-complete.
+- Added durable Workshop-specific outcome, onboarding step, completion time, and Map/Outputs orientation state without adding another approval gate. `Client pitch`, `Board presentation`, and `Team workshop` remain separate from reusable Company identity.
+- Implemented the official-component Welcome → Company Style → unified Source intake → real editable Map path. The professional can use the latest saved Style, review a website suggestion, or save `Clean professional`; Company website copy explicitly says it is not a factual Source.
+- Added one-time, persisted Map and first-Presentation orientation cards. The permanent header still exposes the source count and `Approve brief`; the only blocking approvals remain Brief and Storyboard.
+- Applying a saved Company Style now preserves the current Workshop outcome instead of importing the Style snapshot's prior intent. The clean default inherits the selected Workshop outcome and becomes a real Style Library entry.
+- Corrected the visible one-source label from `1 sources` to `1 source`.
+
+### Verified
+
+- Focused worker and web tests passed: 76 worker cases across eight files and 15 web unit/contract cases across four files.
+- The production browser suite passed all 19 tests. It now proves a new Workshop can choose an outcome, persist its name, select or create a reusable Company Style, add representative meeting notes, build the real Excalidraw Map, dismiss orientation durably, approve the Brief, create Outputs, dismiss the first-Presentation cue, and open an editable PowerPoint.
+- Inspected the four new 1200×800 browser baselines for Welcome, Company Style, Source intake, and the editable Map. The Map baseline waits for the real Excalidraw canvas and contains the ingested grounded node; the orientation card does not cover the Source count or `Approve brief`.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages.
+- `pnpm demo:e2e` passed all six recorded gates after the fresh-root behavior changed.
+- `pnpm submission:build` produced the expected truthful 17-asset `partial` set with four provider limitations; `pnpm submission:verify` returned valid, not stale, and not tampered.
+- `git diff --check` passed before tracking updates.
+
+### Decisions
+
+- Production defaults to an honest empty first run. Seeded behavior now requires the explicit `WORKSHOPLM_SEEDED_FIXTURE=1` test/fixture boundary.
+- The first-use surface shows only the latest saved Company Style, keeping the decision calm; the existing full Style Library remains available inside a Workshop.
+- Website-derived brand findings remain candidates until reviewed. The remaining Company Style work must add explicit role/availability metadata and validated local asset persistence before those acceptance items close.
+
+### Open items
+
+- Website analysis still completes in the focused setup step rather than running as a persisted, reload-safe task beside Source ingestion. That contract remains open.
+- Brand candidate classification, explicit palette/type roles, font availability/licensing truth, validated local asset copying/hashing, and failure-state coverage remain open.
+- The orientation cards dismiss durably, but the quiet `How WorkshopLM works` return entry is not implemented yet.
+- Mobile first-use screenshots and a real public-website in-app-browser run remain open; the existing completed-Workshop mobile/compact suite remains green.
+- Live microphone, GPT-5.6, GPT Image 2, Speech, and final-video evidence remain unchanged and authorization-gated.
 - Codex Session ID: unavailable on this surface; not inferred.

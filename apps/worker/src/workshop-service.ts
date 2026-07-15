@@ -27,6 +27,14 @@ export type WorkshopFrame = { version: number; markdown: string; markdownPath: s
 export type WorkshopSketch = { version: number; graphRevision: number; nodes: Pick<WorkshopMapNode, "id" | "title" | "body" | "kind" | "locator">[]; stale: boolean; approved: boolean; createdAt: string };
 export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop"; referenceUrl?: string; libraryId?: string; lockedAt: string; stale: boolean };
 export type WorkshopStyleLibraryEntry = Omit<WorkshopStyle, "version" | "libraryId" | "lockedAt" | "stale"> & { id: string; createdAt: string; updatedAt: string };
+export type WorkshopOutcome = "client_facing_pitch" | "board_deck" | "internal_workshop";
+export type WorkshopOnboarding = {
+  step: "welcome" | "style" | "sources" | "complete";
+  outcome?: WorkshopOutcome;
+  mapOrientationDismissed: boolean;
+  outputsOrientationDismissed: boolean;
+  completedAt?: string;
+};
 export type WorkshopDesignArtifact = { version: number; styleVersion: number; markdownPath: string; tokensPath: string; stale: boolean; createdAt: string };
 export type ManualStyleInput = { name?: string; accent?: string; ink?: string; paper?: string; logos?: string[]; licensedFonts?: string[]; references?: string[]; negativeRules?: string[]; intentProfile?: WorkshopStyle["intentProfile"] };
 export type WebsiteStyleSuggestion = { referenceUrl: string; name: string; accent: string; ink: string; paper: string; logos: string[]; fontCandidates: string[]; references: string[]; negativeRules: string[]; findings: { colors: number; fontCandidates: number; assets: number; stylesheets: number } };
@@ -57,7 +65,7 @@ export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativ
 export type WorkshopBuildTraceRecord = { htmlPath: string; dataPath: string; htmlSha256: string; dataSha256: string; milestoneCount: number; commitCount: number; taskIds: string[] };
 export type WorkshopVideo = { id: string; version: number; storyboardVersion: number; styleVersion: number; visualDnaVersion?: number; imageBatchId?: string; relativePath: string; provenancePath: string; artifactPath: string; sha256: string; byteCount: number; claimIds: string[]; buildTrace: WorkshopBuildTraceRecord; stale: boolean; createdAt: string };
 export type RenderedVideoInput = Omit<WorkshopVideo, "id" | "version" | "stale" | "createdAt">;
-export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
+export type WorkshopState = { id: string; title: string; onboarding: WorkshopOnboarding; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
 export type WorkshopSummary = { id: string; title: string; sources: number; outputs: number; updatedAt: string; active: boolean };
 export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string; permission?: WorkshopSource["permission"] };
 const execFile = promisify(execFileCallback);
@@ -78,7 +86,7 @@ const seedClaims: WorkshopClaim[] = [
   { id: "claim-seed-design-system", sourceId: "source-design", chunkId: "chunk-seed-design", text: "Evidence becomes an editable production system.", evidenceState: "verified", locator: "Design · Map" },
 ];
 const emptyStoryboard = (): WorkshopStoryboard => ({ version: 0, stale: false, panels: [] });
-const defaultState = (id = defaultWorkshopId, title = defaultWorkshopTitle, seeded = true): WorkshopState => ({ id, title, briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: seeded ? 3 : 0, groundedClaims: seeded ? 5 : 0, sourceItems: seeded ? [
+const defaultState = (id = defaultWorkshopId, title = defaultWorkshopTitle, seeded = false): WorkshopState => ({ id, title, onboarding: { step: seeded ? "complete" : "welcome", outcome: seeded ? "client_facing_pitch" : undefined, mapOrientationDismissed: seeded, outputsOrientationDismissed: seeded, completedAt: seeded ? new Date().toISOString() : undefined }, briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: seeded ? 3 : 0, groundedClaims: seeded ? 5 : 0, sourceItems: seeded ? [
   { id: "source-raw", type: "TXT", title: "Raw voice brainstorm", origin: "ChatGPT task", claimCount: 5, excerpt: "The judge should be able to see the messy original thought become a cited map, a real brief, and a finished piece of work.", locator: "ChatGPT task · 12:41 · chunk 04", permission: "sanitized" },
   { id: "source-brief", type: "PDF", title: "Build Week brief", origin: "Local", claimCount: 3, excerpt: "One visible chain links capture, approved work, and finished delivery.", locator: "Build notes · §2", permission: "sanitized" },
   { id: "source-design", type: "WEB", title: "WorkshopLM direction", origin: "Local", claimCount: 2, excerpt: "Evidence first becomes an editable production system, not a static report.", locator: "Design · Map", permission: "sanitized" },
@@ -109,7 +117,7 @@ function ensureDefaultWorkshop(db: ReturnType<typeof dbFor>) {
   db.prepare("INSERT OR IGNORE INTO workshop VALUES (?, ?, ?)").run(defaultWorkshopId, defaultWorkshopTitle, createdAt);
   const row = db.prepare("SELECT 1 AS found FROM workshop_state WHERE workshop_id=?").get(defaultWorkshopId) as { found: number } | undefined;
   if (!row) {
-    const state = defaultState();
+    const state = defaultState(defaultWorkshopId, defaultWorkshopTitle, process.env.WORKSHOPLM_SEEDED_FIXTURE === "1");
     db.prepare("INSERT INTO workshop_state VALUES (?, ?, ?)").run(state.id, JSON.stringify(state), state.updatedAt);
     syncEvidenceIndex(db, state);
   }
@@ -144,6 +152,46 @@ export function createWorkshop(title: string, root?: string): WorkshopState {
   syncEvidenceIndex(db, state);
   return state;
 }
+function onboardingOutcome(value: unknown): WorkshopOutcome {
+  if (value === "client_facing_pitch" || value === "board_deck" || value === "internal_workshop") return value;
+  throw new Error("Choose Client pitch, Board presentation, or Team workshop.");
+}
+export function updateWorkshopOnboarding(input: { title?: string; outcome?: WorkshopOutcome; step?: WorkshopOnboarding["step"] }, root?: string): WorkshopState {
+  const current = readWorkshopState(root);
+  const title = input.title === undefined ? current.title : input.title.trim();
+  if (!title) throw new Error("Workshop name is required.");
+  const outcome = input.outcome === undefined ? current.onboarding.outcome : onboardingOutcome(input.outcome);
+  const step = input.step ?? current.onboarding.step;
+  if (!(["welcome", "style", "sources", "complete"] as const).includes(step)) throw new Error("Invalid onboarding step.");
+  if (step !== "welcome" && !outcome) throw new Error("Choose what you are making before continuing.");
+  if (step === "sources" && !current.style) throw new Error("Choose, create, or reuse a Company Style before adding material.");
+  if (step === "complete" && current.sourceItems.length === 0) throw new Error("Add at least one source before building the Map.");
+  const updatedAt = new Date().toISOString();
+  return write({
+    ...current,
+    title,
+    onboarding: {
+      ...current.onboarding,
+      outcome,
+      step,
+      completedAt: step === "complete" ? current.onboarding.completedAt ?? updatedAt : current.onboarding.completedAt,
+    },
+    updatedAt,
+  }, root);
+}
+export function dismissWorkshopOrientation(kind: "map" | "outputs", root?: string): WorkshopState {
+  const current = readWorkshopState(root);
+  const updatedAt = new Date().toISOString();
+  return write({
+    ...current,
+    onboarding: {
+      ...current.onboarding,
+      mapOrientationDismissed: kind === "map" ? true : current.onboarding.mapOrientationDismissed,
+      outputsOrientationDismissed: kind === "outputs" ? true : current.onboarding.outputsOrientationDismissed,
+    },
+    updatedAt,
+  }, root);
+}
 export function selectWorkshop(workshopId: string, root?: string): WorkshopState {
   const db = dbFor(root); ensureDefaultWorkshop(db);
   if (!db.prepare("SELECT 1 AS found FROM workshop_state WHERE workshop_id=?").get(workshopId)) throw new Error(`Workshop not found: ${workshopId}.`);
@@ -162,9 +210,9 @@ export function readWorkshopState(root?: string, requestedWorkshopId?: string): 
   if (!row) throw new Error(`Workshop not found: ${workshopId}.`);
   if (row) {
     const state = JSON.parse(row.state_json) as Partial<WorkshopState>;
-    const fallback = defaultState(workshopId, state.title ?? (workshopId === defaultWorkshopId ? defaultWorkshopTitle : "Untitled Workshop"), workshopId === defaultWorkshopId);
+    const fallback = defaultState(workshopId, state.title ?? (workshopId === defaultWorkshopId ? defaultWorkshopTitle : "Untitled Workshop"), workshopId === defaultWorkshopId && Boolean(state.sourceItems?.length));
     if (state.sourceItems && state.mapNodes && state.sourceChunks && state.claims) {
-      const normalized = withSeedEvidence({ ...fallback, ...state, id: workshopId, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), style: state.style ? { ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" } : undefined, storyboard: normalizeStoryboard(state.storyboard, fallback.storyboard), aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
+      const normalized = withSeedEvidence({ ...fallback, ...state, id: workshopId, onboarding: state.onboarding ?? fallback.onboarding, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), style: state.style ? { ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" } : undefined, storyboard: normalizeStoryboard(state.storyboard, fallback.storyboard), aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
       if (normalized.sourceChunks !== state.sourceChunks) return write(normalized, root);
       ensureEvidenceIndex(db, normalized);
       return normalized;
@@ -499,7 +547,7 @@ function applyLockedStyle(current: WorkshopState, style: WorkshopStyle, root?: s
   return write({ ...current, ...(current.style ? staleStyleDependents(current) : {}), style: saved, designArtifact: materializeDesignArtifact(saved, current.id, root), updatedAt: saved.lockedAt }, root);
 }
 export async function lockWebsiteStyle(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch, requestedIntent?: WorkshopStyle["intentProfile"], reviewed?: ManualStyleInput): Promise<WorkshopState> {
-  const suggestion = reviewed ? { ...reviewed, referenceUrl: reviewedWebsiteUrl(rawUrl) } : await analyzeWebsiteStyle(rawUrl, fetchImpl); const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "website", name: suggestion.name?.trim() || "Website foundation", accent: color(suggestion.accent, "#1668E3"), ink: color(suggestion.ink, "#171816"), paper: color(suggestion.paper, "#F4F2EC"), logos: cleanStyleList(suggestion.logos), licensedFonts: cleanStyleList("fontCandidates" in suggestion ? suggestion.fontCandidates : suggestion.licensedFonts), references: cleanStyleList(suggestion.references), negativeRules: cleanStyleList(suggestion.negativeRules), intentProfile: intentProfile(reviewed?.intentProfile ?? requestedIntent), referenceUrl: suggestion.referenceUrl, lockedAt: updatedAt, stale: false };
+  const suggestion = reviewed ? { ...reviewed, referenceUrl: reviewedWebsiteUrl(rawUrl) } : await analyzeWebsiteStyle(rawUrl, fetchImpl); const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "website", name: suggestion.name?.trim() || "Website foundation", accent: color(suggestion.accent, "#1668E3"), ink: color(suggestion.ink, "#171816"), paper: color(suggestion.paper, "#F4F2EC"), logos: cleanStyleList(suggestion.logos), licensedFonts: cleanStyleList("fontCandidates" in suggestion ? suggestion.fontCandidates : suggestion.licensedFonts), references: cleanStyleList(suggestion.references), negativeRules: cleanStyleList(suggestion.negativeRules), intentProfile: intentProfile(reviewed?.intentProfile ?? requestedIntent ?? current.onboarding.outcome), referenceUrl: suggestion.referenceUrl, lockedAt: updatedAt, stale: false };
   return applyLockedStyle(current, style, root);
 }
 function cleanStyleList(values: string[] | undefined) { return [...new Set((values ?? []).map((value) => value.trim()).filter(Boolean))]; }
@@ -515,14 +563,14 @@ function materializeDesignArtifact(style: WorkshopStyle, workshopId: string, roo
 function staleStyleDependents(current: WorkshopState) { return { visualDna: current.visualDna ? { ...current.visualDna, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), storyboardApproved: false, videoState: "blocked" as const }; }
 export function lockManualStyle(input: ManualStyleInput = {}, root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
-  const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "manual", name: input.name?.trim() || "Editorial thinking instrument", accent: color(input.accent, "#1668E3"), ink: color(input.ink, "#171816"), paper: color(input.paper, "#F4F2EC"), logos: cleanStyleList(input.logos), licensedFonts: cleanStyleList(input.licensedFonts), references: cleanStyleList(input.references), negativeRules: cleanStyleList(input.negativeRules), intentProfile: intentProfile(input.intentProfile), lockedAt: updatedAt, stale: false };
+  const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "manual", name: input.name?.trim() || "Clean professional", accent: color(input.accent, "#1668E3"), ink: color(input.ink, "#171816"), paper: color(input.paper, "#F4F2EC"), logos: cleanStyleList(input.logos), licensedFonts: cleanStyleList(input.licensedFonts), references: cleanStyleList(input.references), negativeRules: cleanStyleList(input.negativeRules), intentProfile: intentProfile(input.intentProfile ?? current.onboarding.outcome), lockedAt: updatedAt, stale: false };
   return applyLockedStyle(current, style, root);
 }
 export function applyStyleLibrary(styleId: string, requestedIntent?: WorkshopStyle["intentProfile"], root?: string): WorkshopState {
   const db = dbFor(root); const row = db.prepare("SELECT style_json FROM style_library WHERE id=?").get(styleId) as { style_json: string } | undefined;
   if (!row) throw new Error("Saved Style not found.");
   const entry = JSON.parse(row.style_json) as Omit<WorkshopStyleLibraryEntry, "id" | "createdAt" | "updatedAt">; const current = readWorkshopState(root); const lockedAt = new Date().toISOString();
-  const style: WorkshopStyle = { ...entry, version: (current.style?.version ?? 0) + 1, libraryId: styleId, intentProfile: intentProfile(requestedIntent ?? entry.intentProfile), lockedAt, stale: false };
+  const style: WorkshopStyle = { ...entry, version: (current.style?.version ?? 0) + 1, libraryId: styleId, intentProfile: intentProfile(requestedIntent ?? current.onboarding.outcome ?? entry.intentProfile), lockedAt, stale: false };
   return applyLockedStyle(current, style, root, false);
 }
 export function createVisualDna(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.style || current.style.stale) throw new Error("Visual DNA requires a current locked Style Foundation."); const createdAt = new Date().toISOString(); const profileRule = current.style.intentProfile === "board_deck" ? "Executive hierarchy with source-visible proof points." : current.style.intentProfile === "internal_workshop" ? "Facilitation-first working canvas with writable space." : "Client-ready narrative sequence with a decisive opening."; return write({ ...current, visualDna: { version: (current.visualDna?.version ?? 0) + 1, styleVersion: current.style.version, palette: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, compositionRules: [profileRule, ...current.style.references], textureRules: ["Subtle paper grain only; preserve legibility."], imageRules: ["Use the locked palette and evidence-aware editorial framing."], negativeRules: current.style.negativeRules, approved: false, stale: false, createdAt }, updatedAt: createdAt }, root); }

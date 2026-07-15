@@ -3,8 +3,32 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { describe, expect, it } from "vitest";
-import { analyzeWebsiteStyle, applyMapOperation, applyStyleLibrary, applyWorkshopAction, approveSketch, approveVisualDna, assertStoryboardGrounding, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, extractWorkshopCandidates, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, ingestUrl, listStyleLibrary, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, markImagePanelFailed, normalizePdfLayoutText, readWorkshopState, resolveWorkshopArtifact, searchWorkshopSources, selectImagePanelForRegeneration, selectWorkshop, setActiveSourceScope, syncMapCanvas, undoMapOperation, updateStoryboardPanel } from "./workshop-service.js";
+import { analyzeWebsiteStyle, applyMapOperation, applyStyleLibrary, applyWorkshopAction, approveSketch, approveVisualDna, assertStoryboardGrounding, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, dismissWorkshopOrientation, extractWorkshopCandidates, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, ingestUrl, listStyleLibrary, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, markImagePanelFailed, normalizePdfLayoutText, readWorkshopState, resolveWorkshopArtifact, searchWorkshopSources, selectImagePanelForRegeneration, selectWorkshop, setActiveSourceScope, syncMapCanvas, undoMapOperation, updateStoryboardPanel, updateWorkshopOnboarding } from "./workshop-service.js";
 describe("Workshop service", () => { it("persists brief/style/storyboard gates and blocks video until the storyboard is approved", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-service-")); expect(() => applyWorkshopAction("renderVideo", root)).toThrow(/storyboard/); const brief = applyWorkshopAction("approveBrief", root); expect(brief.frame).toMatchObject({ markdownPath: "generated/FRAME-v1.md", executablePath: "generated/FRAME-v1.json" }); expect(await readFile(join(root, brief.frame!.markdownPath), "utf8")).toContain("# FRAME.md"); expect(JSON.parse(await readFile(join(root, brief.frame!.executablePath), "utf8"))).toMatchObject({ frameVersion: 1, schemaVersion: 1, evidence: expect.any(Array) }); applyWorkshopAction("lockManualStyle", root); expect(applyWorkshopAction("approveStoryboard", root).storyboardApproved).toBe(true); expect(applyWorkshopAction("renderVideo", root).videoState).toBe("queued"); expect(readWorkshopState(root).briefApproved).toBe(true); await rm(root, { recursive: true, force: true }); });
+it("opens a genuinely fresh data root in durable onboarding and preserves outcome, name, and orientation state", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-onboarding-"));
+  const priorFixtureMode = process.env.WORKSHOPLM_SEEDED_FIXTURE;
+  delete process.env.WORKSHOPLM_SEEDED_FIXTURE;
+  try {
+    const fresh = readWorkshopState(root);
+    expect(fresh).toMatchObject({ sources: 0, mapNodes: [], onboarding: { step: "welcome", mapOrientationDismissed: false, outputsOrientationDismissed: false } });
+    const styledStep = updateWorkshopOnboarding({ title: "Acme leadership update", outcome: "board_deck", step: "style" }, root);
+    expect(styledStep).toMatchObject({ title: "Acme leadership update", onboarding: { step: "style", outcome: "board_deck" } });
+    expect(() => updateWorkshopOnboarding({ step: "sources" }, root)).toThrow(/Company Style/);
+    expect(lockManualStyle({}, root).style).toMatchObject({ name: "Clean professional", intentProfile: "board_deck" });
+    expect(updateWorkshopOnboarding({ step: "sources" }, root).onboarding.step).toBe("sources");
+    expect(() => updateWorkshopOnboarding({ step: "complete" }, root)).toThrow(/source/);
+    await ingestSource({ title: "Leadership notes", origin: "Fixture", text: "Leadership needs a source-defensible recommendation." }, root);
+    const complete = updateWorkshopOnboarding({ step: "complete" }, root);
+    expect(complete.onboarding).toMatchObject({ step: "complete", outcome: "board_deck", mapOrientationDismissed: false });
+    expect(dismissWorkshopOrientation("map", root).onboarding.mapOrientationDismissed).toBe(true);
+    expect(readWorkshopState(root)).toMatchObject({ title: "Acme leadership update", onboarding: { step: "complete", outcome: "board_deck", mapOrientationDismissed: true } });
+  } finally {
+    if (priorFixtureMode === undefined) delete process.env.WORKSHOPLM_SEEDED_FIXTURE;
+    else process.env.WORKSHOPLM_SEEDED_FIXTURE = priorFixtureMode;
+    await rm(root, { recursive: true, force: true });
+  }
+});
 it("creates, lists, selects, and isolates durable Workshops", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-collection-"));
   const original = readWorkshopState(root);
@@ -72,7 +96,7 @@ it("marks existing work stale when a different saved Style is applied", async ()
   const second = lockManualStyle({ name: "Board dark", accent: "#552211", intentProfile: "board_deck" }, root);
   selectWorkshop(first.id, root);
   const changed = applyStyleLibrary(second.style!.libraryId!, undefined, root);
-  expect(changed.style).toMatchObject({ name: "Board dark", accent: "#552211", intentProfile: "board_deck", version: 2, stale: false });
+  expect(changed.style).toMatchObject({ name: "Board dark", accent: "#552211", intentProfile: "client_facing_pitch", version: 2, stale: false });
   expect(changed.outputs[0]).toMatchObject({ type: "deck", stale: true });
   expect(changed.storyboard).toMatchObject({ stale: true });
   expect(changed.storyboardApproved).toBe(false);

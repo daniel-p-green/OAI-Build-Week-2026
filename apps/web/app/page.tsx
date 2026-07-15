@@ -35,11 +35,13 @@ type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; orig
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
 type MapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
 type ManualStylePayload = { name: string; accent: string; ink: string; paper: string; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop" };
+type WorkshopOutcome = ManualStylePayload["intentProfile"];
 type StyleLibraryEntry = ManualStylePayload & { id: string; source: "manual" | "website"; referenceUrl?: string; createdAt: string; updatedAt: string };
 type WebsiteStyleSuggestion = Omit<ManualStylePayload, "licensedFonts" | "intentProfile"> & { referenceUrl: string; fontCandidates: string[]; findings: { colors: number; fontCandidates: number; assets: number; stylesheets: number } };
 type PersistedWorkshop = {
   id: string;
   title: string;
+  onboarding: { step: "welcome" | "style" | "sources" | "complete"; outcome?: WorkshopOutcome; mapOrientationDismissed: boolean; outputsOrientationDismissed: boolean; completedAt?: string };
   briefApproved: boolean;
   storyboardApproved: boolean;
   videoState: "blocked" | "queued" | "rendering" | "rendered";
@@ -249,6 +251,10 @@ export default function WorkshopPage() {
   const currentTitle = view === "output" ? (selectedOutput ? outputTitle(selectedOutput.type) : selectedOutputId === "images" ? "Image set" : "Demo video") : VIEW_TITLES[view];
   const backTarget: ObjectView | null = view === "map" ? null : view === "brief" ? "map" : view === "outputs" ? "brief" : "outputs";
 
+  if (loadState === "ready" && state && state.onboarding.step !== "complete") {
+    return <OnboardingFlow state={state} styleLibrary={styleLibrary} busy={busy} notice={notice} onPost={post} onAnalyzeWebsite={analyzeWebsiteStyle} />;
+  }
+
   return (
     <FullScreenShell className="workshop-shell">
       <NavigationHeader className="workshop-header">
@@ -257,7 +263,7 @@ export default function WorkshopPage() {
           <div className="workshop-identity"><ListRowAction className="workshop-picker" aria-label="Switch Workshop" onClick={() => openSheet("workshops")}><strong>{state?.title || "WorkshopLM"}</strong></ListRowAction><span aria-hidden="true">/</span><b>{currentTitle}</b></div>
         </div>
         {loadState === "ready" && <div className="header-actions">
-          <Button variant="secondary" size="small" onClick={() => openSheet("sources")}>{visibleSourceCount} sources</Button>
+          <Button variant="secondary" size="small" onClick={() => openSheet("sources")}>{visibleSourceCount} {visibleSourceCount === 1 ? "source" : "sources"}</Button>
           {view === "map" && Boolean(state?.mapNodes.length) && (state?.briefApproved && !state.frame?.stale
             ? <Button variant={sheet ? "secondary" : "primary"} onClick={() => openView("brief")}>View brief</Button>
             : <Button variant={sheet ? "secondary" : "primary"} disabled={busy || !state?.mapNodes.length} onClick={() => { void post({ action: "approveBrief" }).then((next) => next && openView("brief")); }}>Approve brief</Button>)}
@@ -282,9 +288,9 @@ export default function WorkshopPage() {
       <section className="object-canvas" aria-label={currentTitle}>
         {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
         {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
-        {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onAddSource={() => openSheet("add-source")} />}
+        {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onAddSource={() => openSheet("add-source")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "map" }); }} />}
         {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
-        {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} />}
+        {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
         {loadState === "ready" && view === "storyboard" && <StoryboardView storyboard={state?.storyboard} imageBatch={state?.imageBatch} approved={Boolean(state?.storyboardApproved)} panel={selectedPanel} busy={busy} onSelect={setSelectedPanelId} onPost={post} onShowSource={showSource} />}
         {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} onShowSource={showSource} onShowOriginal={() => openSheet("original")} />}
       </section>
@@ -299,7 +305,98 @@ export default function WorkshopPage() {
   );
 }
 
-function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShowSource, onAddSource }: { state: PersistedWorkshop | null; selectedNode?: MapNode; busy: boolean; onSelect: (id: string) => void; onSync: (nodes: Pick<MapNode, "id" | "title" | "x" | "y" | "width" | "height">[]) => void; onUndo: () => void; onShowSource: (sourceId?: string) => void; onAddSource: () => void }) {
+const OUTCOME_OPTIONS: Array<{ id: WorkshopOutcome; title: string; detail: string; defaultName: string }> = [
+  { id: "client_facing_pitch", title: "Client pitch", detail: "A persuasive, source-defensible recommendation.", defaultName: "Client pitch" },
+  { id: "board_deck", title: "Board presentation", detail: "A concise leadership narrative with evidence.", defaultName: "Board presentation" },
+  { id: "internal_workshop", title: "Team workshop", detail: "A practical working session with clear actions.", defaultName: "Team workshop" },
+];
+
+function OnboardingFlow({ state, styleLibrary, busy, notice, onPost, onAnalyzeWebsite }: { state: PersistedWorkshop; styleLibrary: StyleLibraryEntry[]; busy: boolean; notice: { message: string; tone: "status" | "error" } | null; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onAnalyzeWebsite: (url: string) => Promise<WebsiteStyleSuggestion | null> }) {
+  const [outcome, setOutcome] = useState<WorkshopOutcome | undefined>(state.onboarding.outcome);
+  const [title, setTitle] = useState(state.title === "WorkshopLM Build Week" ? "" : state.title);
+  const [website, setWebsite] = useState("");
+  const [suggestion, setSuggestion] = useState<WebsiteStyleSuggestion | null>(null);
+  const [source, setSource] = useState("");
+  const [sourceTitle, setSourceTitle] = useState("");
+  const sourceKind = sourceInputKind(source);
+  const selectedOutcome = OUTCOME_OPTIONS.find((option) => option.id === outcome);
+
+  async function chooseStyle(body: Record<string, unknown>) {
+    const styled = await onPost(body);
+    if (styled) await onPost({ action: "updateOnboarding", onboardingStep: "sources" });
+  }
+
+  async function reviewWebsite() {
+    const reviewed = await onAnalyzeWebsite(website.trim());
+    if (reviewed) setSuggestion(reviewed);
+  }
+
+  async function saveWebsiteStyle() {
+    if (!suggestion) return;
+    await chooseStyle({
+      action: "lockWebsiteStyle",
+      url: suggestion.referenceUrl,
+      intentProfile: outcome,
+      manualStyle: {
+        name: suggestion.name,
+        accent: suggestion.accent,
+        ink: suggestion.ink,
+        paper: suggestion.paper,
+        logos: suggestion.logos,
+        licensedFonts: suggestion.fontCandidates,
+        references: suggestion.references,
+        negativeRules: suggestion.negativeRules,
+        intentProfile: outcome,
+      },
+    });
+  }
+
+  async function addSource() {
+    const value = source.trim();
+    if (!value) return;
+    const body = sourceKind === "url"
+      ? { action: "ingestUrl", url: value }
+      : sourceKind === "pdf"
+        ? { action: "ingestPdfFile", filePath: value, permission: "private" }
+        : { action: "ingestSource", source: { title: sourceTitle.trim() || sourceTitleFromText(value), origin: "Pasted notes", text: value, permission: "private" } };
+    const next = await onPost(body);
+    if (next) { setSource(""); setSourceTitle(""); }
+  }
+
+  return <FullScreenShell className="onboarding-shell">
+    <NavigationHeader className="onboarding-header"><strong>WorkshopLM</strong><span>From your meetings and documents to a deck you can defend.</span></NavigationHeader>
+    {notice && <Card className={`notice notice--${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}>{notice.message}</Card>}
+    <section className="onboarding-stage">
+      {state.onboarding.step === "welcome" && <Card className="onboarding-card welcome-card">
+        <div className="onboarding-copy"><small>New Workshop</small><h1>Turn raw thinking into finished work.</h1><p>What are you making?</p></div>
+        <div className="outcome-grid" role="radiogroup" aria-label="What are you making?">{OUTCOME_OPTIONS.map((option) => <ListRowAction key={option.id} className={`outcome-choice ${outcome === option.id ? "selected" : ""}`} role="radio" aria-checked={outcome === option.id} onClick={() => { setOutcome(option.id); if (!title.trim()) setTitle(option.defaultName); }}><span><strong>{option.title}</strong><small>{option.detail}</small></span></ListRowAction>)}</div>
+        {outcome && <Input autoFocus label="Workshop name" value={title} onChange={(event) => setTitle(event.target.value)} />}
+        <Button disabled={busy || !outcome || !title.trim()} onClick={() => { void onPost({ action: "updateOnboarding", title: title.trim(), outcome, onboardingStep: "style" }); }}>Continue</Button>
+      </Card>}
+
+      {state.onboarding.step === "style" && <Card className="onboarding-card style-start-card">
+        <div className="onboarding-copy"><small>Company Style</small><h1>Make every Output feel like yours.</h1><p>We’ll suggest colors, type, and brand assets for review. This website will not be added to Sources.</p></div>
+        {styleLibrary.length > 0 && <section className="saved-style-start"><h2>Use your latest saved style</h2><ListGroup>{styleLibrary.slice(0, 1).map((entry) => <ListRow key={entry.id}><ListRowAction disabled={busy} onClick={() => { void chooseStyle({ action: "applyStyleLibrary", styleLibraryId: entry.id, intentProfile: outcome }); }}><div className="saved-style-row"><span><strong>{entry.name}</strong><small>{entry.source === "website" ? "From website" : "Set manually"}</small></span><div className="palette-preview compact" aria-hidden="true"><i style={{ background: entry.accent }} /><i style={{ background: entry.ink }} /><i style={{ background: entry.paper }} /></div></div></ListRowAction></ListRow>)}</ListGroup></section>}
+        <div className="website-style-start"><Input label="Company website" placeholder="https://company.com" value={website} onChange={(event) => { setWebsite(event.target.value); setSuggestion(null); }} /><Button disabled={busy || !website.trim()} onClick={() => { void reviewWebsite(); }}>Find my company style</Button></div>
+        {suggestion && <Card className="website-style-review"><div><small>We found this on {new URL(suggestion.referenceUrl).hostname}. Keep what is right.</small><h2>{suggestion.name}</h2><p>{suggestion.findings.colors} colors · {suggestion.findings.fontCandidates} type candidates · {suggestion.findings.assets} brand assets</p></div><div className="style-review-preview" style={{ color: suggestion.ink, background: suggestion.paper, borderColor: suggestion.accent }}><span style={{ background: suggestion.accent }} /> <strong>Evidence becomes a clear recommendation.</strong><small>{suggestion.fontCandidates[0] ?? "System type"} with a verified source trail</small></div><Button disabled={busy} onClick={() => { void saveWebsiteStyle(); }}>Save company style</Button></Card>}
+        <div className="onboarding-secondary-actions"><Button variant="secondary" disabled={busy} onClick={() => { void chooseStyle({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: outcome } }); }}>Use a clean default for now</Button>{state.style && <Button variant="secondary" disabled={busy} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "sources" }); }}>Continue with {state.style.name}</Button>}<Button variant="secondary" disabled={busy} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "welcome" }); }}>Back</Button></div>
+      </Card>}
+
+      {state.onboarding.step === "sources" && <Card className="onboarding-card source-start-card">
+        <div className="onboarding-copy"><small>{selectedOutcome?.title ?? "Workshop"}</small><h1>Add the thinking.</h1><p>Record the conversation or add meeting notes, a public content URL, or a local PDF. Your Company Style stays separate from factual Sources.</p></div>
+        <RealtimeCapture onSave={async (transcript, capture) => Boolean(await onPost({ action: "captureFallbackTranscript", text: transcript, capture }))} />
+        <div className="source-divider"><span>or add material</span></div>
+        <TextArea label="Source" hint="Paste notes, https://…, or /path/to/file.pdf" value={source} onChange={(event) => setSource(event.target.value)} />
+        {sourceKind === "text" && source.trim() && <Input label="Title (optional)" value={sourceTitle} onChange={(event) => setSourceTitle(event.target.value)} />}
+        <div className="source-start-actions"><Button variant="secondary" disabled={busy || !source.trim()} onClick={() => { void addSource(); }}>Add source</Button><Button disabled={busy || state.sourceItems.length === 0} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "complete" }); }}>Build my Map</Button></div>
+        {state.sourceItems.length > 0 && <p className="source-ready" role="status">{state.sourceItems.length} {state.sourceItems.length === 1 ? "source" : "sources"} ready</p>}
+        <Button variant="secondary" disabled={busy} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "style" }); }}>Back</Button>
+      </Card>}
+    </section>
+  </FullScreenShell>;
+}
+
+function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShowSource, onAddSource, onDismissOrientation }: { state: PersistedWorkshop | null; selectedNode?: MapNode; busy: boolean; onSelect: (id: string) => void; onSync: (nodes: Pick<MapNode, "id" | "title" | "x" | "y" | "width" | "height">[]) => void; onUndo: () => void; onShowSource: (sourceId?: string) => void; onAddSource: () => void; onDismissOrientation: () => void }) {
   const sources = (state?.sourceItems ?? []).filter((source) => state?.activeSourceIds.includes(source.id));
   const nodes = (state?.mapNodes ?? []).filter((node) => !node.sourceId || state?.activeSourceIds.includes(node.sourceId));
   const relatedSourceId = (node: MapNode, index: number) => node.sourceId ?? sources[index % Math.max(1, sources.length)]?.id;
@@ -311,6 +408,7 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
 
   return <div className="map-canvas" data-domain-ui="map-canvas">
     <div className="map-caption" data-domain-ui="map-caption"><span>{nodes.length} ideas · Drag to organize · Double-click to edit</span>{canUndo && <Button variant="secondary" size="small" disabled={busy} onClick={onUndo}>Undo</Button>}</div>
+    {!state?.onboarding.mapOrientationDismissed && <Card className="map-orientation"><div><strong>Your Map is ready.</strong><p>Shape the ideas, approve the Brief, then create branded Outputs. Use Show source to trace any factual point back to the material behind it.</p></div><Button variant="secondary" size="small" onClick={onDismissOrientation}>Got it</Button></Card>}
     <ExcalidrawMap nodes={nodes} sources={sources} edges={state?.mapEdges ?? []} selectedNodeId={selectedNode?.id} onSelectNode={onSelect} onShowSource={(sourceId) => onShowSource(sourceId)} onSync={onSync} />
     {selectedNode && <ClaimInspector node={selectedNode} source={source} busy={busy} onClose={() => onSelect("")} onSave={(title) => onSync([{ id: selectedNode.id, title, x: selectedNode.x, y: selectedNode.y, width: selectedNode.width, height: selectedNode.height }])} onShowSource={() => onShowSource(selectedSourceId)} />}
   </div>;
@@ -396,7 +494,7 @@ function StyleSheet({ style, library, busy, onClose, onPost, onAnalyzeWebsite }:
   </SideSheet>;
 }
 
-function OutputsView({ state, onOpenOutput, onOpenStoryboard }: { state: PersistedWorkshop | null; onOpenOutput: (id: string) => void; onOpenStoryboard: () => void }) {
+function OutputsView({ state, onOpenOutput, onOpenStoryboard, onDismissOrientation }: { state: PersistedWorkshop | null; onOpenOutput: (id: string) => void; onOpenStoryboard: () => void; onDismissOrientation: () => void }) {
   const outputs = [...(state?.outputs ?? [])].sort((left, right) => left.type === right.type
     ? right.createdAt.localeCompare(left.createdAt)
     : left.type === "deck" ? -1 : 1);
@@ -411,6 +509,7 @@ function OutputsView({ state, onOpenOutput, onOpenStoryboard }: { state: Persist
   return <article className="outputs-view">
     <h1 className="visually-hidden">Outputs</h1>
     {!ready ? <StateMessage state="empty" title="Choose a Style">Your Brief is ready. Add a Style to create Outputs.</StateMessage> : <>
+      {!state?.onboarding.outputsOrientationDismissed && heroDeckId && <Card className="outputs-orientation"><div><strong>Your presentation is ready.</strong><p>Show source traces a claim back to its material. The Storyboard is your second and final approval before Video.</p></div><div className="button-row"><Button variant="secondary" size="small" onClick={() => onOpenOutput(heroDeckId)}>Open presentation</Button><Button variant="secondary" size="small" onClick={onDismissOrientation}>Got it</Button></div></Card>}
       {(state?.outputs.length ?? 0) === 0 && !state?.imageBatch && <StateMessage state="empty" title="Create your first Outputs">Turn this Brief into a presentation, infographic, image set, and Storyboard.</StateMessage>}
       {partial && !needsUpdate && <StateMessage state="partial" title="Some Outputs are ready">Review what is finished, then update Outputs to complete the set.</StateMessage>}
       {needsUpdate && <StateMessage state="needs-update" title="Outputs need an update">Your Sources, Brief, or Style changed. Update Outputs before sharing them.</StateMessage>}

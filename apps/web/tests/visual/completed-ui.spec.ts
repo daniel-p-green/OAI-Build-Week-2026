@@ -138,34 +138,31 @@ test("an empty Workshop reaches an editable deck through one obvious path", asyn
   try {
     await page.setViewportSize({ width: 1200, height: 800 });
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: "Start with a source" })).toBeVisible();
-    await page.getByRole("button", { name: "Add source" }).click();
+    await page.getByRole("radio", { name: /Client pitch/ }).click();
+    await page.getByRole("button", { name: "Continue" }).click();
+    const savedStyle = styleLibrary.styles[0];
+    if (savedStyle) await page.getByRole("button", { name: new RegExp(savedStyle.name) }).click();
+    else await page.getByRole("button", { name: "Use a clean default for now" }).click();
 
-    const sourceSheet = page.getByRole("dialog", { name: "Add source" });
-    await sourceSheet.getByRole("textbox", { name: "Source" }).fill([
+    await page.getByRole("textbox", { name: "Source" }).fill([
       "Weekly client meeting",
       "The client approved a two-week pilot for the enablement team.",
       "Leadership needs a grounded deck that explains the decision, timeline, and success measure.",
     ].join("\n"));
-    await expect(sourceSheet.getByRole("textbox", { name: "Title (optional)" })).toBeVisible();
-    await sourceSheet.getByRole("button", { name: "Add source", exact: true }).click();
-    await expect(sourceSheet).toBeHidden();
+    await expect(page.getByRole("textbox", { name: "Title (optional)" })).toBeVisible();
+    await page.getByRole("textbox", { name: "Title (optional)" }).fill("Weekly client meeting");
+    await page.getByRole("button", { name: "Add source", exact: true }).click();
+    await page.getByRole("button", { name: "Build my Map" }).click();
 
     await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
     await page.getByRole("button", { name: "Approve brief" }).click();
-    await expect(page.getByRole("button", { name: "Choose style" })).toBeVisible();
-    await page.getByRole("button", { name: "Choose style" }).click();
-
-    const styleSheet = page.getByRole("dialog", { name: "Style" });
-    const savedStyle = styleLibrary.styles[0];
-    if (savedStyle) await styleSheet.getByRole("button", { name: `Use saved style ${savedStyle.name}` }).click();
-    else await styleSheet.getByRole("button", { name: "Use this style" }).click();
-    await expect(styleSheet).toBeHidden();
     await expect(page.getByRole("button", { name: "Create outputs" })).toBeVisible();
     await page.getByRole("button", { name: "Create outputs" }).click();
 
+    await expect(page.getByText("Your presentation is ready.")).toBeVisible();
+    await page.getByRole("button", { name: "Got it" }).click();
     await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
-    await page.getByRole("button", { name: "Open Presentation" }).click();
+    await page.locator('[data-output-role="hero"]').click();
     await expect(page.getByRole("link", { name: "Download PowerPoint" })).toBeVisible();
     const state = await (await page.request.get("/api/workshop")).json() as { sourceItems: Array<{ title: string }>; outputs: Array<{ type: string; editableRelativePath?: string }> };
     expect(state.sourceItems[0]?.title).toBe("Weekly client meeting");
@@ -794,4 +791,47 @@ test("the local render becomes a real Video preview and the next action", async 
     await closeDialog(page, "Original brainstorm");
     await expectScreen(page, `${viewport.name}-video-viewer`);
   }
+});
+
+test("a new professional reaches the real Map through the durable first-use path", async ({ page }) => {
+  const seededStyle = await page.request.post("/api/workshop", { data: { action: "lockManualStyle", manualStyle: { name: "WorkshopLM editorial", accent: "#0285FF", ink: "#0D0D0D", paper: "#FFFFFF", intentProfile: "client_facing_pitch" } } });
+  expect(seededStyle.ok()).toBeTruthy();
+  const created = await page.request.post("/api/workshop", { data: { action: "createWorkshop", title: "Onboarding acceptance" } });
+  expect(created.ok()).toBeTruthy();
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto("/");
+
+  await expect(page.getByRole("heading", { name: "Turn raw thinking into finished work." })).toBeVisible();
+  await expect(page.getByRole("radiogroup", { name: "What are you making?" })).toBeVisible();
+  await expectScreen(page, "desktop-onboarding-welcome");
+  await page.getByRole("radio", { name: /Board presentation/ }).click();
+  await page.getByLabel("Workshop name").fill("Acme leadership update");
+  await page.getByRole("button", { name: "Continue" }).click();
+
+  await expect(page.getByRole("heading", { name: "Make every Output feel like yours." })).toBeVisible();
+  await expect(page.getByText("This website will not be added to Sources.")).toBeVisible();
+  await expectScreen(page, "desktop-onboarding-style");
+  await page.getByRole("button", { name: "Use a clean default for now" }).click();
+
+  await expect(page.getByRole("heading", { name: "Add the thinking." })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Build my Map" })).toBeDisabled();
+  await expectScreen(page, "desktop-onboarding-sources");
+  await page.getByLabel("Source").fill("Leadership approved the pilot. The recommendation is to begin on Monday and measure adoption during the first week.");
+  await page.getByLabel("Title (optional)").fill("Monday leadership meeting");
+  await page.getByRole("button", { name: "Add source" }).click();
+  await expect(page.getByText("1 source ready")).toBeVisible();
+  await page.getByRole("button", { name: "Build my Map" }).click();
+
+  await expect(page.getByText("Your Map is ready.")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "1 source" })).toBeVisible();
+  await expectMapReady(page, viewports[0]);
+  await expectScreen(page, "desktop-onboarding-map");
+  await page.getByRole("button", { name: "Got it" }).click();
+  await page.reload();
+  await expect(page.getByText("Your Map is ready.")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
+
+  const state = await (await page.request.get("/api/workshop")).json();
+  expect(state).toMatchObject({ title: "Acme leadership update", onboarding: { step: "complete", outcome: "board_deck", mapOrientationDismissed: true }, style: { name: "Clean professional", intentProfile: "board_deck" }, sources: 1 });
 });
