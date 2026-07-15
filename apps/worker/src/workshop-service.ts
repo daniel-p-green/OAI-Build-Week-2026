@@ -36,7 +36,8 @@ export type StyleTypographyRoles = {
   heading: { family: string; availability: FontAvailability; source: StyleEvidenceSource };
   body: { family: string; availability: FontAvailability; source: StyleEvidenceSource };
 };
-export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; paletteRoles: StylePaletteRoles; typographyRoles: StyleTypographyRoles; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop"; referenceUrl?: string; libraryId?: string; lockedAt: string; stale: boolean };
+export type WorkshopBrandAsset = { id: string; sourceUrl: string; localPath: string; contentType: "image/png" | "image/jpeg" | "image/webp" | "image/svg+xml"; byteCount: number; width: number; height: number; sha256: string; selectedAt: string };
+export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; paletteRoles: StylePaletteRoles; typographyRoles: StyleTypographyRoles; brandAssets: WorkshopBrandAsset[]; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop"; referenceUrl?: string; libraryId?: string; lockedAt: string; stale: boolean };
 export type WorkshopStyleLibraryEntry = Omit<WorkshopStyle, "version" | "libraryId" | "lockedAt" | "stale"> & { id: string; createdAt: string; updatedAt: string };
 export type WorkshopOutcome = "client_facing_pitch" | "board_deck" | "internal_workshop";
 export type WebsiteStyleAnalysis = {
@@ -56,8 +57,8 @@ export type WorkshopOnboarding = {
   completedAt?: string;
 };
 export type WorkshopDesignArtifact = { version: number; styleVersion: number; markdownPath: string; tokensPath: string; stale: boolean; createdAt: string };
-export type ManualStyleInput = { name?: string; accent?: string; ink?: string; paper?: string; headingFont?: string; bodyFont?: string; fontsConfirmed?: boolean; logos?: string[]; licensedFonts?: string[]; references?: string[]; negativeRules?: string[]; intentProfile?: WorkshopStyle["intentProfile"] };
-export type WebsiteStyleSuggestion = { referenceUrl: string; name: string; accent: string; ink: string; paper: string; paletteRoles: StylePaletteRoles; logos: string[]; fontCandidates: string[]; typographyCandidates: Array<{ family: string; availability: "unverified"; source: "website" }>; references: string[]; negativeRules: string[]; findings: { colors: number; fontCandidates: number; assets: number; stylesheets: number } };
+export type ManualStyleInput = { name?: string; accent?: string; ink?: string; paper?: string; headingFont?: string; bodyFont?: string; fontsConfirmed?: boolean; selectedAssetUrls?: string[]; logos?: string[]; licensedFonts?: string[]; references?: string[]; negativeRules?: string[]; intentProfile?: WorkshopStyle["intentProfile"] };
+export type WebsiteStyleSuggestion = { referenceUrl: string; name: string; accent: string; ink: string; paper: string; paletteRoles: StylePaletteRoles; logos: string[]; assetCandidates: Array<{ url: string; kind: "logo" }>; fontCandidates: string[]; typographyCandidates: Array<{ family: string; availability: "unverified"; source: "website" }>; references: string[]; negativeRules: string[]; findings: { colors: number; fontCandidates: number; assets: number; stylesheets: number } };
 export type WorkshopVisualDna = { version: number; styleVersion: number; palette: { accent: string; ink: string; paper: string }; compositionRules: string[]; textureRules: string[]; imageRules: string[]; negativeRules: string[]; approved: boolean; stale: boolean; createdAt: string };
 export type WorkshopEvidenceReference = { claimId?: string; sourceId: string; chunkId?: string; locator: string };
 export type WorkshopAssetPlan = { version: number; graphRevision: number; briefVersion: number; styleVersion: number; visualDnaVersion?: number; evidenceClaimIds: string[]; items: { id: string; outputType: "deck" | "infographic" | "images" | "storyboard" | "video"; title: string; prompt: string; locator: string; evidence: WorkshopEvidenceReference[] }[]; stale: boolean; createdAt: string };
@@ -134,13 +135,14 @@ function typographyRoles(heading: string, body: string, availability: FontAvaila
   const role = (family: string) => ({ family, availability: isSystemFont(family) ? "system" as const : availability, source });
   return { heading: role(heading), body: role(body) };
 }
-function normalizeStyleMetadata<T extends Pick<WorkshopStyle, "accent" | "ink" | "paper" | "source" | "licensedFonts"> & Partial<Pick<WorkshopStyle, "paletteRoles" | "typographyRoles">>>(style: T): T & Pick<WorkshopStyle, "paletteRoles" | "typographyRoles"> {
+function normalizeStyleMetadata<T extends Pick<WorkshopStyle, "accent" | "ink" | "paper" | "source" | "licensedFonts"> & Partial<Pick<WorkshopStyle, "paletteRoles" | "typographyRoles" | "brandAssets">>>(style: T): T & Pick<WorkshopStyle, "paletteRoles" | "typographyRoles" | "brandAssets"> {
   const source: StyleEvidenceSource = style.source;
   const families = style.licensedFonts ?? [];
   return {
     ...style,
     paletteRoles: style.paletteRoles ?? paletteRoles(style.accent, style.ink, style.paper, source),
     typographyRoles: style.typographyRoles ?? typographyRoles(families[0] ?? "system-ui", families[1] ?? families[0] ?? "system-ui", families.length ? "user_confirmed" : "system", source),
+    brandAssets: style.brandAssets ?? [],
   };
 }
 function withSeedEvidence(state: WorkshopState): WorkshopState {
@@ -539,14 +541,14 @@ export async function captureFallbackTranscript(text: string, root?: string, evi
   return write({ ...ingested, transcriptSegments: [...ingested.transcriptSegments, segment], firstTranscriptAt: ingested.firstTranscriptAt ?? capturedAt, updatedAt: capturedAt }, root);
 }
 function isPrivateAddress(address: string) { return address === "::1" || address.startsWith("127.") || address.startsWith("10.") || address.startsWith("192.168.") || /^172\.(1[6-9]|2\d|3[0-1])\./.test(address) || address.startsWith("fc") || address.startsWith("fd") || address.startsWith("fe80:"); }
-async function fetchPublicText(rawUrl: string, fetchImpl: typeof fetch = fetch) {
+async function fetchPublicResponse(rawUrl: string, accept: string, fetchImpl: typeof fetch = fetch) {
   let url: URL; try { url = new URL(rawUrl); } catch { throw new Error("A valid HTTP(S) URL is required."); }
   let response: Response | undefined;
   for (let redirects = 0; redirects <= 3; redirects += 1) {
     if (!/^https?:$/.test(url.protocol) || url.username || url.password) throw new Error("Only credential-free HTTP(S) URLs are allowed.");
     if (url.hostname === "localhost" || url.hostname.endsWith(".local")) throw new Error("Local network URLs are not allowed.");
     const addresses = await lookup(url.hostname, { all: true }); if (addresses.some(({ address }) => isPrivateAddress(address))) throw new Error("Private network URLs are not allowed.");
-    response = await fetchImpl(url, { redirect: "manual", signal: AbortSignal.timeout(10_000), headers: { accept: "text/html,text/css,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8", "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 WorkshopLM/1.0" } });
+    response = await fetchImpl(url, { redirect: "manual", signal: AbortSignal.timeout(10_000), headers: { accept, "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 WorkshopLM/1.0" } });
     if (response.status < 300 || response.status >= 400) break;
     const location = response.headers.get("location");
     if (!location || redirects === 3) throw new Error("URL redirected too many times or without a destination.");
@@ -554,6 +556,10 @@ async function fetchPublicText(rawUrl: string, fetchImpl: typeof fetch = fetch) 
   }
   if (response?.status === 401 || response?.status === 403) throw new Error(`This website blocked automatic review (HTTP ${response.status}). Try another public page or set the Style manually.`);
   if (!response?.ok) throw new Error(`URL fetch failed: HTTP ${response?.status ?? "unknown"}.`);
+  return { url, response };
+}
+async function fetchPublicText(rawUrl: string, fetchImpl: typeof fetch = fetch) {
+  const { url, response } = await fetchPublicResponse(rawUrl, "text/html,text/css,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8", fetchImpl);
   const contentType = response.headers.get("content-type") ?? ""; if (!/^(text\/|application\/(json|xml|javascript))/.test(contentType)) throw new Error("URL must return text content.");
   const text = await response.text(); if (text.length > 1_000_000) throw new Error("URL content exceeds the 1 MB local ingestion limit."); return { url, text };
 }
@@ -572,6 +578,65 @@ function normalizeHex(value: string) { const upper = value.toUpperCase(); return
 function luminance(value: string) { const channels = [value.slice(1, 3), value.slice(3, 5), value.slice(5, 7)].map((channel) => Number.parseInt(channel, 16) / 255).map((channel) => channel <= 0.03928 ? channel / 12.92 : ((channel + 0.055) / 1.055) ** 2.4); return channels[0]! * 0.2126 + channels[1]! * 0.7152 + channels[2]! * 0.0722; }
 function absoluteWebUrl(value: string | undefined, base: URL) { if (!value) return undefined; try { const url = new URL(value, base); return /^https?:$/.test(url.protocol) && !url.username && !url.password ? url.toString() : undefined; } catch { return undefined; } }
 function uniqueMatches(text: string, pattern: RegExp) { return [...new Set([...text.matchAll(pattern)].map((match) => match[1]?.trim()).filter((value): value is string => Boolean(value)))]; }
+
+type WebsiteBrandAsset = { url: string; bytes: Buffer; contentType: WorkshopBrandAsset["contentType"]; width: number; height: number; sha256: string; extension: "png" | "jpg" | "webp" | "svg" };
+function jpegDimensions(bytes: Buffer) {
+  if (bytes[0] !== 0xff || bytes[1] !== 0xd8) return undefined;
+  for (let offset = 2; offset + 9 < bytes.length;) {
+    if (bytes[offset] !== 0xff) { offset += 1; continue; }
+    const marker = bytes[offset + 1]!; if (marker === 0xd8 || marker === 0xd9) { offset += 2; continue; }
+    const length = bytes.readUInt16BE(offset + 2); if (length < 2 || offset + 2 + length > bytes.length) return undefined;
+    if ([0xc0, 0xc1, 0xc2, 0xc3, 0xc5, 0xc6, 0xc7, 0xc9, 0xca, 0xcb, 0xcd, 0xce, 0xcf].includes(marker)) return { height: bytes.readUInt16BE(offset + 5), width: bytes.readUInt16BE(offset + 7) };
+    offset += 2 + length;
+  }
+  return undefined;
+}
+function webpDimensions(bytes: Buffer) {
+  if (bytes.subarray(0, 4).toString("ascii") !== "RIFF" || bytes.subarray(8, 12).toString("ascii") !== "WEBP") return undefined;
+  const kind = bytes.subarray(12, 16).toString("ascii");
+  if (kind === "VP8X" && bytes.length >= 30) return { width: bytes.readUIntLE(24, 3) + 1, height: bytes.readUIntLE(27, 3) + 1 };
+  if (kind === "VP8 " && bytes.length >= 30 && bytes[23] === 0x9d && bytes[24] === 0x01 && bytes[25] === 0x2a) return { width: bytes.readUInt16LE(26) & 0x3fff, height: bytes.readUInt16LE(28) & 0x3fff };
+  if (kind === "VP8L" && bytes.length >= 25 && bytes[20] === 0x2f) { const packed = bytes.readUInt32LE(21); return { width: (packed & 0x3fff) + 1, height: ((packed >> 14) & 0x3fff) + 1 }; }
+  return undefined;
+}
+function svgDimensions(bytes: Buffer) {
+  const svg = bytes.toString("utf8");
+  if (!/<svg\b/i.test(svg) || /<!doctype|<!entity|<script\b|<foreignObject\b|<iframe\b|<object\b|<embed\b|\son[a-z]+\s*=|(?:href|src)\s*=\s*["']\s*(?:https?:|data:|\/\/)|@import|url\s*\(/i.test(svg)) throw new Error("SVG brand assets may not contain scripts, active content, or external references.");
+  const numeric = (name: string) => svg.match(new RegExp(`\\b${name}\\s*=\\s*["']([0-9]+(?:\\.[0-9]+)?)(?:px)?["']`, "i"))?.[1];
+  let width = Number(numeric("width")); let height = Number(numeric("height"));
+  if (!width || !height) { const viewBox = svg.match(/\bviewBox\s*=\s*["']\s*[-+\d.]+[\s,]+[-+\d.]+[\s,]+([\d.]+)[\s,]+([\d.]+)\s*["']/i); width = Number(viewBox?.[1]); height = Number(viewBox?.[2]); }
+  return width && height ? { width: Math.round(width), height: Math.round(height) } : undefined;
+}
+function validateBrandAsset(bytes: Buffer, contentType: WorkshopBrandAsset["contentType"]) {
+  let dimensions: { width: number; height: number } | undefined;
+  if (contentType === "image/png") dimensions = bytes.length >= 24 && bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])) ? { width: bytes.readUInt32BE(16), height: bytes.readUInt32BE(20) } : undefined;
+  else if (contentType === "image/jpeg") dimensions = jpegDimensions(bytes);
+  else if (contentType === "image/webp") dimensions = webpDimensions(bytes);
+  else dimensions = svgDimensions(bytes);
+  if (!dimensions) throw new Error("Brand asset bytes do not match a supported image format with readable dimensions.");
+  if (dimensions.width < 16 || dimensions.height < 16 || dimensions.width > 4096 || dimensions.height > 4096 || dimensions.width * dimensions.height > 16_000_000) throw new Error("Brand asset dimensions must be between 16 and 4,096 pixels and no more than 16 megapixels.");
+  return dimensions;
+}
+export async function fetchWebsiteBrandAsset(rawUrl: string, fetchImpl: typeof fetch = fetch): Promise<WebsiteBrandAsset> {
+  const { url, response } = await fetchPublicResponse(rawUrl, "image/png,image/jpeg,image/webp,image/svg+xml", fetchImpl);
+  const headerLength = Number(response.headers.get("content-length") ?? 0); if (headerLength > 2_000_000) throw new Error("Brand asset exceeds the 2 MB limit.");
+  const rawType = response.headers.get("content-type")?.split(";", 1)[0]?.trim().toLowerCase();
+  const contentType = rawType === "image/jpg" ? "image/jpeg" : rawType;
+  if (contentType !== "image/png" && contentType !== "image/jpeg" && contentType !== "image/webp" && contentType !== "image/svg+xml") throw new Error("Brand assets must be PNG, JPEG, WebP, or safe SVG images.");
+  const bytes = Buffer.from(await response.arrayBuffer()); if (!bytes.length || bytes.length > 2_000_000) throw new Error("Brand asset must be non-empty and no larger than 2 MB.");
+  const { width, height } = validateBrandAsset(bytes, contentType);
+  const sha256 = createHash("sha256").update(bytes).digest("hex"); const extension: WebsiteBrandAsset["extension"] = contentType === "image/jpeg" ? "jpg" : contentType === "image/svg+xml" ? "svg" : contentType === "image/png" ? "png" : "webp";
+  return { url: url.toString(), bytes, contentType, width, height, sha256, extension };
+}
+async function persistSelectedBrandAssets(urls: string[] | undefined, workshopId: string, selectedAt: string, root?: string, fetchImpl: typeof fetch = fetch): Promise<WorkshopBrandAsset[]> {
+  const selected = cleanStyleList(urls).slice(0, 3); const dataRoot = root ?? repositoryDataRoot(); const assets: WorkshopBrandAsset[] = [];
+  for (const selectedUrl of selected) {
+    const asset = await fetchWebsiteBrandAsset(selectedUrl, fetchImpl); const localPath = workshopGeneratedPath(workshopId, "brand", `${asset.sha256}.${asset.extension}`);
+    mkdirSync(join(dataRoot, dirname(localPath)), { recursive: true }); writeFileSync(join(dataRoot, localPath), asset.bytes);
+    assets.push({ id: `brand-${asset.sha256.slice(0, 12)}`, sourceUrl: asset.url, localPath, contentType: asset.contentType, byteCount: asset.bytes.length, width: asset.width, height: asset.height, sha256: asset.sha256, selectedAt });
+  }
+  return assets;
+}
 
 export async function analyzeWebsiteStyle(rawUrl: string, fetchImpl: typeof fetch = fetch): Promise<WebsiteStyleSuggestion> {
   const { url, text: html } = await fetchPublicText(rawUrl, fetchImpl);
@@ -593,14 +658,14 @@ export async function analyzeWebsiteStyle(rawUrl: string, fetchImpl: typeof fetc
   const logos = [...new Set(logoTags.filter((tag) => /logo|brand|icon/i.test(`${htmlAttribute(tag, "alt") ?? ""} ${htmlAttribute(tag, "class") ?? ""} ${htmlAttribute(tag, "id") ?? ""} ${htmlAttribute(tag, "src") ?? ""} ${htmlAttribute(tag, "href") ?? ""}`)).map((tag) => absoluteWebUrl(htmlAttribute(tag, "src") ?? htmlAttribute(tag, "href"), url)).filter((value): value is string => Boolean(value)))].slice(0, 5);
   const title = html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.replace(/\s+/g, " ").trim() || url.hostname;
   const reviewedFonts = [...new Set(fontCandidates)].slice(0, 6);
-  return { referenceUrl: url.toString(), name: `${title} foundation`, accent, ink, paper, paletteRoles: paletteRoles(accent, ink, paper, "website"), logos, fontCandidates: reviewedFonts, typographyCandidates: reviewedFonts.map((family) => ({ family, availability: "unverified", source: "website" })), references: [url.toString()], negativeRules: [], findings: { colors: colors.length, fontCandidates: new Set(fontCandidates).size, assets: logos.length, stylesheets: stylesheets.filter(Boolean).length } };
+  return { referenceUrl: url.toString(), name: `${title} foundation`, accent, ink, paper, paletteRoles: paletteRoles(accent, ink, paper, "website"), logos, assetCandidates: logos.map((assetUrl) => ({ url: assetUrl, kind: "logo" })), fontCandidates: reviewedFonts, typographyCandidates: reviewedFonts.map((family) => ({ family, availability: "unverified", source: "website" })), references: [url.toString()], negativeRules: [], findings: { colors: colors.length, fontCandidates: new Set(fontCandidates).size, assets: logos.length, stylesheets: stylesheets.filter(Boolean).length } };
 }
 
 function reviewedWebsiteUrl(rawUrl: string) { let url: URL; try { url = new URL(rawUrl); } catch { throw new Error("A valid HTTP(S) website is required."); } if (!/^https?:$/.test(url.protocol) || url.username || url.password) throw new Error("Only credential-free HTTP(S) websites are allowed."); return url.toString(); }
 function styleLibraryId(name: string) { return `style-${createHash("sha256").update(name.trim().toLowerCase()).digest("hex").slice(0, 12)}`; }
 function saveStyleToLibrary(style: WorkshopStyle, root?: string) {
   const db = dbFor(root); const id = style.libraryId ?? styleLibraryId(style.name); const now = style.lockedAt;
-  const snapshot: Omit<WorkshopStyleLibraryEntry, "id" | "createdAt" | "updatedAt"> = { source: style.source, name: style.name, accent: style.accent, ink: style.ink, paper: style.paper, paletteRoles: style.paletteRoles, typographyRoles: style.typographyRoles, logos: style.logos, licensedFonts: style.licensedFonts, references: style.references, negativeRules: style.negativeRules, intentProfile: style.intentProfile, referenceUrl: style.referenceUrl };
+  const snapshot: Omit<WorkshopStyleLibraryEntry, "id" | "createdAt" | "updatedAt"> = { source: style.source, name: style.name, accent: style.accent, ink: style.ink, paper: style.paper, paletteRoles: style.paletteRoles, typographyRoles: style.typographyRoles, brandAssets: style.brandAssets, logos: style.logos, licensedFonts: style.licensedFonts, references: style.references, negativeRules: style.negativeRules, intentProfile: style.intentProfile, referenceUrl: style.referenceUrl };
   db.prepare("INSERT INTO style_library (id, style_json, created_at, updated_at) VALUES (?, ?, ?, ?) ON CONFLICT(id) DO UPDATE SET style_json=excluded.style_json, updated_at=excluded.updated_at").run(id, JSON.stringify(snapshot), now, now);
   return id;
 }
@@ -615,7 +680,8 @@ export async function lockWebsiteStyle(rawUrl: string, root?: string, fetchImpl:
   const bodyFont = reviewed?.bodyFont?.trim() || candidateFonts[1] || headingFont;
   const fontsConfirmed = reviewed?.fontsConfirmed ?? Boolean(reviewed?.licensedFonts?.length);
   const accent = color(suggestion.accent, "#1668E3"); const ink = color(suggestion.ink, "#171816"); const paper = color(suggestion.paper, "#F4F2EC");
-  const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "website", name: suggestion.name?.trim() || "Website foundation", accent, ink, paper, paletteRoles: paletteRoles(accent, ink, paper, "website"), typographyRoles: typographyRoles(headingFont, bodyFont, fontsConfirmed ? "user_confirmed" : "unverified", "website"), logos: cleanStyleList(suggestion.logos), licensedFonts: fontsConfirmed ? cleanStyleList([headingFont, bodyFont]).filter((font) => !isSystemFont(font)) : [], references: cleanStyleList(suggestion.references), negativeRules: cleanStyleList(suggestion.negativeRules), intentProfile: intentProfile(reviewed?.intentProfile ?? requestedIntent ?? current.onboarding.outcome), referenceUrl: suggestion.referenceUrl, lockedAt: updatedAt, stale: false };
+  const brandAssets = await persistSelectedBrandAssets(reviewed?.selectedAssetUrls, current.id, updatedAt, root, fetchImpl);
+  const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "website", name: suggestion.name?.trim() || "Website foundation", accent, ink, paper, paletteRoles: paletteRoles(accent, ink, paper, "website"), typographyRoles: typographyRoles(headingFont, bodyFont, fontsConfirmed ? "user_confirmed" : "unverified", "website"), brandAssets, logos: brandAssets.map((asset) => asset.localPath), licensedFonts: fontsConfirmed ? cleanStyleList([headingFont, bodyFont]).filter((font) => !isSystemFont(font)) : [], references: cleanStyleList(suggestion.references), negativeRules: cleanStyleList(suggestion.negativeRules), intentProfile: intentProfile(reviewed?.intentProfile ?? requestedIntent ?? current.onboarding.outcome), referenceUrl: suggestion.referenceUrl, lockedAt: updatedAt, stale: false };
   return applyLockedStyle(current, style, root);
 }
 function cleanStyleList(values: string[] | undefined) { return [...new Set((values ?? []).map((value) => value.trim()).filter(Boolean))]; }
@@ -623,8 +689,8 @@ function color(value: string | undefined, fallback: string) { const candidate = 
 function intentProfile(value: WorkshopStyle["intentProfile"] | undefined) { const profile = value ?? "client_facing_pitch"; if (!["client_facing_pitch", "board_deck", "internal_workshop"].includes(profile)) throw new Error("Invalid intent profile."); return profile; }
 function materializeDesignArtifact(style: WorkshopStyle, workshopId: string, root?: string): WorkshopDesignArtifact {
   const dataRoot = root ?? repositoryDataRoot(); const markdownPath = workshopGeneratedPath(workshopId, `DESIGN-v${style.version}.md`); const tokensPath = workshopGeneratedPath(workshopId, `DESIGN-v${style.version}.tokens.json`); const generated = join(dataRoot, dirname(markdownPath));
-  const markdown = `# DESIGN.md\n\n## Foundation\n- Name: ${style.name}\n- Version: ${style.version}\n- Source: ${style.source}\n- Intent profile: ${style.intentProfile}\n\n## Palette\n- Accent: ${style.paletteRoles.accent.value} (${style.paletteRoles.accent.source})\n- Text: ${style.paletteRoles.text.value} (${style.paletteRoles.text.source})\n- Background: ${style.paletteRoles.background.value} (${style.paletteRoles.background.source})\n\n## Typography\n- Heading: ${style.typographyRoles.heading.family} (${style.typographyRoles.heading.availability})\n- Body: ${style.typographyRoles.body.family} (${style.typographyRoles.body.availability})\n\n## Licensed inputs\n${style.licensedFonts.length ? style.licensedFonts.map((font) => `- Confirmed font: ${font}`).join("\n") : "- Confirmed fonts: none; renderers use system fallbacks"}\n${style.logos.length ? style.logos.map((logo) => `- Logo / asset: ${logo}`).join("\n") : "- Logos / assets: none recorded"}\n\n## References\n${style.references.length ? style.references.map((reference) => `- ${reference}`).join("\n") : "- No external visual references recorded"}\n\n## Negative rules\n${style.negativeRules.length ? style.negativeRules.map((rule) => `- ${rule}`).join("\n") : "- No negative rules recorded"}\n\n## Provenance\n- Locked: ${style.lockedAt}\n${style.referenceUrl ? `- Website reference: ${style.referenceUrl}\n` : ""}`;
-  const tokens = { schemaVersion: 2, styleVersion: style.version, source: style.source, name: style.name, palette: { accent: style.accent, ink: style.ink, paper: style.paper }, paletteRoles: style.paletteRoles, typographyRoles: style.typographyRoles, logos: style.logos, licensedFonts: style.licensedFonts, references: style.references, negativeRules: style.negativeRules, intentProfile: style.intentProfile, referenceUrl: style.referenceUrl, lockedAt: style.lockedAt };
+  const markdown = `# DESIGN.md\n\n## Foundation\n- Name: ${style.name}\n- Version: ${style.version}\n- Source: ${style.source}\n- Intent profile: ${style.intentProfile}\n\n## Palette\n- Accent: ${style.paletteRoles.accent.value} (${style.paletteRoles.accent.source})\n- Text: ${style.paletteRoles.text.value} (${style.paletteRoles.text.source})\n- Background: ${style.paletteRoles.background.value} (${style.paletteRoles.background.source})\n\n## Typography\n- Heading: ${style.typographyRoles.heading.family} (${style.typographyRoles.heading.availability})\n- Body: ${style.typographyRoles.body.family} (${style.typographyRoles.body.availability})\n\n## Licensed inputs\n${style.licensedFonts.length ? style.licensedFonts.map((font) => `- Confirmed font: ${font}`).join("\n") : "- Confirmed fonts: none; renderers use system fallbacks"}\n${style.brandAssets.length ? style.brandAssets.map((asset) => `- Brand asset: ${asset.localPath} (${asset.width}×${asset.height}, sha256:${asset.sha256})`).join("\n") : "- Brand assets: none selected"}\n\n## References\n${style.references.length ? style.references.map((reference) => `- ${reference}`).join("\n") : "- No external visual references recorded"}\n\n## Negative rules\n${style.negativeRules.length ? style.negativeRules.map((rule) => `- ${rule}`).join("\n") : "- No negative rules recorded"}\n\n## Provenance\n- Locked: ${style.lockedAt}\n${style.referenceUrl ? `- Website reference: ${style.referenceUrl}\n` : ""}`;
+  const tokens = { schemaVersion: 3, styleVersion: style.version, source: style.source, name: style.name, palette: { accent: style.accent, ink: style.ink, paper: style.paper }, paletteRoles: style.paletteRoles, typographyRoles: style.typographyRoles, brandAssets: style.brandAssets, logos: style.logos, licensedFonts: style.licensedFonts, references: style.references, negativeRules: style.negativeRules, intentProfile: style.intentProfile, referenceUrl: style.referenceUrl, lockedAt: style.lockedAt };
   mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, tokensPath), `${JSON.stringify(tokens, null, 2)}\n`, "utf8");
   return { version: style.version, styleVersion: style.version, markdownPath, tokensPath, stale: false, createdAt: style.lockedAt };
 }
@@ -634,7 +700,8 @@ export function lockManualStyle(input: ManualStyleInput = {}, root?: string): Wo
   const accent = color(input.accent, "#1668E3"); const ink = color(input.ink, "#171816"); const paper = color(input.paper, "#F4F2EC");
   const suppliedFonts = cleanStyleList(input.licensedFonts); const headingFont = input.headingFont?.trim() || suppliedFonts[0] || "system-ui"; const bodyFont = input.bodyFont?.trim() || suppliedFonts[1] || headingFont;
   const fontsConfirmed = input.fontsConfirmed ?? Boolean(suppliedFonts.length); const evidenceSource: StyleEvidenceSource = Object.keys(input).length ? "manual" : "default";
-  const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "manual", name: input.name?.trim() || "Clean professional", accent, ink, paper, paletteRoles: paletteRoles(accent, ink, paper, evidenceSource), typographyRoles: typographyRoles(headingFont, bodyFont, fontsConfirmed ? "user_confirmed" : "unverified", evidenceSource), logos: cleanStyleList(input.logos), licensedFonts: fontsConfirmed ? cleanStyleList([headingFont, bodyFont]).filter((font) => !isSystemFont(font)) : [], references: cleanStyleList(input.references), negativeRules: cleanStyleList(input.negativeRules), intentProfile: intentProfile(input.intentProfile ?? current.onboarding.outcome), lockedAt: updatedAt, stale: false };
+  const brandAssets = current.style?.source === "manual" ? current.style.brandAssets : [];
+  const style: WorkshopStyle = { version: (current.style?.version ?? 0) + 1, source: "manual", name: input.name?.trim() || "Clean professional", accent, ink, paper, paletteRoles: paletteRoles(accent, ink, paper, evidenceSource), typographyRoles: typographyRoles(headingFont, bodyFont, fontsConfirmed ? "user_confirmed" : "unverified", evidenceSource), brandAssets, logos: cleanStyleList(input.logos), licensedFonts: fontsConfirmed ? cleanStyleList([headingFont, bodyFont]).filter((font) => !isSystemFont(font)) : [], references: cleanStyleList(input.references), negativeRules: cleanStyleList(input.negativeRules), intentProfile: intentProfile(input.intentProfile ?? current.onboarding.outcome), lockedAt: updatedAt, stale: false };
   return applyLockedStyle(current, style, root);
 }
 export function applyStyleLibrary(styleId: string, requestedIntent?: WorkshopStyle["intentProfile"], root?: string): WorkshopState {
@@ -774,9 +841,15 @@ function citationLabel(state: WorkshopState, sourceId: string, locator: string) 
   const position = locator.split(" · ").at(-1);
   return [displaySourceTitle(source?.title ?? "Source"), position].filter(Boolean).join(" · ");
 }
-async function embeddedLocalLogo(logos: string[], root: string) {
+async function embeddedLocalLogo(style: WorkshopStyle, root: string) {
+  for (const asset of style.brandAssets) {
+    const path = resolve(root, asset.localPath); const bytes = await readFile(path);
+    if (createHash("sha256").update(bytes).digest("hex") !== asset.sha256) throw new Error("Selected brand asset hash no longer matches the reviewed local copy.");
+    const dimensions = validateBrandAsset(bytes, asset.contentType); if (dimensions.width !== asset.width || dimensions.height !== asset.height) throw new Error("Selected brand asset dimensions no longer match the reviewed local copy.");
+    return `data:${asset.contentType};base64,${bytes.toString("base64")}`;
+  }
   const contentTypes: Record<string, string> = { ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".svg": "image/svg+xml", ".webp": "image/webp" };
-  for (const logo of logos) {
+  for (const logo of style.logos) {
     if (/^https?:\/\//i.test(logo)) continue;
     const path = isAbsolute(logo) ? logo : resolve(root, logo); const contentType = contentTypes[extname(path).toLowerCase()];
     if (!contentType) continue;
@@ -795,7 +868,7 @@ export async function generateOutput(type: "deck" | "infographic", root?: string
     return { id: claim.id, heading, body: outputBody(body), citations: [claim.locator], citationLabel: citationLabel(current, claim.sourceId, claim.locator), layout: role };
   }) : current.mapNodes.filter((node) => node.kind === "grounded").slice(0, 4).map((node, index, all) => ({ id: node.id, heading: outputHeading(prose(node.title)), body: outputBody(prose(node.body)), citations: [node.locator], layout: index === 0 ? "statement" as const : index === all.length - 1 ? "recommendation" as const : index % 2 ? "split" as const : "proof" as const }));
   const outputId = `${type}-v${current.outputs.filter((output) => output.type === type).length + 1}`;
-  const logoData = await embeddedLocalLogo(current.style.logos, dataRoot);
+  const logoData = await embeddedLocalLogo(current.style, dataRoot);
   const rendered = await writeRenderedArtifact(dataRoot, current.id === defaultWorkshopId ? outputId : `${current.id}/${outputId}`, type, { workshopTitle: current.title, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper, fonts: current.style.licensedFonts, intent: current.style.intentProfile, name: current.style.name, logoData }, blocks });
   const stored = await storeArtifact(dataRoot, `${current.id}-${outputId}`, Buffer.from(await readFile(join(dataRoot, rendered.relativePath))), "text/html");
   const editableStored = rendered.editableRelativePath ? await storeArtifact(dataRoot, `${current.id}-${outputId}-editable`, Buffer.from(await readFile(join(dataRoot, rendered.editableRelativePath))), "application/vnd.openxmlformats-officedocument.presentationml.presentation") : undefined;

@@ -179,7 +179,8 @@ test("Style can start from a website and apply a professional intent", async ({ 
   const readyState = await (await page.request.get("/api/workshop")).json();
   const stylelessState = { ...readyState, style: undefined };
   const posted: Record<string, unknown>[] = [];
-  const suggestion = { referenceUrl: "https://example.com/brand", name: "Example Studio foundation", accent: "#2457D6", ink: "#102030", paper: "#FAF8F4", logos: ["https://example.com/logo.svg"], fontCandidates: ["Studio Sans"], references: ["https://example.com/brand"], negativeRules: [], findings: { colors: 3, fontCandidates: 1, assets: 1, stylesheets: 1 } };
+  const suggestion = { referenceUrl: "https://example.com/brand", name: "Example Studio foundation", accent: "#2457D6", ink: "#102030", paper: "#FAF8F4", paletteRoles: { accent: { value: "#2457D6", source: "website" }, text: { value: "#102030", source: "website" }, background: { value: "#FAF8F4", source: "website" } }, logos: ["https://example.com/logo.svg"], assetCandidates: [{ url: "https://example.com/logo.svg", kind: "logo" }], fontCandidates: ["Studio Sans"], typographyCandidates: [{ family: "Studio Sans", availability: "unverified", source: "website" }], references: ["https://example.com/brand"], negativeRules: [], findings: { colors: 3, fontCandidates: 1, assets: 1, stylesheets: 1 } };
+  await page.route("**/api/workshop/brand-preview**", async (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 32"><rect width="64" height="32" rx="5" fill="#2457D6"/><circle cx="48" cy="16" r="8" fill="#FAF8F4"/></svg>' }));
   await page.route("**/api/workshop*", async (route) => {
     if (route.request().method() === "GET" && route.request().url().includes("view=styles")) return route.fulfill({ json: { styles: [] } });
     if (route.request().method() === "GET") return route.fulfill({ json: stylelessState });
@@ -209,19 +210,23 @@ test("Style can start from a website and apply a professional intent", async ({ 
     await expect(sheet.getByText("Found on the website · usage not verified")).toBeVisible();
     const fontConfirmation = sheet.getByRole("checkbox", { name: "I can use these fonts in generated work" });
     await expect(fontConfirmation).not.toBeChecked();
+    const logoSelection = sheet.getByRole("checkbox", { name: "Use logo from example.com" });
+    await expect(logoSelection).not.toBeChecked();
+    await logoSelection.check();
     await sheet.getByRole("textbox", { name: "Accent" }).fill("#335577");
     await expectScreen(page, `${viewport.name}-website-style`);
     await fontConfirmation.check();
     await sheet.getByRole("button", { name: "Use this style" }).click();
-    await expect.poll(() => posted.at(-1)).toEqual({ action: "lockWebsiteStyle", url: "https://example.com/brand", intentProfile: "board_deck", manualStyle: { name: "Example Studio foundation", accent: "#335577", ink: "#102030", paper: "#FAF8F4", headingFont: "Studio Sans", bodyFont: "Studio Sans", fontsConfirmed: true, logos: ["https://example.com/logo.svg"], licensedFonts: ["Studio Sans"], references: ["https://example.com/brand"], negativeRules: [], intentProfile: "board_deck" } });
+    await expect.poll(() => posted.at(-1)).toEqual({ action: "lockWebsiteStyle", url: "https://example.com/brand", intentProfile: "board_deck", manualStyle: { name: "Example Studio foundation", accent: "#335577", ink: "#102030", paper: "#FAF8F4", headingFont: "Studio Sans", bodyFont: "Studio Sans", fontsConfirmed: true, selectedAssetUrls: ["https://example.com/logo.svg"], logos: [], licensedFonts: ["Studio Sans"], references: ["https://example.com/brand"], negativeRules: [], intentProfile: "board_deck" } });
   }
 });
 
 test("a completed website review hands off from the editable Map without blocking it", async ({ page }) => {
   const current = await (await page.request.get("/api/workshop")).json();
-  const suggestion = { referenceUrl: "https://example.com/brand", name: "Example Studio foundation", accent: "#2457D6", ink: "#102030", paper: "#FAF8F4", logos: ["https://example.com/logo.svg"], fontCandidates: ["Studio Sans"], references: ["https://example.com/brand"], negativeRules: [], findings: { colors: 3, fontCandidates: 1, assets: 1, stylesheets: 1 } };
+  const suggestion = { referenceUrl: "https://example.com/brand", name: "Example Studio foundation", accent: "#2457D6", ink: "#102030", paper: "#FAF8F4", paletteRoles: { accent: { value: "#2457D6", source: "website" }, text: { value: "#102030", source: "website" }, background: { value: "#FAF8F4", source: "website" } }, logos: ["https://example.com/logo.svg"], assetCandidates: [{ url: "https://example.com/logo.svg", kind: "logo" }], fontCandidates: ["Studio Sans"], typographyCandidates: [{ family: "Studio Sans", availability: "unverified", source: "website" }], references: ["https://example.com/brand"], negativeRules: [], findings: { colors: 3, fontCandidates: 1, assets: 1, stylesheets: 1 } };
   const stylelessState = { ...current, briefApproved: false, frame: current.frame ? { ...current.frame, stale: true } : undefined, style: undefined, onboarding: { ...current.onboarding, step: "complete", outcome: "board_deck", mapOrientationDismissed: true, styleAnalysis: { status: "ready", url: suggestion.referenceUrl, startedAt: "2026-07-15T14:00:00.000Z", completedAt: "2026-07-15T14:00:01.000Z", suggestion } } };
   const posted: Record<string, unknown>[] = [];
+  await page.route("**/api/workshop/brand-preview**", async (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 32"><rect width="64" height="32" rx="5" fill="#2457D6"/><circle cx="48" cy="16" r="8" fill="#FAF8F4"/></svg>' }));
   await page.route("**/api/workshop*", async (route) => {
     if (route.request().method() === "GET" && route.request().url().includes("view=styles")) return route.fulfill({ json: { styles: [] } });
     if (route.request().method() === "GET") return route.fulfill({ json: stylelessState });
@@ -249,6 +254,7 @@ test("a completed website review hands off from the editable Map without blockin
   await expect.poll(() => posted.at(-1)?.action).toBe("lockWebsiteStyle");
   await expect.poll(() => (posted.at(-1)?.manualStyle as Record<string, unknown>)?.fontsConfirmed).toBe(false);
   await expect.poll(() => (posted.at(-1)?.manualStyle as Record<string, unknown>)?.licensedFonts).toEqual([]);
+  await expect.poll(() => (posted.at(-1)?.manualStyle as Record<string, unknown>)?.selectedAssetUrls).toEqual([]);
 });
 
 test.describe("completed Workshop judge path", () => {

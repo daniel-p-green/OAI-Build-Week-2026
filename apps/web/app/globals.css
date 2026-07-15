@@ -152,6 +152,15 @@ button { -webkit-tap-highlight-color: transparent; }
 .typography-review small { color: #5d5d5d; font-size: 12px; line-height: 16px; }
 .style-type-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .font-confirmation { display: flex; align-items: center; gap: 9px; color: #5d5d5d; font-size: 12px; line-height: 16px; cursor: pointer; }
+.brand-asset-review { display: grid; gap: 10px; margin: 0; padding: 0; border: 0; }
+.brand-asset-review legend { margin-bottom: 2px; font-size: 14px; font-weight: 600; line-height: 20px; }
+.brand-asset-review > p { margin: 0; color: #5d5d5d; font-size: 12px; line-height: 18px; }
+.brand-asset-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.brand-asset-candidate { position: relative; min-width: 0; height: 92px; display: grid; place-items: center; overflow: hidden; border: 1px solid rgba(13,13,13,.1); border-radius: 12px; background: #f7f7f7; cursor: pointer; }
+.brand-asset-candidate.selected { border-color: #0d0d0d; box-shadow: inset 0 0 0 1px #0d0d0d; }
+.brand-asset-candidate .oai-checkbox { position: absolute; z-index: 1; left: 8px; top: 8px; background: #fff; }
+.brand-asset-candidate img { max-width: 72%; max-height: 52px; object-fit: contain; }
+.brand-asset-candidate span { position: absolute; right: 8px; bottom: 6px; color: #5d5d5d; font-size: 10px; line-height: 14px; }
 .style-findings { margin: 0; color: #5d5d5d; font-size: 12px; line-height: 18px; }
 .style-details { display: grid; gap: 14px; }
 .type-preview { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 12px; background: #f3f3f3; }
@@ -294,6 +303,7 @@ button { -webkit-tap-highlight-color: transparent; }
   .focused-output-heading > .button-row { margin-left: 0; flex-wrap: wrap; justify-content: flex-start; }
   .focused-output-preview iframe { width: 200%; height: 200%; transform: scale(.5); transform-origin: top left; }
   .style-color-grid, .style-type-grid { grid-template-columns: 1fr; }
+  .brand-asset-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (prefers-reduced-motion: reduce) {

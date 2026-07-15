@@ -5331,3 +5331,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - The full website failure matrix, saved Style revision semantics, accessible orientation return entry, and real-public-website in-app-browser run remain open.
 - Live microphone, GPT-5.6, GPT Image 2, Speech, and final-video evidence remain unchanged and authorization-gated.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 15:12 CT — Selected brand assets become verified local inputs
+
+**Area:** Product / Company Styles / Trust / Output quality
+
+### Changed
+
+- Website Style review now renders each detected brand asset as a visual candidate and leaves it unselected until the professional explicitly opts in. The review explains that only authorized assets should be selected.
+- A selected remote asset must be a bounded PNG, JPEG, WebP, or safe SVG from a public HTTP(S) target. WorkshopLM validates response type, file signature, byte size, dimensions, pixel count, and dangerous SVG constructs before it can enter a saved Style.
+- Accepted bytes are copied into the Workshop data root under their SHA-256 digest. `DESIGN.md` and its version-three token file retain the local path, source URL, media metadata, dimensions, and hash.
+- Presentation and infographic rendering read the reviewed local copy, recheck its hash and dimensions, and embed it directly. A changed or corrupt copy fails closed instead of silently entering finished work.
+- Added a no-store brand-preview route that applies the same bounded validation without persisting unselected candidates.
+
+### Verified
+
+- Worker tests passed all 78 cases across eight files, including safe SVG persistence and renderer use, hash-tamper rejection, invalid SVG rejection, spoofed PNG rejection, oversized-media rejection, and clearing unselected assets.
+- Web tests passed all 15 cases across four files. The production browser suite passed all 20 tests from a normal non-update run and proves the exact reviewed asset URL—not the raw candidate list—is submitted when saving the Style.
+- Inspected the website Style review at 1200×800, 1024×768, and 390×844. The candidate remains legible and selectable without adding navigation or obscuring the existing Brief context.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. `pnpm demo:e2e` passed all six recorded-fixture gates.
+- `pnpm submission:build` produced the expected truthful 17-asset partial set with four provider limitations; `pnpm submission:verify` returned valid, not stale, and not tampered. `git diff --check` passed.
+
+### Decisions
+
+- Website discovery is evidence, not authorization. No detected asset is selected by default, and remote bytes never become a renderer input until the professional chooses the candidate and validation succeeds.
+- Local content hashes are part of the Style contract, not merely cache keys. Generated work must fail closed when the reviewed bytes change.
+- The product-first roadmap is now explicit in `GOAL.md`: complete the bounded Company Style reliability work, then prioritize provider-backed Map timing, an external professional deck review, and deck-usable GPT Image 2 media ahead of more output breadth.
+
+### Open items
+
+- The complete website-analysis failure/fallback matrix, saved Style revision semantics, quiet `How WorkshopLM works` return entry, accessibility closure, and a real-public-website in-app-browser run remain open.
+- Manual local asset paths retain the legacy path behavior; this increment proves the selected remote website-asset contract and does not claim every manual file path has equivalent validation.
+- The professional send-it review, uncoached own-material timing, live microphone, GPT-5.6, GPT Image 2, Speech, and final-video evidence remain open and must not be inferred from deterministic acceptance.
+- Codex Session ID: unavailable on this surface; not inferred.
