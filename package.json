@@ -11,6 +11,7 @@
     "check": "pnpm lint && pnpm typecheck && pnpm test",
     "demo:reset": "node scripts/reset-demo.mjs",
     "demo:e2e": "tsx scripts/demo-e2e.ts",
+    "demo:live": "tsx scripts/live-operator.ts",
     "demo:render": "tsx scripts/run-worker-render.ts",
     "demo:thumbnail": "node scripts/render-thumbnail.mjs",
     "plugin:inspect": "pnpm --filter @workshoplm/plugin-mcp test",

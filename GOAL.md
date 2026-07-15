@@ -1,12 +1,12 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 22:44 CT
+Last updated: 2026-07-14 22:58 CT
 
 ## Status
 
 **Active phase:** Live demo proof — provider-backed outputs, operator run, and submission assets
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
-**Current gate:** The official-component rebuild and professional UX simplification are implemented and verified. The next proof bar is a bounded provider-backed run on sanitized sources: real GPT-5.6 work, a coherent GPT Image 2 batch, narration, and judge-facing submission assets. Do not reopen shell or vocabulary work unless the visual contract catches a regression.
+**Current gate:** The official-component rebuild is complete, and the isolated live-operator preflight now builds the approved sanitized package without spend. The next proof bar requires explicit paid-call authorization: run the GPT-5.6 benchmark, generate the real GPT Image 2 batch and approved-storyboard narration, inspect the artifacts, and use them in the judge-facing submission. Do not reopen shell or vocabulary work unless the visual contract catches a regression.
 **Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found`. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. It must run before claiming live product use or changing per-operation defaults.
 **Known host risk:** The July 14 host-sync verification is credential-blocked, so it does not prove native task or voice-turn persistence. The designed capture-only fallback remains active; Spike A stays open until the end-of-day decision deadline or a separately authorized live host check.
 
@@ -252,7 +252,7 @@ Use NotebookLM's screenshots as behavioral evidence, then express the result in 
 - [x] Reconcile and lock the written specification and execution architecture.
 - [x] Write the dated execution runbook (`PLAN-2026-07-13.md`).
 - [x] Write the task-level foundation and integration-spike plan under `docs/superpowers/plans/`.
-- [ ] Write subsequent task-level workstream plans as each reaches execution.
+- [x] Write subsequent task-level workstream plans as each reaches execution.
 
 ### 4. Integration spikes
 
@@ -272,12 +272,13 @@ Use NotebookLM's screenshots as behavioral evidence, then express the result in 
 - [x] Scaffold the pnpm/Turborepo monorepo.
 - [x] Create `apps/web`, `apps/worker`, and focused shared packages.
 - [x] Create the unified plugin manifest, WorkshopLM skill, local MCP server, and compact status/trace widget with tested persisted-fixture tools.
-- [x] Establish linting, type checking, tests, and deterministic local fixture reset; typed environment validation remains next.
+- [x] Establish linting, type checking, tests, deterministic local fixture reset, and fail-closed live-provider environment validation.
 - [ ] Record every participating Codex `/feedback` Session ID, or the explicit reason it is unavailable, and designate the primary integrator session from actual build evidence.
 - [x] Configure local SQLite WAL persistence boundaries, atomic filesystem artifact storage, and idempotent leased local jobs.
 - [x] Freeze `packages/domain` v1 schemas, commands, gate flags, dependency edges, and `artifact.json` shape with tests.
 - [x] Create a sanitized local demo fixture that requires no private connector and makes video capture deterministic.
-- [ ] Create a bounded live operator path on sample sources for recording the real demo seam.
+- [x] Create a bounded live operator path on sample sources for recording the real demo seam.
+  - 2026-07-14: `pnpm demo:live` passed its isolated no-spend preflight with two approvals, two traced outputs, six planned GPT Image 2 requests, five planned TTS requests, and zero provider calls. Paid execution remains unrun.
 
 ### 6. Capture
 
@@ -310,7 +311,7 @@ Use NotebookLM's screenshots as behavioral evidence, then express the result in 
 - [x] Generate a source-traceable infographic.
 - [ ] Generate and evaluate a coherent GPT Image 2 batch.
 - [x] Generate an editable, panel-level storyboard.
-- [x] Block video enqueueing until the current storyboard approval is persisted; worker execution remains pending.
+- [x] Block video enqueueing until the current storyboard approval is persisted; the worker accepts current provider narration when present and otherwise uses the disclosed deterministic fallback.
 - [x] Render the sanitized approved storyboard through the local HyperFrames worker path with disclosed fixture narration and verified MP4 streams.
 - [x] Propagate upstream Map and Style changes into accurate downstream stale states.
 

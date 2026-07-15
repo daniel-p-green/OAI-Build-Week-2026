@@ -3090,3 +3090,41 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Real GPT Image 2 bytes and provider-backed output evaluation remain unrun; the gallery still labels planned image content honestly.
 - The next active proof is a bounded live operator run that produces provider-backed assets for the demo and submission package.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 22:58 CT — Bounded live operator and provider-media seam implemented
+
+**Area:** OpenAI integration / local operator workflow / image and narration provenance
+
+### Changed
+
+- Added `pnpm demo:live`, an isolated operator path under `.workshoplm/live-operator/` that captures a sanitized transcript, ingests two share-safe sources, approves the Brief and Storyboard, locks the demo Style and Visual DNA, and creates the traced deck, infographic, image plan, and storyboard.
+- Made the default operator command a no-spend preflight. Live execution requires both `WORKSHOPLM_LIVE_OPENAI=1` and `OPENAI_API_KEY`; either missing value stops execution before a provider call.
+- Integrated GPT Image 2 into real Workshop state: six distinct panel requests run concurrently from one locked Visual DNA block, successful files receive SHA-256 and request/model/version provenance, and failed panels remain individually retryable without discarding siblings or completed outputs.
+- Integrated `gpt-4o-mini-tts` narration into the approved-storyboard dependency chain. Each WAV records panel/version/model/voice/instructions/request/hash provenance, and upstream Map, Style, or Storyboard changes stale the narration.
+- Updated the HyperFrames worker to copy current provider narration into the render composition and disclose the AI-generated OpenAI voice. It continues to synthesize and disclose deterministic tones only when current narration is absent.
+- Added generated-image artifact serving and real image thumbnails in Outputs while retaining the honest planned/partial states.
+- Added the task-level implementation record at `docs/superpowers/plans/2026-07-14-live-operator-and-provider-media.md` and documented the preflight, paid command, and isolated-view command in `README.md`.
+
+### Verified
+
+- Current official OpenAI documentation confirms direct `gpt-image-2` Image API generation, base64 image results, multiple-image support, and high-fidelity reference behavior; it also confirms `gpt-4o-mini-tts`, `marin`, WAV output, and mandatory AI-voice disclosure.
+- `pnpm demo:live` returned `status: ready`, two approvals, two traced outputs with four claims each, six planned GPT Image 2 requests, five planned TTS requests, nine separately planned GPT-5.6 benchmark requests, and `paidCallsMade: false`.
+- `pnpm demo:live -- --execute` without the live opt-in failed closed before any provider call.
+- Worker tests passed 32/32 across four files. New tests cover a complete six-image batch, partial-image retention, image artifact resolution, complete approved-storyboard narration, and a narrated render that calls HyperFrames without generating placeholder tones.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages.
+- `pnpm demo:e2e` passed the recorded Capture → Shape → Deliver seam with both approvals and the rendered-video gate.
+- A clean production rebuild passed, followed by the non-update Playwright visual contract at 8/8. An earlier concurrent visual attempt hit a stale `.next` vendor-chunk cache; it was stopped, rebuilt sequentially, and rerun successfully rather than counted as product evidence.
+
+### Decisions
+
+- The live operator is the one recording path; provider spikes remain diagnostics, not a second manual production workflow.
+- Generated images use six concurrent direct Image API requests because each storyboard/output panel needs a distinct prompt while sharing one Visual DNA block. One `n=6` request would produce variations from one prompt rather than six intentionally different scenes.
+- Provider media is local-only and excluded from Git. The UI reads the same isolated state when launched with `WORKSHOPLM_DATA_ROOT="$PWD/.workshoplm/live-operator"`.
+
+### Open items
+
+- No paid OpenAI request was made. GPT-5.6 runtime outputs, real GPT Image 2 bytes, real narration, and the narrated provider-backed MP4 remain unproved.
+- Run the nine-request GPT-5.6 benchmark and the live operator only after explicit spend authorization; inspect every image, narration clip, provenance record, and the final MP4 before changing the completion checkboxes.
+- Codex Session ID: unavailable on this surface; not inferred.

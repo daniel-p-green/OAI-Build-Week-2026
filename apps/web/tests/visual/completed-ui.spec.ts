@@ -47,6 +47,7 @@ test("reset fixture is calm and responsive", async ({ page }) => {
     await closeDialog(page, "Sources");
   }
 
+  await expect(page.getByRole("button", { name: /sources$/ })).toBeFocused();
   await pressTabUntil(page, "Approve brief");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { name: "Turn raw thinking into finished, traceable work." })).toBeVisible();
