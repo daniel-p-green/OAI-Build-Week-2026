@@ -251,8 +251,8 @@ export default function WorkshopPage() {
   async function createOutputs() {
     if (!state?.outputs.some((output) => output.type === "deck" && !output.stale)) await post({ action: "generateOutput", outputType: "deck" });
     if (!state?.outputs.some((output) => output.type === "infographic" && !output.stale)) await post({ action: "generateOutput", outputType: "infographic" });
-    if (!state?.imageBatch || state.imageBatch.stale || state.imageBatch.panels.some((panel) => panel.state === "failed" || panel.state === "selected_for_regeneration")) await post({ action: "createImageBatch" });
     await post({ action: "generateAssetPlan" });
+    if (!state?.imageBatch || state.imageBatch.stale || state.imageBatch.panels.some((panel) => panel.state === "failed" || panel.state === "selected_for_regeneration")) await post({ action: "createImageBatch" });
     await post({ action: "generateStoryboard" });
     setNotice({ message: "Outputs created from your Brief, Style, and Sources.", tone: "status" });
     openView("outputs");

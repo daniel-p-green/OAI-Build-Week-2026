@@ -5540,3 +5540,43 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Repeat the clean-start path in the Codex in-app browser when callable.
 - Own-material uncoached timing, provider-backed voice/Speech evidence, final founder recording, and public submission links remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 16:23 CT — GPT Image 2 plan becomes grounded professional work before spend
+
+**Area:** Product / GPT Image 2 / Source grounding / Live-provider readiness
+
+### Changed
+
+- Rejected the prior six-image plan before provider spend because it was a hardcoded WorkshopLM demo sequence with no panel-level evidence edges. That plan could demonstrate an API but could not prove a reusable grounded professional product.
+- Each image batch now records the exact Map revision, approved Brief version, Style version, shared reference hash, and panel-specific claim/source locator.
+- Replaced the generic scenes with six distinct professional deck jobs: Hero concept, Systems diagram, Evidence chain, Decision visual, Storyboard sequence, and Section art.
+- Added role-aware evidence selection so the strongest available approved claim drives each visual instead of assigning claims by source order. The live fixture now maps the exact-source claim to Evidence chain, the approval constraint to Decision visual, the Capture → Shape → Deliver claim to Storyboard sequence, and the brand/output claim to Section art.
+- Strengthened Visual DNA and provider direction around one folded-plane motif, matte paper material, restrained depth, soft directional shadow, negative space, and direct client/leadership-deck utility. Prompts explicitly reject readable text, invented quantities, logos, UI chrome, device mockups, generic people-at-work scenes, and stock-photo clichés.
+- Image generation now fails before provider dispatch if any panel loses its evidence, uses a stale Map/Brief/Style, duplicates another prompt, or breaks the shared reference contract.
+- Retry fingerprints now bind prompt hashes, evidence edges, input versions, and the shared reference hash in addition to provider results. The submission image manifest and generated image assets retain panel-specific claim IDs and source locators.
+- `Create outputs` now builds the source-traceable asset plan before the image batch, then binds those planned images into the Storyboard.
+
+### Verified
+
+- The zero-spend `pnpm demo:live` preflight returned `status: ready`, `paidCallsMade: false`, a valid six-panel coherence report with zero issues, shared reference SHA-256 `abc850b041c0c02d30520640319b009b620def9b0b4ce7fad9cc8b00d92bd806`, and no executable paid command because provider voice evidence is still absent.
+- The exact prompt bundle hashes to `446f2bfc5f1a6c4a1ecbc210110d48ef7109bd27304709231f6ea2def9ee42d1`. The sanitized plan and review rubric are checked in at `artifacts/spikes/gpt-image-2-preflight-2026-07-15.md`.
+- Worker tests passed 83 cases across eight files, including role-to-evidence selection, prompt constraints, reference integrity, source-edge failure before spend, partial success, selective retry, narration limits, and submission trace behavior.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. The production-browser build and all 25 visual/interaction/accessibility tests passed at desktop, compact, and mobile sizes.
+- `pnpm demo:e2e` passed the complete deterministic seam. `pnpm submission:build` produced the truthful 17-asset `partial` package with the same four provider limitations; `pnpm submission:verify` returned valid, not stale, and not tampered. `git diff --check` passed.
+
+### Decisions
+
+- A coherent batch is not six similarly styled pictures. It is six different professional communication jobs sharing one art direction and each grounded in the approved Brief.
+- Provider spend remains gated behind both a verified Realtime turn and explicit request authorization. Prompt quality and provenance can be completed before that boundary; generation cannot.
+- Structural coherence checks prove prompt/reference/version integrity, not visual quality. The six generated panels still require a human deck-utility and coherence review.
+
+### Open items
+
+- Record one provider-verified Realtime voice turn in the local operator Workshop and rerun `pnpm demo:live` until it prints the exact twelve-request command.
+- Obtain explicit authorization before running the paid GPT-5.6, GPT Image 2, or Speech requests; do not infer it from the prepared plan.
+- Inspect all six generated panels against the checked-in rubric, selectively regenerate failures, and record the first usable set and timing.
+- Put the external-use deck in front of its intended professional audience for `Send`/`Revise` feedback.
+- Provider-backed voice/Map/Image/Speech evidence, final founder recording, public links, and Codex in-app-browser proof remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

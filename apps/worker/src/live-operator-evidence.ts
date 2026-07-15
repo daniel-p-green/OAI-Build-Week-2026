@@ -15,7 +15,14 @@ export function operatorStateFingerprint(state: WorkshopState): string {
     workshopId: state.id,
     storyboardVersion: state.storyboard.version,
     reasoning: state.aiRuns.map((run) => ({ operation: run.operation, model: run.model, requestId: run.requestId, outputSha256: run.outputSha256 })),
-    images: state.imageBatch?.panels.map((panel) => ({ id: panel.id, version: panel.version, state: panel.state, requestId: panel.provenance?.requestId, sha256: panel.sha256 })),
+    images: state.imageBatch ? {
+      id: state.imageBatch.id,
+      graphRevision: state.imageBatch.graphRevision,
+      briefVersion: state.imageBatch.briefVersion,
+      styleVersion: state.imageBatch.styleVersion,
+      referenceSha256: state.imageBatch.referenceSha256,
+      panels: state.imageBatch.panels.map((panel) => ({ id: panel.id, version: panel.version, promptSha256: createHash("sha256").update(panel.prompt).digest("hex"), evidence: panel.evidence, state: panel.state, requestId: panel.provenance?.requestId, sha256: panel.sha256 })),
+    } : null,
     narration: state.narration ? { storyboardVersion: state.narration.storyboardVersion, stale: state.narration.stale, panels: state.narration.panels.map((panel) => ({ panelId: panel.panelId, requestId: panel.requestId, sha256: panel.sha256 })), failures: state.narration.failures ?? [] } : null,
     videos: state.videos.map((video) => ({ id: video.id, version: video.version, stale: video.stale, sha256: video.sha256 })),
   };
@@ -72,7 +79,7 @@ export function classifyFailedRun(state: WorkshopState, failedStage: string): "p
 export function operatorRunEvidence(state: WorkshopState): Record<string, unknown> {
   return {
     reasoning: state.aiRuns.map((run) => ({ operation: run.operation, model: run.model, requestId: run.requestId, outputSha256: run.outputSha256 })),
-    images: state.imageBatch?.panels.map((panel) => ({ id: panel.id, state: panel.state, model: panel.provenance?.model, requestId: panel.provenance?.requestId, sha256: panel.sha256, error: panel.error })),
+    images: state.imageBatch?.panels.map((panel) => ({ id: panel.id, evidence: panel.evidence, promptSha256: createHash("sha256").update(panel.prompt).digest("hex"), state: panel.state, model: panel.provenance?.model, requestId: panel.provenance?.requestId, sha256: panel.sha256, error: panel.error })),
     narration: state.narration ? {
       stale: state.narration.stale,
       panels: state.narration.panels.map((panel) => ({ panelId: panel.panelId, model: panel.model, voice: panel.voice, requestId: panel.requestId, sha256: panel.sha256 })),

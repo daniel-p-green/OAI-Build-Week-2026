@@ -64,6 +64,7 @@ function assertBuildable(state: WorkshopState, root: string): SubmissionInputSna
   if (!state.assetPlan || state.assetPlan.stale) throw new Error("Submission packaging requires a current output plan.");
   if (!state.storyboardApproved || state.storyboard.stale || state.storyboard.panels.some((panel) => panel.stale || !panel.approved)) throw new Error("Submission packaging requires an approved current Storyboard.");
   if (!state.imageBatch || state.imageBatch.stale) throw new Error("Submission packaging requires a current image set.");
+  if (state.imageBatch.graphRevision !== graphRevision(state) || state.imageBatch.briefVersion !== state.frame.version || state.imageBatch.styleVersion !== state.style.version) throw new Error("Submission packaging requires an image set from the current Map, Brief, and Style.");
   if (state.videoState !== "rendered") throw new Error("Submission packaging requires a rendered Video.");
   const video = currentVideo(state);
   if (!video || video.storyboardVersion !== state.storyboard.version || video.styleVersion !== state.style.version || video.imageBatchId !== state.imageBatch.id) throw new Error("Submission packaging requires a Video rendered from the current approved inputs.");
@@ -127,7 +128,7 @@ function narrationMarkdown(state: WorkshopState): string {
 }
 
 function imageManifestMarkdown(state: WorkshopState): string {
-  return `# Image set\n\nImage batch ${state.imageBatch!.id}, locked to Style version ${state.imageBatch!.styleVersion}.\n\n${state.imageBatch!.panels.map((panel, index) => `- **${index + 1}. ${panel.prompt}** — ${panel.state}${panel.provenance ? `; ${panel.provenance.model}; ${panel.provenance.size}; ${panel.provenance.quality}` : ""}${panel.error ? `; ${panel.error}` : ""}`).join("\n")}\n`;
+  return `# Image set\n\nImage batch ${state.imageBatch!.id}, locked to Brief version ${state.imageBatch!.briefVersion}, graph revision ${state.imageBatch!.graphRevision}, and Style version ${state.imageBatch!.styleVersion}.\n\n${state.imageBatch!.panels.map((panel, index) => `- **${index + 1}. ${panel.prompt}** — ${panel.state}${panel.provenance ? `; ${panel.provenance.model}; ${panel.provenance.size}; ${panel.provenance.quality}` : ""}${panel.error ? `; ${panel.error}` : ""}; sources: ${panel.evidence.map((reference) => reference.locator).join("; ") || "none"}`).join("\n")}\n`;
 }
 
 function evidenceMarkdown(state: WorkshopState, limitations: string[], fingerprint: string): string {
@@ -256,7 +257,11 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   assets.push(await assetFor(packageRoot, "evidence", "BUILD-TRACE.json", "application/json", claimIds, sourceLocators, "source_trace"));
   assets.push(await assetFor(packageRoot, "evidence", "EVIDENCE.md", "text/markdown", claimIds, sourceLocators, "source_trace"));
   if (state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version) for (const [index, panel] of state.narration.panels.entries()) assets.push(await assetFor(packageRoot, "narration", `narration/panel-${index + 1}${extname(panel.relativePath) || ".wav"}`, "audio/wav", claimIds, sourceLocators, "narration"));
-  for (const [index, panel] of generatedPanels.entries()) assets.push(await assetFor(packageRoot, "image", `images/panel-${index + 1}${extname(panel.relativePath!) || ".png"}`, "image/png", claimIds, sourceLocators, "workshop_output"));
+  for (const [index, panel] of generatedPanels.entries()) {
+    const panelClaimIds = unique(panel.evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []));
+    const panelSourceLocators = unique(panel.evidence.map((reference) => reference.locator));
+    assets.push(await assetFor(packageRoot, "image", `images/panel-${index + 1}${extname(panel.relativePath!) || ".png"}`, "image/png", panelClaimIds.length ? panelClaimIds : claimIds, panelSourceLocators.length ? panelSourceLocators : sourceLocators, "workshop_output"));
+  }
 
   const outputSet = SubmissionOutputSet.parse({ schemaVersion: 1, id: "workshoplm-submission-v1", workshopId: state.id, title: "WorkshopLM Build Week submission", version: 1, status: limitations.length ? "partial" : "ready", createdAt: state.updatedAt, inputFingerprint: fingerprint, inputs, claimIds, sourceLocators, limitations, assets });
   const manifestPath = join(packageRoot, "manifest.json");

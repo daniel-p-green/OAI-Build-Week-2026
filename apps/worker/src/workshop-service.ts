@@ -70,6 +70,7 @@ export type ImageBatchPanel = {
   id: string;
   version: number;
   prompt: string;
+  evidence: WorkshopEvidenceReference[];
   state: "planned" | "selected_for_regeneration" | "generated" | "failed";
   referenceId: string;
   relativePath?: string;
@@ -78,7 +79,7 @@ export type ImageBatchPanel = {
   error?: string;
 };
 export type ImageCoherenceContract = { visualDnaVersion?: number; palette: { accent: string; ink: string; paper: string }; compositionRules: string[]; textureRules: string[]; imageRules: string[]; negativeRules: string[]; siblingPanelIds: string[] };
-export type WorkshopImageBatch = { id: string; styleVersion: number; referenceId: string; referencePath: string; referenceSha256: string; coherence: ImageCoherenceContract; panels: ImageBatchPanel[]; stale: boolean; createdAt: string };
+export type WorkshopImageBatch = { id: string; graphRevision: number; briefVersion: number; styleVersion: number; referenceId: string; referencePath: string; referenceSha256: string; coherence: ImageCoherenceContract; panels: ImageBatchPanel[]; stale: boolean; createdAt: string };
 export type WorkshopNarrationPanel = { panelId: string; relativePath: string; sha256: string; model: "gpt-4o-mini-tts"; voice: "marin"; instructions: string; requestId?: string; generatedAt: string };
 export type WorkshopNarrationFailure = { panelId: string; error: string; failedAt: string };
 export type WorkshopNarration = { storyboardVersion: number; disclosure: "AI-generated voice"; panels: WorkshopNarrationPanel[]; failures?: WorkshopNarrationFailure[]; stale: boolean; createdAt: string };
@@ -751,7 +752,7 @@ export function applyStyleLibrary(styleId: string, requestedIntent?: WorkshopSty
   const style: WorkshopStyle = { ...snapshot, version: (current.style?.version ?? 0) + 1, libraryId: styleId, libraryFamilyId: familyId, libraryRevision: revision, intentProfile: intentProfile(requestedIntent ?? current.onboarding.outcome ?? entry.intentProfile), lockedAt, stale: false };
   return applyLockedStyle(current, style, root, false);
 }
-export function createVisualDna(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.style || current.style.stale) throw new Error("Visual DNA requires a current locked Style Foundation."); const createdAt = new Date().toISOString(); const profileRule = current.style.intentProfile === "board_deck" ? "Executive hierarchy with source-visible proof points." : current.style.intentProfile === "internal_workshop" ? "Facilitation-first working canvas with writable space." : "Client-ready narrative sequence with a decisive opening."; return write({ ...current, visualDna: { version: (current.visualDna?.version ?? 0) + 1, styleVersion: current.style.version, palette: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, compositionRules: [profileRule, ...current.style.references], textureRules: ["Subtle paper grain only; preserve legibility."], imageRules: ["Use the locked palette and evidence-aware editorial framing."], negativeRules: current.style.negativeRules, approved: false, stale: false, createdAt }, updatedAt: createdAt }, root); }
+export function createVisualDna(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.style || current.style.stale) throw new Error("Visual DNA requires a current locked Style Foundation."); const createdAt = new Date().toISOString(); const profileRule = current.style.intentProfile === "board_deck" ? "Executive hierarchy with source-visible proof points." : current.style.intentProfile === "internal_workshop" ? "Facilitation-first working canvas with writable space." : "Client-ready narrative sequence with a decisive opening."; return write({ ...current, visualDna: { version: (current.visualDna?.version ?? 0) + 1, styleVersion: current.style.version, palette: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, compositionRules: [profileRule, "Repeat one accent-colored folded-plane motif across the complete image set.", ...current.style.references], textureRules: ["Matte paper forms, restrained depth, soft directional shadow, and clean negative space."], imageRules: ["Create diagrammatic concept visuals and section art suitable for direct placement in a professional deck.", "Prefer object-led editorial composition over people, devices, screens, or generic workplace scenes."], negativeRules: current.style.negativeRules, approved: false, stale: false, createdAt }, updatedAt: createdAt }, root); }
 export function createSketch(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.briefApproved || !current.frame || current.frame.stale) throw new Error("Sketch requires an approved current Map."); const createdAt = new Date().toISOString(); return write({ ...current, sketch: { version: (current.sketch?.version ?? 0) + 1, graphRevision: graphFor(current).graph.revision, nodes: current.mapNodes.map(({ id, title, body, kind, locator }) => ({ id, title, body, kind, locator })), stale: false, approved: false, createdAt }, updatedAt: createdAt }, root); }
 export function approveSketch(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.sketch || current.sketch.stale) throw new Error("A current Sketch preview is required."); return write({ ...current, sketch: { ...current.sketch, approved: true }, updatedAt: new Date().toISOString() }, root); }
 export function approveVisualDna(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.visualDna || current.visualDna.stale) throw new Error("A current Visual DNA preview is required."); return write({ ...current, visualDna: { ...current.visualDna, approved: true }, updatedAt: new Date().toISOString() }, root); }
@@ -963,13 +964,41 @@ function buildStyleReferencePng(palette: ImageCoherenceContract["palette"]): Buf
 }
 
 export function createImageBatch(root?: string): WorkshopState {
-  const current = readWorkshopState(root); if (!current.style || current.style.stale) throw new Error("Image batch generation requires a locked current style.");
+  const current = readWorkshopState(root);
+  if (!current.briefApproved || !current.frame || current.frame.stale) throw new Error("Image batch generation requires an approved current brief.");
+  if (!current.style || current.style.stale) throw new Error("Image batch generation requires a locked current style.");
   const dataRoot = root ?? repositoryDataRoot(); const visualDna = current.visualDna && !current.visualDna.stale ? current.visualDna : undefined;
+  const graphRevision = graphFor(current).graph.revision;
   const panelIds = Array.from({ length: 6 }, (_, index) => `image-panel-${index + 1}`); const referenceId = `style-v${current.style.version}${visualDna ? `-dna-v${visualDna.version}` : ""}`; const createdAt = new Date().toISOString();
   const coherence: ImageCoherenceContract = { visualDnaVersion: visualDna?.version, palette: visualDna?.palette ?? { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, compositionRules: visualDna?.compositionRules ?? current.style.references, textureRules: visualDna?.textureRules ?? ["Restrained natural texture with clean negative space."], imageRules: visualDna?.imageRules ?? ["Evidence-aware editorial framing with one clear focal object."], negativeRules: visualDna?.negativeRules ?? current.style.negativeRules, siblingPanelIds: panelIds };
   const referenceBytes = buildStyleReferencePng(coherence.palette); const referencePath = workshopGeneratedPath(current.id, "references", `${referenceId}.png`); mkdirSync(join(dataRoot, dirname(referencePath)), { recursive: true }); writeFileSync(join(dataRoot, referencePath), referenceBytes);
-  const prompts = ["Editorial workbench where raw source material begins becoming finished work", "Close evidence detail with source cards and a visible chain of support", "Spatial semantic Map organized as an editable professional thinking surface", "Approved Brief distilled into a decisive production direction", "Storyboard panels forming one continuous visual sequence", "Finished presentation and demo video ready for professional delivery"];
-  return write({ ...current, imageBatch: { id: `image-batch-v${(current.imageBatch ? Number(current.imageBatch.id.match(/\d+$/)?.[0]) + 1 : 1)}`, styleVersion: current.style.version, referenceId, referencePath, referenceSha256: createHash("sha256").update(referenceBytes).digest("hex"), coherence, createdAt, stale: false, panels: prompts.map((prompt, index) => ({ id: panelIds[index]!, version: 1, prompt: `${prompt}. Preserve the shared reference composition, palette, lighting, material treatment, and editorial restraint. This is panel ${index + 1} of one continuous six-panel art direction; no readable text, logos, watermarks, UI chrome, or stock-photo cliches.`, state: "planned", referenceId })) }, updatedAt: createdAt }, root);
+  const claims = activeClaimsFor(current);
+  const groundedNodes = current.mapNodes.filter((node): node is WorkshopMapNode & { sourceId: string } => node.kind === "grounded" && typeof node.sourceId === "string" && current.activeSourceIds.includes(node.sourceId));
+  const usedClaims = new Set<string>();
+  const evidenceFor = (index: number, keywords: readonly string[]): { idea: string; evidence: WorkshopEvidenceReference[] } => {
+    const available = claims.filter((claim) => !usedClaims.has(claim.id));
+    const ranked = available.map((claim, order) => ({ claim, order, score: keywords.filter((keyword) => prose(claim.text).toLowerCase().includes(keyword)).length })).sort((left, right) => right.score - left.score || left.order - right.order);
+    const claim = ranked[0]?.claim ?? claims[index % Math.max(1, claims.length)];
+    if (claim) usedClaims.add(claim.id);
+    if (claim) return { idea: outputBody(prose(claim.text)), evidence: [{ claimId: claim.id, sourceId: claim.sourceId, chunkId: claim.chunkId, locator: claim.locator }] };
+    const node = groundedNodes[index % Math.max(1, groundedNodes.length)];
+    if (node) return { idea: outputBody(prose(`${node.title}: ${node.body}`)), evidence: [{ sourceId: node.sourceId, locator: node.locator }] };
+    return { idea: outputBody(prose(current.title)), evidence: [] };
+  };
+  const roles = [
+    ["Hero concept", "Turn the approved idea into one memorable object-led transformation metaphor. Place the focal object in the lower-right and preserve generous upper-left negative space for a slide headline.", ["start", "turn", "become", "outcome", "promise", "professional", "client", "leadership"]],
+    ["Systems diagram", "Translate the approved idea into an unlabeled systems diagram made from geometric nodes, layers, and connectors. Show relationships without implying invented quantities.", ["system", "map", "process", "workflow", "chain", "connect", "brief", "organize", "relationship"]],
+    ["Evidence chain", "Show source-like paper forms progressing through connected proof points into one polished decision artifact. Make provenance visually legible without words or interface chrome.", ["evidence", "source", "claim", "trace", "provenance", "locator", "citation", "grounded", "defend"]],
+    ["Decision visual", "Build a clear tension-to-resolution composition with two contrasting fields joined by one accent-colored bridge. Do not invent data, scales, or labels.", ["approve", "only", "must", "should", "decision", "gate", "review", "sign-off", "recommend"]],
+    ["Storyboard sequence", "Create a four-beat storyboard strip inside one square composition, keeping the same objects, lighting, and camera language across every beat.", ["sequence", "path", "step", "storyboard", "capture", "shape", "deliver", "journey", "continuous"]],
+    ["Section art", "Create polished closing section art: the approved idea resolved into a cohesive family of abstract presentation, diagram, and video-frame forms, with ample negative space.", ["deck", "presentation", "infographic", "image", "video", "brand", "finished", "output", "delivery"]],
+  ] as const;
+  const panels = roles.map(([role, direction, keywords], index) => {
+    const grounded = evidenceFor(index, keywords);
+    const prompt = `Output role: ${role}. ${direction} Approved idea to communicate: ${grounded.idea}. Preserve the shared reference composition, palette, lighting, material treatment, folded-plane motif, and editorial restraint. This is panel ${index + 1} of one continuous six-panel art direction. Create a deck-ready 1:1 visual with no readable text, logos, watermarks, UI chrome, generic people-at-work scenes, device mockups, or stock-photo cliches.`;
+    return { id: panelIds[index]!, version: 1, prompt, evidence: grounded.evidence, state: "planned" as const, referenceId };
+  });
+  return write({ ...current, imageBatch: { id: `image-batch-v${(current.imageBatch ? Number(current.imageBatch.id.match(/\d+$/)?.[0]) + 1 : 1)}`, graphRevision, briefVersion: current.frame.version, styleVersion: current.style.version, referenceId, referencePath, referenceSha256: createHash("sha256").update(referenceBytes).digest("hex"), coherence, createdAt, stale: false, panels }, updatedAt: createdAt }, root);
 }
 export function selectImagePanelForRegeneration(panelId: string, root?: string): WorkshopState {
   const current = readWorkshopState(root); if (!current.imageBatch || current.imageBatch.stale) throw new Error("A current image batch is required."); const found = current.imageBatch.panels.some((panel) => panel.id === panelId); if (!found) throw new Error(`Image panel not found: ${panelId}.`);

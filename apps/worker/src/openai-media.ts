@@ -44,12 +44,33 @@ export type OpenAiMediaRetryPlan = {
 
 export type ImageCoherenceReport = { valid: boolean; referenceId?: string; referenceSha256?: string; panelCount: number; issues: string[] };
 
+function currentGraphRevision(state: WorkshopState): number {
+  if (!state.graphState) return 0;
+  try { return Number((JSON.parse(state.graphState) as { graph?: { revision?: unknown } }).graph?.revision ?? 0); }
+  catch { return Number.NaN; }
+}
+
 export async function validateImageBatchCoherence(root: string, state: WorkshopState = readWorkshopState(root)): Promise<ImageCoherenceReport> {
   const batch = state.imageBatch; const issues: string[] = [];
   if (!batch || batch.stale) return { valid: false, panelCount: batch?.panels.length ?? 0, issues: ["A current image batch is required."] };
   if (batch.panels.length !== 6) issues.push(`Expected six panels; found ${batch.panels.length}.`);
   if (new Set(batch.panels.map((panel) => panel.id)).size !== batch.panels.length) issues.push("Panel IDs are not unique.");
+  if (new Set(batch.panels.map((panel) => panel.prompt)).size !== batch.panels.length) issues.push("Panel prompts are not unique.");
   if (batch.panels.some((panel) => panel.referenceId !== batch.referenceId)) issues.push("One or more panels do not use the batch reference.");
+  if (batch.graphRevision !== currentGraphRevision(state)) issues.push("The batch Map revision is not current.");
+  if (batch.briefVersion !== state.frame?.version || state.frame?.stale || !state.briefApproved) issues.push("The batch Brief version is not current and approved.");
+  if (batch.styleVersion !== state.style?.version || state.style?.stale) issues.push("The batch Style version is not current.");
+  for (const panel of batch.panels) {
+    if (!panel.evidence.length) issues.push(`${panel.id} has no source evidence.`);
+    for (const reference of panel.evidence) {
+      const source = state.sourceItems.find((candidate) => candidate.id === reference.sourceId);
+      if (!source || !state.activeSourceIds.includes(reference.sourceId)) issues.push(`${panel.id} references an inactive source.`);
+      if (reference.claimId) {
+        const claim = state.claims.find((candidate) => candidate.id === reference.claimId);
+        if (!claim || claim.sourceId !== reference.sourceId || claim.chunkId !== reference.chunkId || claim.locator !== reference.locator) issues.push(`${panel.id} has an invalid claim edge.`);
+      }
+    }
+  }
   if (batch.coherence.siblingPanelIds.join("|") !== batch.panels.map((panel) => panel.id).join("|")) issues.push("The sibling continuity list does not match the batch panels.");
   if (batch.coherence.visualDnaVersion !== state.visualDna?.version) issues.push("The batch Visual DNA version does not match the current preview.");
   if (state.visualDna?.stale || !state.visualDna?.approved) issues.push("The current Visual DNA is not approved.");
@@ -154,8 +175,10 @@ export async function generateOpenAiImageBatch(
     `Composition: ${state.imageBatch.coherence.compositionRules.join(" ")}`,
     `Texture: ${state.imageBatch.coherence.textureRules.join(" ")}`,
     `Image treatment: ${state.imageBatch.coherence.imageRules.join(" ")}`,
-    `Avoid: ${state.imageBatch.coherence.negativeRules.join(" ") || "readable text, logos, watermarks, and stock-photo cliches"}.`,
-    "Maintain one coherent editorial art direction across the complete six-image set.",
+    `Additional negative rules: ${state.imageBatch.coherence.negativeRules.join(" ") || "none"}.`,
+    "Design this for direct placement in a client or leadership deck; favor diagrams, concept visuals, and section art over generic illustration.",
+    "Do not add readable text, letters, numbers, logos, watermarks, interface chrome, device mockups, people posing at work, or visualized quantities not present in the approved idea.",
+    "Maintain one coherent editorial art direction, folded-plane motif, material language, and lighting model across the complete six-image set.",
   ].join("\n");
 
   const settled = await Promise.allSettled(panels.map(async (panel) => {

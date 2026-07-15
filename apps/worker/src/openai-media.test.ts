@@ -52,8 +52,10 @@ describe("OpenAI media adapters", () => {
     expect(new Set(requests.map(({ body }) => (body.get("image") as Blob).size)).size).toBe(1);
     expect((requests[0]!.body.get("image") as Blob).size).toBeGreaterThan(1_000);
     expect(requests.every(({ body }) => String(body.get("prompt")).includes("Locked palette: #1155AA, #171816, #F4F2EC"))).toBe(true);
+    expect(requests.every(({ body }) => String(body.get("prompt")).includes("direct placement in a client or leadership deck"))).toBe(true);
+    expect(requests.every(({ body }) => String(body.get("prompt")).includes("Do not add readable text, letters, numbers, logos"))).toBe(true);
     const state = readWorkshopState(root);
-    expect(state.imageBatch?.panels.every((panel) => panel.state === "generated" && panel.provenance?.model === "gpt-image-2" && panel.provenance.referenceId === state.imageBatch?.referenceId && panel.sha256?.length === 64)).toBe(true);
+    expect(state.imageBatch?.panels.every((panel) => panel.state === "generated" && panel.evidence.length > 0 && panel.provenance?.model === "gpt-image-2" && panel.provenance.referenceId === state.imageBatch?.referenceId && panel.sha256?.length === 64)).toBe(true);
     await expect(readFile(join(root, state.imageBatch!.panels[0]!.relativePath!))).resolves.toEqual(fixturePng);
     expect(resolveWorkshopArtifact("image-panel-1", root)).toMatchObject({ contentType: "image/png", path: expect.stringContaining("image-panel-1-v1.png") });
   });
@@ -75,6 +77,18 @@ describe("OpenAI media adapters", () => {
     await expect(validateImageBatchCoherence(root, state)).resolves.toMatchObject({ valid: true, panelCount: 6, issues: [] });
     await writeFile(join(root, state.imageBatch!.referencePath), "tampered-reference");
     await expect(validateImageBatchCoherence(root)).resolves.toMatchObject({ valid: false, issues: ["The shared reference image hash does not match its manifest."] });
+    let calls = 0;
+    const fetchImpl: typeof fetch = async () => { calls += 1; return new Response("should not run", { status: 500 }); };
+    await expect(generateOpenAiImageBatch(root, config, fetchImpl)).rejects.toThrow("Image coherence contract failed");
+    expect(calls).toBe(0);
+  });
+
+  it("fails closed before spend when a planned image loses its source edge", async () => {
+    const root = await readyRoot(); const state = readWorkshopState(root);
+    state.imageBatch!.panels[0]!.evidence = [];
+    const db = (await import("./db/client.js")).openLocalDatabase(join(root, "data", "workshoplm.sqlite"));
+    db.prepare("UPDATE workshop_state SET state_json=? WHERE workshop_id=?").run(JSON.stringify(state), state.id);
+    await expect(validateImageBatchCoherence(root)).resolves.toMatchObject({ valid: false, issues: expect.arrayContaining(["image-panel-1 has no source evidence."]) });
     let calls = 0;
     const fetchImpl: typeof fetch = async () => { calls += 1; return new Response("should not run", { status: 500 }); };
     await expect(generateOpenAiImageBatch(root, config, fetchImpl)).rejects.toThrow("Image coherence contract failed");

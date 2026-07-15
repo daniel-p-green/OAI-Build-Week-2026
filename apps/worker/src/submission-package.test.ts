@@ -19,8 +19,8 @@ async function buildableWorkshop() {
   await generateOutput("deck", root);
   await generateOutput("infographic", root);
   generateAssetPlan(root);
-  generateStoryboard(root);
   createImageBatch(root);
+  generateStoryboard(root);
   applyWorkshopAction("approveStoryboard", root);
   const videoBytes = Buffer.from("deterministic-video");
   const videoPath = join("generated", "workshoplm-demo-v1.mp4");
@@ -63,6 +63,7 @@ describe("submission Output set", () => {
     expect(built.outputSet.assets).toHaveLength(17);
     await expect(readFile(join(built.manifestPath, "..", "DEVPOST.md"), "utf8")).resolves.toContain("No live GPT-5.6 run is claimed");
     await expect(readFile(join(built.manifestPath, "..", "STORYBOARD.md"), "utf8")).resolves.toContain("Sanitized fixture · chunk 01");
+    await expect(readFile(join(built.manifestPath, "..", "IMAGE-SET.md"), "utf8")).resolves.toContain("Sanitized fixture · chunk 01");
     await expect(verifySubmissionOutputSet(root, built.manifestPath)).resolves.toEqual({ valid: true, stale: false, tampered: false, issues: [] });
   });
 

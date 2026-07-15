@@ -8,8 +8,8 @@ async function main() {
   if (!state.style || state.style.stale) state = lockManualStyle({}, root);
   if (!state.outputs.some((output) => output.type === "deck" && !output.stale)) state = await generateOutput("deck", root);
   if (!state.outputs.some((output) => output.type === "infographic" && !output.stale)) state = await generateOutput("infographic", root);
-  if (!state.imageBatch || state.imageBatch.stale) state = createImageBatch(root);
   if (!state.assetPlan || state.assetPlan.stale) state = generateAssetPlan(root);
+  if (!state.imageBatch || state.imageBatch.stale) state = createImageBatch(root);
   if (!state.storyboard.panels.length || state.storyboard.stale || state.storyboard.panels.length !== state.assetPlan?.items.length || state.storyboard.panels.some((panel) => !panel.id.startsWith("storyboard-v"))) generateStoryboard(root);
 }
 
