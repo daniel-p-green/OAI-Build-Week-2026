@@ -30,6 +30,13 @@ describe("production renderers", () => {
     expect(deck).not.toContain('<p class="body"></p>');
     expect(deck).toContain("02 · Core insight");
   });
+  it("renders a sparse split claim as an intentional dark editorial composition", () => {
+    const deck = renderDeck({ ...brief, blocks: [{ id: "claim-only", heading: "A decisive change", body: "", citations: ["meeting · 12:41"], layout: "split" }] });
+    expect(deck).toContain('class="slide split is-sparse"');
+    expect(deck).toContain(".split.is-sparse{display:flex;align-items:center;background:var(--ink)");
+    expect(deck).toContain("A decisive change");
+    expect(deck).not.toContain('<p class="body"></p>');
+  });
   it("turns numeric proof into client-facing metrics while keeping exact trace metadata", () => {
     const deck = renderDeck({ ...brief, blocks: [{ id: "scale", heading: "180+ chapters across 40+ countries", body: "A global network supported by 400+ volunteer organizers.", citations: ["newsletter · chunk 79"], citationLabel: "AI Collective Newsletter · chunk 79", layout: "proof" }] });
     expect(deck).toContain('class="slide proof metrics"');

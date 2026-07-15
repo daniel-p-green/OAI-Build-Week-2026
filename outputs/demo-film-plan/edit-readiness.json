@@ -104,9 +104,9 @@
       "label": "Verified non-partial final submission Output set",
       "path": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
       "validator": "ready-submission-manifest",
-      "exists": false,
+      "exists": true,
       "satisfied": false,
-      "issue": "Evidence file is missing or empty."
+      "issue": "Submission status is partial, not ready."
     },
     {
       "shotId": "final-export",

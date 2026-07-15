@@ -5972,3 +5972,35 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - The supported plugin host is now settled. Remaining blockers are product/provider/submission evidence, not ChatGPT Work parity.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 18:43 CT — Sparse professional claims become intentional presentation moments
+
+**Area:** Deliver / Presentation quality / Submission claims
+
+### Changed
+
+- Audited the current external-use AI Collective deck against the professional send-it bar. The only source-backed claim without a separate supporting sentence still rendered as an underfilled pale split template dominated by a decorative index.
+- Replaced that failure state in both responsive HTML and editable PowerPoint with a dark editorial claim composition: strong headline hierarchy, Accent rule, subordinate index, quiet visible citation, and no invented supporting copy. Split slides with real body copy retain their existing evidence-rail layout.
+- Made dark-slide PowerPoint footers explicitly contrast-aware, including the cover and recommendation states, so visible citations survive the PowerPoint/LibreOffice round trip.
+- Refreshed the five-slide HTML, editable PowerPoint, PDF, individual review frames, contact sheet, and their checked-in evidence hashes in `outputs/dogfood-ai-collective-chapter-brief/` and `artifacts/spikes/external-deck-dogfood-2026-07-15.json`.
+- Corrected the generated submission narrative to the verified host boundary: Codex desktop/CLI owns conversation and commands, the local in-app browser owns the visual Workshop, WorkshopLM's capture-only Realtime control owns voice, and ChatGPT Work parity is not claimed.
+
+### Verified
+
+- Visually inspected the refreshed sparse slide and cover at full resolution. The sparse claim is now intentional and legible; the title, logo, source line, and page number remain visible on the cover and all other review frames retain their established layouts.
+- `unzip -t` reported no PowerPoint archive errors. LibreOffice produced five 16:9 pages; `pdftotext -layout` retained the title, all four claims, `180+`, `40+`, both source labels, and the recommendation.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages after one initial test-only failure exposed a wrong fixture filename (`README.md` instead of the actual `README-NARRATIVE.md`); the assertion was corrected and the complete suite reran green with eight production tests, 84 worker tests, and the existing package baselines.
+- `pnpm demo:e2e` passed all six deterministic gates. `pnpm submission:build` produced a truthful 17-asset `partial` Output set, `pnpm submission:verify` returned valid/non-stale/non-tampered, and `pnpm demo:film:verify` kept six shots ready and four blocked on the named founder/provider/final-submission evidence.
+
+### Decisions
+
+- Sparse evidence should produce deliberate whitespace and visual rhythm, not fabricated prose. Output quality improved without weakening grounding.
+- This is an internally verified candidate improvement, not external approval. The presentation send-it item remains open until the intended professional audience returns `Send` or the first required revision.
+
+### Open items
+
+- Obtain the cold external `Send`/`Revise` decision on the refreshed candidate.
+- Provider-backed Map, image set, Realtime turn, narration, and final public video remain open under `GOAL.md`.
+- Codex Session ID: unavailable on this surface; not inferred.

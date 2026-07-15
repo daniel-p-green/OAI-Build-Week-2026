@@ -62,6 +62,8 @@ describe("submission Output set", () => {
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "BUILD-TRACE.json", mimeType: "application/json", provenance: "source_trace" }));
     expect(built.outputSet.assets).toHaveLength(17);
     await expect(readFile(join(built.manifestPath, "..", "DEVPOST.md"), "utf8")).resolves.toContain("No live GPT-5.6 run is claimed");
+    await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("Codex owns conversation and commands");
+    await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("ChatGPT Work parity is not claimed");
     await expect(readFile(join(built.manifestPath, "..", "STORYBOARD.md"), "utf8")).resolves.toContain("Sanitized fixture · chunk 01");
     await expect(readFile(join(built.manifestPath, "..", "IMAGE-SET.md"), "utf8")).resolves.toContain("Sanitized fixture · chunk 01");
     await expect(verifySubmissionOutputSet(root, built.manifestPath)).resolves.toEqual({ valid: true, stale: false, tampered: false, issues: [] });

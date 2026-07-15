@@ -60,15 +60,16 @@
   "outputs": {
     "inputManifest": "outputs/dogfood-ai-collective-chapter-brief/deck-input.json",
     "rebuildCommand": "pnpm dogfood:deck:build",
-    "htmlSha256": "09dfc856f85d2c15b33fe896c5a6a13ef173a9a6ba4bcb58261ca76d51d5fc42",
-    "pptxSha256": "bebf0b5e5b0159a39b7fb212daf66869fca3561e09d120b9f10819a086245dc5",
-    "pdfSha256": "8d23138e843707eeb7825549dc6a5bd27678a775965eb92b414d9a583f0c1842",
-    "contactSheetSha256": "4501ea1b961ed9d1337396f4ca3bbc071c70ecd70e0b1fde676d26736897d76e",
+    "htmlSha256": "c79c0384c950cc0967362c3ef723836a5b3e0807bd668b7a128bfa3412666eea",
+    "pptxSha256": "a19559b272466d06d5c9adfde263db55e6209c227f5f9c52d892a39f29c235a6",
+    "pdfSha256": "f2db9b649baaa79a87867d45140e94a7d69491509bb2953594504a2be3ca0a06",
+    "contactSheetSha256": "b92a19efcbf4fe70c76e652e70fd32eea78c50b07de5332aae3e27da4d7cfe4c",
     "slides": 5,
     "pageSize": "16:9",
     "pptxArchive": "passed",
     "libreOfficeRoundTrip": "passed",
-    "visualInspection": "passed-no-observed-overflow-raw-implementation-labels-or-empty-body-furniture"
+    "visualInspection": "passed-no-observed-overflow-raw-implementation-labels-or-empty-body-furniture",
+    "latestRevision": "2026-07-15 18:41 CT: sparse source-backed claims use an intentional dark editorial composition instead of an underfilled pale split template; cover and dark-slide footers remain visible and exact source notes remain embedded"
   },
   "boundary": "This is the first privacy-safe candidate intended for a real professional audience. It is ready for cold review but has not received an external send-or-revise judgment and is not externally approved."
 }
