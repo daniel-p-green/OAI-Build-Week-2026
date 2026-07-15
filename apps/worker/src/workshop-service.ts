@@ -44,7 +44,8 @@ export type ImageBatchPanel = {
 };
 export type WorkshopImageBatch = { id: string; styleVersion: number; referenceId: string; panels: ImageBatchPanel[]; stale: boolean; createdAt: string };
 export type WorkshopNarrationPanel = { panelId: string; relativePath: string; sha256: string; model: "gpt-4o-mini-tts"; voice: "marin"; instructions: string; requestId?: string; generatedAt: string };
-export type WorkshopNarration = { storyboardVersion: number; disclosure: "AI-generated voice"; panels: WorkshopNarrationPanel[]; stale: boolean; createdAt: string };
+export type WorkshopNarrationFailure = { panelId: string; error: string; failedAt: string };
+export type WorkshopNarration = { storyboardVersion: number; disclosure: "AI-generated voice"; panels: WorkshopNarrationPanel[]; failures?: WorkshopNarrationFailure[]; stale: boolean; createdAt: string };
 export type WorkshopAiRun = { id: string; operation: "grounded_graph"; model: "gpt-5.6-sol" | "gpt-5.6-terra" | "gpt-5.6-luna"; inputClaimIds: string[]; outputSha256: string; requestId?: string; createdAt: string };
 export type GroundedMapProposal = { nodes: { id: string; title: string; body: string; evidenceState: "grounded" | "derived"; evidenceClaimIds: string[]; x: number; y: number }[]; edges: WorkshopMapEdge[] };
 export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; artifactPath: string; claimIds: string[]; stale: boolean; createdAt: string };
@@ -298,8 +299,21 @@ export function recordNarration(narration: WorkshopNarration, root?: string): Wo
   if (!current.storyboardApproved || current.storyboard.stale) throw new Error("Narration requires an approved current storyboard.");
   if (narration.storyboardVersion !== current.storyboard.version) throw new Error("Narration belongs to a different storyboard version.");
   const panelIds = new Set(current.storyboard.panels.map((panel) => panel.id));
-  if (narration.panels.length !== panelIds.size || narration.panels.some((panel) => !panelIds.has(panel.panelId))) throw new Error("Narration must cover every current storyboard panel exactly once.");
-  return write({ ...current, narration: { ...narration, stale: false }, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
+  const narrationPanelIds = narration.panels.map((panel) => panel.panelId);
+  if (narrationPanelIds.length !== panelIds.size || new Set(narrationPanelIds).size !== narrationPanelIds.length || narrationPanelIds.some((panelId) => !panelIds.has(panelId))) throw new Error("Narration must cover every current storyboard panel exactly once.");
+  return write({ ...current, narration: { ...narration, failures: [], stale: false }, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
+}
+export function recordNarrationProgress(narration: WorkshopNarration, root?: string): WorkshopState {
+  const current = readWorkshopState(root);
+  if (!current.storyboardApproved || current.storyboard.stale) throw new Error("Narration requires an approved current storyboard.");
+  if (narration.storyboardVersion !== current.storyboard.version) throw new Error("Narration belongs to a different storyboard version.");
+  const panelIds = new Set(current.storyboard.panels.map((panel) => panel.id));
+  const recordedIds = narration.panels.map((panel) => panel.panelId);
+  const failedIds = narration.failures?.map((failure) => failure.panelId) ?? [];
+  if (recordedIds.some((panelId) => !panelIds.has(panelId)) || failedIds.some((panelId) => !panelIds.has(panelId))) throw new Error("Narration progress contains an unknown storyboard panel.");
+  if (new Set(recordedIds).size !== recordedIds.length || new Set(failedIds).size !== failedIds.length) throw new Error("Narration progress contains duplicate panels.");
+  if (recordedIds.some((panelId) => failedIds.includes(panelId))) throw new Error("A narration panel cannot be both complete and failed.");
+  return write({ ...current, narration: { ...narration, stale: true }, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
 export function updateStoryboardPanel(panelId: string, patch: Pick<StoryboardPanel, "title" | "narration" | "durationSeconds">, root?: string): WorkshopState {
   const current = readWorkshopState(root); const index = current.storyboard.panels.findIndex((panel) => panel.id === panelId); if (index < 0) throw new Error(`Storyboard panel not found: ${panelId}.`);

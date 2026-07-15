@@ -1,7 +1,7 @@
-import { mkdir, rm, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { access, mkdir, rm, writeFile } from "node:fs/promises";
+import { join, resolve } from "node:path";
 import { executeOne } from "../apps/worker/src/executor.ts";
-import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, type OpenAiMediaConfig } from "../apps/worker/src/openai-media.ts";
+import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, planOpenAiMediaRetry, type OpenAiMediaConfig } from "../apps/worker/src/openai-media.ts";
 import { generateGroundedMapWithGpt56 } from "../apps/worker/src/openai-reasoning.ts";
 import { createProviderRequestBudget, type ProviderRequestBudget } from "../apps/worker/src/provider-budget.ts";
 import {
@@ -20,16 +20,16 @@ import {
 } from "../apps/worker/src/workshop-service.ts";
 
 const executeLive = process.argv.includes("--execute");
-const keep = process.argv.includes("--keep");
+const retryFailed = process.argv.includes("--retry-failed");
 const root = resolve(process.cwd(), ".workshoplm", "live-operator");
 const liveOperatorPaidRequestCount = 12;
 
-function liveConfig(): { media: OpenAiMediaConfig; budget: ProviderRequestBudget } {
+function liveConfig(requiredRequests: number): { media: OpenAiMediaConfig; budget: ProviderRequestBudget } {
   if (process.env.WORKSHOPLM_LIVE_OPENAI !== "1") throw new Error("Refusing paid provider calls: set WORKSHOPLM_LIVE_OPENAI=1 only after spend authorization.");
   if (!process.env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY is required for the live operator run.");
   const requestCeiling = Number(process.env.WORKSHOPLM_MAX_PAID_REQUESTS);
-  if (!Number.isSafeInteger(requestCeiling) || requestCeiling < liveOperatorPaidRequestCount) {
-    throw new Error(`WORKSHOPLM_MAX_PAID_REQUESTS must explicitly authorize at least ${liveOperatorPaidRequestCount} requests for this live run.`);
+  if (!Number.isSafeInteger(requestCeiling) || requestCeiling < requiredRequests) {
+    throw new Error(`WORKSHOPLM_MAX_PAID_REQUESTS must explicitly authorize at least ${requiredRequests} requests for this live run.`);
   }
   return {
     media: { apiKey: process.env.OPENAI_API_KEY, ...defaultOpenAiMediaConfig },
@@ -38,7 +38,7 @@ function liveConfig(): { media: OpenAiMediaConfig; budget: ProviderRequestBudget
 }
 
 async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: ProviderRequestBudget }): Promise<void> {
-  if (!keep) await rm(root, { recursive: true, force: true });
+  await rm(root, { recursive: true, force: true });
   await mkdir(root, { recursive: true });
   await captureFallbackTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved brief, coherent visuals, an editable storyboard, and the final Build Week demo video.", root);
   await ingestSource({
@@ -77,20 +77,38 @@ async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: Prov
 }
 
 async function main(): Promise<void> {
-  const config = executeLive ? liveConfig() : undefined;
-  await prepareWorkshop(config);
+  if (process.argv.includes("--keep")) throw new Error("--keep was removed because it could duplicate sources and provider work. Use --retry-failed for a state-preserving retry.");
+  if (retryFailed) {
+    try {
+      await access(join(root, "data", "workshoplm.sqlite"));
+    } catch {
+      throw new Error("No prior live-operator state is available to retry. Run the normal live operator first.");
+    }
+  }
+  const prior = retryFailed ? readWorkshopState(root) : undefined;
+  const retryPlan = prior ? planOpenAiMediaRetry(prior) : undefined;
+  const requiredRequests = retryPlan?.plannedRequests ?? liveOperatorPaidRequestCount;
+  const config = executeLive && requiredRequests > 0 ? liveConfig(requiredRequests) : undefined;
+  if (!retryFailed) await prepareWorkshop(config);
   const prepared = readWorkshopState(root);
   const plan = {
-    mode: executeLive ? "live" : "preflight",
+    mode: retryFailed ? (executeLive ? "live-retry" : "retry-preflight") : (executeLive ? "live" : "preflight"),
     status: executeLive ? "running" : "ready",
     root,
     paidCallsMade: false,
-    plannedPaidRequests: { liveOperator: liveOperatorPaidRequestCount, gpt56GroundedMap: 1, gptImage2: prepared.imageBatch?.panels.length ?? 0, gpt4oMiniTts: prepared.storyboard.panels.length, separateGpt56Benchmark: 9 },
-    requestCeiling: executeLive ? config!.budget.maxRequests : null,
+    plannedPaidRequests: retryPlan
+      ? { liveOperator: retryPlan.plannedRequests, gpt56GroundedMap: 0, gptImage2: retryPlan.imagePanelIds.length, gpt4oMiniTts: retryPlan.narrationPanelIds.length, separateGpt56Benchmark: 9 }
+      : { liveOperator: liveOperatorPaidRequestCount, gpt56GroundedMap: 1, gptImage2: prepared.imageBatch?.panels.length ?? 0, gpt4oMiniTts: prepared.storyboard.panels.length, separateGpt56Benchmark: 9 },
+    retrySelection: retryPlan ?? null,
+    requestCeiling: config?.budget.maxRequests ?? null,
     approvals: { brief: prepared.briefApproved, storyboard: prepared.storyboardApproved },
     sources: prepared.sourceItems.filter((source) => source.origin === "Sanitized operator fixture" || source.origin.includes("capture-only fallback")).map((source) => ({ title: source.title, permission: source.permission })),
     outputs: prepared.outputs.map((output) => ({ type: output.type, relativePath: output.relativePath, claims: output.claimIds.length })),
-    nextCommand: `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${liveOperatorPaidRequestCount} OPENAI_API_KEY=... pnpm demo:live -- --execute`,
+    nextCommand: retryFailed
+      ? (requiredRequests > 0
+          ? `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${requiredRequests} OPENAI_API_KEY=... pnpm demo:live -- --execute --retry-failed`
+          : "pnpm demo:live -- --execute --retry-failed")
+      : `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${liveOperatorPaidRequestCount} OPENAI_API_KEY=... pnpm demo:live -- --execute`,
     viewCommand: 'WORKSHOPLM_DATA_ROOT="$PWD/.workshoplm/live-operator" pnpm dev',
   };
   await writeFile(resolve(root, "live-operator-plan.json"), `${JSON.stringify(plan, null, 2)}\n`);
@@ -99,19 +117,30 @@ async function main(): Promise<void> {
     return;
   }
 
-  const images = await generateOpenAiImageBatch(root, config!.media, config!.budget.fetch);
-  if (images.status !== "passed") throw new Error(`Live image batch was partial; failed panels: ${images.failed.join(", ")}`);
-  const narration = await generateOpenAiNarration(root, config!.media, config!.budget.fetch);
-  if (narration.status !== "passed") throw new Error(`Live narration was partial; failed panels: ${narration.failed.join(", ")}`);
-  applyWorkshopAction("renderVideo", root);
-  const video = await executeOne(root);
-  if (video.state !== "succeeded") throw new Error(video.error ?? "HyperFrames video render failed.");
+  const imageSelection = retryPlan?.imagePanelIds;
+  const narrationSelection = retryPlan?.narrationPanelIds;
+  if (imageSelection?.length || !retryFailed) {
+    const images = await generateOpenAiImageBatch(root, config!.media, config!.budget.fetch, imageSelection);
+    if (images.status !== "passed") throw new Error(`Live image batch was partial; failed panels: ${images.failed.join(", ")}`);
+  }
+  if (narrationSelection?.length || !retryFailed) {
+    const narration = await generateOpenAiNarration(root, config!.media, config!.budget.fetch, narrationSelection);
+    if (narration.status !== "passed") throw new Error(`Live narration was partial; failed panels: ${narration.failed.join(", ")}`);
+  }
+  const beforeRender = readWorkshopState(root);
+  let video: Awaited<ReturnType<typeof executeOne>> | { state: "succeeded"; artifact: { relativePath: string } };
+  if (beforeRender.videoState === "rendered") video = { state: "succeeded", artifact: { relativePath: "generated/workshoplm-demo.mp4" } };
+  else {
+    applyWorkshopAction("renderVideo", root);
+    video = await executeOne(root);
+    if (video.state !== "succeeded") throw new Error(video.error ?? "HyperFrames video render failed.");
+  }
   const finalState = readWorkshopState(root);
   console.log(JSON.stringify({
     ...plan,
     status: "passed",
-    paidCallsMade: true,
-    paidRequests: { used: config!.budget.usedRequests(), ceiling: config!.budget.maxRequests },
+    paidCallsMade: Boolean(config?.budget.usedRequests()),
+    paidRequests: { used: config?.budget.usedRequests() ?? 0, ceiling: config?.budget.maxRequests ?? 0 },
     reasoning: finalState.aiRuns.map((run) => ({ operation: run.operation, model: run.model, requestId: run.requestId, outputSha256: run.outputSha256 })),
     images: finalState.imageBatch?.panels.map((panel) => ({ id: panel.id, state: panel.state, model: panel.provenance?.model, sha256: panel.sha256 })),
     narration: finalState.narration?.panels.map((panel) => ({ panelId: panel.panelId, model: panel.model, voice: panel.voice, sha256: panel.sha256 })),

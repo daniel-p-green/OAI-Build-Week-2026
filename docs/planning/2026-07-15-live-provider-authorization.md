@@ -51,4 +51,21 @@ Do not upgrade any public claim until a person inspects:
 - the final narrated MP4 and its approved Storyboard version;
 - the rebuilt submission manifest and its remaining limitations.
 
-If either run is partial, preserve successful artifacts, record the exact failed request, and use selective retry rather than rerunning the complete batch.
+## Partial-run recovery
+
+The live operator persists every successful image and narration clip before reporting a partial result. Inspect the exact failed panel IDs without making a provider call:
+
+```bash
+pnpm demo:live -- --retry-failed
+```
+
+The retry preflight reports only missing image and narration panels and prints the exact minimum request ceiling. Run that printed command after authorization. For example, one failed image after narration completed requires one request, not twelve:
+
+```bash
+WORKSHOPLM_LIVE_OPENAI=1 \
+WORKSHOPLM_MAX_PAID_REQUESTS=1 \
+OPENAI_API_KEY=... \
+pnpm demo:live -- --execute --retry-failed
+```
+
+`--retry-failed` never recreates the Workshop, re-ingests sources, reruns a successful GPT-5.6 Map, or regenerates successful media. The retired `--keep` flag fails closed because its former behavior could duplicate setup and paid work. If the initial GPT-5.6 Map request itself fails, no downstream provider artifact exists yet; rerun the normal live command from a clean operator state after recording that failed request.
