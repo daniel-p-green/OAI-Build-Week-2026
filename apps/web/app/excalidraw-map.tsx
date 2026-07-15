@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef } from "react";
+import { baselineFromScene, patchesFromScene, type CanvasNodePatch, type MapSceneElement, type SceneNodeBaseline } from "./excalidraw-map-state";
 
 const Excalidraw = dynamic(() => import("@excalidraw/excalidraw").then((module) => module.Excalidraw), { ssr: false });
 
@@ -25,8 +26,7 @@ export type ExcalidrawMapNode = {
 
 type Source = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; claimCount: number };
 type MapEdge = { id: string; from: string; to: string; kind: string; label?: string };
-type CanvasNodePatch = Pick<ExcalidrawMapNode, "id" | "title" | "x" | "y" | "width" | "height">;
-type SceneElement = {
+type SceneElement = MapSceneElement & {
   id: string;
   type: string;
   x: number;
@@ -44,11 +44,7 @@ const shapeId = (nodeId: string) => `map-node-${nodeId}`;
 const sourceShapeId = (sourceId: string) => `map-source-${sourceId}`;
 const toSceneX = (value: number) => NODE_OFFSET_X + value * NODE_SCALE_X;
 const toSceneY = (value: number) => value * (SCENE_HEIGHT / 100);
-const fromSceneX = (value: number) => (value - NODE_OFFSET_X) / NODE_SCALE_X;
-const fromSceneY = (value: number) => value / (SCENE_HEIGHT / 100);
 const toSceneWidth = (value: number) => value * (SCENE_WIDTH / 100);
-const fromSceneWidth = (value: number) => value / (SCENE_WIDTH / 100);
-const rounded = (value: number) => Math.round(value * 10) / 10;
 
 function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: MapEdge[]) {
   const activeSourceIds = new Set(sources.map((source) => source.id));
@@ -140,24 +136,6 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
   return [...sourceShapes, ...nodeShapes, ...sourceLinks, ...graphLinks];
 }
 
-function patchesFromScene(nodes: ExcalidrawMapNode[], scene: readonly SceneElement[]): CanvasNodePatch[] {
-  return nodes.flatMap((node) => {
-    const shape = scene.find((element) => element.id === shapeId(node.id) && !element.isDeleted);
-    if (!shape) return [];
-    const label = scene.find((element) => element.containerId === shape.id && element.type === "text" && !element.isDeleted);
-    const patch = {
-      id: node.id,
-      title: label?.text?.trim() || node.title,
-      x: rounded(fromSceneX(shape.x)),
-      y: rounded(fromSceneY(shape.y)),
-      width: rounded(fromSceneWidth(shape.width)),
-      height: rounded(fromSceneY(shape.height)),
-    };
-    const changed = patch.title !== node.title || patch.x !== node.x || patch.y !== node.y || patch.width !== node.width || patch.height !== node.height;
-    return changed ? [patch] : [];
-  });
-}
-
 export function ExcalidrawMap({ nodes, sources, edges, selectedNodeId, onSelectNode, onShowSource, onSync }: {
   nodes: ExcalidrawMapNode[];
   sources: Source[];
@@ -168,6 +146,7 @@ export function ExcalidrawMap({ nodes, sources, edges, selectedNodeId, onSelectN
   onSync: (nodes: CanvasNodePatch[]) => void;
 }) {
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const baseline = useRef<Map<string, SceneNodeBaseline> | null>(null);
   const lastSent = useRef("");
   const lastSelection = useRef("");
   const skeleton = useMemo(() => sceneSkeleton(nodes, sources, edges), [nodes, sources, edges]);
@@ -178,7 +157,11 @@ export function ExcalidrawMap({ nodes, sources, edges, selectedNodeId, onSelectN
   }, [skeleton, selectedNodeId]);
 
   useEffect(() => () => { if (timeout.current) clearTimeout(timeout.current); }, []);
-  useEffect(() => { lastSent.current = ""; }, [sceneKey]);
+  useEffect(() => {
+    baseline.current = null;
+    lastSent.current = "";
+    if (timeout.current) clearTimeout(timeout.current);
+  }, [sceneKey]);
 
   function onChange(scene: readonly SceneElement[], appState: SceneAppState) {
     const selectedIds = Object.keys(appState.selectedElementIds).filter((id) => appState.selectedElementIds[id]);
@@ -193,7 +176,11 @@ export function ExcalidrawMap({ nodes, sources, edges, selectedNodeId, onSelectN
       else onSelectNode(nextNodeId);
     }
 
-    const changed = patchesFromScene(nodes, scene);
+    if (!baseline.current) {
+      baseline.current = baselineFromScene(nodes, scene);
+      return;
+    }
+    const changed = patchesFromScene(nodes, scene, baseline.current);
     const signature = JSON.stringify(changed);
     if (!changed.length || signature === lastSent.current) return;
     if (timeout.current) clearTimeout(timeout.current);

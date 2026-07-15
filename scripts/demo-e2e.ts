@@ -8,7 +8,7 @@ import { renderDeck, renderInfographic } from "../packages/production/src/render
 import { openLocalDatabase } from "../apps/worker/src/db/client.ts";
 import { migrate } from "../apps/worker/src/db/migrate.ts";
 import { executeOne } from "../apps/worker/src/executor.ts";
-import { applyWorkshopAction, createImageBatch, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState } from "../apps/worker/src/workshop-service.ts";
+import { applyWorkshopAction, createImageBatch, dismissWorkshopOrientation, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, updateWorkshopOnboarding } from "../apps/worker/src/workshop-service.ts";
 
 async function main() {
 const root = resolve(process.cwd(), ".workshoplm", "acceptance");
@@ -39,6 +39,9 @@ await ingestSource({ title: "Recorded fixture brainstorm", origin: "Sanitized fi
   "The OpenAI Build Week submission uses WorkshopLM to create its own presentation, image set, Storyboard, and demo Video from this raw brainstorm.",
   "The product promise is faster delivery without weaker work: one source-traceable package that remains editable in the tools teams already use.",
 ].join("\n\n") }, root);
+updateWorkshopOnboarding({ outcome: "client_facing_pitch", step: "complete" }, root);
+dismissWorkshopOrientation("map", root);
+dismissWorkshopOrientation("outputs", root);
 applyWorkshopAction("approveBrief", root);
 lockManualStyle({}, root);
 createImageBatch(root);
@@ -64,6 +67,7 @@ applyWorkshopAction("renderVideo", root);
 const video = await executeOne(root);
 if (video.state !== "succeeded" || !(await stat(resolve(root, "generated", "workshoplm-demo.mp4"))).isFile()) throw new Error("approved storyboard did not produce a local video");
 const finalState = readWorkshopState(root);
+if (finalState.onboarding.step !== "complete" || !finalState.onboarding.mapOrientationDismissed || !finalState.onboarding.outputsOrientationDismissed) throw new Error("recorded fixture did not open directly on the judge-ready Map");
 if (!finalState.imageBatch || finalState.imageBatch.panels.length !== 6) throw new Error("recorded fixture did not preserve the planned coherent image set");
 if (finalState.videos.length !== 1 || finalState.videos[0]?.stale || !(await stat(resolve(root, finalState.videos[0].relativePath))).isFile()) throw new Error("recorded fixture did not preserve one current immutable Video version");
 const buildTrace = finalState.videos[0]?.buildTrace;

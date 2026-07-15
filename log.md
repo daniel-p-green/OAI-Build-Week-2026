@@ -6004,3 +6004,32 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Obtain the cold external `Send`/`Revise` decision on the refreshed candidate.
 - Provider-backed Map, image set, Realtime turn, narration, and final public video remain open under `GOAL.md`.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 18:54 CT — Opening the demo can no longer invalidate it
+
+**Area:** Demo fixture / Map persistence / Live browser verification
+
+### Changed
+
+- Corrected the recorded-fixture entry path. `pnpm demo:e2e` now completes first-use onboarding and dismisses both orientation cues, while the new `pnpm demo:serve` command starts the web app against the exact verified `.workshoplm/acceptance` root. The README no longer tells a recorder to build one fixture and unknowingly open another workspace.
+- Replaced absolute Excalidraw mount-time geometry persistence with a captured scene baseline. Excalidraw may normalize a label container's dimensions when it opens, but WorkshopLM now persists only the user's position, size, or title delta relative to that baseline.
+- Added three focused web regressions proving that normalized initial geometry is a no-op, a real move persists the intended domain delta without leaking normalized dimensions, and a real label edit persists.
+
+### Verified
+
+- Rebuilt the sanitized Workshop with `pnpm demo:e2e`, started it with `pnpm demo:serve`, and opened it in the Codex in-app browser. It landed directly on `WorkshopLM Build Week / Map` with `1 source` and `View brief`; the server recorded only GET requests and no mutation request during load.
+- Followed the live Map → Brief → Outputs → Presentation path. The gallery showed the Presentation hero, Infographic, six-image planned set, approved five-panel Storyboard, and rendered Video; the focused Presentation exposed `Show source`, `Download PowerPoint`, and its live preview.
+- After browser inspection, `/api/workshop` still reported `briefApproved: true`, `storyboardApproved: true`, `videoState: rendered`, and zero stale Outputs.
+- `pnpm check` passed all 13 packages, including 18 web tests and 84 worker tests. `pnpm demo:e2e` passed all six gates; `pnpm submission:build` and `pnpm submission:verify` produced and validated the truthful 17-asset `partial` set; `pnpm demo:film:verify` retained six ready shots and four provider/founder/final-evidence-blocked shots; `git diff --check` passed.
+
+### Decisions
+
+- A read-only open is part of the product contract. Canvas-library normalization must never masquerade as a professional edit or trigger downstream staleness.
+- The judge capture command must name the verified fixture explicitly; relying on an ambient default data root is too easy to record incorrectly.
+
+### Open items
+
+- Provider-backed Map, six-image gallery, Realtime turn, narration, founder brainstorm, cold professional `Send`/`Revise`, final public Video, and `/feedback` Session ID remain open under `GOAL.md`.
+- Codex Session ID: unavailable on this surface; not inferred.

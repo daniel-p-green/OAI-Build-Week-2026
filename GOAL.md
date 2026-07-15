@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 18:43 CT
+Last updated: 2026-07-15 18:54 CT
 
 ## Status
 
@@ -618,6 +618,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 
 - [x] Add a recorded-fixture mode to `pnpm demo:e2e` for repeatable demo diagnosis, with live-provider checks kept separate.
 - [ ] Maintain and log the end-to-end acceptance path daily once the first vertical slice exists.
+  - 2026-07-15 live-browser repair: the acceptance builder now completes onboarding and dismisses tutorial cues, and `pnpm demo:serve` opens the exact verified `.workshoplm/acceptance` data root instead of an unrelated fresh workspace. A Codex in-app-browser reload exposed and then verified the repair for a more serious seam: Excalidraw's mount-time shape normalization no longer posts false Map edits or revokes the approved Brief, Storyboard, rendered Video, and current Outputs. Real position, size, and label deltas remain persistable under focused regression tests. Keep this daily gate open until submission.
 - [x] Verify the full Capture → Shape → Deliver flow in the live application.
 - [x] Verify realistic desktop, tablet, and mobile behavior.
 - [x] Verify schema, gate, graph, grounding, rendering, and integration tests.

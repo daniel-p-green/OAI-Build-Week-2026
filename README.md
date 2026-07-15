@@ -44,12 +44,12 @@ pnpm demo:reset
 pnpm demo:e2e
 pnpm demo:render
 pnpm demo:thumbnail
-pnpm dev
+pnpm demo:serve
 ```
 
-`pnpm demo:e2e` is recorded-fixture mode: it does not require OpenAI credentials or paid model calls. `pnpm demo:render` runs the approved sanitized fixture through the local HyperFrames worker. `pnpm demo:thumbnail` derives a local PNG thumbnail and hash metadata from that rendered video. The app data is stored under `.workshoplm/`, which is reset by `demo:reset`.
+`pnpm demo:e2e` is recorded-fixture mode: it does not require OpenAI credentials or paid model calls. It builds the judge-ready Workshop under `.workshoplm/acceptance`, completes first-use onboarding, and dismisses tutorial cues so the recorded surface opens directly on the grounded Map. `pnpm demo:render` runs the approved sanitized fixture through the local HyperFrames worker. `pnpm demo:thumbnail` derives a local PNG thumbnail and hash metadata from that rendered video. `pnpm demo:serve` starts the app against that exact verified fixture; ordinary `pnpm dev` remains available for a fresh product workspace. The repository-owned `.workshoplm/` data root is reset by `demo:reset`.
 
-After `pnpm dev` starts, open `http://localhost:3000` in the ChatGPT/Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, real presentation and infographic previews, editable PowerPoint files, planned Image set, editable Storyboard, and local Video. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
+After `pnpm demo:serve` starts, open `http://localhost:3000` in the Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, real presentation and infographic previews, editable PowerPoint files, planned Image set, editable Storyboard, and local Video. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
 
 The GPT-5.6 routing benchmark is deliberately spend-gated. Once a paid-call authorization exists, run `WORKSHOPLM_LIVE_OPENAI=1 OPENAI_API_KEY=… pnpm --filter @workshoplm/ai probe:gpt56`; it compares Sol, Terra, and Luna on compact grounded-graph, brief, and claim-triage cases, recording latency, reported token usage, and deterministic JSON/evidence checks. It does not invent dollar costs from token counts.
 
