@@ -396,7 +396,31 @@ export async function ingestSource(input: SourceIngestion, root?: string): Promi
   const createdAt = new Date().toISOString(); const snapshot = graphFor(current);
   const operation = GraphOperation.parse({ type: "add_node", node: { id: `node-${node.id}`, kind: "claim", label: node.title, claimId: claims[0]?.id, evidenceState: "verified", metadata: { body: node.body, locator: node.locator, sourceId, x: node.x, y: node.y, width: node.width, height: node.height } } });
   const applied = appendGraphOperation(snapshot.graph, snapshot.history, operation, { id: `operation-source-${hash.slice(0, 12)}`, actor: "system", createdAt });
-  return write({ ...current, sources: current.sources + 1, groundedClaims: current.groundedClaims + claims.length, sourceItems: [...current.sourceItems, source], activeSourceIds: [...new Set([...current.activeSourceIds, sourceId])], sourceChunks: [...chunks, ...current.sourceChunks], claims: [...claims, ...current.claims], mapNodes: mapNodesFor(applied.graph, [...current.mapNodes, node]), mapEdges: mapEdgesFor(applied.graph), graphState: serializeGraphState(applied.graph, applied.history), updatedAt: createdAt }, root);
+  return write({
+    ...current,
+    sources: current.sources + 1,
+    groundedClaims: current.groundedClaims + claims.length,
+    sourceItems: [...current.sourceItems, source],
+    activeSourceIds: [...new Set([...current.activeSourceIds, sourceId])],
+    sourceChunks: [...chunks, ...current.sourceChunks],
+    claims: [...claims, ...current.claims],
+    candidates: [],
+    mapNodes: mapNodesFor(applied.graph, [...current.mapNodes, node]),
+    mapEdges: mapEdgesFor(applied.graph),
+    graphState: serializeGraphState(applied.graph, applied.history),
+    frame: current.frame ? { ...current.frame, stale: true } : undefined,
+    sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined,
+    assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined,
+    imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined,
+    narration: current.narration ? { ...current.narration, stale: true } : undefined,
+    storyboard: current.storyboard.panels.length ? { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) } : current.storyboard,
+    outputs: current.outputs.map((output) => ({ ...output, stale: true })),
+    videos: staleVideos(current),
+    briefApproved: false,
+    storyboardApproved: false,
+    videoState: "blocked",
+    updatedAt: createdAt,
+  }, root);
 }
 export async function captureFallbackTranscript(text: string, root?: string, evidence?: RealtimeCaptureEvidence): Promise<WorkshopState> {
   const normalized = normalizeSourceText(text); if (!normalized) throw new Error("Capture text is required."); const capturedAt = new Date().toISOString();

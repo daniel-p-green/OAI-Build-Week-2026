@@ -9,15 +9,17 @@
 Back to Brief
 Back to Map
 Back to Outputs
-Build Week presentation
-Build Week presentationPresentation · Version 1Up to date2 sources
+Build notes · §2
+ChatGPT task · 12:41 · chunk 04
 Create video
 Edit
 Evidence
-Evidence infographic
-Evidence infographicInfographic · Version 1Up to date2 sources
 Image set
+Infographic
+InfographicInfographic · Version 1Up to date3 sources
 Outputs
+Presentation
+PresentationPresentation · Version 1Up to date3 sources
 Save
 Show source
 Storyboard
@@ -27,3 +29,4 @@ Undo
 View brief
 View outputs
 View storyboard
+WorkshopLM Build Week

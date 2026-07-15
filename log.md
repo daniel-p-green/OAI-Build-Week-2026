@@ -4574,3 +4574,43 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Live GPT-5.6 Map reasoning, six GPT Image 2 outputs, provider narration, and one Realtime microphone turn remain spend-gated and unproved.
 - Founder footage, primary `/feedback` Session ID, final edit, public upload, and Devpost submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 12:31 CT — Weekly return visit now refreshes work without lying about history
+
+**Area:** Product / Trust / Return visit / UI / Testing
+
+### Changed
+
+- Reproduced the professional weekly rhythm in an isolated real browser Workshop: one Monday meeting, approved Brief, reused saved Style, and Presentation Version 1; then a Thursday meeting arrived and had to change the work.
+- Fixed Source ingestion as a dependency boundary. Every genuinely new Source now expands the typed Map, clears extracted candidates, revokes Brief and Storyboard approval, blocks Video, and marks the existing Frame, Sketch, asset plan, image batch, Storyboard, narration, Outputs, and Videos `Needs update`. The Style remains current because evidence changed, not the brand system.
+- Added a complete service regression covering saved Style reuse, initial deck delivery, new-meeting ingestion, Map expansion, Brief Version 2, Presentation Version 2, retained Presentation Version 1 history, and a Version 2 claim ID that resolves to the Thursday Source.
+- Fixed current-versus-history semantics in Outputs. The current state is derived from the newest presentation and infographic versions, current asset plan, image batch, Storyboard, and Video; a stale historical version no longer leaves the whole screen in a false `Update outputs` state.
+- Kept partial success distinct from stale work. A failed or incomplete batch says `Some Outputs are ready`; a changed Source, Brief, or Style says `Outputs need an update`. Both retain one appropriate `Update outputs` action.
+- Removed fixture-specific labels from professional Workshops: `Build Week presentation` is now `Presentation`, and `Evidence infographic` is now `Infographic`.
+- Reconciled the production-browser suite with saved-first Style progressive disclosure, actual three-Source fixture coverage, exact `Open preview` language, and the Storyboard panel whose evidence really resolves to `Build Week brief`.
+
+### Verified
+
+- In the ChatGPT/Codex in-app browser, adding `Thursday client meeting` changed the header from `View brief` to `Approve brief`, expanded the Map from one to two ideas, and showed two selected Sources. Reapproval produced Brief Version 2 while `Client system` remained Style Version 1 and current.
+- Before regeneration, Presentation Version 1 was visibly `Needs update`. After `Update outputs`, Presentation Version 2 was `Up to date`, showed two Sources, and cited Thursday's pilot approval and Monday-start recommendation. Version 1 remained visible as one-Source history without keeping the screen stale; the only primary next action became `View storyboard`.
+- The isolated API state confirmed deck Version 1 stale, deck Version 2 current, infographic Version 1 current, current Storyboard Version 1, current Frame Version 2, Style Version 1, and exact claim IDs from both meeting Sources.
+- `pnpm check` passed across all 13 packages. Worker passed 63/63 tests, web 13/13, and production 3/3. `pnpm demo:e2e` passed the complete recorded seam and all six gates.
+- The production Next build passed. After intentional baseline reconciliation, the strict no-update Playwright run passed all 17/17 desktop, compact, mobile, state, provenance, Style, Storyboard, Video, accessibility, and visible-copy scenarios.
+- `pnpm submission:build` produced the honest 16-asset `partial` set, and `pnpm submission:verify` reported `valid: true`, `stale: false`, and `tampered: false`.
+- Structured evidence and the browser screenshot are recorded in `artifacts/spikes/weekly-return-visit-2026-07-15.json` and `artifacts/spikes/weekly-return-visit-2026-07-15.png`; the screenshot SHA-256 is `b4adc837dd2cb3f72a6ed73b51b574b993c4d6b2af30d1e6fad1a2aa198f02bd`.
+
+### Decisions
+
+- Adding evidence is a semantic graph change, not a harmless collection edit. Existing finished work must become stale until the professional reapproves the changed Brief.
+- Style is independent of Source freshness. Reusing a saved Style across weekly updates should remove setup friction, not create another approval loop.
+- Historical staleness is informative; current staleness is actionable. The UI must preserve both without confusing one for the other.
+- Generic Output names belong in the product. Demo-specific names belong in the Workshop content, not the surrounding interface.
+
+### Open items
+
+- Obtain a real cold `Send` or `Revise` judgment from someone outside the project for the AI Collective deck candidate.
+- Live GPT-5.6 Map reasoning, six GPT Image 2 outputs, provider narration, and one Realtime microphone turn remain spend-gated and unproved.
+- Founder footage, primary `/feedback` Session ID, final video edit, public upload, submitted links, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

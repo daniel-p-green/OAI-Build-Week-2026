@@ -61,8 +61,29 @@ type PersistedWorkshop = {
 };
 
 const VIEW_TITLES: Record<ObjectView, string> = { map: "Map", brief: "Brief", outputs: "Outputs", storyboard: "Storyboard", output: "Output" };
-const outputTitle = (type: "deck" | "infographic") => type === "deck" ? "Build Week presentation" : "Evidence infographic";
+const outputTitle = (type: "deck" | "infographic") => type === "deck" ? "Presentation" : "Infographic";
 const outputType = (type: "deck" | "infographic") => type === "deck" ? "Presentation" : "Infographic";
+
+function outputSetStatus(state: PersistedWorkshop | null) {
+  if (!state) return { incomplete: false, stale: false, actionRequired: false };
+  const latest = (type: "deck" | "infographic") => [...state.outputs].reverse().find((output) => output.type === type);
+  const deck = latest("deck");
+  const infographic = latest("infographic");
+  const generationStarted = Boolean(state.outputs.length || state.assetPlan || state.imageBatch);
+  const currentVideo = [...(state.videos ?? [])].sort((left, right) => right.version - left.version)[0];
+  const failedImages = Boolean(state.imageBatch?.panels.some((panel) => panel.state === "failed"));
+  const incomplete = Boolean(generationStarted && (!deck || !infographic || !state.imageBatch || !state.storyboard.panels.length)) || failedImages;
+  const stale = Boolean(
+    deck?.stale
+    || infographic?.stale
+    || state.assetPlan?.stale
+    || state.imageBatch?.stale
+    || state.imageBatch?.panels.some((panel) => panel.state === "selected_for_regeneration")
+    || state.storyboard.stale
+    || currentVideo?.stale
+  );
+  return { incomplete, stale, actionRequired: incomplete || stale };
+}
 
 function outputVersion(output: PersistedWorkshop["outputs"][number], outputs: PersistedWorkshop["outputs"]) {
   return outputs.filter((item) => item.type === output.type).findIndex((item) => item.id === output.id) + 1;
@@ -112,7 +133,7 @@ export default function WorkshopPage() {
   const selectedPanel = useMemo(() => state?.storyboard.panels.find((panel) => panel.id === selectedPanelId) ?? state?.storyboard.panels[0], [state, selectedPanelId]);
   const selectedOutput = useMemo(() => state?.outputs.find((output) => output.id === selectedOutputId), [state, selectedOutputId]);
   const canDeliver = Boolean(state?.briefApproved && state.style && !state.style.stale);
-  const outputsNeedUpdate = Boolean(state?.outputs.some((output) => output.stale) || state?.assetPlan?.stale || state?.imageBatch?.stale || state?.imageBatch?.panels.some((panel) => panel.state === "failed" || panel.state === "selected_for_regeneration") || state?.storyboard.stale || (state?.videos?.length && !state.videos.some((video) => !video.stale)));
+  const outputsNeedUpdate = outputSetStatus(state).actionRequired;
 
   async function reload() {
     setLoadState("loading");
@@ -378,8 +399,9 @@ function OutputsView({ state, onOpenOutput, onOpenStoryboard }: { state: Persist
   const generatedImages = state?.imageBatch?.panels.filter((panel) => panel.state === "generated").length ?? 0;
   const failedImages = state?.imageBatch?.panels.filter((panel) => panel.state === "failed").length ?? 0;
   const ready = Boolean(state?.briefApproved && state.style && !state.style.stale);
-  const partial = Boolean(state?.outputs.length === 1 || failedImages);
-  const needsUpdate = Boolean(state?.outputs.some((output) => output.stale) || state?.assetPlan?.stale || state?.imageBatch?.stale || state?.storyboard.stale || (videos.length && !videos.some((video) => !video.stale)));
+  const outputStatus = outputSetStatus(state);
+  const partial = outputStatus.incomplete;
+  const needsUpdate = outputStatus.stale;
   return <article className="outputs-view">
     <h1 className="visually-hidden">Outputs</h1>
     {!ready ? <StateMessage state="empty" title="Choose a Style">Your Brief is ready. Add a Style to create Outputs.</StateMessage> : <>

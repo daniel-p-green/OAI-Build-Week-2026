@@ -129,12 +129,12 @@ async function main(): Promise<void> {
     await page.getByRole("button", { name: "View outputs" }).click();
     await beat("create-outputs", "Create the traced Output set", async () => {
       await page.getByRole("button", { name: "Create outputs" }).click();
-      await expect(page.getByRole("heading", { name: "Build Week presentation" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
       await expect(page.getByRole("heading", { name: "Image set" })).toBeVisible();
     }, 2600);
 
     await beat("output-evidence", "Follow a presentation back to its source", async () => {
-      await page.getByRole("button", { name: "Open Build Week presentation" }).click();
+      await page.getByRole("button", { name: "Open Presentation" }).click();
       await page.getByRole("button", { name: "Show source" }).click();
       await expect(page.getByRole("dialog", { name: "Source" })).toBeVisible();
     }, 1800);

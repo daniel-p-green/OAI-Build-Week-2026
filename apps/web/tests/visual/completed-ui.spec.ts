@@ -138,6 +138,8 @@ test("Style can start from a website and apply a professional intent", async ({ 
     await page.getByRole("button", { name: "View brief" }).click();
     await page.getByRole("button", { name: "Choose style" }).click();
     const sheet = page.getByRole("dialog", { name: "Style" });
+    const createAnother = sheet.getByRole("button", { name: "Create another style" });
+    if (await createAnother.isVisible()) await createAnother.click();
     await sheet.getByRole("button", { name: /Website/ }).click();
     await sheet.getByRole("textbox", { name: "Website" }).fill("https://example.com/brand");
     await sheet.getByRole("button", { name: /Board presentation/ }).click();
@@ -194,19 +196,19 @@ test.describe("completed Workshop judge path", () => {
 
       await page.getByRole("button", { name: "View outputs" }).click();
       await expectPrimaryActions(page, 1);
-      await expect(page.getByRole("heading", { name: "Build Week presentation" })).toHaveCount(1);
-      await expect(page.getByRole("heading", { name: "Evidence infographic" })).toHaveCount(1);
+      await expect(page.getByRole("heading", { name: "Presentation" })).toHaveCount(1);
+      await expect(page.getByRole("heading", { name: "Infographic" })).toHaveCount(1);
       await expect(page.getByRole("heading", { name: "Image set" })).toHaveCount(1);
       await expect(page.getByRole("heading", { name: "Storyboard" })).toHaveCount(1);
       await expect(page.getByRole("button", { name: "Show source" })).toHaveCount(0);
       await expectScreen(page, `${viewport.name}-outputs`);
 
-      await page.getByRole("button", { name: "Open Build Week presentation" }).click();
-      await expect(page.getByRole("heading", { name: "Build Week presentation" })).toBeVisible();
-      await expect(page.getByText("Presentation · Version 1 · 2 sources", { exact: true })).toBeVisible();
-      await expect(page.getByRole("button", { name: "2 sources" })).toBeVisible();
+      await page.getByRole("button", { name: "Open Presentation" }).click();
+      await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
+      await expect(page.getByText("Presentation · Version 1 · 3 sources", { exact: true })).toBeVisible();
+      await expect(page.getByRole("button", { name: "3 sources" })).toBeVisible();
       await expect(page.getByRole("button", { name: "Show source" })).toHaveClass(/oai-button--primary/);
-      await expect(page.getByRole("link", { name: "Open file" })).toBeVisible();
+      await expect(page.getByRole("link", { name: "Open preview" })).toBeVisible();
       await expectScreen(page, `${viewport.name}-output-viewer`);
       await page.getByRole("button", { name: "Back to Outputs" }).click();
 
@@ -221,7 +223,7 @@ test.describe("completed Workshop judge path", () => {
       await expectPrimaryActions(page, 1);
       await expect(page.getByRole("button", { name: "Save" })).toHaveCount(0);
       await expectScreen(page, `${viewport.name}-storyboard`);
-      await page.locator(".storyboard-strip button").nth(1).click();
+      await page.locator(".storyboard-strip button").nth(2).click();
       await page.getByRole("button", { name: "Show source" }).click();
       const storyboardSource = page.getByRole("dialog", { name: "Source" });
       await expect(storyboardSource).toContainText("Build Week brief");
@@ -338,8 +340,8 @@ test("Outputs preserve recognizable version history and source coverage", async 
   await page.getByRole("button", { name: "View brief" }).click();
   await page.getByRole("button", { name: "View outputs" }).click();
 
-  await expect(page.getByRole("button", { name: "Open Build Week presentation, version 2" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Open Build Week presentation, version 1" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Open Presentation, version 2" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Open Presentation, version 1" })).toBeVisible();
   await expect(page.getByText("Presentation · Version 2")).toBeVisible();
   await expect(page.getByText("Presentation · Version 1")).toBeVisible();
   await expect(page.getByText("Up to date", { exact: true }).first()).toBeVisible();
