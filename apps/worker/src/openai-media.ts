@@ -97,6 +97,23 @@ function wavDurationSeconds(bytes: Buffer): number {
   return duration;
 }
 
+function validatePng(bytes: Buffer, expectedSize: string): void {
+  const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+  if (bytes.length < 33 || !bytes.subarray(0, 8).equals(signature)) throw new Error("Image API returned an invalid PNG file.");
+  let offset = 8; let width: number | undefined; let height: number | undefined; let foundEnd = false;
+  while (offset + 12 <= bytes.length) {
+    const size = bytes.readUInt32BE(offset); const type = bytes.toString("ascii", offset + 4, offset + 8); const end = offset + 12 + size;
+    if (end > bytes.length) throw new Error("Image API returned a truncated PNG file.");
+    if (offset === 8 && (type !== "IHDR" || size !== 13)) throw new Error("Image API returned a PNG without a valid IHDR chunk.");
+    if (type === "IHDR") { width = bytes.readUInt32BE(offset + 8); height = bytes.readUInt32BE(offset + 12); }
+    if (type === "IEND") { foundEnd = true; if (end !== bytes.length) throw new Error("Image API returned a PNG with trailing bytes."); }
+    offset = end;
+  }
+  if (!foundEnd || !width || !height) throw new Error("Image API returned an incomplete PNG file.");
+  const expected = expectedSize.match(/^(\d+)x(\d+)$/);
+  if (expected && (width !== Number(expected[1]) || height !== Number(expected[2]))) throw new Error(`Image API returned ${width}x${height}; expected ${expectedSize}.`);
+}
+
 function safeError(error: unknown): string {
   return (error instanceof Error ? error.message : String(error))
     .replace(/sk-[A-Za-z0-9_-]+/g, "[redacted]")
@@ -159,6 +176,7 @@ export async function generateOpenAiImageBatch(
     const encoded = payload.data?.[0]?.b64_json;
     if (!encoded) throw new Error("Image API response did not contain base64 image data.");
     const bytes = Buffer.from(encoded, "base64");
+    validatePng(bytes, config.imageSize);
     const relativePath = workshopGeneratedPath(state.id, "images", `${panel.id}-v${panel.version}.png`);
     await writeFile(join(root, relativePath), bytes);
     recordGeneratedImagePanel(panel.id, {

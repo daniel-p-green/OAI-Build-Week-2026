@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 13:56 CT
+Last updated: 2026-07-15 13:59 CT
 
 ## Status
 
@@ -424,6 +424,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Generate a source-traceable infographic.
 - [ ] Generate and evaluate a coherent GPT Image 2 batch.
   - 2026-07-15: the production batch now creates a 512×512 style-derived reference board, hashes and versions it with the approved Visual DNA, sends the same bytes and locked direction through `/v1/images/edits` for all six panels and selective retries, and refuses provider dispatch if the reference or sibling contract drifts. Keep this open until the six real images are generated and visually inspected as one set.
+  - 2026-07-15 provider-media gate: decoded Image API output must be a structurally complete PNG with a valid IHDR, positive dimensions, terminal IEND, no trailing bytes, and exact requested dimensions before a panel can become `generated`. Malformed, truncated, or wrong-sized bytes become a selective-retry failure and never enter Storyboard or Video provenance.
 - [x] Generate an editable, panel-level storyboard.
   - 2026-07-15: every generated Storyboard panel stores durable claim/source/chunk/locator evidence plus its bound image-panel ID and version. `Show source` opens that panel's exact Source; the focused review and HyperFrames composition resolve the same generated image bytes, and any version-changing image regeneration revokes Storyboard approval before narration or video can proceed.
 - [x] Block video enqueueing until the current storyboard approval is persisted; the worker accepts current provider narration when present and otherwise uses the disclosed deterministic fallback.

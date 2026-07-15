@@ -5084,3 +5084,33 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - The first paid narration run still needs explicit request authorization, listening review, and confirmation that the selected voice consistently fits approved panel timing.
 - No live-provider quality claim is unlocked by deterministic WAV fixtures.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 14:00 CT — GPT Image bytes now pass a real media gate
+
+**Area:** Images / Provider readiness / Provenance integrity
+
+### Changed
+
+- Added structural validation between Image API base64 decoding and panel persistence.
+- A provider image must have the PNG signature, a first valid IHDR chunk, positive width and height, bounded chunks, a terminal IEND chunk, no trailing bytes, and dimensions matching the requested output size.
+- Invalid, truncated, incomplete, trailing-byte, or wrong-sized payloads become panel-level selective-retry failures. They never receive `generated` state or flow into Storyboard and Video provenance.
+- Replaced arbitrary string image fixtures with the real deterministic Style reference PNG and added malformed-byte plus wrong-dimension regression cases.
+
+### Verified
+
+- `pnpm --filter @workshoplm/worker test` passed 69 tests across eight files.
+- `pnpm --filter @workshoplm/worker typecheck` passed.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages.
+- `pnpm demo:e2e` passed all six recorded gates and retained the deterministic rendered Video artifact.
+
+### Decisions
+
+- A `.png` filename and base64 transport do not prove an image is renderable. The provider adapter must validate the actual decoded media before upgrading panel state.
+- Media validity is distinct from visual quality. This gate protects the production seam, while the real six-panel coherence and deck-usability review remains open until paid generation is explicitly authorized.
+
+### Open items
+
+- No real GPT Image 2 output has run or been visually reviewed; the image-gallery, coherence, and professional send-it checks remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

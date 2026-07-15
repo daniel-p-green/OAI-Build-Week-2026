@@ -6,7 +6,7 @@ import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarra
 import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDna, generateAssetPlan, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, resolveWorkshopArtifact, updateStoryboardPanel } from "./workshop-service.js";
 
 const roots: string[] = [];
-const config: OpenAiMediaConfig = { apiKey: "test-key", ...defaultOpenAiMediaConfig };
+const config: OpenAiMediaConfig = { apiKey: "test-key", ...defaultOpenAiMediaConfig, imageSize: "512x512" };
 
 function testWav(durationSeconds = 1, marker = 0): Buffer {
   const sampleRate = 8_000; const channels = 1; const bitsPerSample = 16; const byteRate = sampleRate * channels * bitsPerSample / 8; const dataSize = Math.round(durationSeconds * byteRate); const bytes = Buffer.alloc(44 + dataSize, marker);
@@ -38,11 +38,12 @@ afterEach(async () => {
 describe("OpenAI media adapters", () => {
   it("persists a six-image GPT Image 2 batch with panel-level provenance", async () => {
     const root = await readyRoot();
+    const fixturePng = await readFile(join(root, readWorkshopState(root).imageBatch!.referencePath));
     const requests: Array<{ url: string; body: FormData }> = [];
     const fetchImpl: typeof fetch = async (input, init) => {
       const body = init?.body as FormData;
       requests.push({ url: String(input), body });
-      return new Response(JSON.stringify({ data: [{ b64_json: Buffer.from(`image-${requests.length}`).toString("base64") }] }), { status: 200, headers: { "content-type": "application/json", "x-request-id": `image-request-${requests.length}` } });
+      return new Response(JSON.stringify({ data: [{ b64_json: fixturePng.toString("base64") }] }), { status: 200, headers: { "content-type": "application/json", "x-request-id": `image-request-${requests.length}` } });
     };
 
     await expect(generateOpenAiImageBatch(root, config, fetchImpl)).resolves.toMatchObject({ status: "passed", completed: expect.arrayContaining(["image-panel-1", "image-panel-6"]), failed: [] });
@@ -53,8 +54,20 @@ describe("OpenAI media adapters", () => {
     expect(requests.every(({ body }) => String(body.get("prompt")).includes("Locked palette: #1155AA, #171816, #F4F2EC"))).toBe(true);
     const state = readWorkshopState(root);
     expect(state.imageBatch?.panels.every((panel) => panel.state === "generated" && panel.provenance?.model === "gpt-image-2" && panel.provenance.referenceId === state.imageBatch?.referenceId && panel.sha256?.length === 64)).toBe(true);
-    await expect(readFile(join(root, state.imageBatch!.panels[0]!.relativePath!), "utf8")).resolves.toBe("image-1");
+    await expect(readFile(join(root, state.imageBatch!.panels[0]!.relativePath!))).resolves.toEqual(fixturePng);
     expect(resolveWorkshopArtifact("image-panel-1", root)).toMatchObject({ contentType: "image/png", path: expect.stringContaining("image-panel-1-v1.png") });
+  });
+
+  it("rejects malformed or wrong-sized image bytes before recording a generated panel", async () => {
+    const malformedRoot = await readyRoot(); const malformedPanel = readWorkshopState(malformedRoot).imageBatch!.panels[0]!;
+    const malformedFetch: typeof fetch = async () => new Response(JSON.stringify({ data: [{ b64_json: Buffer.from("not-a-png").toString("base64") }] }), { status: 200 });
+    await expect(generateOpenAiImageBatch(malformedRoot, config, malformedFetch, [malformedPanel.id])).resolves.toEqual({ status: "partial", completed: [], failed: [malformedPanel.id] });
+    expect(readWorkshopState(malformedRoot).imageBatch!.panels[0]).toMatchObject({ state: "failed", error: "Image API returned an invalid PNG file." });
+
+    const wrongSizeRoot = await readyRoot(); const wrongSizeState = readWorkshopState(wrongSizeRoot); const wrongSizePanel = wrongSizeState.imageBatch!.panels[0]!; const fixturePng = await readFile(join(wrongSizeRoot, wrongSizeState.imageBatch!.referencePath));
+    const wrongSizeFetch: typeof fetch = async () => new Response(JSON.stringify({ data: [{ b64_json: fixturePng.toString("base64") }] }), { status: 200 });
+    await expect(generateOpenAiImageBatch(wrongSizeRoot, { ...config, imageSize: "1024x1024" }, wrongSizeFetch, [wrongSizePanel.id])).resolves.toEqual({ status: "partial", completed: [], failed: [wrongSizePanel.id] });
+    expect(readWorkshopState(wrongSizeRoot).imageBatch!.panels[0]?.error).toBe("Image API returned 512x512; expected 1024x1024.");
   });
 
   it("fails closed when the shared reference artifact no longer matches the batch manifest", async () => {
@@ -70,11 +83,12 @@ describe("OpenAI media adapters", () => {
 
   it("keeps successful image panels when one provider request fails", async () => {
     const root = await readyRoot();
+    const fixturePng = await readFile(join(root, readWorkshopState(root).imageBatch!.referencePath));
     let count = 0;
     const fetchImpl: typeof fetch = async () => {
       count += 1;
       if (count === 2) return new Response(JSON.stringify({ error: { message: "temporary timeout" } }), { status: 503 });
-      return new Response(JSON.stringify({ data: [{ b64_json: Buffer.from(`image-${count}`).toString("base64") }] }), { status: 200, headers: { "content-type": "application/json" } });
+      return new Response(JSON.stringify({ data: [{ b64_json: fixturePng.toString("base64") }] }), { status: 200, headers: { "content-type": "application/json" } });
     };
 
     await expect(generateOpenAiImageBatch(root, config, fetchImpl)).resolves.toMatchObject({ status: "partial", failed: ["image-panel-2"] });
@@ -87,7 +101,7 @@ describe("OpenAI media adapters", () => {
     let retryCalls = 0;
     const retryFetch: typeof fetch = async () => {
       retryCalls += 1;
-      return new Response(JSON.stringify({ data: [{ b64_json: Buffer.from("image-retry-2").toString("base64") }] }), { status: 200, headers: { "content-type": "application/json", "x-request-id": "image-retry-2" } });
+      return new Response(JSON.stringify({ data: [{ b64_json: fixturePng.toString("base64") }] }), { status: 200, headers: { "content-type": "application/json", "x-request-id": "image-retry-2" } });
     };
     await expect(generateOpenAiImageBatch(root, config, retryFetch, ["image-panel-2"])).resolves.toEqual({ status: "passed", completed: ["image-panel-2"], failed: [] });
     expect(retryCalls).toBe(1);
