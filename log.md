@@ -4129,3 +4129,37 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Run and inspect the authorized GPT Image 2 batch, then capture the same gallery and focused review with real provider bytes before closing visual completion.
 - Provider narration, Realtime microphone evidence, founder recording, host footage, Session ID, and final public film remain open under the existing evidence gates.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 04:35 CT — Storyboard approval now pins the exact video images
+
+**Area:** Storyboard / image versions / HyperFrames handoff / live operator
+
+### Changed
+
+- Added image-panel ID and version bindings to generated Storyboard panels. The Storyboard filmstrip, selected-panel review, and HyperFrames composition now resolve the same generated image version.
+- Made version-changing image regeneration revoke Storyboard approval, stale only the affected bound panel path, stale narration, and block video until the Storyboard is current and approved again.
+- Staged the exact bound image bytes into the local HyperFrames render directory; the disclosed style preview remains only for a panel without generated bound media.
+- Corrected the live-provider sequence so the no-spend preflight leaves the Storyboard `Ready for review`, all image requests finish before the operator crosses Storyboard approval, and narration stays blocked until approval.
+- Kept partial image recovery state-preserving: retry planning now accepts a current unapproved Storyboard so a failed image request can be retried before approval without regenerating successful siblings.
+
+### Verified
+
+- Domain tests passed 13/13; worker tests passed 51/51, including exact binding, approval revocation, staged-byte equality, and pre-approval selective retry.
+- `pnpm demo:live` passed with `paidCallsMade: false`, Brief approval true, Storyboard approval false, six planned image requests, five planned narration requests, and no provider call.
+- The production visual suite passed 16/16 after making the image-bound Storyboard fixture independent of prior serial-test state. The inspected 1200×800 review shows five panels, `Ready for review`, the bound visual, and one `Approve storyboard` action; its SHA-256 is `7d26f0a6b492ec60a86ef45f6e94e89709e7c592441faf9051608ee01345bf77`.
+- `pnpm check` passed across all 13 packages. `pnpm demo:e2e` passed the six recorded gates and local video artifact. `pnpm demo:film:verify` remained honestly `draft` with five ready shots, five blocked shots, and the same ten missing live/final evidence inputs. `git diff --check` passed.
+- No paid provider request was made.
+
+### Decisions
+
+- Storyboard approval is a versioned production boundary, not a text-only flag: the images reviewed at approval are the images eligible for video.
+- A provider image failure occurs before Storyboard approval in the live operator. Successful image bytes and provenance remain intact; retry finishes the visual set before narration or render can begin.
+- The deterministic style preview remains useful for the recorded fixture but does not count as GPT Image 2 output or provider-backed video evidence.
+
+### Open items
+
+- Generate and inspect the authorized six-image GPT Image 2 set, then verify the live Storyboard and narrated HyperFrames output use those exact hashes before closing the provider image/video gates.
+- Realtime microphone evidence, founder recording, host footage, primary Session ID, final edit, public upload, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

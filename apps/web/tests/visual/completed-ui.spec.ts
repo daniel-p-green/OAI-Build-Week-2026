@@ -342,6 +342,43 @@ test("Outputs preserve recognizable version history and source coverage", async 
   await expect(page.locator('.output-card iframe[title$="preview"]')).toHaveCount(3);
 });
 
+test("Storyboard previews the exact image versions bound for video", async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 800 });
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+  const readyState = await (await page.request.get("/api/workshop")).json();
+  const panels = readyState.imageBatch.panels.map((panel: Record<string, unknown>) => ({ ...panel, state: "generated", relativePath: `generated/images/${panel.id}.png` }));
+  const storyboardPanels = [
+    ["Presentation", "A clear presentation built from the approved Brief. Evidence: Meeting · 12:41.", 4],
+    ["Infographic", "Distill the strongest evidence into one source-traceable visual.", 4],
+    ["Image set", "Show one coherent art direction across the complete image set.", 4],
+    ["Storyboard", "Review the exact sequence and visuals before video production.", 4],
+    ["Demo video", "Render only the Storyboard and image versions approved here.", 6],
+  ].map(([title, narration, durationSeconds], index) => ({
+    id: `storyboard-bound-panel-${index + 1}`,
+    title,
+    narration,
+    durationSeconds,
+    imagePanelId: panels[index].id,
+    imagePanelVersion: panels[index].version,
+    approved: true,
+    stale: false,
+  }));
+  const boundState = { ...readyState, storyboardApproved: false, videoState: "blocked", imageBatch: { ...readyState.imageBatch, panels }, storyboard: { ...readyState.storyboard, stale: false, panels: storyboardPanels } };
+  await page.route("**/api/workshop", async (route) => route.request().method() === "GET" ? route.fulfill({ json: boundState }) : route.continue());
+  await page.route("**/api/workshop/artifacts/image-panel-*", async (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="1200" height="800" fill="#0d0d0d"/><rect x="90" y="90" width="410" height="620" rx="32" fill="#0285ff"/><circle cx="900" cy="280" r="190" fill="#ffffff" opacity=".9"/><rect x="660" y="560" width="390" height="36" rx="18" fill="#ffffff" opacity=".72"/></svg>' }));
+  await page.goto("/");
+  await page.getByRole("button", { name: "View brief" }).click();
+  await page.getByRole("button", { name: "View outputs" }).click();
+  await page.getByRole("button", { name: "Open Storyboard" }).click();
+  const preview = page.locator(".panel-visual");
+  await expect(preview.locator("img")).toHaveAttribute("src", "/api/workshop/artifacts/image-panel-1");
+  await expect(preview.getByText("Bound image")).toBeVisible();
+  await expectScreen(page, "desktop-storyboard-bound-image");
+  await page.locator(".storyboard-strip button").nth(1).click();
+  await expect(preview.locator("img")).toHaveAttribute("src", "/api/workshop/artifacts/image-panel-2");
+});
+
 test("finished Video reveals the original brainstorm without adding navigation", async ({ page }) => {
   const readyState = await (await page.request.get("/api/workshop")).json();
   const revealState = {

@@ -171,7 +171,7 @@ The Outputs card uses a compact contact sheet for six visually coherent panels. 
 
 ### 7. Storyboard
 
-Use a horizontal filmstrip above a large selected-panel editor. Every panel displays duration, editable title and narration, source access, and stale status. The second and final blocking action is `Approve storyboard`. Only after approval does the same header position become `Create video`.
+Use a horizontal filmstrip above a large selected-panel editor. Every panel displays duration, editable title and narration, source access, and stale status. When an image set exists, each panel binds one exact image-panel ID and version; the filmstrip, selected-panel preview, and local video renderer must resolve those same bytes. Regenerating a bound image to a new version marks the affected Storyboard path `Needs update` and revokes its approval. The second and final blocking action is `Approve storyboard`. Only after approval does the same header position become `Create video`.
 
 ### 8. Source evidence and original reveal
 

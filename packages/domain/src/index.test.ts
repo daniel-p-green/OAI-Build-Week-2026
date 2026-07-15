@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ArtifactJson, Claim, DomainError, GraphOperation, SemanticGraph, SubmissionOutputSet, appendGraphOperation, applyGraphOperation, applyStalePropagation, assertCommandEligible, assertEligible, collectStaleDependents, deriveGates, parseGraphState, serializeGraphState, undoGraphOperation, undoLatestGraphOperation } from "./index.js";
+import { ArtifactJson, Claim, DomainError, GraphOperation, SemanticGraph, StoryboardPanel, SubmissionOutputSet, appendGraphOperation, applyGraphOperation, applyStalePropagation, assertCommandEligible, assertEligible, collectStaleDependents, deriveGates, parseGraphState, serializeGraphState, undoGraphOperation, undoLatestGraphOperation } from "./index.js";
 
 const now = "2026-07-13T12:00:00.000Z";
 const ids = { workshopId: "workshop-1", graphId: "graph-1", nodeA: "node-a", nodeB: "node-b", edge: "edge-1", claim: "claim-1", source: "source-1", chunk: "chunk-1", artifact: "artifact-1" };
@@ -47,6 +47,11 @@ describe("domain contracts", () => {
     expect(() => assertCommandEligible("render_video", current)).not.toThrow();
     expect(() => assertCommandEligible("render_video", { ...current, allStoryboardPanelsCurrent: false })).toThrow(expect.objectContaining({ code: "STALE" }));
     expect(() => assertCommandEligible("render_video", { ...current, storyboardApproved: false })).toThrow(expect.objectContaining({ code: "GATE_BLOCKED" }));
+  });
+  it("requires Storyboard image bindings to pin both panel identity and version", () => {
+    const panel = { id: "panel-1", purpose: "Show approved work", claimIds: [], voiceover: "Show the reviewed image.", onScreenText: "Approved", durationSeconds: 4, composition: "Full bleed image", visualDnaVersionId: "dna-v1", transition: "cut", approved: true, staleState: "current" };
+    expect(StoryboardPanel.parse({ ...panel, imagePanelId: "image-panel-1", imagePanelVersion: 2 })).toMatchObject({ imagePanelId: "image-panel-1", imagePanelVersion: 2 });
+    expect(() => StoryboardPanel.parse({ ...panel, imagePanelId: "image-panel-1" })).toThrow(/both panel ID and version/);
   });
   it("propagates staleness transitively without staling the changed input", () => {
     const stale = collectStaleDependents("graph-1" as never, [{ upstreamId: "graph-1" as never, downstreamId: "brief-1" as never, reason: "graph" }, { upstreamId: "brief-1" as never, downstreamId: "deck-1" as never, reason: "brief" }]);

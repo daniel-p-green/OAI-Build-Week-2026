@@ -88,6 +88,17 @@ describe("OpenAI media adapters", () => {
     for (const [panelId, hash] of preservedHashes) expect(retried.find((panel) => panel.id === panelId)?.sha256).toBe(hash);
   });
 
+  it("plans an image-first retry before the current Storyboard is approved", async () => {
+    const root = await readyRoot();
+    generateStoryboard(root);
+
+    expect(planOpenAiMediaRetry(readWorkshopState(root))).toEqual({
+      imagePanelIds: expect.any(Array),
+      narrationPanelIds: expect.any(Array),
+      plannedRequests: 11,
+    });
+  });
+
   it("persists complete AI-generated WAV narration only for an approved current storyboard", async () => {
     const root = await readyRoot();
     const calls: Record<string, unknown>[] = [];

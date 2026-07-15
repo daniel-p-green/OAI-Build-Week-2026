@@ -63,7 +63,9 @@ export async function validateImageBatchCoherence(root: string, state: WorkshopS
 
 export function planOpenAiMediaRetry(state: WorkshopState): OpenAiMediaRetryPlan {
   if (!state.imageBatch || state.imageBatch.stale) throw new Error("A current image batch is required for selective retry.");
-  if (!state.storyboardApproved || state.storyboard.stale) throw new Error("An approved current storyboard is required for selective retry.");
+  if (state.storyboard.stale || state.storyboard.panels.some((panel) => panel.stale || !panel.approved)) {
+    throw new Error("A current Storyboard is required for selective retry.");
+  }
   const imagePanelIds = state.imageBatch.panels.filter((panel) => panel.state !== "generated").map((panel) => panel.id);
   const existingNarrationIds = state.narration?.storyboardVersion === state.storyboard.version
     ? new Set(state.narration.panels.map((panel) => panel.panelId))

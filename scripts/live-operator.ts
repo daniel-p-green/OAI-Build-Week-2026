@@ -80,7 +80,6 @@ async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: Prov
   await generateOutput("infographic", root);
   createImageBatch(root);
   generateStoryboard(root);
-  applyWorkshopAction("approveStoryboard", root);
 }
 
 async function main(): Promise<void> {
@@ -144,6 +143,8 @@ async function main(): Promise<void> {
       const images = await generateOpenAiImageBatch(root, config!.media, config!.budget.fetch, imageSelection);
       if (images.status !== "passed") throw new Error(`Live image batch was partial; failed panels: ${images.failed.join(", ")}`);
     }
+    const imageReadyState = readWorkshopState(root);
+    if (!imageReadyState.storyboardApproved) applyWorkshopAction("approveStoryboard", root);
     failedStage = "narration";
     if (narrationSelection?.length || !retryFailed) {
       const narration = await generateOpenAiNarration(root, config!.media, config!.budget.fetch, narrationSelection);
@@ -166,6 +167,7 @@ async function main(): Promise<void> {
       completedAt: new Date().toISOString(),
       paidCallsMade: Boolean(config?.budget.usedRequests()),
       paidRequests: { used: config?.budget.usedRequests() ?? 0, ceiling: config?.budget.maxRequests ?? 0 },
+      approvals: { brief: finalState.briefApproved, storyboard: finalState.storyboardApproved },
       ...operatorRunEvidence(finalState),
       video: video.artifact?.relativePath,
     };
