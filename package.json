@@ -17,6 +17,7 @@
     "demo:capture-draft": "pnpm --filter @workshoplm/web capture:demo",
     "demo:film:verify": "tsx scripts/verify-demo-film.ts",
     "demo:film:verify-final": "tsx scripts/verify-demo-film.ts --final",
+    "dogfood:deck:build": "tsx scripts/rebuild-dogfood-deck.ts",
     "submission:build": "tsx scripts/submission-output-set.ts build",
     "submission:verify": "tsx scripts/submission-output-set.ts verify",
     "plugin:inspect": "pnpm --filter @workshoplm/plugin-mcp test",

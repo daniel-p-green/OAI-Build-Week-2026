@@ -1,0 +1,47 @@
+{
+  "workshopTitle": "AI Collective chapter launch briefing",
+  "version": "Approved brief",
+  "style": {
+    "accent": "#FF640D",
+    "ink": "#171717",
+    "paper": "#FAF8F3",
+    "fonts": ["Arial", "Arial"],
+    "intent": "client_facing_pitch",
+    "name": "AI Collective",
+    "logoPath": "ai-collective-logo.png"
+  },
+  "blocks": [
+    {
+      "id": "claim-bb80dd1be045-4-1",
+      "heading": "Become a go-to resource",
+      "body": "As a chapter lead, you’ll be seen as a leader and facilitator in your local AI scene.",
+      "citations": ["Local PDF · GenAI Collective Chapter Startup FAQ.pdf · chunk 05"],
+      "citationLabel": "Chapter Startup FAQ · chunk 05",
+      "layout": "statement"
+    },
+    {
+      "id": "claim-bb80dd1be045-29-2",
+      "heading": "Your events are financially sustainable",
+      "body": "",
+      "citations": ["Local PDF · GenAI Collective Chapter Startup FAQ.pdf · chunk 30"],
+      "citationLabel": "Chapter Startup FAQ · chunk 30",
+      "layout": "split"
+    },
+    {
+      "id": "claim-60bb5377e97a-78-1",
+      "heading": "180+ chapters across 40+ countries",
+      "body": "400+ volunteer organizers, with a community that includes everyone from solo founders to teams at the biggest AI labs in the world.",
+      "citations": ["https://newsletter.aicollective.com/ · chunk 79"],
+      "citationLabel": "AI Collective Newsletter · chunk 79",
+      "layout": "proof"
+    },
+    {
+      "id": "claim-60bb5377e97a-80-3",
+      "heading": "Start a chapter in your city",
+      "body": "You can also attend an event, volunteer to organize, or pitch a Byte article.",
+      "citations": ["https://newsletter.aicollective.com/ · chunk 81"],
+      "citationLabel": "AI Collective Newsletter · chunk 81",
+      "layout": "recommendation"
+    }
+  ]
+}

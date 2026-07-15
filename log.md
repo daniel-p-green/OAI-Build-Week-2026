@@ -4861,3 +4861,34 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Provider-backed GPT-5.6 Map reasoning, six GPT Image 2 panels, narration, and one Realtime microphone turn remain authorization-gated and unproved.
 - Founder/Codex footage, primary `/feedback` Session ID, final video, public upload, and Devpost submission remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 13:27 CT — External-use deck candidate rebuilt through the current renderer
+
+**Area:** Deliver / Dogfood one / Reproducible cold review
+
+### Changed
+
+- Rebuilt the AI Collective chapter-launch candidate after the presentation-layout improvement so the external reviewer no longer sees the stale pre-fix output.
+- Added a checked-in, claim-level `deck-input.json` with exact source locators, the already-authorized embedded logo, and one root command, `pnpm dogfood:deck:build`, that recreates the responsive HTML, editable PowerPoint, PDF round trip, and five review images.
+- Removed the vague `We’ll help you with this` support fragment from the financially-sustainable-events slide. The claim now uses the sparse grounded composition instead of padding a weak source sentence.
+- Added a one-page contact sheet and refreshed the external dogfood evidence hashes.
+
+### Verified
+
+- `pnpm dogfood:deck:build` produced five slides and reported SHA-256 hashes for HTML, PowerPoint, and PDF.
+- `unzip -t` found no errors in the editable `.pptx`; `pdfinfo` reported five 16:9 pages.
+- Inspected all five PowerPoint-round-trip pages together in `outputs/dogfood-ai-collective-chapter-brief/contact-sheet.png`. The sequence has no observed overflow, raw implementation labels, duplicated recommendation, or empty body furniture.
+- `pnpm --filter @workshoplm/production test` passed 5/5 renderer tests, and `pnpm check` passed lint, typecheck, and tests across all 13 packages.
+
+### Decisions
+
+- A cold reviewer must judge the same renderer version the product currently ships. External dogfood packages therefore need reproducible inputs and should be refreshed when a material output-quality fix lands.
+- Source fidelity outranks filling space. When the selected evidence contains no useful supporting sentence, the layout should carry the grounded claim confidently rather than invent or retain weak copy.
+
+### Open items
+
+- A representative professional still needs to return `Send` or name the first blocking revision. Internal visual inspection does not close that gate.
+- Provider-backed Map reasoning, GPT Image 2 panels, narration, and one Realtime microphone turn remain unproved; final video and submission publication remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

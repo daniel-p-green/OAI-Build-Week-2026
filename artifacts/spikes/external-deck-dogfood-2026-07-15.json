@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-07-15T12:06:00-05:00",
+  "recordedAt": "2026-07-15T13:27:00-05:00",
   "kind": "external-professional-deck-candidate",
   "workshop": "AI Collective chapter launch briefing",
   "privacy": "shareable sources only",
@@ -58,14 +58,17 @@
     "officialLogoEmbedded": true
   },
   "outputs": {
-    "htmlSha256": "217b36d2b453a9af602723a4cdd990c69dd10043286ef523a35fa600342a4680",
-    "pptxSha256": "2f8df7e87092679b16a70f6e16eadf29518d528bddc73b0ca3e289cf7a8f60bc",
-    "pdfSha256": "913d9abe82cd06fa0d16d8a7aca604ded4eec1985c8085be062ed59da5ab66ba",
+    "inputManifest": "outputs/dogfood-ai-collective-chapter-brief/deck-input.json",
+    "rebuildCommand": "pnpm dogfood:deck:build",
+    "htmlSha256": "09dfc856f85d2c15b33fe896c5a6a13ef173a9a6ba4bcb58261ca76d51d5fc42",
+    "pptxSha256": "bebf0b5e5b0159a39b7fb212daf66869fca3561e09d120b9f10819a086245dc5",
+    "pdfSha256": "8d23138e843707eeb7825549dc6a5bd27678a775965eb92b414d9a583f0c1842",
+    "contactSheetSha256": "4501ea1b961ed9d1337396f4ca3bbc071c70ecd70e0b1fde676d26736897d76e",
     "slides": 5,
     "pageSize": "16:9",
     "pptxArchive": "passed",
     "libreOfficeRoundTrip": "passed",
-    "visualInspection": "passed-no-observed-overflow-or-raw-implementation-labels"
+    "visualInspection": "passed-no-observed-overflow-raw-implementation-labels-or-empty-body-furniture"
   },
   "boundary": "This is the first privacy-safe candidate intended for a real professional audience. It is ready for cold review but has not received an external send-or-revise judgment and is not externally approved."
 }
