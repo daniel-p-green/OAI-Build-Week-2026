@@ -40,7 +40,7 @@ pnpm demo:live -- --execute
 
 The command refuses to start when the ceiling is missing or below twelve. One shared counter reserves requests before dispatch, including concurrent image requests, and counts failed provider attempts. It cannot silently exceed the supplied ceiling.
 
-Every authorized attempt writes a terminal record to `.workshoplm/live-operator-run.json`. A passed record includes request usage and provider evidence. A partial or failed record includes the failed stage, sanitized error, completed panel hashes and request IDs, recorded panel failures, and the exact recovery command. The record lives outside the resettable operator root, so a later preflight cannot erase it.
+Every authorized attempt writes a terminal record to `.workshoplm/live-operator-run.json`. A passed record includes request usage and provider evidence. A partial or failed record includes the failed stage, sanitized error, completed panel hashes and request IDs, recorded panel failures, and the exact recovery command. The record lives outside the operator root. If it proves reusable paid results, both normal preflight and normal execution refuse to reset the corresponding local state.
 
 Before authorization, run the zero-spend plan:
 
@@ -76,4 +76,12 @@ OPENAI_API_KEY=... \
 pnpm demo:live -- --execute --retry-failed
 ```
 
-`--retry-failed` never recreates the Workshop, re-ingests sources, reruns a successful GPT-5.6 Map, or regenerates successful media. The retired `--keep` flag fails closed because its former behavior could duplicate setup and paid work. If the initial GPT-5.6 Map request itself fails, no downstream provider artifact exists yet; rerun the normal live command from a clean operator state after recording that failed request.
+`--retry-failed` is evidence-bound: it runs only when the durable record proves a paid `partial` or post-Map `failed` attempt and its SHA-256 state fingerprint matches the current persisted reasoning, image, narration, Storyboard, and Video evidence. It refuses ordinary preflight state, a stale or fabricated record, a passed run, a no-call failure, and an initial GPT-5.6 Map failure. It never recreates the Workshop, re-ingests sources, reruns a successful GPT-5.6 Map, or regenerates successful media.
+
+The retired `--keep` flag fails closed because its former behavior could duplicate setup and paid work. If the initial GPT-5.6 Map request itself fails, no downstream provider artifact exists yet; rerun the normal live command from a clean operator state after recording that failed request. After a passed or reusable partial run, intentionally discarding its local artifacts requires the explicit `--reset-paid-state` flag:
+
+```bash
+pnpm demo:live -- --reset-paid-state
+```
+
+That reset is destructive to the recoverable local operator state; do not use it as part of routine preflight or retry.

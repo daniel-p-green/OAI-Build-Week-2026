@@ -1,5 +1,39 @@
+import { createHash } from "node:crypto";
 import { planOpenAiMediaRetry, type OpenAiMediaRetryPlan } from "./openai-media.js";
 import type { WorkshopState } from "./workshop-service.js";
+
+export type OperatorRunRecord = {
+  mode?: string;
+  status?: string;
+  failedStage?: string;
+  paidCallsMade?: boolean;
+  stateFingerprint?: string;
+};
+
+export function operatorStateFingerprint(state: WorkshopState): string {
+  const evidence = {
+    workshopId: state.id,
+    storyboardVersion: state.storyboard.version,
+    reasoning: state.aiRuns.map((run) => ({ operation: run.operation, model: run.model, requestId: run.requestId, outputSha256: run.outputSha256 })),
+    images: state.imageBatch?.panels.map((panel) => ({ id: panel.id, version: panel.version, state: panel.state, requestId: panel.provenance?.requestId, sha256: panel.sha256 })),
+    narration: state.narration ? { storyboardVersion: state.narration.storyboardVersion, stale: state.narration.stale, panels: state.narration.panels.map((panel) => ({ panelId: panel.panelId, requestId: panel.requestId, sha256: panel.sha256 })), failures: state.narration.failures ?? [] } : null,
+    videos: state.videos.map((video) => ({ id: video.id, version: video.version, stale: video.stale, sha256: video.sha256 })),
+  };
+  return createHash("sha256").update(JSON.stringify(evidence)).digest("hex");
+}
+
+export function retryEligibility(record: OperatorRunRecord | undefined, stateFingerprint?: string): { eligible: boolean; reason?: string } {
+  if (!record) return { eligible: false, reason: "No prior live operator record exists." };
+  if (!record.paidCallsMade) return { eligible: false, reason: "The prior operator record contains no paid provider attempt." };
+  if (record.status !== "partial" && record.status !== "failed") return { eligible: false, reason: `The prior operator status is ${record.status ?? "unknown"}, not partial or failed.` };
+  if (record.failedStage === "grounded-map-and-preparation") return { eligible: false, reason: "The GPT-5.6 Map stage did not complete; start a clean normal live run instead." };
+  if (!record.stateFingerprint || !stateFingerprint || record.stateFingerprint !== stateFingerprint) return { eligible: false, reason: "The prior run record does not match the current persisted Workshop state." };
+  return { eligible: true };
+}
+
+export function protectsPaidOperatorState(record: OperatorRunRecord | undefined): boolean {
+  return Boolean(record?.paidCallsMade && (record.status === "passed" || record.status === "partial" || (record.status === "failed" && record.failedStage !== "grounded-map-and-preparation")));
+}
 
 export function safeOperatorError(error: unknown): string {
   return (error instanceof Error ? error.message : String(error))

@@ -1,8 +1,8 @@
-import { access, mkdir, rm, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { executeOne } from "../apps/worker/src/executor.ts";
 import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, planOpenAiMediaRetry, type OpenAiMediaConfig } from "../apps/worker/src/openai-media.ts";
-import { classifyFailedRun, operatorRunEvidence, retryCommandFor, safeOperatorError } from "../apps/worker/src/live-operator-evidence.ts";
+import { classifyFailedRun, operatorRunEvidence, operatorStateFingerprint, protectsPaidOperatorState, retryCommandFor, retryEligibility, safeOperatorError, type OperatorRunRecord } from "../apps/worker/src/live-operator-evidence.ts";
 import { generateGroundedMapWithGpt56 } from "../apps/worker/src/openai-reasoning.ts";
 import { createProviderRequestBudget, type ProviderRequestBudget } from "../apps/worker/src/provider-budget.ts";
 import {
@@ -22,12 +22,26 @@ import {
 
 const executeLive = process.argv.includes("--execute");
 const retryFailed = process.argv.includes("--retry-failed");
+const resetPaidState = process.argv.includes("--reset-paid-state");
 const root = resolve(process.cwd(), ".workshoplm", "live-operator");
 const liveOperatorPaidRequestCount = 12;
 const runArtifactPath = resolve(process.cwd(), ".workshoplm", "live-operator-run.json");
 
 async function writeRunArtifact(value: Record<string, unknown>): Promise<void> {
   await writeFile(runArtifactPath, `${JSON.stringify({ schemaVersion: 1, ...value }, null, 2)}\n`);
+}
+
+async function readRunArtifact(): Promise<OperatorRunRecord | undefined> {
+  try {
+    const value = JSON.parse(await readFile(runArtifactPath, "utf8")) as unknown;
+    return value && typeof value === "object" ? value as OperatorRunRecord : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+async function operatorStateExists(): Promise<boolean> {
+  try { await access(join(root, "data", "workshoplm.sqlite")); return true; } catch { return false; }
 }
 
 function liveConfig(requiredRequests: number): { media: OpenAiMediaConfig; budget: ProviderRequestBudget } {
@@ -89,12 +103,16 @@ async function main(): Promise<void> {
   let failedStage = "authorization";
   try {
     if (process.argv.includes("--keep")) throw new Error("--keep was removed because it could duplicate sources and provider work. Use --retry-failed for a state-preserving retry.");
+    if (retryFailed && resetPaidState) throw new Error("--retry-failed and --reset-paid-state cannot be used together.");
+    const priorRun = await readRunArtifact();
+    const stateExists = await operatorStateExists();
+    const existingState = stateExists ? readWorkshopState(root) : undefined;
     if (retryFailed) {
-      try {
-        await access(join(root, "data", "workshoplm.sqlite"));
-      } catch {
-        throw new Error("No prior live-operator state is available to retry. Run the normal live operator first.");
-      }
+      if (!stateExists) throw new Error("No prior live-operator state is available to retry. Run the normal live operator first.");
+      const eligibility = retryEligibility(priorRun, operatorStateFingerprint(existingState!));
+      if (!eligibility.eligible) throw new Error(`Refusing --retry-failed: ${eligibility.reason}`);
+    } else if (stateExists && protectsPaidOperatorState(priorRun) && !resetPaidState) {
+      throw new Error("Refusing to replace reusable paid live-operator state. Use --retry-failed to continue it, or --reset-paid-state only when intentionally discarding those artifacts.");
     }
     const prior = retryFailed ? readWorkshopState(root) : undefined;
     const retryPlan = prior ? planOpenAiMediaRetry(prior) : undefined;
@@ -171,6 +189,7 @@ async function main(): Promise<void> {
       completedAt: new Date().toISOString(),
       paidCallsMade: Boolean(config?.budget.usedRequests()),
       paidRequests: { used: config?.budget.usedRequests() ?? 0, ceiling: config?.budget.maxRequests ?? 0 },
+      stateFingerprint: operatorStateFingerprint(finalState),
       approvals: { brief: finalState.briefApproved, storyboard: finalState.storyboardApproved },
       ...operatorRunEvidence(finalState),
       video: video.artifact?.relativePath,
@@ -191,6 +210,7 @@ async function main(): Promise<void> {
         root,
         paidCallsMade: Boolean(config?.budget.usedRequests()),
         paidRequests: { used: config?.budget.usedRequests() ?? 0, ceiling: config?.budget.maxRequests ?? 0 },
+        stateFingerprint: operatorStateFingerprint(state),
         retrySelection: retry.selection,
         retryCommand: retry.command,
         ...operatorRunEvidence(state),

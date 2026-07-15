@@ -5114,3 +5114,37 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - No real GPT Image 2 output has run or been visually reviewed; the image-gallery, coherence, and professional send-it checks remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 14:06 CT — Paid live-run recovery is evidence-bound and reset-safe
+
+**Area:** Live operator / Spend safety / Recovery integrity
+
+### Changed
+
+- Bound `--retry-failed` to a durable paid `partial` or post-Map `failed` operator record. No-spend preflight state, passed runs, no-call failures, and failed initial GPT-5.6 Map attempts cannot enter retry mode.
+- Added a SHA-256 state fingerprint over the persisted Workshop ID, Storyboard version, GPT reasoning evidence, image versions/status/request IDs/hashes, narration request IDs/hashes/failures, and immutable Video versions/hashes.
+- Retry now requires the durable operator record's fingerprint to match the exact current persisted state, preventing an old, fabricated, or mismatched record from skipping GPT-5.6 or authorizing selective media claims.
+- Normal preflight and execution now refuse to erase reusable paid state. Intentional discard requires the explicit `--reset-paid-state` flag; it cannot be combined with retry.
+- Updated the live-provider runbook and current GOAL risk statement with the recovery and destructive-reset boundaries.
+
+### Verified
+
+- `pnpm demo:live` returned the expected no-spend twelve-request plan: one GPT-5.6 Map, six GPT Image 2 panels, and five narration clips.
+- `pnpm demo:live -- --retry-failed` rejected ordinary preflight state because no eligible paid run record existed.
+- With a simulated paid partial record, normal preflight failed closed and the SQLite SHA-256 remained exactly `3a0dbe195bd662a161bbee013d97b3aa6e5550667efc997ff921c13f9edb48dc` before and after the attempt.
+- The same simulated record was then rejected for retry after fingerprint binding because it did not match persisted Workshop evidence. The temporary record was removed after the test.
+- Worker tests passed 72 cases across eight files, including retry eligibility, paid-state protection, and fingerprint drift.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; `pnpm demo:e2e` passed all six recorded gates.
+
+### Decisions
+
+- Request ceilings prevent overspend, but do not by themselves protect the truth of a recovery run. Retry authority must come from both the terminal run record and the exact state it describes.
+- A routine preflight is not authorized to destroy paid evidence. Destructive reset remains available, but only through an explicit operator flag whose name states the consequence.
+
+### Open items
+
+- The normal twelve-request live run remains unexecuted pending explicit spend authorization.
+- The single latest-run record is sufficient for the current bounded operator path; a multi-attempt historical ledger remains unnecessary unless more than one paid run must be retained for judge evidence.
+- Codex Session ID: unavailable on this surface; not inferred.

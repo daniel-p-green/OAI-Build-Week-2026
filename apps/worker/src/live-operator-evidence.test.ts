@@ -2,7 +2,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { classifyFailedRun, operatorRunEvidence, retryCommandFor, safeOperatorError } from "./live-operator-evidence.js";
+import { classifyFailedRun, operatorRunEvidence, operatorStateFingerprint, protectsPaidOperatorState, retryCommandFor, retryEligibility, safeOperatorError } from "./live-operator-evidence.js";
 import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDna, generateAssetPlan, generateStoryboard, lockManualStyle, markImagePanelFailed, readWorkshopState, recordGeneratedImagePanel, recordNarrationProgress } from "./workshop-service.js";
 
 const roots: string[] = [];
@@ -72,5 +72,33 @@ describe("live operator evidence", () => {
     roots.push(root);
     const state = readWorkshopState(root);
     expect(retryCommandFor(state)).toEqual({ selection: null, command: "WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=12 OPENAI_API_KEY=... pnpm demo:live -- --execute" });
+  });
+
+  it("allows retries only from a paid partial or post-Map failed run", () => {
+    const fingerprint = "f".repeat(64);
+    expect(retryEligibility(undefined, fingerprint)).toMatchObject({ eligible: false, reason: expect.stringContaining("No prior") });
+    expect(retryEligibility({ mode: "preflight", status: "ready", paidCallsMade: false }, fingerprint)).toMatchObject({ eligible: false, reason: expect.stringContaining("no paid") });
+    expect(retryEligibility({ mode: "live", status: "passed", paidCallsMade: true, stateFingerprint: fingerprint }, fingerprint)).toMatchObject({ eligible: false, reason: expect.stringContaining("passed") });
+    expect(retryEligibility({ mode: "live", status: "failed", failedStage: "grounded-map-and-preparation", paidCallsMade: true, stateFingerprint: fingerprint }, fingerprint)).toMatchObject({ eligible: false, reason: expect.stringContaining("Map stage") });
+    expect(retryEligibility({ mode: "live", status: "partial", failedStage: "images", paidCallsMade: true, stateFingerprint: fingerprint }, "0".repeat(64))).toMatchObject({ eligible: false, reason: expect.stringContaining("does not match") });
+    expect(retryEligibility({ mode: "live", status: "partial", failedStage: "images", paidCallsMade: true, stateFingerprint: fingerprint }, fingerprint)).toEqual({ eligible: true });
+    expect(retryEligibility({ mode: "live-retry", status: "failed", failedStage: "video", paidCallsMade: true, stateFingerprint: fingerprint }, fingerprint)).toEqual({ eligible: true });
+  });
+
+  it("protects reusable paid results from an implicit clean reset", () => {
+    expect(protectsPaidOperatorState(undefined)).toBe(false);
+    expect(protectsPaidOperatorState({ mode: "preflight", status: "ready", paidCallsMade: false })).toBe(false);
+    expect(protectsPaidOperatorState({ mode: "live", status: "failed", failedStage: "grounded-map-and-preparation", paidCallsMade: true })).toBe(false);
+    expect(protectsPaidOperatorState({ mode: "live", status: "partial", failedStage: "narration", paidCallsMade: true })).toBe(true);
+    expect(protectsPaidOperatorState({ mode: "live", status: "passed", paidCallsMade: true })).toBe(true);
+  });
+
+  it("changes the retry fingerprint when provider evidence changes", async () => {
+    const root = await readyRoot(); const before = readWorkshopState(root); const imagePanel = before.imageBatch!.panels[0]!; const first = operatorStateFingerprint(before);
+    recordGeneratedImagePanel(imagePanel.id, { relativePath: "generated/image.png", sha256: "a".repeat(64), provenance: { model: "gpt-image-2", size: "1024x1024", quality: "medium", referenceId: before.imageBatch!.referenceId, requestId: "request-1", generatedAt: new Date().toISOString() } }, root);
+    const after = operatorStateFingerprint(readWorkshopState(root));
+    expect(first).toMatch(/^[a-f0-9]{64}$/);
+    expect(after).toMatch(/^[a-f0-9]{64}$/);
+    expect(after).not.toBe(first);
   });
 });
