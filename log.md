@@ -2718,6 +2718,8 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
+---
+
 ## 2026-07-15 12:43 CT — Office-hours guidance captured in hackathon notes
 
 **Area:** Research / Submission
@@ -4643,6 +4645,8 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+---
+
 ## 2026-07-15 12:38 CT — Product north star now governs the submission and roadmap
 
 **Area:** Product strategy / Professional validation / Demo / Claims / Submission
@@ -4706,4 +4710,33 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Obtain a cold `Send` or `Revise` judgment on the external-use presentation candidate.
 - Provider-backed GPT-5.6 Map reasoning, six GPT Image 2 outputs, provider narration, and one Realtime microphone turn remain authorization-gated and unproved.
 - Founder footage, primary `/feedback` Session ID, final video edit, public upload, submitted links, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 12:56 CT — Public release parity and verification floor restored
+
+**Area:** Release hygiene / Public repository / Verification
+
+### Changed
+
+- Reconciled the visible-copy browser baseline with the intentional post-save UI: the removed `Save` control is no longer asserted as visible.
+- Ignored local browser-build, visual-test state, test-result, local-run, and generated archive artifacts so normal release checks leave the worktree clean.
+- Published the reviewed local history through `b21cfe57c78bf5de22f0e70e7b10e64d351d4402`, including editable infographic export and the explicit plugin data-root contract.
+
+### Verified
+
+- `pnpm check` passed across all 13 packages; the worker passed 63 tests, web passed 13 tests, and the production package passed 4 tests.
+- `pnpm --filter @workshoplm/web test:visual` passed all 17 browser scenarios on the production Next build.
+- `pnpm demo:reset && pnpm demo:e2e`, `pnpm submission:build && pnpm submission:verify`, and `pnpm demo:film:verify` completed. The submission set is the honest 17-asset `partial` set with `valid: true`, `stale: false`, and `tampered: false`.
+- Local `HEAD` and `origin/main` both resolved to `b21cfe57c78bf5de22f0e70e7b10e64d351d4402` before this log entry; the subsequent documentation commit is pushed with the same release hygiene changes.
+
+### Decisions
+
+- The draft film verification is green as a gate, not a final-film claim: it correctly stays `finalReady: false` until the ten missing live/provider, footage, session-ID, and final-export artifacts exist.
+- Release hygiene excludes generated artifacts rather than deleting them, preserving local evidence while preventing accidental publication.
+
+### Open items
+
+- The remaining submission blockers are unchanged: cold professional deck validation; provider-backed GPT-5.6, Image, narration, and Realtime evidence; founder/Codex footage; primary `/feedback` Session ID; final video; public upload; and Devpost submission.
 - Codex Session ID: unavailable on this surface; not inferred.

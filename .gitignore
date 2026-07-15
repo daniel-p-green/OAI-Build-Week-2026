@@ -12,6 +12,7 @@ apps/web/test-results/
 .DS_Store
 workshoplm-desktop.png
 .workshoplm/
+.workshoplm-visual-test/
 .workshoplm-recording-draft/
 .env
 .env.local
