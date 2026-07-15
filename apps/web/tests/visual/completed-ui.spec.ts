@@ -447,7 +447,9 @@ test.describe("completed Workshop judge path", () => {
       await page.getByRole("button", { name: "Open Image set" }).click();
       await expect(page.getByRole("heading", { name: "Image set" })).toBeVisible();
       await expect(page.locator('[data-domain-ui="image-review-grid"] [data-domain-ui="image-tile"]')).toHaveCount(6);
-      await expect(page.getByText("6 images · 3 sources", { exact: true })).toBeVisible();
+      await expect(page.getByText("6 images · 3 sources · One shared Style", { exact: true })).toBeVisible();
+      await expect(page.getByText("Hero concept", { exact: true })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Show source" })).toHaveCount(6);
       await expectScreen(page, `${viewport.name}-image-set`);
       await page.getByRole("button", { name: "Back to Outputs" }).click();
 
@@ -619,6 +621,43 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
   await expectScreen(page, "desktop-storyboard-bound-image");
   await page.locator(".storyboard-strip button").nth(1).click();
   await expect(preview.locator("img")).toHaveAttribute("src", "/api/workshop/artifacts/image-panel-2");
+});
+
+test("Image set review exposes each visual job, exact source, and selective replacement", async ({ page }) => {
+  await page.setViewportSize({ width: 1200, height: 800 });
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+  const readyState = await (await page.request.get("/api/workshop")).json();
+  const panels = readyState.imageBatch.panels.map((panel: Record<string, unknown>) => ({ ...panel, state: "generated", relativePath: `generated/images/${panel.id}.png` }));
+  let current = { ...readyState, imageBatch: { ...readyState.imageBatch, panels } };
+  const posted: Array<Record<string, unknown>> = [];
+  await page.route("**/api/workshop", async (route) => {
+    if (route.request().method() === "GET") return route.fulfill({ json: current });
+    const body = route.request().postDataJSON() as Record<string, unknown>;
+    posted.push(body);
+    if (body.action === "regenerateImagePanel") current = { ...current, storyboardApproved: false, imageBatch: { ...current.imageBatch, panels: current.imageBatch.panels.map((panel: Record<string, unknown>) => panel.id === body.panelId ? { ...panel, version: Number(panel.version) + 1, state: "selected_for_regeneration" } : panel) } };
+    return route.fulfill({ json: current });
+  });
+  await page.route("**/api/workshop/artifacts/image-panel-*", async (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><rect width="1000" height="1000" fill="#f4f2ec"/><path d="M90 810L450 120L710 810Z" fill="#0285ff"/><circle cx="760" cy="320" r="150" fill="#0d0d0d"/></svg>' }));
+  await page.goto("/");
+  await page.getByRole("button", { name: "View brief" }).click();
+  await page.getByRole("button", { name: "View outputs" }).click();
+  await page.getByRole("button", { name: "Open Image set" }).click();
+
+  const hero = page.getByRole("region", { name: "Hero concept" });
+  await expect(hero).toContainText("Ready");
+  await expect(hero).toContainText(/professional|WorkshopLM|source|meeting/i);
+  await hero.getByRole("button", { name: "Show source" }).click();
+  const evidence = panels[0].evidence[0];
+  const source = readyState.sourceItems.find((item: Record<string, unknown>) => item.id === evidence.sourceId);
+  await expect(page.getByRole("dialog", { name: "Source" })).toContainText(String(source.title));
+  await expect(page.getByRole("dialog", { name: "Source" })).toContainText(String(evidence.locator));
+  await closeDialog(page, "Source");
+
+  await hero.getByRole("button", { name: "Request replacement" }).click();
+  await expect.poll(() => posted.at(-1)).toMatchObject({ action: "regenerateImagePanel", panelId: panels[0].id });
+  await expect(hero.getByText("Replacement requested", { exact: true })).toBeVisible();
+  await expect(page.getByText("Replacement requested. Review the new image in Storyboard before approving Video.")).toBeVisible();
 });
 
 test("finished Video reveals the original brainstorm without adding navigation", async ({ page }) => {

@@ -1013,8 +1013,15 @@ export function recordGeneratedImagePanel(panelId: string, artifact: Pick<ImageB
   const current = readWorkshopState(root);
   if (!current.imageBatch || current.imageBatch.stale) throw new Error("A current image batch is required.");
   if (!artifact.relativePath || !artifact.sha256 || !artifact.provenance) throw new Error("Generated image provenance is incomplete.");
-  if (!current.imageBatch.panels.some((panel) => panel.id === panelId)) throw new Error(`Image panel not found: ${panelId}.`);
-  return write({ ...current, imageBatch: { ...current.imageBatch, panels: current.imageBatch.panels.map((panel) => panel.id === panelId ? { ...panel, ...artifact, state: "generated", error: undefined } : panel) }, updatedAt: new Date().toISOString() }, root);
+  const generatedPanel = current.imageBatch.panels.find((panel) => panel.id === panelId);
+  if (!generatedPanel) throw new Error(`Image panel not found: ${panelId}.`);
+  const storyboardPanels = current.storyboard.panels.map((panel) => panel.imagePanelId === panelId
+    ? { ...panel, imagePanelVersion: generatedPanel.version, approved: true, stale: false }
+    : panel);
+  const storyboard = current.storyboard.panels.some((panel) => panel.imagePanelId === panelId)
+    ? { ...current.storyboard, panels: storyboardPanels, stale: storyboardPanels.some((panel) => panel.stale) }
+    : current.storyboard;
+  return write({ ...current, imageBatch: { ...current.imageBatch, panels: current.imageBatch.panels.map((panel) => panel.id === panelId ? { ...panel, ...artifact, state: "generated", error: undefined } : panel) }, storyboard, updatedAt: new Date().toISOString() }, root);
 }
 export function recordNarration(narration: WorkshopNarration, root?: string): WorkshopState {
   const current = readWorkshopState(root);

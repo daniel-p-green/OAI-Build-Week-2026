@@ -5580,3 +5580,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Put the external-use deck in front of its intended professional audience for `Send`/`Revise` feedback.
 - Provider-backed voice/Map/Image/Speech evidence, final founder recording, public links, and Codex in-app-browser proof remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 16:36 CT — Image set becomes a grounded professional review loop
+
+**Area:** Product / Image review / Selective regeneration / Trust
+
+### Changed
+
+- Replaced generic `Image 1–6` review labels with six explicit professional jobs: Hero concept, Systems diagram, Evidence chain, Decision visual, Storyboard sequence, and Section art.
+- Each image card now shows the approved grounded idea, honest generation state, exact panel Source action, and direct image link when generated. The focused surface has no global ambiguous source action and introduces no navigation or tabs.
+- Added the user-facing `Request replacement` path for a generated or failed panel. The UI states the consequence plainly: the new image must be reviewed in Storyboard before Video approval.
+- Repaired a contract defect in selective regeneration. A requested replacement previously revoked Storyboard approval but the finished new image never rebound its Storyboard panel. Recording the replacement now binds the exact new image version, clears only that panel's stale state, and deliberately keeps global Storyboard approval false until the professional signs off again.
+- Prevented a replacement-only Storyboard stale state from surfacing the unrelated `Update outputs` action while the selected image is awaiting generation.
+
+### Verified
+
+- Worker tests passed 83 cases, including the full version-1 approval → version-2 replacement request → generated-image rebind → explicit reapproval sequence.
+- Web typecheck and 15 component/API contract tests passed.
+- The production Next build and all 26 browser tests passed at 1200×800, 1024×768, and 390×844, including exact Source content, selective replacement POST data, calm replacement status, responsive snapshots, official primitive states, keyboard behavior, reduced motion, contrast, and 200% logical zoom.
+- The updated responsive review captures are `apps/web/tests/visual/__screenshots__/desktop-image-set.png`, `compact-image-set.png`, and `mobile-image-set.png`; desktop and mobile were visually inspected after capture.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages after clearing only a disposable duplicate Next visual-build cache.
+- `pnpm demo:e2e` passed the complete deterministic seam. `pnpm submission:build` truthfully remained `partial` with 17 assets and the same four provider limitations; `pnpm submission:verify` returned valid, not stale, and not tampered.
+
+### Decisions
+
+- The image set is a professional art-direction review, not a contact sheet. Every panel must explain its communication job and evidence without exposing the full provider prompt.
+- `Request replacement` is intentionally narrower and more truthful than `Regenerate`: it selects one panel for provider work and makes the downstream approval consequence visible.
+- Replacement completion may restore panel-level currency, but it may never silently restore the global Storyboard approval gate.
+
+### Open items
+
+- Record one provider-verified Realtime voice turn, rerun the zero-spend operator preflight, and obtain explicit authorization before the first paid provider run.
+- Generate all six GPT Image 2 panels, inspect them in this review surface against the checked-in deck-utility/coherence rubric, and selectively replace failures.
+- Put the external-use deck in front of its intended professional audience for a cold `Send`/`Revise` decision.
+- Provider-backed voice/Map/Image/Speech evidence, final founder recording, public links, and Codex in-app-browser proof remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

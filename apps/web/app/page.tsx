@@ -62,7 +62,7 @@ type PersistedWorkshop = {
   style?: { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; paletteRoles: StylePaletteRoles; typographyRoles: StyleTypographyRoles; brandAssets: BrandAsset[]; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: ManualStylePayload["intentProfile"]; referenceUrl?: string; libraryId?: string; libraryFamilyId?: string; libraryRevision?: number; stale: boolean };
   assetPlan?: { version: number; stale: boolean; evidenceClaimIds: string[] };
   storyboard: { version: number; stale: boolean; panels: { id: string; title: string; narration: string; durationSeconds: number; claimIds: string[]; evidence: { claimId?: string; sourceId: string; chunkId?: string; locator: string }[]; imagePanelId?: string; imagePanelVersion?: number; approved: boolean; stale: boolean }[] };
-  imageBatch?: { id: string; stale: boolean; panels: { id: string; version: number; prompt: string; state: "planned" | "selected_for_regeneration" | "generated" | "failed"; relativePath?: string }[] };
+  imageBatch?: { id: string; graphRevision: number; briefVersion: number; styleVersion: number; referenceId: string; stale: boolean; panels: { id: string; version: number; prompt: string; evidence: { claimId?: string; sourceId: string; chunkId?: string; locator: string }[]; state: "planned" | "selected_for_regeneration" | "generated" | "failed"; relativePath?: string }[] };
   outputs: { id: string; type: "deck" | "infographic"; stale: boolean; artifactPath: string; editableRelativePath?: string; claimIds?: string[]; createdAt: string }[];
   videos: { id: string; version: number; storyboardVersion: number; styleVersion: number; relativePath: string; provenancePath: string; artifactPath: string; claimIds: string[]; buildTrace?: { htmlPath: string; dataPath: string; htmlSha256: string; dataSha256: string; milestoneCount: number; commitCount: number; taskIds: string[] }; stale: boolean; createdAt: string }[];
 };
@@ -80,13 +80,16 @@ function outputSetStatus(state: PersistedWorkshop | null) {
   const currentVideo = [...(state.videos ?? [])].sort((left, right) => right.version - left.version)[0];
   const failedImages = Boolean(state.imageBatch?.panels.some((panel) => panel.state === "failed"));
   const incomplete = Boolean(generationStarted && (!deck || !infographic || !state.imageBatch || !state.storyboard.panels.length)) || failedImages;
+  const replacementIds = new Set(state.imageBatch?.panels.filter((panel) => panel.state === "selected_for_regeneration").map((panel) => panel.id) ?? []);
+  const replacementOnlyStoryboardStale = replacementIds.size > 0
+    && state.storyboard.stale
+    && state.storyboard.panels.filter((panel) => panel.stale).every((panel) => Boolean(panel.imagePanelId && replacementIds.has(panel.imagePanelId)));
   const stale = Boolean(
     deck?.stale
     || infographic?.stale
     || state.assetPlan?.stale
     || state.imageBatch?.stale
-    || state.imageBatch?.panels.some((panel) => panel.state === "selected_for_regeneration")
-    || state.storyboard.stale
+    || (state.storyboard.stale && !replacementOnlyStoryboardStale)
     || currentVideo?.stale
   );
   return { incomplete, stale, actionRequired: incomplete || stale };
@@ -306,7 +309,7 @@ export default function WorkshopPage() {
         {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
         {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
         {loadState === "ready" && view === "storyboard" && <StoryboardView storyboard={state?.storyboard} imageBatch={state?.imageBatch} approved={Boolean(state?.storyboardApproved)} panel={selectedPanel} busy={busy} onSelect={setSelectedPanelId} onPost={post} onShowSource={showSource} />}
-        {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} onShowSource={showSource} onShowOriginal={() => openSheet("original")} />}
+        {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} busy={busy} onShowSource={showSource} onShowOriginal={() => openSheet("original")} onRequestReplacement={async (panelId) => { const next = await post({ action: "regenerateImagePanel", panelId }); if (next) setNotice({ message: "Replacement requested. Review the new image in Storyboard before approving Video.", tone: "status" }); }} />}
       </section>
 
       {sheet === "workshops" && <WorkshopsSheet workshops={workshops} busy={busy} onClose={closeSheet} onSelect={(workshopId) => { void post({ action: "selectWorkshop", workshopId }); }} onCreate={(title) => post({ action: "createWorkshop", title }).then(Boolean)} onHelp={() => setSheet("help")} />}
@@ -529,7 +532,13 @@ function OutputsView({ state, onOpenOutput, onOpenStoryboard, onDismissOrientati
   </article>;
 }
 
-function FocusedOutputView({ state, outputId, onShowSource, onShowOriginal }: { state: PersistedWorkshop | null; outputId: string; onShowSource: (sourceId?: string) => void; onShowOriginal: () => void }) {
+function imagePanelCopy(prompt: string, index: number) {
+  const role = prompt.match(/Output role:\s*([^.]+)\./)?.[1]?.trim() ?? `Image ${index + 1}`;
+  const idea = prompt.match(/Approved idea to communicate:\s*(.+?)\.\s+Preserve/)?.[1]?.trim() ?? "Grounded in the approved Brief.";
+  return { role, idea };
+}
+
+function FocusedOutputView({ state, outputId, busy, onShowSource, onShowOriginal, onRequestReplacement }: { state: PersistedWorkshop | null; outputId: string; busy: boolean; onShowSource: (sourceId?: string) => void; onShowOriginal: () => void; onRequestReplacement: (panelId: string) => Promise<void> }) {
   const output = state?.outputs.find((item) => item.id === outputId);
   const isVideo = outputId === "video" || outputId.startsWith("video-v");
   const video = isVideo ? (outputId === "video" ? state?.videos?.find((item) => !item.stale) : state?.videos?.find((item) => item.id === outputId)) : undefined;
@@ -542,9 +551,11 @@ function FocusedOutputView({ state, outputId, onShowSource, onShowOriginal }: { 
   const sourceId = state?.claims?.find((claim) => output?.claimIds?.includes(claim.id))?.sourceId;
   const href = `/api/workshop/artifacts/${outputId}`;
   if (!output && (!isVideo || !video) && !isImages) return <div className="state-surface"><StateMessage state="error" title="Couldn't open Output">Return to Outputs and try opening it again.</StateMessage></div>;
-  if (isImages) return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail}</p>{state?.imageBatch?.stale && <Status tone="waiting">Needs update</Status>}</div><Button size="small" onClick={() => onShowSource()}>Show source</Button></div><div className="focused-image-grid" data-domain-ui="image-review-grid">{state?.imageBatch?.panels.map((panel, index) => {
-    const content = <><div className={`focused-image-preview ${panel.state}`} data-domain-ui="image-tile">{panel.state === "generated" ? <img alt={`Image ${index + 1}: ${panel.prompt}`} src={`/api/workshop/artifacts/${panel.id}`} /> : <span>{String(index + 1).padStart(2, "0")}</span>}</div><div className="focused-image-caption"><strong>Image {index + 1}</strong><Status tone={panel.state === "generated" ? "current" : "waiting"}>{panel.state === "generated" ? "Ready" : panel.state === "failed" ? "Couldn't create" : panel.state === "selected_for_regeneration" ? "Needs update" : "Planned"}</Status></div></>;
-    return panel.state === "generated" ? <a className="focused-image-card" href={`/api/workshop/artifacts/${panel.id}`} target="_blank" rel="noreferrer" key={panel.id} aria-label={`Open image ${index + 1}`}>{content}</a> : <div className="focused-image-card" key={panel.id}>{content}</div>;
+  if (isImages) return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail} · One shared Style</p>{state?.imageBatch?.stale && <Status tone="waiting">Needs update</Status>}</div></div><div className="focused-image-grid" data-domain-ui="image-review-grid">{state?.imageBatch?.panels.map((panel, index) => {
+    const { role, idea } = imagePanelCopy(panel.prompt, index);
+    const status = panel.state === "generated" ? "Ready" : panel.state === "failed" ? "Couldn't create" : panel.state === "selected_for_regeneration" ? "Replacement requested" : "Planned";
+    const preview = <div className={`focused-image-preview ${panel.state}`} data-domain-ui="image-tile">{panel.state === "generated" ? <img alt={`${role}: ${idea}`} src={`/api/workshop/artifacts/${panel.id}`} /> : <span>{String(index + 1).padStart(2, "0")}</span>}</div>;
+    return <section className="focused-image-card" key={panel.id} aria-label={role}>{panel.state === "generated" ? <a href={`/api/workshop/artifacts/${panel.id}`} target="_blank" rel="noreferrer" aria-label={`Open ${role}`}>{preview}</a> : preview}<div className="focused-image-caption"><strong>{role}</strong><Status tone={panel.state === "generated" ? "current" : "waiting"}>{status}</Status></div><p>{idea}</p><div className="focused-image-actions"><Button variant="secondary" size="small" onClick={() => onShowSource(panel.evidence[0]?.sourceId)}>Show source</Button>{panel.state !== "planned" && <Button variant="secondary" size="small" disabled={busy || panel.state === "selected_for_regeneration"} onClick={() => { void onRequestReplacement(panel.id); }}>{panel.state === "selected_for_regeneration" ? "Requested" : "Request replacement"}</Button>}</div></section>;
   })}</div></article>;
   return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail}</p>{(output?.stale || video?.stale) && <Status tone="waiting">Needs update</Status>}</div><div className="button-row">{isVideo ? <Button size="small" onClick={onShowOriginal}>Show original</Button> : <Button size="small" onClick={() => onShowSource(sourceId)}>Show source</Button>}{output?.editableRelativePath && <ButtonLink variant="secondary" size="small" href={`${href}?format=editable`}>Download PowerPoint</ButtonLink>}<ButtonLink variant="secondary" size="small" href={href} target="_blank" rel="noreferrer">{isVideo ? "Open video" : "Open preview"}</ButtonLink></div></div><div className={`focused-output-preview ${isVideo ? "video-preview" : ""}`} data-domain-ui="artifact-preview">{isVideo ? <video controls src={href} /> : <iframe title={title} sandbox="allow-same-origin" src={href} />}</div></article>;
 }
