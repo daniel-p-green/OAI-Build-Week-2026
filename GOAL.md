@@ -1,12 +1,12 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 21:24 CT
+Last updated: 2026-07-14 21:43 CT
 
 ## Status
 
-**Active phase:** Full implementation — integration spikes and platform foundation in parallel
+**Active phase:** P0 interface correction — official components, professional layout, and plain language
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
-**Current gate:** No founder approval gate. Execute the plan autonomously and escalate only for credentials/spend, material privacy/security/licensing decisions, irreversible external actions, or an objective-changing breaking decision.
+**Current gate:** P0 interface correction. The judge-visible UI is not complete until every shell primitive is implemented through the official Apps in ChatGPT system or a documented composition of its primitives, all visible language passes the plain-language contract below, and rendered-state tests prove the result. No founder approval is required to execute this correction.
 **Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found`. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. It must run before claiming live product use or changing per-operation defaults.
 **Known host risk:** The July 14 host-sync verification is credential-blocked, so it does not prove native task or voice-turn persistence. The designed capture-only fallback remains active; Spike A stays open until the end-of-day decision deadline or a separately authorized live host check.
 
@@ -39,11 +39,12 @@ This goal is not complete when the architecture, shell, mocks, or isolated model
 3. Local files, URLs, and sanitized meeting material become normalized, searchable sources with inspectable claim → chunk → source grounding.
 4. GPT-5.6 turns the conversation and selected evidence into an editable semantic graph rendered as an Excalidraw Map, with typed operations, undo, evidence states, and a regenerable Sketch view.
 5. `Approve map as brief` produces inspectable `FRAME.md` plus executable data; a website URL or manual assets produce a reviewable, versioned `DESIGN.md`, Brand Foundation, Intent Profile, and Visual DNA.
-6. Studio generates the complete locked output set: source-traceable deck, source-traceable infographic, coherent GPT Image 2 batch, editable storyboard, and narrated local HyperFrames video.
+6. Outputs creates and keeps the complete locked output set: source-traceable deck, source-traceable infographic, coherent GPT Image 2 batch, editable storyboard, and narrated local HyperFrames video.
 7. Storyboard approval, dependency versions, stale propagation, retry/cancel/partial-success behavior, and artifact provenance work across the real seam—not only in isolated tests.
 8. The provenance view traces the actual WorkshopLM submission from raw brainstorm through sources, Map, brief, style, outputs, build evidence, and measured time-to-first-output.
 9. The under-three-minute public demo video shows the real working flow clearly enough that judges do not need to recreate the local plugin environment to understand or score it.
 10. The repository passes the documented deterministic checks, the live demo seam is recorded from the intended surface, and all judge-facing claims match captured evidence.
+11. The judge-visible interface uses real reusable implementations of the verified Apps in ChatGPT components—not identifying attributes or visual approximations—and a first-time professional can name the current object, active source scope, and next action within five seconds.
 
 All items above are committed scope for this hackathon version. Fallbacks may change implementation mechanics, but may not silently remove the user-visible capability they preserve.
 
@@ -71,7 +72,7 @@ The NotebookLM association is intentional category shorthand for hackathon judgi
 - Original source files and normalized representations remain in the local Workshop data directory for the core demo. Hosted indexing may be added later, but source grounding does not depend on upload.
 - The only required network dependency for the core demo is the OpenAI API; HyperFrames and output rendering run locally.
 - The ChatGPT task is WorkshopLM's Conversation layer: native text/voice, reasoning, clarification, and plugin invocation.
-- The local web app in the ChatGPT/Codex in-app browser is WorkshopLM's visual layer: Sources, Map, brief/style, Studio, storyboard, outputs, and trace. It contains no duplicate chat composer.
+- The local web app in the ChatGPT/Codex in-app browser is WorkshopLM's visual layer: Sources, Map, Brief/Style, Outputs, Storyboard, and source trace. It contains no duplicate chat composer.
 - Codex app-server brokers ChatGPT/Codex login and account state. WorkshopLM does not receive, expose, or persist raw ChatGPT auth tokens and does not create a second account system.
 - WorkshopLM is packaged as a unified ChatGPT/Codex plugin: workflow skills plus a bundled local stdio MCP server and compact review widgets. The plugin is the native discovery/orchestration layer; the local browser workspace remains the full production interface.
 - Core plugin use requires no connected app. Granola, Google Drive, and other source apps are optional adapters after the sanitized file/URL path works.
@@ -90,7 +91,9 @@ The NotebookLM association is intentional category shorthand for hackathon judgi
 - WorkshopLM is organized into Workshops; each Workshop is the durable top-level container equivalent to a Notebook in NotebookLM.
 - A Workshop contains its sources, conversation, semantic map, approved brief, style, and outputs.
 - Preserve NotebookLM's familiar Sources → central work → Outputs mental model across two native surfaces, but remove permanent destination navigation: ChatGPT owns Conversation; the in-app browser renders one current Workshop object with optional Sources, Library, creation, and detail sheets.
-- Deliver is a Studio of output types over one shared grounded Workshop core, not a mandatory fixed package.
+- Preserve the layout lessons visible in the NotebookLM reference screenshots: the Workshop identity stays fixed, Sources always open from the same place, the current work object owns the center, Outputs remain a durable history of recognizable objects, and citation selection reveals the exact source without changing products. Adapt these patterns to professional production rather than copying Google's chrome, terminology, three-column proportions, or education framing.
+- Product language is plain, professional, and action-first. Prefer familiar nouns (`Sources`, `Map`, `Brief`, `Outputs`, `Storyboard`, `Video`) and short verb–noun actions (`Add source`, `Approve brief`, `Create outputs`, `Show source`, `Create video`). Internal nouns such as gate, contract, package, artifact, provenance, render, Visual DNA, and version identifiers stay out of primary labels unless the user opens technical Details.
+- Deliver is the durable Outputs history over one shared grounded Workshop core, not a mandatory fixed package.
 - `Production Kit` is rejected as the output label.
 - Pipecat is deferred from the MVP; retain an adapter seam and revisit only for telephony, provider switching, or server-side audio pipelines.
 - OpenAI project reasoning and structured operations use the Responses API with the GPT-5.6 routing policy: `gpt-5.6-sol` for quality-critical reasoning, `gpt-5.6-terra` for balanced structured work, and `gpt-5.6-luna` for repeatable high-volume work. Per-operation defaults may change only with recorded quality, latency, and cost evidence.
@@ -100,7 +103,7 @@ The NotebookLM association is intentional category shorthand for hackathon judgi
 - Narration uses `gpt-4o-mini-tts`, stores panel-level provenance, and clearly discloses that the voice is AI-generated.
 - Batch image generation uses the direct Image API with `gpt-image-2`; conversational image edits may use the Responses image-generation tool.
 - `Notedex`, `Notex`, and `ChatGPT Notes` are rejected names.
-- **Studio** is the creation area; an **Output type** is a guided creation path; an **Output** is one artifact; an **Output set** is a user-selected group generated from the same approved state.
+- **Outputs** is the user-facing creation and history area; an **Output type** is a guided creation path; an **Output** is one professional deliverable; an **Output set** is a user-selected group created from the same approved state. `Studio` may remain an internal research comparison but is not a WorkshopLM navigation label.
 - Exactly two blocking approval gates exist: approve the Map as the brief, then approve the storyboard before video. Style selection is inline review, not a third gate.
 - The demo path includes a one-click sanitized sample Workshop with no private connector, plus a bounded live operator run on sample sources for recording and optional inspection.
 - The public demo video is the primary judge experience and must prove the live thought-to-delivery seam clearly. The sanitized fixture makes recording repeatable and supports optional inspection without requiring judges to supply or spend their own API credits.
@@ -178,11 +181,67 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Replace four equal output actions with one coherent package action and deduplicate deck/infographic cards so each artifact appears exactly once.
 - [x] Remove the persistent stage spine, generic Library, generic Details, browser capture composer, and other shell chrome that competed with ChatGPT.
 - [x] Inventory the exact components, variables, styles, icons, and display-mode templates in `Apps in ChatGPT · OpenAI Official (Community)` from an editable Figma design-file copy; record names and source identifiers without inference.
-- [x] Replace every approximated or custom WorkshopLM shell component and style with verified assets or compositions from the official Figma library. Permit custom rendering only for domain content such as Map geometry and generated artifact media.
-- [x] Add a UI-system conformance check that maps every judge-visible shell component to the official Figma inventory and fails on unapproved tokens or primitives.
+- [ ] Replace every approximated or custom WorkshopLM shell component and style with real reusable implementations of verified assets or documented compositions from the official Figma library. Permit custom rendering only for domain content such as Map geometry and generated artifact media. `data-oai-component` attributes and final-cascade CSS overrides do not satisfy this item.
+- [ ] Replace the string-presence UI test with conformance checks that cover every judge-visible element, the full CSS cascade, rendered computed styles, interaction states, responsive layouts, icons, and accessibility behavior.
 - [ ] Capture a fresh final screenshot set for the rebuilt Map, trace, Brief/Style, package, Storyboard, and mobile Evidence outline.
 - [ ] Add frontend regression coverage for the six rebuilt states, including a duplicate-artifact assertion and one-dominant-action checks.
 - [ ] Verify keyboard focus order, WCAG AA contrast, reduced motion, and 200% zoom on the rebuilt judge path.
+
+#### P0 official-component rebuild
+
+Completion means implementation fidelity, not visual resemblance:
+
+- [ ] Turn `packages/ui` into the real WorkshopLM UI layer with tested exports for `FullScreenShell`, `NavigationHeader`, `Button`, `IconButton`, `Token`, `Checkbox`, `Input`, `TextArea`, `Card`, `ListGroup`, `ListRow`, `EntityCard`, `Carousel`, and `CarouselRow`.
+- [ ] Implement each primitive from its recorded Figma node, variants, typography, spacing, state, radius, border, shadow, and icon source. Form controls must inherit the verified SF Pro web stack and match hover, pressed, focus, disabled, selected, checked, and error states.
+- [ ] Replace every ordinary HTML control and shell container in the judged path with the reusable UI layer. Domain interactions such as Map nodes, evidence edges, charts, slide media, image tiles, and storyboard imagery may stay custom, but their controls and containers may not.
+- [ ] Replace text glyphs and improvised symbols with the verified official iconography. Every IconButton must have an accessible name and visible tooltip where its meaning is not obvious.
+- [ ] When the library has no ready-made component, add a named WorkshopLM composite only after documenting its recipe in the Figma inventory. A composite may arrange official primitives and spacing tokens; it may not introduce independent chrome tokens, control geometry, typography, shadows, or interaction behavior.
+- [ ] Remove dead MVP shell CSS and isolate allowed domain rendering so no legacy selector can override official component states. The full application cascade must contain no retired structural color, radius, type, shadow, or spacing value outside explicitly documented generated-media exceptions.
+- [ ] Correct the known audit failures: 44px source Token versus the verified 42px reference, non-inheriting button fonts, legacy green locked-Style shadow, native checkbox appearance, glyph Back/Close icons, unmapped Brief/Storyboard actions and fields, the unmapped approval receipt, and missing current-object identity on mobile.
+- [ ] Add one inventory-backed exception manifest for custom domain rendering. Any custom judge-visible class absent from that manifest fails conformance.
+
+#### P0 professional layout and language
+
+Use NotebookLM's screenshots as behavioral evidence, then express the result in the official OpenAI system:
+
+- [ ] Keep one stable orientation frame: Workshop name and current object at top left, Sources in one consistent location, one focused center object, and one primary next action. Do not reintroduce persistent workflow tabs or a duplicate browser chat.
+- [ ] Make Sources feel as immediate as NotebookLM: one labeled count opens the source list; selection is directly visible; one click from any citation reveals the exact source excerpt and locator; closing it returns focus to the originating claim.
+- [ ] Make Outputs behave like NotebookLM's useful Studio history without copying its panel: each output is a recognizable named object with a real preview, type, freshness, source coverage, and one obvious open action. Creation controls do not compete with the output history.
+- [ ] Preserve the professional control advantage: Map editing, brief approval, style selection, storyboard editing, and storyboard approval remain visible only when relevant. The user sees two blocking approvals—Brief and Storyboard—not internal gate machinery.
+- [ ] Replace judge-visible copy using this canonical dictionary:
+
+| Current or internal wording | Required user-facing wording |
+| --- | --- |
+| `Grounding this Workshop` | remove; the control reads `{n} sources` |
+| `Evidence becomes structure` | `Map` or remove when the object title already says Map |
+| `Approve as brief` / `Approve map as brief` | `Approve brief` |
+| `Production contract` | `Brief` |
+| `Visual contract` | `Style` |
+| `Lock one coherent system` | `Choose a style` |
+| `Lock Style v1` | `Use this style` |
+| `Update Style v1` | `Update style` |
+| `Coherent delivery package` | `Outputs` |
+| `One system. Every format.` | a concrete output title or remove |
+| `Generate package` / `Refresh package` | `Create outputs` / `Update outputs` |
+| `Open package` | `View outputs` |
+| `Trace` | `Show source` |
+| `Illuminate path on Map` / `Highlight on Map` | `Show on map` |
+| `Provider render pending` | `Images not created yet` |
+| `Editable before the expensive step` | `Review before video` or remove |
+| `Prepare render` | `Create video` |
+| `Current` / `Stale` | `Up to date` / `Needs update` |
+
+- [ ] Audit every visible string. Labels identify the object; buttons state the result of clicking them; helper text explains only a consequence the user would not reasonably know. Use sentence case, avoid redundant subtitles, keep primary actions to roughly three words, and never expose implementation terms in the default view.
+- [ ] Pass a five-second orientation test on Map, Brief, Outputs, Storyboard, Sources, and mobile: a first-time professional can answer `Where am I?`, `What is this based on?`, and `What should I do next?` without opening another surface.
+
+#### P0 proof before completion
+
+- [ ] Add structural tests that fail for unmapped interactive elements, raw shell controls, glyph icons, unapproved tokens, or custom chrome outside the exception manifest.
+- [ ] Add computed-style assertions for the exact official geometry and type of the core primitives in every interaction state.
+- [ ] Add screenshot regression coverage for reset and completed fixtures at 1200×800, 1024×768, and 390×844 across Map, Sources, evidence, Brief/Style, Outputs, Storyboard, and focused output viewer.
+- [ ] Verify keyboard-only completion of both approval paths, focus return after drawers, visible focus, WCAG AA contrast, reduced motion, screen-reader names, 200% zoom, and no horizontal overflow.
+- [ ] Run a copy inventory test that snapshots every judge-visible label and rejects the retired/internal vocabulary above outside technical Details.
+- [ ] Complete a manual Figma-to-runtime reconciliation table with source node, code component, rendered measurement, state coverage, and screenshot evidence. Only then may the two reopened compliance items be checked again.
 
 ### 3. Specification and implementation plan
 

@@ -2893,3 +2893,35 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - This milestone proves exact local UI-system conformance and the deterministic product seam. It does not prove live GPT-5.6, GPT Image 2, Realtime, or final narration provider use.
 - Refresh the permanent demo screenshot gallery after the remaining provider-backed content and final recording fixture are ready; temporary acceptance captures were not promoted to submission evidence.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 21:43 CT — UI compliance claim corrected and P0 rebuild goal locked
+
+**Area:** Goal correction / official design system / professional UX language
+
+### Corrected evidence
+
+- A follow-up audit disproved the prior claim that the official Apps in ChatGPT system was fully implemented. The previous test checked only whether each component name appeared somewhere in `page.tsx` and scanned only `official-ui.css`; it did not prove per-element conformance or prevent legacy `globals.css` selectors from winning.
+- The current `packages/ui` package has no component implementation. The judged page still contains unmapped ordinary controls, native checkbox appearance, glyph Back/Close icons, and data attributes that name official components without implementing reusable equivalents.
+- Live computed-style inspection confirmed concrete drift: the source Token renders at 44px rather than the 42px reference, button controls do not consistently inherit the verified SF Pro stack, and the locked Style card still receives the retired green MVP shadow. Mobile avoids horizontal overflow but drops the current object name from the header.
+- The two implementation/conformance items in `GOAL.md` were reopened. The exact inventory remains complete and valid.
+
+### Goal revision
+
+- Made official-component remediation the active P0 gate. Completion now requires a real tested `packages/ui` layer, official iconography, primitive-grounded composites for any library gaps, removal/isolation of legacy chrome CSS, and an exception manifest limited to WorkshopLM domain rendering.
+- Reused the NotebookLM screenshot evidence for behavioral layout principles: fixed Workshop orientation, immediate source scoping, one focused center object, durable recognizable Outputs, and one-click source reveal. The goal explicitly rejects copying Google's branding, terminology, education framing, or exact three-column proportions.
+- Locked a plain-language contract and canonical copy replacements. Primary UI now targets familiar professional nouns and short verb–noun actions such as `Approve brief`, `Create outputs`, `Show source`, `Show on map`, and `Create video`; implementation terms such as gate, contract, package, artifact, provenance, render, Visual DNA, and version identifiers move to technical Details.
+- Added proof requirements for per-element structural conformance, complete-cascade token checks, computed styles, interaction states, screenshot regression at three viewports, keyboard/focus/contrast/reduced-motion/zoom verification, copy snapshots, and a manual Figma-to-runtime reconciliation table.
+
+### Decision
+
+- If the official library lacks a ready-made control, WorkshopLM may create a named composite only from verified primitives, spacing, typography, iconography, and interaction behavior. A missing component is permission to compose, not permission to invent a parallel visual system.
+- The interface is not complete because it looks closer to ChatGPT. It is complete only when code structure, rendered behavior, language, and evidence all satisfy the locked system.
+
+### Verification
+
+- Re-read the privacy-safe NotebookLM Sources/Chat/Studio, populated output history, and citation/source screenshots together with the existing user-flow and simplification audits.
+- Reviewed the revised `GOAL.md` for the prior false-completion state, the known runtime failures, NotebookLM translation boundary, explicit copy dictionary, executable implementation sequence, and completion evidence.
+- This milestone changes the source-of-truth goal and does not claim that the P0 rebuild itself is implemented.
+- Codex Session ID: unavailable on this surface; not inferred.
