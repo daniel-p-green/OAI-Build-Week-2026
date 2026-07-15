@@ -2718,6 +2718,42 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
+---
+
+## 2026-07-15 17:17 CT — Clean-start Shape becomes claim-level professional composition
+
+**Area:** Product quality / Shape / Brief / Source trust
+
+### Changed
+
+- Reproduced the clean-start path with representative professional notes and found that six grounded claims were being collapsed into one oversized Map node and a mechanically fragmented Brief. The data was grounded, but the first draft did not yet communicate professional structure.
+- Changed deterministic Source ingestion to create separately editable claim-level Map nodes with exact claim IDs, Source IDs, chunk locators, concise titles, and stable spatial placement. One Source with six verified statements now becomes six useful ideas instead of one Source summary.
+- Changed `FRAME.md` composition to rank one concise, noncreative outcome and preserve up to three separate exact evidence statements. The outcome claim is not repeated as evidence.
+- Attached each Brief evidence locator to its exact statement and made that control open the precise source sentence and chunk, rather than showing detached duplicate citation controls.
+- Added regression coverage for realistic six-claim notes, graph placement, concise outcome selection, exact evidence composition, and claim-aware source trace.
+
+### Verified
+
+- A fresh isolated Workshop in the actual Codex in-app browser completed Client pitch → clean Style → one pasted Source → six-idea Map → approved Brief. The 1280px Map and Brief had no horizontal overflow.
+- The Brief heading was exactly `WorkshopLM organizes messy thinking into a grounded Map`; it contained three evidence rows. Opening the first row's `Pasted notes · chunk 01` control showed the exact sentence `Professional teams lose hours turning meeting notes into client-ready presentations`.
+- Worker tests passed 84 cases, including the new realistic composition regression. Web component/API tests passed 15 cases.
+- The production build and all 27 browser tests passed at desktop, compact, and mobile widths after intentional visual-baseline review. `pnpm check` passed all 13 packages. `pnpm demo:e2e` passed the complete deterministic seam with all six gates green and the local rendered Video intact.
+- The evidence record is `artifacts/spikes/claim-level-shape-2026-07-15.json`. No OpenAI provider request or paid generation occurred.
+
+### Decisions
+
+- The Map's deterministic fallback unit is a grounded claim, not a Source document. Source summaries remain useful metadata but are too coarse to be the professional thinking surface.
+- A professional Brief leads with one outcome and keeps evidence exact, separate, and immediately traceable. Locator controls belong with the statement they support.
+- This closes a deterministic composition defect only. Provider-backed organization and an uncoached professional's `Send`/`Revise` judgment remain separate evidence gates.
+
+### Open items
+
+- Record one provider-verified Realtime voice turn, rerun the zero-spend operator preflight, obtain explicit request authorization, and run the provider-backed Map, image, and narration path.
+- Put the external-use deck in front of its intended professional audience for a cold `Send`/`Revise` decision.
+- Invoke the installed package from ChatGPT Work and record actual surface support without inferring parity from Codex.
+- Provider-backed media, final founder recording, public links, and the Devpost `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
 ## 2026-07-15 12:43 CT — Office-hours guidance captured in hackathon notes
 
 **Area:** Research / Submission
@@ -5689,4 +5725,25 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Record one provider-verified Realtime turn, obtain explicit request authorization, and run the provider-backed Map, image, and narration path.
 - Put the external-use deck in front of its intended professional audience for a cold `Send`/`Revise` decision.
 - Provider-backed media, final founder recording, public links, and the Devpost `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 17:22 CT — Build-log chronology correction and Map orientation proof
+
+**Area:** Evidence hygiene / First-run Map
+
+### Changed
+
+- The preceding `17:17 CT — Clean-start Shape becomes claim-level professional composition` milestone was added above the later `16:42` and `17:01` entries because its append patch matched an earlier repeated Session-ID line. This entry records the chronology error without deleting or rewriting historical content; the 17:17 milestone's implementation and verification claims are unchanged.
+- Moved the one-time `Your Map is ready` orientation card from the upper-left idea field to the empty lower-left canvas area so it no longer covers the Source node, claim nodes, or evidence edges at the recorded desktop width.
+
+### Verified
+
+- Rebuilt the production visual app, regenerated the one affected onboarding baseline, visually inspected the unobscured six-idea Map, and passed the targeted clean-start browser test against the new baseline.
+- The full update-mode production browser suite passed all 27 cases before the targeted normal-baseline rerun passed.
+
+### Open items
+
+- Product evidence gates remain unchanged: provider-backed Map/media, uncoached professional `Send`/`Revise`, ChatGPT Work invocation, founder recording, public links, and `/feedback` Session ID.
 - Codex Session ID: unavailable on this surface; not inferred.

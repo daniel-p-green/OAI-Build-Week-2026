@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 17:01 CT
+Last updated: 2026-07-15 17:17 CT
 
 ## Status
 
@@ -89,6 +89,7 @@ These gates measure replacement value, not implementation breadth. Automated che
 - [ ] On the provider-backed path, a professional can add their own material and see the grounded Map organize it within two minutes.
 - [ ] From an empty Workshop and the professional's own material, the first editable, source-defensible deck is ready within 15 minutes. Record elapsed time and every manual repair.
   - 2026-07-15 mechanical proof: a new empty Workshop accepted fresh pasted meeting notes, derived the Source title, built the grounded Map, approved the Brief, applied a Style, created Outputs directly from the Brief, and opened an editable `.pptx` presentation in 2.6 seconds of automated production-browser time with no manual repair. The same source field now routes pasted notes, a public URL, or an absolute local PDF path without a mode picker. The human gate stays open until a representative professional repeats this with their own material and no coaching.
+  - 2026-07-15 composition proof: the isolated Codex-browser clean start now turns six realistic verified claims into six separately editable, claim-backed Map ideas instead of one oversized Source summary. The approved Brief selects one concise outcome and three exact evidence sentences, each with an attached locator that opens the precise source text. This closes the deterministic first-draft composition defect; it does not close the provider-backed or uncoached-professional gates.
 
 #### Send-it quality
 
@@ -551,6 +552,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 ### 7. Shape
 
 - [x] Generate the typed semantic graph from transcript/source ingestion with durable source metadata.
+  - 2026-07-15: deterministic fallback ingestion now materializes up to twelve claim-level nodes per Source set with exact claim IDs, Source IDs, locators, concise titles, and stable spatial placement. `FRAME.md` ranks the strongest noncreative claim as the outcome and preserves up to three separate exact evidence statements.
 - [x] Render and synchronize the Excalidraw Map, including persisted title, position, and size changes plus typed Undo.
 - [x] Support typed, undoable user and AI graph operations.
 - [x] Generate Sketch view from an approved graph version.

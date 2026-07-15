@@ -398,11 +398,23 @@ function mapNodesFor(graph: SemanticGraphType, existing: WorkshopMapNode[]): Wor
   return graph.nodes.map((node, index) => { const prior = existing.find((item) => `node-${item.id}` === node.id); const metadata = node.metadata as { body?: unknown; locator?: unknown; sourceId?: unknown; x?: unknown; y?: unknown; width?: unknown; height?: unknown }; return { id: node.id.replace(/^node-/, ""), title: node.label, body: typeof metadata.body === "string" ? metadata.body : prior?.body ?? node.label, kind: node.evidenceState === "verified" ? "grounded" : node.evidenceState === "unverified" ? "derived" : node.evidenceState, locator: typeof metadata.locator === "string" ? metadata.locator : prior?.locator ?? "Map operation", sourceId: typeof metadata.sourceId === "string" ? metadata.sourceId : prior?.sourceId, x: typeof metadata.x === "number" ? metadata.x : prior?.x ?? 16 + (index * 15) % 65, y: typeof metadata.y === "number" ? metadata.y : prior?.y ?? 18 + (index * 19) % 58, width: typeof metadata.width === "number" ? metadata.width : prior?.width ?? 24, height: typeof metadata.height === "number" ? metadata.height : prior?.height ?? 18 }; });
 }
 function mapEdgesFor(graph: SemanticGraphType): WorkshopMapEdge[] { return graph.edges.map((edge) => ({ ...edge, from: edge.from.replace(/^node-/, ""), to: edge.to.replace(/^node-/, "") })); }
+function frameOutcomeScore(node: WorkshopMapNode) {
+  const text = prose(`${node.title} ${node.body}`);
+  let score = node.kind === "grounded" ? 2 : 0;
+  if (roleSignals.statement.test(text)) score += 20;
+  if (/\b(professional|client|leadership|deliverable|defend|outcome|promise)\b/i.test(text)) score += 6;
+  if (roleSignals.split.test(text)) score -= 4;
+  return score;
+}
 function frameFor(state: WorkshopState, approvedAt: string, root?: string): WorkshopFrame {
-  const core = state.mapNodes.filter((node) => node.kind !== "creative").slice(0, 3);
-  const evidence = core.map((node) => `- ${node.title}: ${node.body} (${node.locator})`).join("\n");
-  const version = (state.frame?.version ?? 0) + 1; const markdown = `# FRAME.md\n\n## Outcome\n${core[0]?.body ?? "Turn raw thinking into finished work."}\n\n## Evidence\n${evidence}\n\n## Production proof\nShow the approved Map, source locators, and a finished output in one continuous path.\n`; const dataRoot = root ?? repositoryDataRoot(); const markdownPath = workshopGeneratedPath(state.id, `FRAME-v${version}.md`); const executablePath = workshopGeneratedPath(state.id, `FRAME-v${version}.json`); const generated = join(dataRoot, dirname(markdownPath));
-  mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, executablePath), `${JSON.stringify({ schemaVersion: 1, frameVersion: version, graphRevision: graphFor(state).graph.revision, outcome: core[0]?.body ?? "Turn raw thinking into finished work.", evidence: core.map((node) => ({ nodeId: node.id, title: node.title, body: node.body, locator: node.locator, sourceId: node.sourceId })), productionProof: "Show the approved Map, source locators, and a finished output in one continuous path.", approvedAt }, null, 2)}\n`, "utf8");
+  const available = state.mapNodes.filter((node) => node.kind !== "creative");
+  const outcomeNode = [...available].sort((left, right) => frameOutcomeScore(right) - frameOutcomeScore(left) || available.indexOf(left) - available.indexOf(right))[0];
+  const evidenceNodes = available.filter((node) => node.id !== outcomeNode?.id).slice(0, 3);
+  if (!evidenceNodes.length && outcomeNode) evidenceNodes.push(outcomeNode);
+  const outcome = outcomeNode?.title ?? "Turn raw thinking into finished work.";
+  const evidence = evidenceNodes.map((node) => `- ${prose(node.body)} — ${node.locator}`).join("\n");
+  const version = (state.frame?.version ?? 0) + 1; const markdown = `# FRAME.md\n\n## Outcome\n${outcome}\n\n## Evidence\n${evidence}\n\n## Production proof\nShow the approved Map, source locators, and a finished output in one continuous path.\n`; const dataRoot = root ?? repositoryDataRoot(); const markdownPath = workshopGeneratedPath(state.id, `FRAME-v${version}.md`); const executablePath = workshopGeneratedPath(state.id, `FRAME-v${version}.json`); const generated = join(dataRoot, dirname(markdownPath));
+  mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, executablePath), `${JSON.stringify({ schemaVersion: 1, frameVersion: version, graphRevision: graphFor(state).graph.revision, outcome, evidence: evidenceNodes.map((node) => ({ nodeId: node.id, title: node.title, body: node.body, locator: node.locator, sourceId: node.sourceId })), productionProof: "Show the approved Map, source locators, and a finished output in one continuous path.", approvedAt }, null, 2)}\n`, "utf8");
   return { version, approvedAt, stale: false, markdown, markdownPath, executablePath };
 }
 export function applyMapOperation(operation: unknown, root?: string): WorkshopState {
@@ -493,6 +505,30 @@ export function normalizePdfLayoutText(text: string) {
 function sourceClaimCount(text: string) { return Math.max(1, text.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean).length); }
 function chunksFor(text: string, sourceId: string, hash: string, origin: string): WorkshopChunk[] { return text.split(/\n\n+/).flatMap((paragraph) => paragraph.match(/.{1,700}(?:\s|$)/g) ?? [paragraph]).filter(Boolean).map((chunk, ordinal) => ({ id: `chunk-${hash.slice(0, 12)}-${ordinal + 1}`, sourceId, text: chunk.trim(), locator: `${origin} · chunk ${String(ordinal + 1).padStart(2, "0")}`, ordinal })); }
 function claimsFor(chunks: WorkshopChunk[], hash: string): WorkshopClaim[] { return chunks.flatMap((chunk) => chunk.text.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean).map((text, index) => ({ id: `claim-${hash.slice(0, 12)}-${chunk.ordinal}-${index + 1}`, sourceId: chunk.sourceId, chunkId: chunk.id, text, evidenceState: "verified" as const, locator: chunk.locator }))); }
+function sourceExcerpt(text: string) { return text.length <= 240 ? text : `${text.slice(0, 240).replace(/\s+\S*$/, "").trimEnd()}…`; }
+function mapNodeTitle(text: string) {
+  const clean = prose(text);
+  const clause = clean.split(/,\s+(?:then|but|because|so|while)\b|[;:]\s*/i)[0]?.trim() ?? clean;
+  return outputHeading(clause.length >= 24 ? clause : clean, 64);
+}
+function mapNodesForClaims(claims: WorkshopClaim[], existingCount: number): WorkshopMapNode[] {
+  const room = Math.max(0, 12 - existingCount);
+  return claims.slice(0, Math.min(6, room)).map((claim, index) => {
+    const position = existingCount + index;
+    return {
+      id: claim.id,
+      title: mapNodeTitle(claim.text),
+      body: prose(claim.text),
+      kind: "grounded" as const,
+      locator: claim.locator,
+      sourceId: claim.sourceId,
+      x: 8 + (position % 3) * 31,
+      y: 10 + (Math.floor(position / 3) % 4) * 23,
+      width: 24,
+      height: 18,
+    };
+  });
+}
 function candidateCategory(text: string): WorkshopCandidate["category"] { const normalized = text.toLowerCase(); if (/\?|\b(how|what|which|when|where|why)\b/.test(normalized)) return "question"; if (/\b(must|must not|only|cannot|deadline|require|constraint)\b/.test(normalized)) return "constraint"; if (/\b(judge|customer|client|team|user|audience)\b/.test(normalized)) return "audience"; if (/\b(goal|aim|need to|should|want to|deliver|build)\b/.test(normalized)) return "goal"; return "claim"; }
 export function extractWorkshopCandidates(root?: string): WorkshopState { const current = readWorkshopState(root); const candidates = activeClaimsFor(current).slice(0, 40).map((claim) => ({ id: `candidate-${claim.id}`, category: candidateCategory(claim.text), text: claim.text, sourceId: claim.sourceId, chunkId: claim.chunkId, locator: claim.locator })); return write({ ...current, candidates, updatedAt: new Date().toISOString() }, root); }
 function evidenceMatchQuery(query: string): string | undefined { const terms = [...new Set(normalizeSourceText(query).toLocaleLowerCase().split(/[^\p{L}\p{N}_]+/u).filter((term) => term.length > 1))]; return terms.length ? terms.map((term) => `"${term.replaceAll('"', '""')}"`).join(" OR ") : undefined; }
@@ -520,12 +556,16 @@ export async function ingestSource(input: SourceIngestion, root?: string): Promi
   await mkdir(sourceDirectory, { recursive: true });
   await writeFile(join(sourceDirectory, `${hash}.txt`), text, "utf8");
   const claimCount = sourceClaimCount(text);
-  const source: WorkshopSource = { id: sourceId, type: input.type ?? "TXT", title, origin, claimCount, excerpt: text.slice(0, 240), locator: `${origin} · normalized:${hash.slice(0, 12)}`, permission };
+  const source: WorkshopSource = { id: sourceId, type: input.type ?? "TXT", title, origin, claimCount, excerpt: sourceExcerpt(text), locator: `${origin} · normalized:${hash.slice(0, 12)}`, permission };
   const chunks = chunksFor(text, sourceId, hash, origin); const claims = claimsFor(chunks, hash);
-  const node: WorkshopMapNode = { id: `evidence-${hash.slice(0, 12)}`, title, body: source.excerpt, kind: "grounded", locator: source.locator, sourceId, x: 18 + (current.mapNodes.length * 13) % 64, y: 24 + (current.mapNodes.length * 17) % 54, width: 24, height: 18 };
+  const nodes = mapNodesForClaims(claims, current.mapNodes.length);
   const createdAt = new Date().toISOString(); const snapshot = graphFor(current);
-  const operation = GraphOperation.parse({ type: "add_node", node: { id: `node-${node.id}`, kind: "claim", label: node.title, claimId: claims[0]?.id, evidenceState: "verified", metadata: { body: node.body, locator: node.locator, sourceId, x: node.x, y: node.y, width: node.width, height: node.height } } });
-  const applied = appendGraphOperation(snapshot.graph, snapshot.history, operation, { id: `operation-source-${hash.slice(0, 12)}`, actor: "system", createdAt });
+  let graph = snapshot.graph; let history = snapshot.history;
+  for (const [index, node] of nodes.entries()) {
+    const operation = GraphOperation.parse({ type: "add_node", node: { id: `node-${node.id}`, kind: "claim", label: node.title, claimId: node.id, evidenceState: "verified", metadata: { body: node.body, locator: node.locator, sourceId, x: node.x, y: node.y, width: node.width, height: node.height } } });
+    const applied = appendGraphOperation(graph, history, operation, { id: `operation-source-${hash.slice(0, 12)}-${index + 1}`, actor: "system", createdAt });
+    graph = applied.graph; history = applied.history;
+  }
   return write({
     ...current,
     sources: current.sources + 1,
@@ -535,9 +575,9 @@ export async function ingestSource(input: SourceIngestion, root?: string): Promi
     sourceChunks: [...chunks, ...current.sourceChunks],
     claims: [...claims, ...current.claims],
     candidates: [],
-    mapNodes: mapNodesFor(applied.graph, [...current.mapNodes, node]),
-    mapEdges: mapEdgesFor(applied.graph),
-    graphState: serializeGraphState(applied.graph, applied.history),
+    mapNodes: mapNodesFor(graph, [...current.mapNodes, ...nodes]),
+    mapEdges: mapEdgesFor(graph),
+    graphState: serializeGraphState(graph, history),
     frame: current.frame ? { ...current.frame, stale: true } : undefined,
     sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined,
     assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined,

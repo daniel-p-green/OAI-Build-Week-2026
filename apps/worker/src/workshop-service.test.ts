@@ -92,7 +92,32 @@ it("creates, lists, selects, and isolates durable Workshops", async () => {
   expect(createWorkshop("Client launch", root).id).toBe("workshop-client-launch-2");
   await rm(root, { recursive: true, force: true });
 });
-it("normalizes a sanitized source into durable chunks, claims, permissions, and typed grounded Map records", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-ingest-")); const ingested = await ingestSource({ title: "Sanitized meeting", origin: "Local fixture", text: "  Judges need a visible trail.\r\n\r\nThe Map must remain editable.  " }, root); const sourceId = ingested.sourceItems.at(-1)!.id; expect(ingested.sources).toBe(4); expect(ingested.sourceItems.at(-1)).toMatchObject({ title: "Sanitized meeting", origin: "Local fixture", type: "TXT", permission: "sanitized" }); expect(ingested.sourceChunks.filter((chunk) => chunk.sourceId === sourceId).at(-1)).toMatchObject({ sourceId, locator: "Local fixture · chunk 02" }); expect(ingested.claims.filter((claim) => claim.sourceId === sourceId)).toHaveLength(2); expect(searchWorkshopSources("editable Map", root).filter((chunk) => chunk.sourceId === sourceId)).toHaveLength(1); expect(ingested.mapNodes.at(-1)).toMatchObject({ title: "Sanitized meeting", kind: "grounded" }); expect(ingested.graphState).toContain("operation-source-"); expect(ingested.graphState).toContain('"actor":"system"'); const repeated = await ingestSource({ title: "Sanitized meeting", origin: "Local fixture", text: "Judges need a visible trail.\n\nThe Map must remain editable." }, root); expect(repeated.sources).toBe(4); await rm(root, { recursive: true, force: true }); });
+it("normalizes a sanitized source into durable chunks, claims, permissions, and typed grounded Map records", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-ingest-")); const ingested = await ingestSource({ title: "Sanitized meeting", origin: "Local fixture", text: "  Judges need a visible trail.\r\n\r\nThe Map must remain editable.  " }, root); const sourceId = ingested.sourceItems.at(-1)!.id; expect(ingested.sources).toBe(4); expect(ingested.sourceItems.at(-1)).toMatchObject({ title: "Sanitized meeting", origin: "Local fixture", type: "TXT", permission: "sanitized" }); expect(ingested.sourceChunks.filter((chunk) => chunk.sourceId === sourceId).at(-1)).toMatchObject({ sourceId, locator: "Local fixture · chunk 02" }); const claims = ingested.claims.filter((claim) => claim.sourceId === sourceId); expect(claims).toHaveLength(2); expect(searchWorkshopSources("editable Map", root).filter((chunk) => chunk.sourceId === sourceId)).toHaveLength(1); expect(ingested.mapNodes.filter((node) => node.sourceId === sourceId)).toMatchObject([{ id: claims[0]!.id, title: "Judges need a visible trail", body: "Judges need a visible trail", kind: "grounded" }, { id: claims[1]!.id, title: "The Map must remain editable", body: "The Map must remain editable", kind: "grounded" }]); expect(ingested.graphState).toContain("operation-source-"); expect(ingested.graphState).toContain('"actor":"system"'); const repeated = await ingestSource({ title: "Sanitized meeting", origin: "Local fixture", text: "Judges need a visible trail.\n\nThe Map must remain editable." }, root); expect(repeated.sources).toBe(4); await rm(root, { recursive: true, force: true }); });
+it("turns realistic meeting notes into a six-idea grounded Map and a concise executable Brief", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-professional-shape-"));
+  const priorFixtureMode = process.env.WORKSHOPLM_SEEDED_FIXTURE;
+  delete process.env.WORKSHOPLM_SEEDED_FIXTURE;
+  try {
+    const text = "Professional teams lose hours turning meeting notes into client-ready presentations. WorkshopLM organizes messy thinking into a grounded Map, then creates an editable deck with every factual claim linked to its exact source.\n\nThe recommended workflow is Capture, Shape, Deliver. The professional reviews the Brief before output creation and reviews the Storyboard before video rendering.\n\nCompany Style keeps colors, typography, and layout rules consistent across presentations, diagrams, images, and video. The goal is a deck a consultant can defend and send without rebuilding it in another tool.";
+    const ingested = await ingestSource({ title: "Client delivery notes", origin: "Pasted notes", text, permission: "private" }, root);
+    expect(ingested.claims).toHaveLength(6);
+    expect(ingested.mapNodes).toHaveLength(6);
+    expect(ingested.mapNodes.every((node) => node.kind === "grounded" && node.sourceId === ingested.sourceItems[0]!.id)).toBe(true);
+    expect(ingested.mapNodes.map((node) => node.id)).toEqual(ingested.claims.map((claim) => claim.id));
+    expect(new Set(ingested.mapNodes.map((node) => `${node.x}:${node.y}`)).size).toBe(6);
+    const approved = applyWorkshopAction("approveBrief", root);
+    expect(approved.frame?.markdown).toContain("## Outcome\nWorkshopLM organizes messy thinking into a grounded Map");
+    expect(approved.frame?.markdown).toContain("- Professional teams lose hours turning meeting notes into client-ready presentations — Pasted notes · chunk 01");
+    expect(approved.frame?.markdown).not.toContain("Client delivery notes:");
+    const executable = JSON.parse(await readFile(join(root, approved.frame!.executablePath), "utf8"));
+    expect(executable).toMatchObject({ outcome: "WorkshopLM organizes messy thinking into a grounded Map" });
+    expect(executable.evidence[0]).toMatchObject({ nodeId: ingested.claims[0]!.id, locator: "Pasted notes · chunk 01" });
+  } finally {
+    if (priorFixtureMode === undefined) delete process.env.WORKSHOPLM_SEEDED_FIXTURE;
+    else process.env.WORKSHOPLM_SEEDED_FIXTURE = priorFixtureMode;
+    await rm(root, { recursive: true, force: true });
+  }
+});
 it("ships a BM25-searchable sanitized Workshop without an acceptance-only data-root override", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-seed-evidence-")); const state = readWorkshopState(root); expect(state.sourceChunks).toHaveLength(3); expect(state.claims).toHaveLength(5); expect(searchWorkshopSources("editable production system", root)[0]).toMatchObject({ sourceId: "source-design", locator: "Design · Map" }); const database = new DatabaseSync(join(root, "data", "workshoplm.sqlite")); expect((database.prepare("SELECT count(*) AS count FROM evidence_fts WHERE workshop_id=?").get(state.id) as { count: number }).count).toBe(3); database.close(); await rm(root, { recursive: true, force: true }); });
 it("preserves the requested source permission", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-permission-")); const state = await ingestSource({ title: "Private notes", origin: "Fixture", text: "Keep this source private.", permission: "private" }, root); expect(state.sourceItems.at(-1)?.permission).toBe("private"); await rm(root, { recursive: true, force: true }); });
 it("indexes readable website content instead of scripts and navigation", async () => {
@@ -195,7 +220,10 @@ it("refreshes the weekly Map and Brief after a new meeting while preserving the 
   const refreshed = await ingestSource({ title: "Thursday client meeting", origin: "Meeting · Thursday", text: "The weekly client update now confirms pilot approval from leadership. The team should start the client pilot on Monday and measure adoption during the first week." }, root);
   const newSource = refreshed.sourceItems.at(-1)!;
   expect(refreshed).toMatchObject({ id: weekly.id, briefApproved: false, storyboardApproved: false, videoState: "blocked" });
-  expect(refreshed.mapNodes.some((node) => node.sourceId === newSource.id && node.title === "Thursday client meeting")).toBe(true);
+  expect(refreshed.mapNodes.filter((node) => node.sourceId === newSource.id)).toMatchObject([
+    { body: "The weekly client update now confirms pilot approval from leadership", locator: "Meeting · Thursday · chunk 01" },
+    { body: "The team should start the client pilot on Monday and measure adoption during the first week", locator: "Meeting · Thursday · chunk 01" },
+  ]);
   expect(refreshed.frame).toMatchObject({ version: initialBrief.frame!.version, stale: true });
   expect(refreshed.style).toMatchObject({ libraryId: styled.style!.libraryId, version: 1, stale: false });
   expect(refreshed.outputs.find((output) => output.id === firstDeck.id)).toMatchObject({ stale: true });

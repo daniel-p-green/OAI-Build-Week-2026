@@ -434,7 +434,13 @@ function frameSection(markdown: string | undefined, heading: string) {
 
 function BriefView({ state, onChooseStyle, onShowSource }: { state: PersistedWorkshop | null; onChooseStyle: () => void; onShowSource: (target?: EvidenceTarget) => void }) {
   const outcome = frameSection(state?.frame?.markdown, "Outcome") || "Turn raw thinking into finished work.";
-  const evidence = frameSection(state?.frame?.markdown, "Evidence").split("\n").map((line) => line.replace(/^[-*]\s*/, "").trim()).filter(Boolean);
+  const evidence = frameSection(state?.frame?.markdown, "Evidence").split("\n").map((line) => line.replace(/^[-*]\s*/, "").trim()).filter(Boolean).map((item) => {
+    const separator = item.lastIndexOf(" — ");
+    const text = separator >= 0 ? item.slice(0, separator).trim() : item;
+    const locator = separator >= 0 ? item.slice(separator + 3).trim() : undefined;
+    const claim = state?.claims?.find((candidate) => candidate.locator === locator && candidate.text === text) ?? state?.claims?.find((candidate) => candidate.locator === locator);
+    return { text, locator, claim };
+  });
   const proof = frameSection(state?.frame?.markdown, "Production proof");
   const locked = Boolean(state?.style && !state.style.stale);
 
@@ -442,9 +448,8 @@ function BriefView({ state, onChooseStyle, onShowSource }: { state: PersistedWor
     <Card className="brief-document">
       <div className="brief-meta"><Status>Approved</Status><span>{state?.activeSourceIds.length ?? 0} sources · {state?.mapNodes.filter((node) => node.kind === "grounded").length ?? 0} verified claims</span></div>
       <h1>{outcome}</h1>
-      {evidence.length > 0 && <section className="brief-section"><h2>Evidence</h2><ul>{evidence.map((item) => <li key={item}>{item}</li>)}</ul></section>}
+      {evidence.length > 0 && <section className="brief-section"><h2>Evidence</h2><ul>{evidence.map((item) => <li className="brief-evidence-item" key={`${item.text}-${item.locator ?? "untraced"}`}><span>{item.text}</span>{item.locator && <Token onClick={() => onShowSource({ sourceId: item.claim?.sourceId, claimId: item.claim?.id, locator: item.locator })}>{item.locator}</Token>}</li>)}</ul></section>}
       {proof && <section className="brief-section"><h2>Success looks like</h2><p>{proof}</p></section>}
-      <div className="citation-row">{state?.claims?.slice(0, 3).map((claim) => <Token key={claim.id} onClick={() => onShowSource({ sourceId: claim.sourceId, claimId: claim.id, locator: claim.locator })}>{claim.locator}</Token>)}</div>
       <section className="style-summary" aria-label="Style"><div className="style-summary-copy"><small>Style</small><strong>{locked ? `${state?.style?.name} · Version ${state?.style?.libraryRevision ?? 1}` : "Not selected"}</strong></div><div className="palette-preview compact" data-domain-ui="palette-preview"><i style={{ background: state?.style?.accent ?? "#0285FF" }} /><i style={{ background: state?.style?.ink ?? "#0D0D0D" }} /><i style={{ background: state?.style?.paper ?? "#FFFFFF" }} /></div>{locked && <Button variant="secondary" size="small" onClick={onChooseStyle}>Edit</Button>}</section>
     </Card>
   </article>;

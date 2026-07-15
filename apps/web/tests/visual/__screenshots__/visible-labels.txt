@@ -10,10 +10,10 @@ Back to Brief
 Back to Map
 Back to Outputs
 Build notes · §2
-ChatGPT task · 12:41 · chunk 04
 Create video
 Edit
 Evidence
+Goal · capture
 Image set
 Infographic
 InfographicInfographic · Version 1Up to date3 sources
@@ -23,7 +23,7 @@ PresentationPresentation · Version 1Up to date3 sources
 Show source
 Storyboard
 Success looks like
-Turn raw thinking into finished work without losing the trail back to source material.
+The product promise
 Undo
 View brief
 View outputs

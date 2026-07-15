@@ -106,7 +106,7 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await page.getByRole("button", { name: /sources$/ }).focus();
   await pressTabUntil(page, "Approve brief");
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Turn raw thinking into finished work");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("The product promise");
   await pressTabUntil(page, "Choose style");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog", { name: "Style" })).toBeVisible();
@@ -1025,13 +1025,14 @@ test("a new professional reaches the real Map through the durable first-use path
   await expect(page.getByRole("heading", { name: "Add the thinking." })).toBeVisible();
   await expect(page.getByRole("button", { name: "Build my Map" })).toBeDisabled();
   await expectScreen(page, "desktop-onboarding-sources");
-  await page.getByLabel("Source").fill("Leadership approved the pilot. The recommendation is to begin on Monday and measure adoption during the first week.");
-  await page.getByLabel("Title (optional)").fill("Monday leadership meeting");
+  await page.getByLabel("Source").fill("Professional teams lose hours turning meeting notes into client-ready presentations. WorkshopLM organizes messy thinking into a grounded Map, then creates an editable deck with every factual claim linked to its exact source.\n\nThe recommended workflow is Capture, Shape, Deliver. The professional reviews the Brief before output creation and reviews the Storyboard before video rendering.\n\nCompany Style keeps colors, typography, and layout rules consistent across presentations, diagrams, images, and video. The goal is a deck a consultant can defend and send without rebuilding it in another tool.");
+  await page.getByLabel("Title (optional)").fill("Client delivery meeting");
   await page.getByRole("button", { name: "Add source" }).click();
   await expect(page.getByText("1 source ready")).toBeVisible();
   await page.getByRole("button", { name: "Build my Map" }).click();
 
   await expect(page.getByText("Your Map is ready.")).toBeVisible();
+  await expect(page.getByText("6 ideas · Drag to organize · Double-click to edit")).toBeVisible();
   await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
   await expect(page.getByRole("button", { name: "1 source" })).toBeVisible();
   await expectMapReady(page, viewports[0]);
@@ -1040,9 +1041,16 @@ test("a new professional reaches the real Map through the durable first-use path
   await page.reload();
   await expect(page.getByText("Your Map is ready.")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
+  await page.getByRole("button", { name: "Approve brief" }).click();
+  await expect(page.getByRole("heading", { level: 1, name: "WorkshopLM organizes messy thinking into a grounded Map" })).toBeVisible();
+  await expect(page.locator(".brief-evidence-item")).toHaveCount(3);
+  const problemEvidence = page.locator(".brief-evidence-item").filter({ hasText: "Professional teams lose hours turning meeting notes into client-ready presentations" });
+  await problemEvidence.getByRole("button", { name: "Pasted notes · chunk 01" }).click();
+  await expect(page.getByRole("dialog", { name: "Source" })).toContainText("Professional teams lose hours turning meeting notes into client-ready presentations");
+  await closeDialog(page, "Source");
 
   const state = await (await page.request.get("/api/workshop")).json();
-  expect(state).toMatchObject({ title: "Acme leadership update", onboarding: { step: "complete", outcome: "board_deck", mapOrientationDismissed: true }, style: { name: "Clean professional", intentProfile: "board_deck" }, sources: 1 });
+  expect(state).toMatchObject({ title: "Acme leadership update", onboarding: { step: "complete", outcome: "board_deck", mapOrientationDismissed: true }, style: { name: "Clean professional", intentProfile: "board_deck" }, sources: 1, groundedClaims: 6, mapNodes: expect.arrayContaining([expect.objectContaining({ id: expect.stringMatching(/^claim-/), sourceId: expect.stringMatching(/^source-/) })]) });
 });
 
 test("fresh Outputs keep the primary source trace clear and reveal the exact claim", async ({ page }) => {
