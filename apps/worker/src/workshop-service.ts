@@ -565,7 +565,7 @@ export function generateStoryboard(root?: string): WorkshopState {
   });
   return write({ ...current, storyboard: { version: current.storyboard.version + 1, panels, stale: false }, narration: current.narration ? { ...current.narration, stale: true } : undefined, videos: staleVideos(current), storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
-function outputHeading(text: string) { if (text.length <= 64) return text; const clipped = text.slice(0, 64).trimEnd(); return `${clipped.slice(0, clipped.lastIndexOf(" ")).trim()}…`; }
+function outputHeading(text: string, limit = 82) { if (text.length <= limit) return text; const clipped = text.slice(0, limit).trimEnd(); return `${clipped.slice(0, clipped.lastIndexOf(" ")).trim()}…`; }
 function outputBody(text: string) { if (text.length <= 240) return text; const clipped = text.slice(0, 240).trimEnd(); return `${clipped.slice(0, clipped.lastIndexOf(" ")).trim()}…`; }
 type DeckRole = "statement" | "split" | "proof" | "recommendation";
 const deckRoles: readonly DeckRole[] = ["statement", "split", "proof", "recommendation"];
@@ -636,10 +636,12 @@ function deckHeading(text: string, role: DeckRole) {
     if (action) return action.charAt(0).toUpperCase() + action.slice(1);
   }
   const clause = text.split(/\s*[—–]\s*|[;:]\s|,\s+(?=(?:but|because|while|which|with|without|so)\b)|\s+(?=(?:using|through|that)\b)/i)[0]?.trim() ?? text;
-  return outputHeading(clause.length >= 24 ? clause : text);
+  return outputHeading(clause.length >= 24 ? clause : text, role === "recommendation" ? 96 : 82);
 }
 function deckBody(text: string, heading: string) {
-  if (heading.endsWith("…") || !text.toLowerCase().startsWith(heading.toLowerCase())) return text;
+  const headingPrefix = heading.replace(/…$/, "").trim();
+  if (heading.endsWith("…") && text.toLowerCase().startsWith(headingPrefix.toLowerCase())) return "";
+  if (!text.toLowerCase().startsWith(heading.toLowerCase())) return text;
   return text.slice(heading.length).replace(/^\s*[:—–-]\s*/, "").trim();
 }
 function displaySourceTitle(title: string) {

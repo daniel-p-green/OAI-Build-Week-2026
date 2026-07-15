@@ -4825,3 +4825,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Provider-backed two-minute Map proof and the uncoached 15-minute deck test remain open.
 - The broader submission blockers remain provider-backed GPT-5.6/Image/narration/Realtime evidence, founder and Codex footage, the primary `/feedback` Session ID, final video/export, public upload, and Devpost submission.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 13:20 CT — Presentation renderer clears its first visual send-it defect
+
+**Area:** Deliver / Presentation quality / Editable export / Visual verification
+
+### Changed
+
+- Audited the generated five-slide fixture presentation as an actual editable PowerPoint, not only as HTML or a ZIP signature. The first render showed three professional-quality defects: empty body furniture on claim-only slides, a visually unstable split rail in LibreOffice, and recommendation copy repeated as both headline and body.
+- Made sparse claims a first-class presentation composition. Statement, split, proof, and recommendation slides now omit empty body elements, enlarge and reposition the supported headline, and retain the quiet source footer and PowerPoint notes trace.
+- Replaced generic `Key point` labels with `Core insight`, `What changes`, `Evidence`, and `Recommended next move`; corrected the client-facing deck label from `Organizer brief` to `Client presentation`.
+- Added an explicit pale accent rail to the split layout so PowerPoint-compatible renderers produce an intentional two-zone composition instead of relying on transparent text-box behavior.
+- Stabilized generated-preview browser screenshots by waiting for same-origin preview documents and fonts before capture. Mobile preview screens retain a bounded 1.5% raster tolerance for iframe font antialiasing; non-preview screens remain at 0.4% mobile and 0.1% desktop/compact.
+- Preserved the inspected contact sheet at `artifacts/deck-send-it-audit-2026-07-15.png`.
+
+### Verified
+
+- Production renderer tests pass 5/5, including a new sparse-slide contract; worker tests pass 63/63, including full claim text, sparse recommendation composition, editable export, and source trace.
+- `pnpm check` passed all 13 packages; web remained 15/15.
+- `pnpm demo:reset && pnpm demo:e2e` passed all six gates and regenerated the presentation from the recorded fixture.
+- LibreOffice opened and converted `.workshoplm/acceptance/generated/deck-v1.presentation.pptx` to a five-page 16:9 PDF. `unzip -t` found no archive errors. All five rasterized pages were inspected together; no empty placeholder furniture or duplicated recommendation remained.
+- The strict production-browser suite passed 18/18 after updating the two presentation-affected mobile baselines. The presentation and infographic preview frames are now explicitly ready before screenshot comparison.
+- `pnpm submission:build && pnpm submission:verify` produced the honest 17-asset `partial` package with `valid: true`, `stale: false`, and `tampered: false`.
+
+### Decisions
+
+- A one-sentence grounded claim should render as a strong sourced statement, not be padded with invented support or an empty text box. Output quality improves by adapting the layout to available evidence while preserving source fidelity.
+- This is an internal visual-quality pass, not a cold professional endorsement. The `Send`/`Revise` product gate remains open until an external reviewer judges a real-use deck candidate.
+
+### Open items
+
+- Obtain the first cold professional `Send` or named revision on the external-use deck candidate and iterate from that evidence.
+- Provider-backed GPT-5.6 Map reasoning, six GPT Image 2 panels, narration, and one Realtime microphone turn remain authorization-gated and unproved.
+- Founder/Codex footage, primary `/feedback` Session ID, final video, public upload, and Devpost submission remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

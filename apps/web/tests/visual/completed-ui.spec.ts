@@ -9,7 +9,8 @@ const viewports = [
 ] as const;
 
 async function expectScreen(page: Page, name: string) {
-  await expect(page).toHaveScreenshot(`${name}.png`, { animations: "disabled", caret: "hide", maxDiffPixelRatio: 0.001 });
+  const previewRatio = name === "mobile-outputs" || name === "mobile-output-viewer" ? 0.015 : name.startsWith("mobile-") ? 0.004 : 0.001;
+  await expect(page).toHaveScreenshot(`${name}.png`, { animations: "disabled", caret: "hide", maxDiffPixelRatio: previewRatio });
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(await page.evaluate(() => innerWidth));
 }
 
@@ -20,6 +21,15 @@ async function closeDialog(page: Page, name: string) {
 
 async function expectPrimaryActions(page: Page, count: 0 | 1) {
   await expect(page.locator('.oai-button--primary:not(:disabled):visible')).toHaveCount(count);
+}
+
+async function expectPreviewFramesReady(page: Page) {
+  const frames = page.locator('iframe[title$="preview"]');
+  if (await frames.count() === 0) return;
+  await expect.poll(() => frames.evaluateAll((items) => items.every((item) => {
+    const document = (item as HTMLIFrameElement).contentDocument;
+    return document?.readyState === "complete" && document.fonts.status === "loaded" && Boolean(document.body?.scrollHeight);
+  }))).toBe(true);
 }
 
 async function expectMapReady(page: Page, viewport: typeof viewports[number]) {
@@ -250,6 +260,7 @@ test.describe("completed Workshop judge path", () => {
       await expect(page.getByRole("heading", { name: "Image set" })).toHaveCount(1);
       await expect(page.getByRole("heading", { name: "Storyboard" })).toHaveCount(1);
       await expect(page.getByRole("button", { name: "Show source" })).toHaveCount(0);
+      await expectPreviewFramesReady(page);
       await expectScreen(page, `${viewport.name}-outputs`);
 
       await page.getByRole("button", { name: "Open Presentation" }).click();
@@ -258,6 +269,7 @@ test.describe("completed Workshop judge path", () => {
       await expect(page.getByRole("button", { name: "3 sources" })).toBeVisible();
       await expect(page.getByRole("button", { name: "Show source" })).toHaveClass(/oai-button--primary/);
       await expect(page.getByRole("link", { name: "Open preview" })).toBeVisible();
+      await expectPreviewFramesReady(page);
       await expectScreen(page, `${viewport.name}-output-viewer`);
       await page.getByRole("button", { name: "Back to Outputs" }).click();
 

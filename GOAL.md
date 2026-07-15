@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 12:53 CT
+Last updated: 2026-07-15 13:20 CT
 
 ## Status
 
@@ -92,6 +92,7 @@ These gates measure replacement value, not implementation breadth. Automated che
 #### Send-it quality
 
 - [ ] A cold professional returns `Send` on the external-use deck candidate or names the first required revision; apply that revision and repeat until the deck clears the bar.
+  - 2026-07-15 internal quality pass: LibreOffice/PDF inspection exposed empty layout furniture and repeated copy when a selected claim had no separate supporting sentence. Sparse statement, split, proof, and recommendation slides now use intentional claim-only compositions; the client-facing label is explicit, the split layout has a stable pale evidence rail, role labels describe the slide's job, and the recommendation no longer repeats its headline as body copy. The five-slide fixture deck, editable `.pptx`, source footers/notes, responsive UI previews, and `artifacts/deck-send-it-audit-2026-07-15.png` are verified. This improves the candidate but does not close the cold professional `Send`/`Revise` gate.
 - [ ] The first real GPT Image 2 batch contains deck-usable diagrams, concept visuals, or section art—not generic illustration—and passes a six-panel coherence review.
 - [ ] The provider-narrated Video clears a leadership or professional social-post review for pacing, voice, and visual coherence.
 - [x] Every primary Output has a credible last-10-percent path: editable PowerPoint for the presentation and infographic, in-product panel editing for Storyboard, direct image files plus selective regeneration, and a standard MP4 handoff for Video.

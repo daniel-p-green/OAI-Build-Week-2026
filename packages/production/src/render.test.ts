@@ -18,8 +18,14 @@ describe("production renderers", () => {
     expect(deck).toContain('class="slide split"');
     expect(deck).toContain('class="slide recommendation"');
     expect(deck).toContain('class="brand-logo"');
-    expect(deck).toContain("WorkshopLM · Organizer brief");
+    expect(deck).toContain("WorkshopLM · Client presentation");
     expect(renderInfographic(brief)).toContain("Source-defensible brief");
+  });
+  it("treats a claim with no supporting sentence as an intentional sparse slide", () => {
+    const deck = renderDeck({ ...brief, blocks: [{ id: "claim-only", heading: "One defensible statement", body: "", citations: ["meeting · 12:41"], layout: "statement" }] });
+    expect(deck).toContain('class="slide statement is-sparse"');
+    expect(deck).not.toContain('<p class="body"></p>');
+    expect(deck).toContain("02 · Core insight");
   });
   it("writes an inspectable preview and an editable PowerPoint deck", async () => {
     const root = await mkdtemp(join(tmpdir(), "workshoplm-production-"));
