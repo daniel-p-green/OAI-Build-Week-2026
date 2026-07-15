@@ -5366,3 +5366,37 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Manual local asset paths retain the legacy path behavior; this increment proves the selected remote website-asset contract and does not claim every manual file path has equivalent validation.
 - The professional send-it review, uncoached own-material timing, live microphone, GPT-5.6, GPT Image 2, Speech, and final-video evidence remain open and must not be inferred from deterministic acceptance.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 15:19 CT — Company Style failures preserve the work and a clear way forward
+
+**Area:** Product / Company Styles / Reliability / Browser verification
+
+### Changed
+
+- Website analysis now distinguishes invalid addresses, private/local-network targets, redirect abuse, blocked scans, JavaScript-only app shells, pages with no useful public style findings, and other scan failures.
+- Persisted failure state carries a stable category and privacy-safe user message rather than exposing raw network or parser errors.
+- A page with no real colors, font candidates, or brand assets can no longer silently become a website-derived Style made from defaults. JavaScript-only shells and genuinely empty findings fail honestly.
+- The existing Map recovery card remains the single failure surface: the professional can keep shaping and approving the Brief, then `Try again`, `Set manually`, or `Use a clean default` without restarting the Workshop.
+
+### Verified
+
+- Worker tests passed all 79 cases across eight files. The new matrix covers invalid input, generic scan failure, dynamic-site failure, no useful findings, redirect loops, redirect to a private target, and system-font fallback; the existing media tests continue to cover unsafe SVG, spoofed images, and oversized assets.
+- Web unit tests passed all 15 cases across four files and the production Next.js build succeeded.
+- The production browser suite passed all 21 tests. Its new recovery test keeps the real Map and `Approve brief` visible, opens the manual Style editor, retries the same public URL, and applies the clean default through the exact API actions.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. `pnpm demo:e2e` passed all six recorded-fixture gates.
+- `pnpm submission:build` produced the expected truthful 17-asset partial set with four provider limitations; `pnpm submission:verify` returned valid, not stale, and not tampered. `git diff --check` passed.
+
+### Decisions
+
+- A syntactically valid website is not a successful Style result. Website provenance requires at least one real public visual finding.
+- Recovery belongs beside the work, not in a blocking setup loop. Style failure may block Output creation, but never Source ingestion, Map editing, or Brief approval.
+- Failure messages describe the professional's next action and intentionally omit raw infrastructure details.
+
+### Open items
+
+- Saved Style revision semantics, the quiet `How WorkshopLM works` return entry, accessibility closure, and the real-public-website in-app-browser run remain open Company Style work.
+- Manual local asset paths still retain legacy behavior; selected remote website assets have the stronger verified contract.
+- Professional send-it review, own-material live timing, provider-backed voice/Map/Image/Speech evidence, and the final public video remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

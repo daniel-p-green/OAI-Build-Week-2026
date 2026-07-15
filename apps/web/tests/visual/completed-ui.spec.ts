@@ -257,6 +257,44 @@ test("a completed website review hands off from the editable Map without blockin
   await expect.poll(() => (posted.at(-1)?.manualStyle as Record<string, unknown>)?.selectedAssetUrls).toEqual([]);
 });
 
+test("a failed website review keeps the Map usable and offers all safe Style fallbacks", async ({ page }) => {
+  const current = await (await page.request.get("/api/workshop")).json();
+  const failedState = { ...current, briefApproved: false, frame: current.frame ? { ...current.frame, stale: true } : undefined, style: undefined, onboarding: { ...current.onboarding, step: "complete", outcome: "board_deck", mapOrientationDismissed: true, styleAnalysis: { status: "error", url: "https://example.com/app", startedAt: "2026-07-15T14:00:00.000Z", completedAt: "2026-07-15T14:00:01.000Z", errorCode: "dynamic_site", error: "This website loads its visual system with JavaScript, so WorkshopLM could not review it safely. Set the Style manually or use a clean default." } } };
+  const defaultStyle = { ...current.style, name: "Clean professional", source: "manual", intentProfile: "board_deck", stale: false };
+  let state = failedState;
+  const posted: Record<string, unknown>[] = [];
+  await page.route("**/api/workshop*", async (route) => {
+    if (route.request().method() === "GET" && route.request().url().includes("view=styles")) return route.fulfill({ json: { styles: [] } });
+    if (route.request().method() === "GET") return route.fulfill({ json: state });
+    const body = route.request().postDataJSON() as Record<string, unknown>;
+    posted.push(body);
+    if (body.action === "beginWebsiteStyleAnalysis") state = { ...state, onboarding: { ...state.onboarding, styleAnalysis: { ...state.onboarding.styleAnalysis, status: "reviewing" } } };
+    if (body.action === "lockManualStyle") state = { ...state, style: defaultStyle };
+    return route.fulfill({ json: state });
+  });
+
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto("/");
+  await expect(page.getByText("Couldn't review this website")).toBeVisible();
+  await expect(page.getByText(/loads its visual system with JavaScript/)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
+  await expectMapReady(page, viewports[0]);
+
+  await page.getByRole("button", { name: "Set manually" }).click();
+  const sheet = page.getByRole("dialog", { name: "Style" });
+  await expect(sheet.getByRole("textbox", { name: "Accent" })).toHaveValue("#0285FF");
+  await expect(sheet.getByRole("button", { name: "Use this style" })).toBeVisible();
+  await closeDialog(page, "Style");
+
+  await page.getByRole("button", { name: "Try again" }).click();
+  await expect.poll(() => posted.at(-1)).toMatchObject({ action: "beginWebsiteStyleAnalysis", url: "https://example.com/app" });
+  state = failedState;
+  await page.reload();
+  await page.getByRole("button", { name: "Use a clean default" }).click();
+  await expect.poll(() => posted.at(-1)).toMatchObject({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: "board_deck" } });
+  await expect(page.getByText("Couldn't review this website")).toHaveCount(0);
+});
+
 test.describe("completed Workshop judge path", () => {
   test.beforeAll(() => {
     const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");

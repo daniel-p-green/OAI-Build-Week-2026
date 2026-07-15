@@ -40,12 +40,14 @@ export type WorkshopBrandAsset = { id: string; sourceUrl: string; localPath: str
 export type WorkshopStyle = { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; paletteRoles: StylePaletteRoles; typographyRoles: StyleTypographyRoles; brandAssets: WorkshopBrandAsset[]; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: "client_facing_pitch" | "board_deck" | "internal_workshop"; referenceUrl?: string; libraryId?: string; lockedAt: string; stale: boolean };
 export type WorkshopStyleLibraryEntry = Omit<WorkshopStyle, "version" | "libraryId" | "lockedAt" | "stale"> & { id: string; createdAt: string; updatedAt: string };
 export type WorkshopOutcome = "client_facing_pitch" | "board_deck" | "internal_workshop";
+export type WebsiteStyleErrorCode = "invalid_url" | "private_network" | "redirect" | "blocked" | "dynamic_site" | "no_useful_findings" | "scan_failed";
 export type WebsiteStyleAnalysis = {
   status: "reviewing" | "ready" | "error";
   url: string;
   startedAt: string;
   completedAt?: string;
   suggestion?: WebsiteStyleSuggestion;
+  errorCode?: WebsiteStyleErrorCode;
   error?: string;
 };
 export type WorkshopOnboarding = {
@@ -224,14 +226,24 @@ export function beginWebsiteStyleAnalysis(rawUrl: string, root?: string): Worksh
   const startedAt = new Date().toISOString();
   return write({ ...current, onboarding: { ...current.onboarding, styleAnalysis: { status: "reviewing", url, startedAt } }, updatedAt: startedAt }, root);
 }
-function finishWebsiteStyleAnalysis(rawUrl: string, result: { suggestion: WebsiteStyleSuggestion } | { error: string }, root?: string) {
+function websiteStyleFailure(error: unknown): { errorCode: WebsiteStyleErrorCode; error: string } {
+  const message = error instanceof Error ? error.message : "";
+  if (/valid HTTP\(S\)|valid HTTP/i.test(message)) return { errorCode: "invalid_url", error: "Enter a complete public website address, such as https://company.com." };
+  if (/private network|local network|localhost/i.test(message)) return { errorCode: "private_network", error: "WorkshopLM cannot review private or local-network websites. Set the Style manually or use a clean default." };
+  if (/redirected too many times|without a destination/i.test(message)) return { errorCode: "redirect", error: "This website redirected too many times to review safely. Try another public page or set the Style manually." };
+  if (/blocked automatic review|HTTP 401|HTTP 403/i.test(message)) return { errorCode: "blocked", error: "This website blocked automatic review. Try another public page or set the Style manually." };
+  if (/JavaScript app shell/i.test(message)) return { errorCode: "dynamic_site", error: "This website loads its visual system with JavaScript, so WorkshopLM could not review it safely. Set the Style manually or use a clean default." };
+  if (/no usable public visual style/i.test(message)) return { errorCode: "no_useful_findings", error: "WorkshopLM could not find usable public colors, type, or brand assets on this page. Set the Style manually or use a clean default." };
+  return { errorCode: "scan_failed", error: "WorkshopLM could not review this website. Try again, set the Style manually, or use a clean default." };
+}
+function finishWebsiteStyleAnalysis(rawUrl: string, result: { suggestion: WebsiteStyleSuggestion } | { errorCode: WebsiteStyleErrorCode; error: string }, root?: string) {
   const current = readWorkshopState(root);
   const url = reviewedWebsiteUrl(rawUrl);
   if (current.onboarding.styleAnalysis?.url !== url) return current;
   const completedAt = new Date().toISOString();
   const styleAnalysis: WebsiteStyleAnalysis = "suggestion" in result
     ? { ...current.onboarding.styleAnalysis, status: "ready", suggestion: result.suggestion, completedAt }
-    : { ...current.onboarding.styleAnalysis, status: "error", error: result.error, completedAt };
+    : { ...current.onboarding.styleAnalysis, status: "error", errorCode: result.errorCode, error: result.error, completedAt };
   return write({ ...current, onboarding: { ...current.onboarding, styleAnalysis }, updatedAt: completedAt }, root);
 }
 export async function runWebsiteStyleAnalysis(rawUrl: string, root?: string, fetchImpl: typeof fetch = fetch): Promise<WorkshopState> {
@@ -239,7 +251,7 @@ export async function runWebsiteStyleAnalysis(rawUrl: string, root?: string, fet
     const suggestion = await analyzeWebsiteStyle(rawUrl, fetchImpl);
     return finishWebsiteStyleAnalysis(rawUrl, { suggestion }, root);
   } catch (error) {
-    return finishWebsiteStyleAnalysis(rawUrl, { error: error instanceof Error ? error.message : "This website could not be reviewed." }, root);
+    return finishWebsiteStyleAnalysis(rawUrl, websiteStyleFailure(error), root);
   }
 }
 export function dismissWorkshopOrientation(kind: "map" | "outputs", root?: string): WorkshopState {
@@ -656,6 +668,11 @@ export async function analyzeWebsiteStyle(rawUrl: string, fetchImpl: typeof fetc
   const fontCandidates = uniqueMatches(css, /font-family\s*:\s*([^;}]+)/gi).flatMap((declaration) => declaration.split(",")).map((font) => font.replace(/["']/g, "").trim()).filter((font) => font && !/^(inherit|initial|system-ui|sans-serif|serif|monospace|cursive|fantasy|ui-)/i.test(font) && !font.startsWith("var("));
   const logoTags = [...(html.match(/<img\b[^>]*>/gi) ?? []), ...linkTags.filter((tag) => /icon/i.test(htmlAttribute(tag, "rel") ?? ""))];
   const logos = [...new Set(logoTags.filter((tag) => /logo|brand|icon/i.test(`${htmlAttribute(tag, "alt") ?? ""} ${htmlAttribute(tag, "class") ?? ""} ${htmlAttribute(tag, "id") ?? ""} ${htmlAttribute(tag, "src") ?? ""} ${htmlAttribute(tag, "href") ?? ""}`)).map((tag) => absoluteWebUrl(htmlAttribute(tag, "src") ?? htmlAttribute(tag, "href"), url)).filter((value): value is string => Boolean(value)))].slice(0, 5);
+  if (colors.length === 0 && fontCandidates.length === 0 && logos.length === 0) {
+    const visibleText = readableHtmlText(html);
+    if (/<script\b/i.test(html) && visibleText.length < 40) throw new Error("Website style analysis found only a JavaScript app shell.");
+    throw new Error("Website style analysis found no usable public visual style.");
+  }
   const title = html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.replace(/\s+/g, " ").trim() || url.hostname;
   const reviewedFonts = [...new Set(fontCandidates)].slice(0, 6);
   return { referenceUrl: url.toString(), name: `${title} foundation`, accent, ink, paper, paletteRoles: paletteRoles(accent, ink, paper, "website"), logos, assetCandidates: logos.map((assetUrl) => ({ url: assetUrl, kind: "logo" })), fontCandidates: reviewedFonts, typographyCandidates: reviewedFonts.map((family) => ({ family, availability: "unverified", source: "website" })), references: [url.toString()], negativeRules: [], findings: { colors: colors.length, fontCandidates: new Set(fontCandidates).size, assets: logos.length, stylesheets: stylesheets.filter(Boolean).length } };

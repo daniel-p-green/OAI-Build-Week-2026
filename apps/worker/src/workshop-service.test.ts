@@ -46,7 +46,30 @@ it("persists website Style analysis while source work proceeds and ignores stale
 
   beginWebsiteStyleAnalysis("https://example.net/brand", root);
   const failed = await runWebsiteStyleAnalysis("https://example.net/brand", root, async () => { throw new Error("Fixture network failure"); });
-  expect(failed.onboarding.styleAnalysis).toMatchObject({ status: "error", error: "Fixture network failure" });
+  expect(failed.onboarding.styleAnalysis).toMatchObject({ status: "error", errorCode: "scan_failed", error: "WorkshopLM could not review this website. Try again, set the Style manually, or use a clean default." });
+  await rm(root, { recursive: true, force: true });
+});
+it("classifies website Style failures without exposing internals and preserves every fallback", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-style-failures-"));
+  expect(() => beginWebsiteStyleAnalysis("not a website", root)).toThrow(/valid HTTP/);
+
+  beginWebsiteStyleAnalysis("https://example.com/dynamic", root);
+  const dynamic = await runWebsiteStyleAnalysis("https://example.com/dynamic", root, (async () => new Response('<html><body><div id="root"></div><script src="/app.js"></script></body></html>', { status: 200, headers: { "content-type": "text/html" } })) as typeof fetch);
+  expect(dynamic.onboarding.styleAnalysis).toMatchObject({ status: "error", errorCode: "dynamic_site", error: expect.stringContaining("loads its visual system with JavaScript") });
+
+  beginWebsiteStyleAnalysis("https://example.com/plain", root);
+  const empty = await runWebsiteStyleAnalysis("https://example.com/plain", root, (async () => new Response("<html><head><title>Plain page</title></head><body>Company information without a public visual system.</body></html>", { status: 200, headers: { "content-type": "text/html" } })) as typeof fetch);
+  expect(empty.onboarding.styleAnalysis).toMatchObject({ status: "error", errorCode: "no_useful_findings", error: expect.stringContaining("could not find usable public colors") });
+
+  beginWebsiteStyleAnalysis("https://example.com/redirect", root);
+  const redirected = await runWebsiteStyleAnalysis("https://example.com/redirect", root, (async () => new Response(null, { status: 302, headers: { location: "/again" } })) as typeof fetch);
+  expect(redirected.onboarding.styleAnalysis).toMatchObject({ status: "error", errorCode: "redirect", error: expect.stringContaining("redirected too many times") });
+
+  beginWebsiteStyleAnalysis("https://example.com/private", root);
+  const privateTarget = await runWebsiteStyleAnalysis("https://example.com/private", root, (async () => new Response(null, { status: 302, headers: { location: "http://127.0.0.1/private" } })) as typeof fetch);
+  expect(privateTarget.onboarding.styleAnalysis).toMatchObject({ status: "error", errorCode: "private_network", error: expect.stringContaining("private or local-network") });
+
+  expect(lockManualStyle({ name: "Clean professional", intentProfile: "board_deck" }, root).style).toMatchObject({ name: "Clean professional", typographyRoles: { heading: { family: "system-ui", availability: "system" }, body: { family: "system-ui", availability: "system" } } });
   await rm(root, { recursive: true, force: true });
 });
 it("creates, lists, selects, and isolates durable Workshops", async () => {
