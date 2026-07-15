@@ -2,7 +2,13 @@
 
 Status: ready, not authorized, zero provider generation calls made.
 
-WorkshopLM has two separate spend-gated runs. Request ceilings are enforced in code, but they are not dollar estimates. Before either run, set the desired dollar limit in the OpenAI project and confirm the current official pricing separately.
+WorkshopLM has two separate spend-gated runs. Request ceilings are enforced in code, but they are not dollar estimates. The dated [provider cost envelope](./2026-07-15-provider-cost-envelope.md) converts the current fixed fixture into a reviewable estimate and records the remaining TTS pricing uncertainty.
+
+Recommended boundary: set a **$5 OpenAI project budget or alert**, authorize exactly nine benchmark requests plus exactly twelve initial live-operator requests, and authorize at most one 60-second capture-only Realtime turn. Treat the project setting as an operating envelope, not as proof of a hard per-command cutoff. Retries require a new explicit ceiling after the zero-spend retry preflight.
+
+Suggested authorization statement:
+
+> Authorize the nine-request GPT-5.6 benchmark, the twelve-request WorkshopLM live operator, and one capture-only Realtime turn up to 60 seconds, under a $5 OpenAI project budget or alert. Do not run retries without a new explicit request ceiling.
 
 ## 1. GPT-5.6 routing benchmark
 

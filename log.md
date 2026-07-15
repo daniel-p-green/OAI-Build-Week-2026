@@ -3915,3 +3915,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Obtain explicit provider-spend authorization and run the benchmark and live thought-to-delivery path; inspect the resulting terminal record together with the media.
 - Capture and inspect one Realtime microphone turn before upgrading the voice claim.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 03:23 CT — Provider authorization gained a dated dollar envelope
+
+**Area:** Official pricing evidence / paid-run boundary / narration preflight
+
+### Changed
+
+- Added `docs/planning/2026-07-15-provider-cost-envelope.md` with the current official GPT-5.6, GPT Image 2, and Realtime rates, exact WorkshopLM request and output-token boundaries, conservative fixture calculations, the public TTS-pricing gap, and a concrete authorization statement.
+- Replaced the authorization runbook's vague `set the desired dollar limit` instruction with a $5 project budget-or-alert recommendation, nine benchmark requests, twelve initial live-operator requests, one capture-only Realtime turn capped at 60 seconds, and separately authorized retries.
+- Added a fail-closed 4,096-character narration boundary from the current Speech API reference. An oversized Storyboard panel is rejected before output-directory creation or provider dispatch.
+
+### Verified
+
+- OpenAI's current standard pricing lists GPT-5.6 Sol/Terra/Luna at $5/$2.50/$1 input and $30/$15/$6 output per 1M short-context tokens; GPT Image 2 at $5 per 1M text-input tokens and $30 per 1M image-output tokens; and `gpt-realtime-whisper` at $0.017 per minute.
+- The current image calculator lists a medium 1024×1024 GPT Image 2 output at $0.053, making the six-image output estimate $0.318 before small text-prompt charges.
+- A deterministic calculation over the checked-in benchmark fixture proved 747 prompt characters and 620 maximum output tokens per model. The maximum output portion is $0.03162; treating every prompt character as an input token gives a conservative $0.0063495 input estimate and a combined estimate below $0.04.
+- The current pricing page contains no `gpt-4o-mini-tts` or `tts-1` rate. The model page documents a 2,000-token input maximum and the Speech API reference documents a 4,096-character request maximum, so the cost document records the dollar rate as unknown instead of treating it as zero.
+- Worker tests increased from 45/45 to 46/46. The new test creates an approved oversized Storyboard and proves narration refuses with zero fetch calls.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; web tests remained 11/11 and worker tests passed 46/46.
+- `pnpm demo:e2e` passed all six recorded gates with two grounded rendered Outputs, six planned image panels, five Storyboard panels, and a local MP4. `git diff --check` passed.
+- No paid provider request was made.
+
+### Decisions
+
+- The $5 project setting is an intentionally generous operating envelope for the known sub-$1 initial path plus the unpublished TTS component. It is not represented as an application-enforced or platform-guaranteed hard cutoff.
+- Explicit request ceilings remain the hard WorkshopLM spend boundary. A retry never inherits unused initial authorization; it receives a new exact ceiling after the zero-spend retry preflight.
+- Pricing evidence is dated because provider rates can change. Recheck the official pages before any later run.
+
+### Open items
+
+- Obtain explicit provider-spend authorization matching the runbook statement before running the nine-request benchmark, twelve-request live operator, or one-minute Realtime capture.
+- Inspect benchmark routing evidence before changing GPT-5.6 defaults, then inspect the live Map, six images, five narration clips, terminal run record, and narrated MP4 before upgrading claims.
+- Codex Session ID: unavailable on this surface; not inferred.

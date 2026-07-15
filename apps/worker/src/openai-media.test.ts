@@ -2,8 +2,8 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, planOpenAiMediaRetry, type OpenAiMediaConfig } from "./openai-media.js";
-import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDna, generateAssetPlan, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, resolveWorkshopArtifact } from "./workshop-service.js";
+import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, maxTtsInputCharacters, planOpenAiMediaRetry, type OpenAiMediaConfig } from "./openai-media.js";
+import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDna, generateAssetPlan, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, resolveWorkshopArtifact, updateStoryboardPanel } from "./workshop-service.js";
 
 const roots: string[] = [];
 const config: OpenAiMediaConfig = { apiKey: "test-key", ...defaultOpenAiMediaConfig };
@@ -89,6 +89,21 @@ describe("OpenAI media adapters", () => {
     expect(narration).toMatchObject({ storyboardVersion: 2, disclosure: "AI-generated voice", stale: false });
     expect(narration?.panels).toHaveLength(5);
     await expect(readFile(join(root, narration!.panels[0]!.relativePath), "utf8")).resolves.toContain("RIFF-test");
+  });
+
+  it("rejects oversized narration before dispatching a speech request", async () => {
+    const root = await readyRoot();
+    const panel = readWorkshopState(root).storyboard.panels[0]!;
+    updateStoryboardPanel(panel.id, { title: panel.title, narration: "x".repeat(maxTtsInputCharacters + 1), durationSeconds: panel.durationSeconds }, root);
+    applyWorkshopAction("approveStoryboard", root);
+    let calls = 0;
+    const fetchImpl: typeof fetch = async () => {
+      calls += 1;
+      return new Response(Buffer.from("should-not-run"), { status: 200 });
+    };
+
+    await expect(generateOpenAiNarration(root, config, fetchImpl)).rejects.toThrow(`exceeds the ${maxTtsInputCharacters}-character Speech API input limit`);
+    expect(calls).toBe(0);
   });
 
   it("preserves successful narration clips and retries only the failed panel", async () => {

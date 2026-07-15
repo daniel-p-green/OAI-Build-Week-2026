@@ -30,6 +30,8 @@ export const defaultOpenAiMediaConfig: Omit<OpenAiMediaConfig, "apiKey"> = {
   voiceInstructions: "Speak with calm authority at a brisk presentation pace. Preserve source names and technical terms exactly.",
 };
 
+export const maxTtsInputCharacters = 4096;
+
 type Fetch = typeof fetch;
 type MediaResult = { status: "passed" | "partial"; completed: string[]; failed: string[] };
 
@@ -154,6 +156,8 @@ export async function generateOpenAiNarration(
   const panelsToGenerate = state.storyboard.panels.filter((panel) => !requested || requested.has(panel.id));
   if (!panelsToGenerate.length) throw new Error("No narration panels were selected.");
   if (requested && panelsToGenerate.length !== requested.size) throw new Error("The narration selection contains an unknown panel.");
+  const oversizedPanel = panelsToGenerate.find((panel) => panel.narration.length > maxTtsInputCharacters);
+  if (oversizedPanel) throw new Error(`Storyboard panel ${oversizedPanel.id} exceeds the ${maxTtsInputCharacters}-character Speech API input limit.`);
   const outputDirectory = join(root, "generated", "narration", `storyboard-v${state.storyboard.version}`);
   await mkdir(outputDirectory, { recursive: true });
 
