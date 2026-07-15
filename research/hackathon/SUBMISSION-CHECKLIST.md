@@ -12,6 +12,7 @@
 ## Devpost entry
 
 - [ ] Clear project description explaining features and functionality
+- [x] Evidence-gated draft copy maps current claims to direct proof and bounded fallback wording
 - [ ] Submitter type selected: Individual, Team of Individuals, or Organization
 - [ ] Country of residence selected
 - [ ] Public or private code-repository URL supplied
@@ -57,6 +58,7 @@
 - [ ] Stable judge path retained through the August 12, 2026 winner announcement
 - [ ] Public video makes the full value and working flow understandable without local setup
 - [x] Sanitized recorded fixture supports repeatable capture and optional inspection without paid calls
+- [x] Isolated Codex profile activates `$workshoplm` and retrieves an exact grounded source excerpt through bundled read tools
 - [ ] Login credentials included only if a later verified judge path requires them
 - [x] Supported browser/platform documented
 - [ ] A judge can understand the value even if they never run the app
@@ -69,6 +71,7 @@ WorkshopLM is a local plugin/developer-tool experience. Keep these concise and s
 - [x] Supported platforms
 - [x] Test path that does not require rebuilding from scratch
 - [x] Sanitized fixture or inspection path
+- [x] Public-claim ledger distinguishes proven Codex support from unverified ChatGPT Work support
 
 ## Final live verification
 

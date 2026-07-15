@@ -3581,3 +3581,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Test the available ChatGPT Work surface explicitly and record whether it can activate the skill and call the local stdio server.
 - Keep the judge-facing plugin claim Codex-specific until that Work proof exists.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 01:37 CT — Public claims reconciled to the verified product floor
+
+**Area:** Devpost / demo script / evidence discipline / submission verification
+
+### Changed
+
+- Added `submission/CLAIM-LEDGER.md` as the publication gate for every material judge-facing claim. It maps supported wording to direct evidence and records the exact artifact required before live GPT-5.6 reasoning, GPT Image 2 pixels, provider narration, Realtime voice, ChatGPT Work, plugin-doorway footage, or final self-produced-submission language may appear.
+- Rewrote the Devpost draft and timed demo script around the implemented product language: `Sources`, `Map`, `Brief`, `Style`, `Outputs`, `Storyboard`, `Video`, and `Show source`. Retired destination labels and raw technical filenames no longer appear as default judge-visible moments.
+- Added a binary evidence selector to the recording script. Missing or ambiguous proof now selects the bounded recorded-fixture line rather than a provider claim.
+- Refreshed the completion audit with July 15 evidence for the editable Excalidraw Map, version-aware Outputs history, Realtime implementation boundary, isolated Codex skill activation, grounded MCP read path, and verified 12-asset partial submission set.
+- Updated `GOAL.md` and the submission checklist without closing the overall public-claims objective. Final video, Devpost entry, release tag, screenshots, and submitted links still must pass the same gate.
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; worker tests remained 38/38 and web unit tests remained 10/10.
+- The production-route visual suite rebuilt the Next app and passed 11/11 tests, covering the three responsive judge paths, Realtime capture boundary, editable Map, Output history, official component states, canonical copy, accessibility, contrast, reduced motion, and 200% logical zoom.
+- `pnpm demo:e2e` passed the recorded Sources → Map → Brief → Outputs → Storyboard → Video seam with all six gates true, two rendered source-traceable Outputs, six planned image panels, five Storyboard panels, and a local MP4.
+- The first `pnpm submission:verify` correctly failed after the acceptance reset removed derived submission assets. `pnpm submission:build` then rebuilt the 12-asset `partial` set with all four provider limitations intact; the subsequent verifier returned `valid: true`, `stale: false`, and `tampered: false`.
+- The ten demo beats are continuous from 0:00 through 2:42, below the 2:55 recording ceiling.
+- Static checks found no retired `Studio`, `Story`, `Trace`, `asset plan`, or `image manifest` label in the Devpost draft, timed demo, or completion audit. All referenced local proof artifacts exist, and `git diff --check` passed.
+
+### Decisions
+
+- The public story now distinguishes product implementation from provider execution. Implemented-and-tested Realtime code is not called live voice; planned image panels are not called GPT Image 2 output; placeholder tones are not called AI narration.
+- Codex plugin language remains Codex-specific until ChatGPT Work is exercised. The isolated proof task is evidence for skill/tool behavior, not the missing Devpost `/feedback` Session ID.
+- The current 12-asset Output set is useful proof of trace and integrity but remains `partial`; it cannot support the final self-produced-submission claim until provider media and the public video replace its disclosed fallbacks.
+
+### Open items
+
+- Complete the five independent first-time orientation reviews and repair any critical navigation finding before recording.
+- Capture and inspect authorized live GPT-5.6, GPT Image 2, Realtime microphone, and provider-narration artifacts before selecting their demo lines.
+- Capture the Codex doorway, contemporaneous founder brainstorm, representative `/feedback` Session ID, final public video, release tag, and logged-out submitted links.
+- Codex Session ID: unavailable on this surface; not inferred.

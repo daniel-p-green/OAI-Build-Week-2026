@@ -6,9 +6,9 @@ Turn raw thinking into finished, source-traceable work.
 
 ## What it does
 
-WorkshopLM is a local-first professional production workspace for turning captured source material into an editable Map, an approved brief, branded deliverables, an editable storyboard, and a locally rendered video. ChatGPT/Codex remains the conversation surface; WorkshopLM's browser workspace provides Sources, Map, and Studio without duplicating chat.
+WorkshopLM is a local-first professional production workspace for turning captured source material into an editable Map, an approved Brief, branded Outputs, an editable Storyboard, and a locally rendered Video. ChatGPT/Codex remains the conversation surface; WorkshopLM's browser workspace keeps the current work in focus without duplicating chat.
 
-The recorded judge path uses sanitized local data and needs no account, connector, or paid API call. It demonstrates a source capture, normalized evidence and claim locators, an editable Excalidraw Map, `FRAME.md` and `DESIGN.md`, a source-traceable deck and infographic, an image-batch plan, an editable five-panel storyboard, both approval gates, and a local HyperFrames MP4 rendered from that current storyboard.
+The recorded judge path uses sanitized local data and needs no account, private connector, paid API call, or judge-supplied credits. It demonstrates grounded Sources, exact evidence locators, an editable Excalidraw Map, a readable Brief and Style, a source-traceable presentation and infographic, a disclosed planned six-panel image set, an editable five-panel Storyboard, both approval gates, and a local HyperFrames MP4 rendered from the approved current Storyboard.
 
 ## Why it matters
 
@@ -16,17 +16,19 @@ Knowledge tools help teams understand material. WorkshopLM focuses on the next s
 
 ## How it was built
 
-Codex accelerated the TypeScript monorepo, local SQLite state, MCP doorway, typed graph operations, browser workspace, deterministic fixture, and HyperFrames worker. Human decisions defined the product boundary: professional workflows, local-first privacy-safe judging, a single conversation surface, and exactly two approval gates.
+Codex accelerated the TypeScript monorepo, local SQLite state, unified plugin, typed graph operations, browser workspace, deterministic fixture, and HyperFrames worker. Human decisions defined the product boundary: professional workflows, local-first privacy-safe judging, a single conversation surface, and exactly two approval gates.
+
+The packaged `$workshoplm` skill and its read-only MCP tools were activated from an isolated Codex profile and used to search and fetch an exact grounded source excerpt. That proof is Codex-specific; ChatGPT Work support is not claimed yet.
 
 WorkshopLM implements an operation-level GPT-5.6 policy: Sol for quality-critical graph work, Terra for structured synthesis, and Luna for repeatable triage. Live paid GPT-5.6 benchmark results are intentionally not claimed in this draft until their authorized run is captured.
 
 ## Verification
 
-`pnpm check` passes all workspace lint, typecheck, and tests. `pnpm demo:reset && pnpm demo:e2e` runs the recorded source-to-current-storyboard-to-MP4 path without credentials. The public repository contains setup, fixture, and plugin inspection instructions.
+The current recorded build passes checks across 13 packages, 11 production-route UI tests, all six acceptance gates, and submission integrity verification. `pnpm demo:reset && pnpm demo:e2e` runs the recorded Sources → Map → Brief → Outputs → Storyboard → Video path without credentials. These counts must be refreshed before final publication because the suite may continue to grow. The public repository contains setup, fixture, and plugin inspection instructions.
 
 ## Known scope boundary
 
-The local deterministic demo currently uses planned image panels and disclosed local placeholder-tone audio. Live GPT Image 2, GPT-4o mini TTS, GPT-5.6 benchmarks, and native ChatGPT task/voice synchronization are separately gated on provider authorization or host access and are not represented as completed runtime behavior.
+The deterministic demo currently uses planned image panels and disclosed local placeholder-tone audio. The Realtime capture boundary is implemented and tested but has not persisted an inspected provider-backed microphone turn. Live GPT Image 2, provider narration, GPT-5.6 product reasoning, and ChatGPT Work invocation are separately gated on provider authorization or host access and are not represented as completed runtime behavior.
 
 ## Submission fields still requiring human action
 
