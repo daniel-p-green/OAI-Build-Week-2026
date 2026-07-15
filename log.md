@@ -2720,6 +2720,31 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-14 17:32 CT — Official Figma library made the exclusive UI system
+
+**Area:** Product design system / implementation boundary
+
+### Changed
+
+- Locked `Apps in ChatGPT · OpenAI Official (Community)` as WorkshopLM's only source for product-chrome components and styles.
+- Replaced the earlier loose `borrow the chrome` direction with a verifiable rule: every control, container, label, menu, sheet, status treatment, icon, spacing value, and typography treatment must map to an exact asset in the official file.
+- Kept custom rendering only for WorkshopLM domain content such as Map geometry, evidence paths, generated media, charts, slide previews, and storyboard imagery; the UI surrounding that content remains library-owned.
+- Added explicit inventory, implementation-reconciliation, and conformance-check work to `GOAL.md`.
+
+### Evidence boundary
+
+- The Figma connector is authenticated as Daniel and can access the account, but the Community source key `1625636989296445101` grants view access only. Connector metadata inspection failed because it requires edit access.
+- No component names, variants, variables, or internal node identifiers have been inferred from the Community preview.
+- No editable copy was created because duplicating the Community file would write to the user's Figma account and still requires an explicit target or authorization.
+
+### Remaining work
+
+- Resolve the editable copied design-file URL/key, then inventory the real library before changing the implementation.
+- Reconcile the current provisional CSS tokens and custom shell primitives against that inventory; do not treat the present ChatGPT-like approximation as compliant.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-14 15:05 CT — Capture → Shape → Deliver UX and real artifact gallery
 
 **Area:** Flagship browser GUI / source scope / delivery evidence
@@ -2832,4 +2857,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Verify keyboard focus order, WCAG AA contrast, reduced motion, and 200% zoom.
 - Replace planned image tiles with genuine GPT Image 2 media only after bounded provider spend is explicitly authorized.
 - Provider-backed GPT-5.6, image, and final narration evidence remains unproved.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 21:24 CT — Official Apps in ChatGPT UI contract implemented
+
+**Area:** Figma design system / application chrome / visual acceptance
+
+### Changed
+
+- Imported Daniel's local `Apps in ChatGPT · OpenAI Official (Community).fig` into an editable Figma design file and inspected the actual foundations, platform component pages, display-mode templates, component variants, and component anatomy rather than inferring them from screenshots.
+- Recorded the exact editable file key, official library keys, relevant page/node ids, verified light/dark colors, SF Pro web type ramp, spacing scale, component geometry, and WorkshopLM mappings in `research/openai-apps-figma-component-inventory-2026-07-14.md`.
+- Reconciled `DESIGN.md` to the verified source. Retired the provisional MVP palette, square button/card geometry, decorative status pills, 64–68px header, and unsupported typography assumptions.
+- Added `apps/web/app/oai-ui-contract.ts` as the machine-readable allowlist and `official-ui.css` as the sole final cascade for application chrome. The app now maps its visible Full screen, Navigation/Header, Button, IconButton, Token, Checkbox, Input, TextArea, Card, ListGroup, ListRow, EntityCard, Carousel, and CarouselRow compositions in markup.
+- Added a conformance suite that pins the editable Figma source and component ids, requires exact foundation values, rejects retired MVP colors, and requires all judge-visible shell families to be mapped.
+- Preserved custom rendering only where it expresses WorkshopLM domain content: Map geometry/evidence edges and generated artifact/storyboard media. The surrounding chrome uses the official system.
+- Corrected a ListRow regression found during live review: source title and metadata now retain the verified two-line hierarchy instead of collapsing into one line.
+
+### Decision
+
+- `Apps in ChatGPT · OpenAI Official (Community)` is an enforceable implementation boundary, not moodboard inspiration. New application chrome must first enter the verified inventory and machine-readable contract.
+- The library's Inspector page is marked “Coming soon.” WorkshopLM composes its evidence panel from verified Full screen columns, Card, Input, ListRow, IconButton, and Button primitives and does not claim an official Inspector component exists.
+
+### Verification
+
+- Figma design context was retrieved for the visible primary Button instance `7:104094`, confirming 36px height, 8px/16px padding, 4px gap, 999px radius, `#0D0D0D` fill, and SF Pro 14/20 label treatment. Card, ListRow, and Full screen context had already been inspected from the editable copy.
+- `pnpm --filter @workshoplm/web build` passed with the optimized application routes.
+- `pnpm check` passed all thirteen package lint/typecheck/test tasks. The new web conformance suite passed 3/3 tests and the worker retained 28/28 passing tests.
+- `pnpm demo:e2e` passed all six recorded-fixture gates with two persisted HTML outputs, five asset-plan items, five storyboard panels, and a rendered video artifact.
+- Live local browser acceptance covered the 52px Full screen header, Map/Card composition, Token source scope, Sources ListGroup/ListRows and checkboxes, approved Brief and Style Card/Input composition, and the visual Outputs/Carousel package. The source-row defect was fixed and visually rechecked before acceptance.
+
+### Open items
+
+- This milestone proves exact local UI-system conformance and the deterministic product seam. It does not prove live GPT-5.6, GPT Image 2, Realtime, or final narration provider use.
+- Refresh the permanent demo screenshot gallery after the remaining provider-backed content and final recording fixture are ready; temporary acceptance captures were not promoted to submission evidence.
 - Codex Session ID: unavailable on this surface; not inferred.

@@ -29,9 +29,17 @@ The browser contains no second chat transcript, composer, or capture textarea. C
 
 The inline plugin widget is a single-purpose doorway. It shows Workshop title, source count, current outcome/status, and at most two actions: one primary `Open workshop` action and one optional contextual secondary action. It has no tabs, nested navigation, or duplicate composer.
 
+## Official component boundary
+
+`Apps in ChatGPT · OpenAI Official (Community)` is the sole design-system source for WorkshopLM's product chrome. Every user-interface control and container must map to a verified component, variable, text style, effect style, icon, spacing value, or display-mode template from that file. Do not approximate a ChatGPT-like component, invent a parallel token, or keep custom shell styling merely because it already exists in the MVP.
+
+Before a component or style is implemented, record its exact Figma name and source node or variable identifier in the project inventory. If the library has no matching primitive, compose verified library primitives; do not create a new visual language. WorkshopLM-specific content may remain custom only where it expresses the product's domain rather than application chrome—for example Map nodes and edges, evidence-path geometry, generated artifact imagery, charts, slide previews, and storyboard media. The frames, controls, labels, menus, sheets, status treatments, and typography around that content still come from the official library.
+
+The verified source inventory is [research/openai-apps-figma-component-inventory-2026-07-14.md](research/openai-apps-figma-component-inventory-2026-07-14.md). The tables below are now reconciled to that file. `apps/web/app/oai-ui-contract.ts` is the machine-readable implementation allowlist.
+
 ## Visual atmosphere
 
-Calm, exact, and native to the ChatGPT/Codex environment. **Borrow the chrome; invent the interaction.** Official Apps in ChatGPT patterns govern shell typography, controls, spacing, and responsive behavior. WorkshopLM's identity lives in three proprietary work surfaces: the relational Map, the synchronized evidence trace, and the coherent output package/storyboard.
+Calm, exact, and native to the ChatGPT/Codex environment. **Use the official chrome; reserve invention for the work itself.** WorkshopLM's identity lives in three proprietary work surfaces: the relational Map, the synchronized evidence trace, and the coherent output package/storyboard.
 
 Avoid:
 
@@ -46,33 +54,34 @@ Avoid:
 | Token | Value | Role |
 | --- | --- | --- |
 | `paper` | `#FFFFFF` | Primary canvas and artifact background |
-| `surface` | `#F7F7F8` | Drawers, inspectors, sheets, menus |
-| `white` | `#FFFFFF` | Focused artifact pages and selected cards |
+| `surface-secondary` | `#E8E8E8` | Segmented controls and secondary surfaces |
+| `surface-tertiary` | `#F3F3F3` | Selected rows and quiet grouped areas |
 | `ink` | `#0D0D0D` | Primary text and high-emphasis strokes |
-| `ink-muted` | `#6B6B6B` | Secondary labels and metadata |
-| `hairline` | `#E5E5E5` | Dividers, card outlines, canvas grid |
+| `ink-secondary` | `#5D5D5D` | Secondary labels and metadata |
+| `ink-tertiary` | `#8F8F8F` | Tertiary labels and disabled metadata |
+| `hairline-5` | `rgba(13,13,13,.05)` | Dividers and quiet boundaries |
+| `hairline-10` | `rgba(13,13,13,.10)` | Controls and menus |
+| `hairline-15` | `rgba(13,13,13,.15)` | Cards and stronger boundaries |
 | `action` | `#0D0D0D` | Primary actions and highest-emphasis controls |
-| `action-soft` | `#ECECF1` | Selected rows and focused evidence paths |
-| `grounded` | `#10A37F` | Verified source-backed claims |
-| `grounded-soft` | `#E7F5F0` | Grounded card edge/background accent |
-| `derived` | `#9A650F` | Reasoned but not directly quoted content |
-| `derived-soft` | `#F7EDD8` | Derived content accent |
-| `creative` | `#7356B8` | Deliberately invented visual/story content |
-| `creative-soft` | `#EEE8FA` | Creative content accent |
-| `danger` | `#B23B32` | Failed, blocked, destructive, or stale conflict |
-| `danger-soft` | `#F8E8E5` | Error/stale background accent |
+| `accent-blue` | `#0285FF` | Focus, selected evidence paths, and creative labels |
+| `accent-green` | `#008635` | Verified source-backed claims and current state |
+| `accent-orange` | `#E25507` | Derived content and waiting state |
+| `accent-red` | `#E02E2A` | Failed, blocked, destructive, or stale conflict |
 
 Color communicates evidence state only when paired with an icon and text label.
 
 ## Typography
 
-- **Interface:** inherit the host/platform system font stack.
+- **Interface:** SF Pro on web through the Apple system font stack.
 - **Workshop titles:** use the same system family with restrained weight and size changes.
 - **Generated artifacts:** may use the active Workshop style library inside the artifact preview only.
 - **Evidence, locators, timing, and provenance:** use system body-small styling; monospace is reserved for explicit technical detail views.
-- Default body size: 14px with 1.45 line height.
-- Rail metadata: 12px; controls never smaller than 12px.
-- Workshop title: 18–22px, semibold.
+- Heading 1: 36/40, semibold, -0.10px tracking.
+- Heading 2: 24/28, semibold, -0.25px tracking.
+- Heading 3: 18/26, semibold, -0.45px tracking.
+- Body: 16/26 regular or semibold, -0.40px tracking.
+- Body small: 14/18 regular or semibold, -0.30px tracking.
+- Caption: 12/16 regular or semibold, -0.10px tracking.
 - Artifact titles: follow the generated artifact's own style inside focused previews.
 
 All shipped fonts must have a verified redistribution license or use local/system fallbacks.
@@ -95,9 +104,9 @@ Design first for the ChatGPT in-app browser at approximately 1200×800, then ver
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-- Top bar: 64–68px, flat white surface. It contains Back, the current object title and purpose, a source-scope count, and one context-sensitive primary action.
+- Top bar: 52px, flat white `Navigation/Header`. It contains Back, the current object title and purpose, a source-scope Token, and one context-sensitive primary Button.
 - The current object title is not navigation. Object changes come from the active workflow, direct links, Back, or the host conversation.
-- Sources: closed by default; a 280–320px drawer opens from a labeled count button.
+- Sources: closed by default; a 360px reference column may expand to 420px for readable ListRows and evidence excerpts.
 - Creation: one `Generate package` action creates the configured deliverable set. Output-type customization is secondary. There is no permanent Studio rail.
 - Context inspector: closed by default and appears only after selecting a Map node, citation, storyboard panel, or output element. Its title is specific—Evidence, Claim, Source, Panel, or Artifact—never generic Details.
 - Center: at least 80% of default workspace width and never narrower than 640px on desktop.
@@ -114,7 +123,7 @@ Open the last active Workshop or the sanitized demo Workshop immediately. A comp
 The Map is the product's hero screen and opens by default after a task is linked.
 
 - Subtle 24px dot grid at low contrast.
-- Cards resemble clipped editorial notes: mostly squared, 8px corners, thin outline, almost no shadow.
+- Map cards use the verified Card/Map card container: 24px corners, 0.5px 15% ink outline, and the restrained 0 4px 16px 5% shadow. Their custom geometry and evidence-state content remain WorkshopLM domain rendering.
 - A 3px left edge communicates `Grounded`, `Derived`, `Creative`, or `Unverified`.
 - Each claim card shows a short locator chip such as `Meeting · 12:41` or `Brief.pdf · p. 7`.
 - Evidence connections are thin curved lines; selecting a claim highlights its full claim→chunk→source path in action blue and mutes unrelated content.
@@ -179,12 +188,13 @@ For the meta-demo, a `How WorkshopLM built this` view adds the raw task transcri
 
 ## Components and geometry
 
-- Primary buttons: 8px corners, 36px height, ink or action fill, concise verb-first labels.
-- Secondary buttons: flat surface with hairline border; no tinted background unless selected.
-- Icon buttons: 32px square, visible tooltip and accessible label.
-- Cards: 8px corners; artifact pages may use 2px corners for a paper-like edge.
-- Menus/popovers: 10px corners, restrained 12px shadow blur, clear keyboard focus.
-- Status chips: compact 22px height; use only for state or origin, never decoration.
+- Primary buttons: verified Button large, 36px height, 8px 16px padding, 4px content gap, 999px radius, ink fill, and 14/20 medium label.
+- Secondary buttons: the corresponding Button secondary variant with the same geometry.
+- Icon buttons: verified IconButton with accessible label.
+- Tokens: 42px reference height, 12px 16px padding, 25px radius, and 10% ink stroke; compact citation compositions may reduce vertical padding while preserving the Token language.
+- Cards: 24px radius, 0.5px 15% ink border, and 0 4px 16px 5% shadow.
+- Menus/popovers: 12px radius, 6px inner padding, 10% ink stroke, and the verified two-part shadow.
+- Status is body-small or caption text paired with an official accent. Do not invent a decorative status pill.
 - Focus ring: 2px action blue with 2px offset.
 
 ## Motion

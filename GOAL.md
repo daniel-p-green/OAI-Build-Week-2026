@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 17:10 CT
+Last updated: 2026-07-14 21:24 CT
 
 ## Status
 
@@ -177,6 +177,9 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Replace trivial approval states with a Brief coverage receipt, live Style contract, Storyboard coverage/runtime summary, and visibly named approved versions.
 - [x] Replace four equal output actions with one coherent package action and deduplicate deck/infographic cards so each artifact appears exactly once.
 - [x] Remove the persistent stage spine, generic Library, generic Details, browser capture composer, and other shell chrome that competed with ChatGPT.
+- [x] Inventory the exact components, variables, styles, icons, and display-mode templates in `Apps in ChatGPT · OpenAI Official (Community)` from an editable Figma design-file copy; record names and source identifiers without inference.
+- [x] Replace every approximated or custom WorkshopLM shell component and style with verified assets or compositions from the official Figma library. Permit custom rendering only for domain content such as Map geometry and generated artifact media.
+- [x] Add a UI-system conformance check that maps every judge-visible shell component to the official Figma inventory and fails on unapproved tokens or primitives.
 - [ ] Capture a fresh final screenshot set for the rebuilt Map, trace, Brief/Style, package, Storyboard, and mobile Evidence outline.
 - [ ] Add frontend regression coverage for the six rebuilt states, including a duplicate-artifact assertion and one-dominant-action checks.
 - [ ] Verify keyboard focus order, WCAG AA contrast, reduced motion, and 200% zoom on the rebuilt judge path.
@@ -276,6 +279,7 @@ The primary integrator selects and justifies these without separate founder appr
 
 - [Public GitHub repository](https://github.com/daniel-p-green/OAI-Build-Week-2026)
 - [WorkshopLM interface design system](DESIGN.md)
+- [Verified Apps in ChatGPT Figma component inventory](research/openai-apps-figma-component-inventory-2026-07-14.md)
 - [UI/UX simplification audit](research/ui-ux-simplification-audit-2026-07-14.md)
 - [Judge-path interaction rebuild](research/judge-path-interaction-rebuild-2026-07-14.md)
 - [Experience acceptance criteria](research/ui-experience-acceptance-criteria-2026-07-14.md)
