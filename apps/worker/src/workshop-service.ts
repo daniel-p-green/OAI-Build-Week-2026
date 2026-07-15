@@ -6,6 +6,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, basename, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
+import { deflateSync } from "node:zlib";
 import { appendGraphOperation, GraphOperation, parseGraphState, SemanticGraph, serializeGraphState, undoLatestGraphOperation, type SemanticGraph as SemanticGraphType } from "@workshoplm/domain";
 import { writeRenderedArtifact } from "@workshoplm/production";
 import { storeArtifact } from "./artifacts/local-artifact-store.js";
@@ -40,10 +41,11 @@ export type ImageBatchPanel = {
   referenceId: string;
   relativePath?: string;
   sha256?: string;
-  provenance?: { model: "gpt-image-2"; size: string; quality: "low" | "medium" | "high"; requestId?: string; generatedAt: string };
+  provenance?: { model: "gpt-image-2"; size: string; quality: "low" | "medium" | "high"; referenceId: string; requestId?: string; generatedAt: string };
   error?: string;
 };
-export type WorkshopImageBatch = { id: string; styleVersion: number; referenceId: string; panels: ImageBatchPanel[]; stale: boolean; createdAt: string };
+export type ImageCoherenceContract = { visualDnaVersion?: number; palette: { accent: string; ink: string; paper: string }; compositionRules: string[]; textureRules: string[]; imageRules: string[]; negativeRules: string[]; siblingPanelIds: string[] };
+export type WorkshopImageBatch = { id: string; styleVersion: number; referenceId: string; referencePath: string; referenceSha256: string; coherence: ImageCoherenceContract; panels: ImageBatchPanel[]; stale: boolean; createdAt: string };
 export type WorkshopNarrationPanel = { panelId: string; relativePath: string; sha256: string; model: "gpt-4o-mini-tts"; voice: "marin"; instructions: string; requestId?: string; generatedAt: string };
 export type WorkshopNarrationFailure = { panelId: string; error: string; failedAt: string };
 export type WorkshopNarration = { storyboardVersion: number; disclosure: "AI-generated voice"; panels: WorkshopNarrationPanel[]; failures?: WorkshopNarrationFailure[]; stale: boolean; createdAt: string };
@@ -313,10 +315,55 @@ export async function generateOutput(type: "deck" | "infographic", root?: string
   const stored = await storeArtifact(dataRoot, outputId, Buffer.from(await readFile(join(dataRoot, rendered.relativePath))), "text/html"); const createdAt = new Date().toISOString();
   return write({ ...current, outputs: [...current.outputs, { id: outputId, type, relativePath: rendered.relativePath, artifactPath: stored.relativePath, claimIds: blocks.map((block) => block.id), stale: false, createdAt }], firstRenderedOutputAt: current.firstRenderedOutputAt ?? createdAt, updatedAt: createdAt }, root);
 }
+
+function crc32(bytes: Uint8Array): number {
+  let crc = 0xffffffff;
+  for (const byte of bytes) {
+    crc ^= byte;
+    for (let bit = 0; bit < 8; bit += 1) crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}
+
+function pngChunk(type: string, data: Uint8Array): Buffer {
+  const typeBytes = Buffer.from(type, "ascii");
+  const length = Buffer.alloc(4); length.writeUInt32BE(data.length);
+  const checksum = Buffer.alloc(4); checksum.writeUInt32BE(crc32(Buffer.concat([typeBytes, data])));
+  return Buffer.concat([length, typeBytes, data, checksum]);
+}
+
+function rgb(hex: string): [number, number, number] {
+  const normalized = /^#[0-9a-f]{6}$/i.test(hex) ? hex.slice(1) : "000000";
+  return [Number.parseInt(normalized.slice(0, 2), 16), Number.parseInt(normalized.slice(2, 4), 16), Number.parseInt(normalized.slice(4, 6), 16)];
+}
+
+/** Deterministic, text-free reference board shared by every image in a batch. */
+function buildStyleReferencePng(palette: ImageCoherenceContract["palette"]): Buffer {
+  const width = 512; const height = 512; const paper = rgb(palette.paper); const ink = rgb(palette.ink); const accent = rgb(palette.accent);
+  const raw = Buffer.alloc((width * 4 + 1) * height);
+  const card = (x: number, y: number) => x >= 54 && x < 458 && y >= 64 && y < 448;
+  const focal = (x: number, y: number) => x >= 72 && x < 214 && y >= 88 && y < 424;
+  const line = (x: number, y: number) => x >= 246 && x < 424 && ((y >= 120 && y < 136) || (y >= 176 && y < 188) || (y >= 228 && y < 240));
+  for (let y = 0; y < height; y += 1) {
+    const row = y * (width * 4 + 1); raw[row] = 0;
+    for (let x = 0; x < width; x += 1) {
+      const pixel = row + 1 + x * 4;
+      const color = focal(x, y) ? accent : line(x, y) ? ink : card(x, y) ? paper : ink;
+      raw[pixel] = color[0]; raw[pixel + 1] = color[1]; raw[pixel + 2] = color[2]; raw[pixel + 3] = 255;
+    }
+  }
+  const header = Buffer.alloc(13); header.writeUInt32BE(width, 0); header.writeUInt32BE(height, 4); header[8] = 8; header[9] = 6;
+  return Buffer.concat([Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), pngChunk("IHDR", header), pngChunk("IDAT", deflateSync(raw)), pngChunk("IEND", Buffer.alloc(0))]);
+}
+
 export function createImageBatch(root?: string): WorkshopState {
   const current = readWorkshopState(root); if (!current.style || current.style.stale) throw new Error("Image batch generation requires a locked current style.");
-  const referenceId = `style-v${current.style.version}`; const createdAt = new Date().toISOString(); const prompts = ["editorial workbench", "source evidence detail", "semantic Map on paper", "approved brief", "storyboard panels", "finished delivery artifact"];
-  return write({ ...current, imageBatch: { id: `image-batch-v${(current.imageBatch ? Number(current.imageBatch.id.match(/\d+$/)?.[0]) + 1 : 1)}`, styleVersion: current.style.version, referenceId, createdAt, stale: false, panels: prompts.map((prompt, index) => ({ id: `image-panel-${index + 1}`, version: 1, prompt: `${prompt}; ${current.style!.name}; ${current.style!.accent}; no text or logos`, state: "planned", referenceId })) }, updatedAt: createdAt }, root);
+  const dataRoot = root ?? repositoryDataRoot(); const visualDna = current.visualDna && !current.visualDna.stale ? current.visualDna : undefined;
+  const panelIds = Array.from({ length: 6 }, (_, index) => `image-panel-${index + 1}`); const referenceId = `style-v${current.style.version}${visualDna ? `-dna-v${visualDna.version}` : ""}`; const createdAt = new Date().toISOString();
+  const coherence: ImageCoherenceContract = { visualDnaVersion: visualDna?.version, palette: visualDna?.palette ?? { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, compositionRules: visualDna?.compositionRules ?? current.style.references, textureRules: visualDna?.textureRules ?? ["Restrained natural texture with clean negative space."], imageRules: visualDna?.imageRules ?? ["Evidence-aware editorial framing with one clear focal object."], negativeRules: visualDna?.negativeRules ?? current.style.negativeRules, siblingPanelIds: panelIds };
+  const referenceBytes = buildStyleReferencePng(coherence.palette); const referencePath = join("generated", "references", `${referenceId}.png`); mkdirSync(join(dataRoot, dirname(referencePath)), { recursive: true }); writeFileSync(join(dataRoot, referencePath), referenceBytes);
+  const prompts = ["Editorial workbench where raw source material begins becoming finished work", "Close evidence detail with source cards and a visible chain of support", "Spatial semantic Map organized as an editable professional thinking surface", "Approved Brief distilled into a decisive production direction", "Storyboard panels forming one continuous visual sequence", "Finished presentation and demo video ready for professional delivery"];
+  return write({ ...current, imageBatch: { id: `image-batch-v${(current.imageBatch ? Number(current.imageBatch.id.match(/\d+$/)?.[0]) + 1 : 1)}`, styleVersion: current.style.version, referenceId, referencePath, referenceSha256: createHash("sha256").update(referenceBytes).digest("hex"), coherence, createdAt, stale: false, panels: prompts.map((prompt, index) => ({ id: panelIds[index]!, version: 1, prompt: `${prompt}. Preserve the shared reference composition, palette, lighting, material treatment, and editorial restraint. This is panel ${index + 1} of one continuous six-panel art direction; no readable text, logos, watermarks, UI chrome, or stock-photo cliches.`, state: "planned", referenceId })) }, updatedAt: createdAt }, root);
 }
 export function selectImagePanelForRegeneration(panelId: string, root?: string): WorkshopState {
   const current = readWorkshopState(root); if (!current.imageBatch || current.imageBatch.stale) throw new Error("A current image batch is required."); const found = current.imageBatch.panels.some((panel) => panel.id === panelId); if (!found) throw new Error(`Image panel not found: ${panelId}.`);

@@ -363,6 +363,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Generate a source-traceable presentation.
 - [x] Generate a source-traceable infographic.
 - [ ] Generate and evaluate a coherent GPT Image 2 batch.
+  - 2026-07-15: the production batch now creates a 512×512 style-derived reference board, hashes and versions it with the approved Visual DNA, sends the same bytes and locked direction through `/v1/images/edits` for all six panels and selective retries, and refuses provider dispatch if the reference or sibling contract drifts. Keep this open until the six real images are generated and visually inspected as one set.
 - [x] Generate an editable, panel-level storyboard.
 - [x] Block video enqueueing until the current storyboard approval is persisted; the worker accepts current provider narration when present and otherwise uses the disclosed deterministic fallback.
 - [x] Render the sanitized approved storyboard through the local HyperFrames worker path with disclosed fixture narration and verified MP4 streams.

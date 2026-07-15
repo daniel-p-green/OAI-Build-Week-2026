@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import {
   markImagePanelFailed,
@@ -41,6 +41,26 @@ export type OpenAiMediaRetryPlan = {
   plannedRequests: number;
 };
 
+export type ImageCoherenceReport = { valid: boolean; referenceId?: string; referenceSha256?: string; panelCount: number; issues: string[] };
+
+export async function validateImageBatchCoherence(root: string, state: WorkshopState = readWorkshopState(root)): Promise<ImageCoherenceReport> {
+  const batch = state.imageBatch; const issues: string[] = [];
+  if (!batch || batch.stale) return { valid: false, panelCount: batch?.panels.length ?? 0, issues: ["A current image batch is required."] };
+  if (batch.panels.length !== 6) issues.push(`Expected six panels; found ${batch.panels.length}.`);
+  if (new Set(batch.panels.map((panel) => panel.id)).size !== batch.panels.length) issues.push("Panel IDs are not unique.");
+  if (batch.panels.some((panel) => panel.referenceId !== batch.referenceId)) issues.push("One or more panels do not use the batch reference.");
+  if (batch.coherence.siblingPanelIds.join("|") !== batch.panels.map((panel) => panel.id).join("|")) issues.push("The sibling continuity list does not match the batch panels.");
+  if (batch.coherence.visualDnaVersion !== state.visualDna?.version) issues.push("The batch Visual DNA version does not match the current preview.");
+  if (state.visualDna?.stale || !state.visualDna?.approved) issues.push("The current Visual DNA is not approved.");
+  try {
+    const reference = await readFile(join(root, batch.referencePath));
+    if (sha256(reference) !== batch.referenceSha256) issues.push("The shared reference image hash does not match its manifest.");
+  } catch {
+    issues.push("The shared reference image is missing.");
+  }
+  return { valid: issues.length === 0, referenceId: batch.referenceId, referenceSha256: batch.referenceSha256, panelCount: batch.panels.length, issues };
+}
+
 export function planOpenAiMediaRetry(state: WorkshopState): OpenAiMediaRetryPlan {
   if (!state.imageBatch || state.imageBatch.stale) throw new Error("A current image batch is required for selective retry.");
   if (!state.storyboardApproved || state.storyboard.stale) throw new Error("An approved current storyboard is required for selective retry.");
@@ -81,6 +101,8 @@ export async function generateOpenAiImageBatch(
   const state = readWorkshopState(root);
   if (!state.imageBatch || state.imageBatch.stale) throw new Error("A current planned image batch is required.");
   if (!state.style || state.style.stale || !state.visualDna?.approved || state.visualDna.stale) throw new Error("Image generation requires approved current Visual DNA.");
+  const coherenceReport = await validateImageBatchCoherence(root, state);
+  if (!coherenceReport.valid) throw new Error(`Image coherence contract failed: ${coherenceReport.issues.join(" ")}`);
   const requested = panelIds?.length ? new Set(panelIds) : undefined;
   const panels = state.imageBatch.panels.filter((panel) => !requested || requested.has(panel.id));
   if (!panels.length) throw new Error("No image panels were selected.");
@@ -88,26 +110,28 @@ export async function generateOpenAiImageBatch(
 
   const outputDirectory = join(root, "generated", "images");
   await mkdir(outputDirectory, { recursive: true });
+  const referenceBytes = await readFile(join(root, state.imageBatch.referencePath));
   const sharedDirection = [
-    `Locked palette: ${state.visualDna.palette.accent}, ${state.visualDna.palette.ink}, ${state.visualDna.palette.paper}.`,
-    `Composition: ${state.visualDna.compositionRules.join(" ")}`,
-    `Image treatment: ${state.visualDna.imageRules.join(" ")}`,
-    `Avoid: ${state.visualDna.negativeRules.join(" ") || "readable text, logos, watermarks, and stock-photo cliches"}.`,
+    `Locked palette: ${state.imageBatch.coherence.palette.accent}, ${state.imageBatch.coherence.palette.ink}, ${state.imageBatch.coherence.palette.paper}.`,
+    `Composition: ${state.imageBatch.coherence.compositionRules.join(" ")}`,
+    `Texture: ${state.imageBatch.coherence.textureRules.join(" ")}`,
+    `Image treatment: ${state.imageBatch.coherence.imageRules.join(" ")}`,
+    `Avoid: ${state.imageBatch.coherence.negativeRules.join(" ") || "readable text, logos, watermarks, and stock-photo cliches"}.`,
     "Maintain one coherent editorial art direction across the complete six-image set.",
   ].join("\n");
 
   const settled = await Promise.allSettled(panels.map(async (panel) => {
-    const response = await fetchImpl("https://api.openai.com/v1/images/generations", {
+    const body = new FormData();
+    body.append("model", config.imageModel);
+    body.append("prompt", `${panel.prompt}\n${sharedDirection}`);
+    body.append("image", new Blob([referenceBytes], { type: "image/png" }), `${state.imageBatch!.referenceId}.png`);
+    body.append("quality", config.imageQuality);
+    body.append("size", config.imageSize);
+    body.append("output_format", "png");
+    const response = await fetchImpl("https://api.openai.com/v1/images/edits", {
       method: "POST",
-      headers: { Authorization: `Bearer ${config.apiKey}`, "content-type": "application/json" },
-      body: JSON.stringify({
-        model: config.imageModel,
-        prompt: `${panel.prompt}\n${sharedDirection}`,
-        n: 1,
-        quality: config.imageQuality,
-        size: config.imageSize,
-        output_format: "png",
-      }),
+      headers: { Authorization: `Bearer ${config.apiKey}` },
+      body,
     });
     if (!response.ok) throw await responseError("Image API", response);
     const payload = await response.json() as { data?: Array<{ b64_json?: string }> };
@@ -123,6 +147,7 @@ export async function generateOpenAiImageBatch(
         model: config.imageModel,
         quality: config.imageQuality,
         size: config.imageSize,
+        referenceId: state.imageBatch!.referenceId,
         requestId: response.headers.get("x-request-id") ?? undefined,
         generatedAt: new Date().toISOString(),
       },

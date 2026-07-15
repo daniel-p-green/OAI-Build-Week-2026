@@ -4058,3 +4058,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Provider-backed GPT Image 2 media remains the only open visual Output in the main product seam; website review does not upgrade any provider claim.
 - Final provider, founder, host, Session ID, and public-video evidence remains open under the film verifier.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 04:07 CT — Image coherence changed from metadata to a real shared input
+
+**Area:** GPT Image 2 integration / visual consistency / provider preflight
+
+### Changed
+
+- Replaced six independent production image-generation requests with six image-edit requests that all receive the same style-specific 512×512 PNG reference board.
+- Bound the batch to an inspectable coherence contract: locked palette, composition, texture, image treatment, negative rules, Visual DNA version, sibling panel order, reference path, and reference SHA-256.
+- Expanded each panel prompt into one continuous six-panel professional sequence and persisted the shared reference ID in every generated panel's provider provenance.
+- Added a fail-closed preflight that blocks all provider dispatch when the reference is missing or altered, panel IDs drift, sibling order changes, references disagree, or the approved Visual DNA version no longer matches.
+- Kept selective regeneration on the same contract and same reference bytes, preserving successful siblings rather than silently starting a new art direction.
+
+### Verified
+
+- Worker tests passed 48/48, including six multipart `/v1/images/edits` requests with identical nontrivial reference bytes, shared palette direction, panel provenance, partial-failure retry preservation, and a tampered-reference test that made zero provider calls.
+- Worker typecheck and `git diff --check` passed.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages; web tests remained 11/11.
+- `pnpm demo:e2e` passed all six recorded gates with six planned image panels and the local rendered MP4.
+- The recorded acceptance run wrote a valid 512×512 RGBA PNG at `.workshoplm/acceptance/generated/references/style-v1.png`; its SHA-256 was `8b5c25bdaddc018758d30b573f49a5735056d87f949fb58db4db750859bb922d`.
+- `pnpm demo:film:verify` remained honestly in draft mode with five ready shots, five blocked shots, and the provider gallery still named as missing evidence.
+- No paid provider request was made.
+
+### Decisions
+
+- A database `referenceId` alone is not a coherence mechanism. Production now supplies actual shared visual bytes plus the same direction to every panel.
+- Deterministic checks prove contract continuity, not aesthetic quality. The Deliver checkbox remains open until the six GPT Image 2 results are inspected together.
+- The re-supplied six-phase submission sequence remains a deferred planning input in `docs/planning/2026-07-14-submission-sequence-rough.md`; it does not replace the active runbook or block safe pre-spend work.
+
+### Open items
+
+- After explicit spend authorization, run the provider-backed six-image batch, inspect palette, lighting, composition, subject continuity, and obvious defects as one contact sheet, then selectively regenerate only failed panels if needed.
+- Provider narration, Realtime microphone evidence, founder recording, host footage, Session ID, and final public film remain open under the existing evidence gates.
+- Codex Session ID: unavailable on this surface; not inferred.

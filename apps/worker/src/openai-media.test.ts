@@ -1,8 +1,8 @@
-import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, maxTtsInputCharacters, planOpenAiMediaRetry, type OpenAiMediaConfig } from "./openai-media.js";
+import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, maxTtsInputCharacters, planOpenAiMediaRetry, validateImageBatchCoherence, type OpenAiMediaConfig } from "./openai-media.js";
 import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDna, generateAssetPlan, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, resolveWorkshopArtifact, updateStoryboardPanel } from "./workshop-service.js";
 
 const roots: string[] = [];
@@ -30,20 +30,34 @@ afterEach(async () => {
 describe("OpenAI media adapters", () => {
   it("persists a six-image GPT Image 2 batch with panel-level provenance", async () => {
     const root = await readyRoot();
-    const requests: Array<{ url: string; body: Record<string, unknown> }> = [];
+    const requests: Array<{ url: string; body: FormData }> = [];
     const fetchImpl: typeof fetch = async (input, init) => {
-      const body = JSON.parse(String(init?.body)) as Record<string, unknown>;
+      const body = init?.body as FormData;
       requests.push({ url: String(input), body });
       return new Response(JSON.stringify({ data: [{ b64_json: Buffer.from(`image-${requests.length}`).toString("base64") }] }), { status: 200, headers: { "content-type": "application/json", "x-request-id": `image-request-${requests.length}` } });
     };
 
     await expect(generateOpenAiImageBatch(root, config, fetchImpl)).resolves.toMatchObject({ status: "passed", completed: expect.arrayContaining(["image-panel-1", "image-panel-6"]), failed: [] });
     expect(requests).toHaveLength(6);
-    expect(requests.every(({ url, body }) => url.endsWith("/v1/images/generations") && body.model === "gpt-image-2" && body.n === 1)).toBe(true);
+    expect(requests.every(({ url, body }) => url.endsWith("/v1/images/edits") && body.get("model") === "gpt-image-2" && body.get("image") instanceof Blob)).toBe(true);
+    expect(new Set(requests.map(({ body }) => (body.get("image") as Blob).size)).size).toBe(1);
+    expect((requests[0]!.body.get("image") as Blob).size).toBeGreaterThan(1_000);
+    expect(requests.every(({ body }) => String(body.get("prompt")).includes("Locked palette: #1155AA, #171816, #F4F2EC"))).toBe(true);
     const state = readWorkshopState(root);
-    expect(state.imageBatch?.panels.every((panel) => panel.state === "generated" && panel.provenance?.model === "gpt-image-2" && panel.sha256?.length === 64)).toBe(true);
+    expect(state.imageBatch?.panels.every((panel) => panel.state === "generated" && panel.provenance?.model === "gpt-image-2" && panel.provenance.referenceId === state.imageBatch?.referenceId && panel.sha256?.length === 64)).toBe(true);
     await expect(readFile(join(root, state.imageBatch!.panels[0]!.relativePath!), "utf8")).resolves.toBe("image-1");
     expect(resolveWorkshopArtifact("image-panel-1", root)).toMatchObject({ contentType: "image/png", path: expect.stringContaining("image-panel-1-v1.png") });
+  });
+
+  it("fails closed when the shared reference artifact no longer matches the batch manifest", async () => {
+    const root = await readyRoot(); const state = readWorkshopState(root);
+    await expect(validateImageBatchCoherence(root, state)).resolves.toMatchObject({ valid: true, panelCount: 6, issues: [] });
+    await writeFile(join(root, state.imageBatch!.referencePath), "tampered-reference");
+    await expect(validateImageBatchCoherence(root)).resolves.toMatchObject({ valid: false, issues: ["The shared reference image hash does not match its manifest."] });
+    let calls = 0;
+    const fetchImpl: typeof fetch = async () => { calls += 1; return new Response("should not run", { status: 500 }); };
+    await expect(generateOpenAiImageBatch(root, config, fetchImpl)).rejects.toThrow("Image coherence contract failed");
+    expect(calls).toBe(0);
   });
 
   it("keeps successful image panels when one provider request fails", async () => {

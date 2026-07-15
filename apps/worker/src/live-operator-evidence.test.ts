@@ -42,7 +42,7 @@ describe("live operator evidence", () => {
     recordGeneratedImagePanel(imagePanel.id, {
       relativePath: `generated/images/${imagePanel.id}.png`,
       sha256: "a".repeat(64),
-      provenance: { model: "gpt-image-2", size: "1024x1024", quality: "medium", requestId: "image-request-1", generatedAt: new Date().toISOString() },
+      provenance: { model: "gpt-image-2", size: "1024x1024", quality: "medium", referenceId: prepared.imageBatch!.referenceId, requestId: "image-request-1", generatedAt: new Date().toISOString() },
     }, root);
     markImagePanelFailed(prepared.imageBatch!.panels[1]!.id, "Image API returned HTTP 503", root);
     recordNarrationProgress({
