@@ -66,9 +66,15 @@ codex plugin marketplace add daniel-p-green/OAI-Build-Week-2026
 codex plugin add workshoplm@workshoplm-local
 ```
 
-Restart or open a fresh Codex task after installation so newly registered plugin tools are available. The plugin's stdio server reads the configured `WORKSHOPLM_DATA_ROOT`; in a source checkout that defaults to this repository's `.workshoplm/` directory. Run the fixture commands above before trying its grounded `search` and `fetch` tools.
+Set the local data root before opening the Codex task that will use WorkshopLM, then restart or open a fresh task so the plugin tools inherit it:
 
-Verified installation surface: the Codex CLI marketplace flow on macOS. Fresh-task tool invocation in the Codex desktop UI remains a separately recorded integration check.
+```bash
+export WORKSHOPLM_DATA_ROOT="/absolute/path/to/OAI-Build-Week-2026/.workshoplm/live-operator"
+```
+
+The plugin forwards only that explicit local path to its stdio server. It does not upload the Workshop, scan arbitrary folders, or assume an installed cache shares the source checkout. Run the fixture or live-operator preflight before trying grounded `search` and `fetch`.
+
+Verified installation surface: the Codex CLI marketplace flow on macOS. Codex can discover and call the bundled stdio tools; the installed version must be refreshed after a public plugin update before the latest data-root forwarding change is present.
 
 ## Architecture
 

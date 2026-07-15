@@ -1,6 +1,6 @@
 {
   "name": "workshoplm",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Turn raw thinking into finished, source-traceable work.",
   "skills": "./skills/",
   "apps": "./.app.json",

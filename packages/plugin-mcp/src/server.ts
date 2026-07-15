@@ -6,7 +6,7 @@ type Request = { id?: string | number; method: string; params?: { name?: string;
 function response(id: Request["id"], result: unknown) { process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", id, result })}\n`); }
 
 export function handleRequest(request: Request): unknown {
-  if (request.method === "initialize") return { protocolVersion: "2025-03-26", serverInfo: { name: "workshoplm", version: "0.1.0" }, capabilities: { tools: {} } };
+  if (request.method === "initialize") return { protocolVersion: "2025-03-26", serverInfo: { name: "workshoplm", version: "0.1.2" }, capabilities: { tools: {} } };
   if (request.method === "tools/list") return { tools: toolDefinitions };
   if (request.method === "tools/call") {
     const result = executeTool(request.params?.name ?? "", request.params?.arguments);

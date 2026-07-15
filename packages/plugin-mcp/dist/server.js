@@ -4,7 +4,7 @@ import { executeTool, toolDefinitions } from "./tools.js";
 function response(id, result) { process.stdout.write(`${JSON.stringify({ jsonrpc: "2.0", id, result })}\n`); }
 export function handleRequest(request) {
     if (request.method === "initialize")
-        return { protocolVersion: "2025-03-26", serverInfo: { name: "workshoplm", version: "0.1.0" }, capabilities: { tools: {} } };
+        return { protocolVersion: "2025-03-26", serverInfo: { name: "workshoplm", version: "0.1.2" }, capabilities: { tools: {} } };
     if (request.method === "tools/list")
         return { tools: toolDefinitions };
     if (request.method === "tools/call") {

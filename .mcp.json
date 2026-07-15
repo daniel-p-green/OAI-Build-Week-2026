@@ -1,7 +1,10 @@
 {
-  "workshoplm": {
-    "command": "node",
-    "args": ["./packages/plugin-mcp/dist/server.js"],
-    "transport": "stdio"
+  "mcpServers": {
+    "workshoplm": {
+      "command": "node",
+      "args": ["./packages/plugin-mcp/dist/server.js"],
+      "cwd": ".",
+      "env_vars": ["WORKSHOPLM_DATA_ROOT"]
+    }
   }
 }
