@@ -3162,3 +3162,32 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - No GPT-5.6 request has run. Structured-output compatibility, quality, latency, usage, and the account-specific bare-alias discrepancy remain live-verification items.
 - No TTS request has run; the documentation lifecycle mismatch is unresolved in practice.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-14 23:08 CT — Interface goal reduced to one official, plain-language contract
+
+**Area:** Product design / goal reconciliation
+
+### Changed
+
+- Rewrote the user-facing objective and completion bar around the five-step path a professional sees: talk and select Sources, shape the Map, approve the Brief and choose Style, create Outputs, approve the Storyboard, and create Video.
+- Added one locked interface contract to `GOAL.md`: one current object, one consistent Sources control, one dominant next action, two approvals, and visual Outputs.
+- Made the official Apps in ChatGPT Figma file the explicit sole source for product chrome. Any missing pattern must be a documented composite of verified primitives rather than a new control or styling system.
+- Replaced remaining goal-level drift toward Studio, package, generic Library, host-strip, and engineering vocabulary with the canonical WorkshopLM objects and plain action labels.
+
+### Verified
+
+- Recompared the NotebookLM three-region and populated-output screenshots with the current WorkshopLM Map, Outputs, and Storyboard screenshots. The locked contract preserves stable Workshop identity, immediate Sources, focused work, tangible output history, and one-click source trace without copying Google's chrome or permanent three-column layout.
+- `pnpm --filter @workshoplm/web test -- --run app/oai-ui-contract.test.ts` passed 5/5. The contract rejects retired copy and requires the canonical actions `Approve brief`, `Create outputs`, `Show source`, `Show on map`, and `Create video`.
+
+### Decisions
+
+- The app remains simpler than NotebookLM's permanent three-panel workspace because ChatGPT already owns Conversation. WorkshopLM borrows NotebookLM's orientation behaviors, not its column count.
+- Technical names remain valid in code, logs, generated files, and technical Details; they do not become primary navigation, labels, or buttons.
+- The official-component UI gate stays complete. Real GPT Image 2 media is the only reason the visual Outputs-gallery item remains open.
+
+### Open items
+
+- Generate and inspect the real provider-backed image set after explicit spend authorization, then close the visual Outputs-gallery item if the results meet the locked contract.
+- Codex Session ID: unavailable on this surface; not inferred.

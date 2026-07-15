@@ -1,12 +1,12 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-14 23:05 CT
+Last updated: 2026-07-14 23:06 CT
 
 ## Status
 
 **Active phase:** Live demo proof — provider-backed outputs, operator run, and submission assets
 **Implementation:** Fully authorized for the complete locked WorkshopLM version in this file. Product discovery is closed; execute, verify, and ship.
-**Current gate:** The official-component rebuild is complete, and the isolated live-operator preflight now builds the approved sanitized package without spend. The next proof bar requires explicit paid-call authorization: run the GPT-5.6 benchmark, generate the real GPT Image 2 batch and approved-storyboard narration, inspect the artifacts, and use them in the judge-facing submission. Do not reopen shell or vocabulary work unless the visual contract catches a regression.
+**Current gate:** The official-component rebuild is complete, and the isolated live-operator preflight now builds the approved sanitized Workshop without spend. The next proof bar requires explicit paid-call authorization: run the GPT-5.6 benchmark, create the real GPT Image 2 image set and approved-storyboard narration, inspect the results, and use them in the judge-facing submission. Do not reopen the shell or product language unless a visual or usability test finds a regression.
 **Known provider risk:** The configured API key authenticates and can retrieve `gpt-image-2`, `gpt-4o-mini-tts`, `gpt-realtime-2.1`, and the GPT-5.6 variants `gpt-5.6-luna`, `gpt-5.6-terra`, and `gpt-5.6-sol`. The bare `gpt-5.6` endpoint returns `404 model_not_found` for this account even though the current public model page describes it as a Sol alias. The locked runtime uses an operation-level GPT-5.6 routing policy; a spend-gated nine-request Responses benchmark is ready to measure Sol, Terra, and Luna on latency, reported usage, and deterministic quality checks. The live operator now has a claim-validated structured-output adapter for the selected grounded-graph route, but no request has run. The current model catalog labels `gpt-4o-mini-tts` deprecated while the current speech guide still recommends it; verify the actual live response before recording. Do not claim live product use or change per-operation defaults before these checks.
 **Known host risk:** The July 14 host-sync verification is credential-blocked, so it does not prove native task or voice-turn persistence. The designed capture-only fallback remains active; Spike A stays open until the end-of-day decision deadline or a separately authorized live host check.
 
@@ -19,14 +19,15 @@ Last updated: 2026-07-14 23:05 CT
 
 Implement and verify the complete locked WorkshopLM product for OpenAI Build Week in a pnpm/Turborepo monorepo.
 
-Deliver the full WorkshopLM scope through one exceptionally intuitive **Capture → Shape → Deliver** happy path:
+Deliver the full WorkshopLM scope through one exceptionally intuitive **Capture → Shape → Deliver** path:
 
-1. The native ChatGPT conversation/voice experience and grounded sources become an editable semantic Excalidraw whiteboard in the in-app browser.
-2. The approved board, together with a website-derived or manually configured Style Library and Intent Profile, becomes the executable brief.
-3. The brief produces a source-traceable presentation, infographic, visually coherent GPT Image 2 batch, and editable storyboard.
-4. Only an approved storyboard may render a narrated HyperFrames video.
+1. Start with a ChatGPT text or voice conversation and select the sources that matter.
+2. WorkshopLM turns that material into an editable, source-grounded Map.
+3. Approve the Map as the Brief and choose a Style from a website or uploaded brand assets.
+4. Create source-traceable Outputs: a presentation, infographic, coherent image set, and editable storyboard.
+5. Review and approve the storyboard, then create the narrated local video.
 
-Preserve citations, exact brand rules, dependency-aware versions, and stale-state propagation across every artifact. Use WorkshopLM to create its own truthful hackathon demo package and final meta-demo video. Target **Work & Productivity**. Keep Education/Learning mode, general-purpose Canva scope, and unsupported production claims out of scope.
+Keep citations, exact brand rules, version history, and clear `Needs update` states throughout the work. Use WorkshopLM to create its own truthful hackathon submission and final meta-demo video. Target **Work & Productivity**. Keep Education/Learning mode, general-purpose design-tool scope, and unsupported production claims out of scope.
 
 Completion requires verification of the live product, responsive UX, core tests, OpenAI integration behavior, and judge-facing submission artifacts against the current research and hackathon rules.
 
@@ -34,17 +35,17 @@ Completion requires verification of the live product, responsive UX, core tests,
 
 This goal is not complete when the architecture, shell, mocks, or isolated model calls exist. It is complete only when one coherent local product demonstrates all of the following:
 
-1. A locally installed unified WorkshopLM plugin opens and controls the full visual Workshop in the ChatGPT/Codex in-app browser.
-2. Native ChatGPT text/voice—or the deadline-triggered Realtime capture fallback—feeds a durable Workshop transcript without creating a duplicate browser chat product.
-3. Local files, URLs, and sanitized meeting material become normalized, searchable sources with inspectable claim → chunk → source grounding.
-4. GPT-5.6 turns the conversation and selected evidence into an editable semantic graph rendered as an Excalidraw Map, with typed operations, undo, evidence states, and a regenerable Sketch view.
-5. `Approve map as brief` produces inspectable `FRAME.md` plus executable data; a website URL or manual assets produce a reviewable, versioned `DESIGN.md`, Brand Foundation, Intent Profile, and Visual DNA.
-6. Outputs creates and keeps the complete locked output set: source-traceable deck, source-traceable infographic, coherent GPT Image 2 batch, editable storyboard, and narrated local HyperFrames video.
-7. Storyboard approval, dependency versions, stale propagation, retry/cancel/partial-success behavior, and artifact provenance work across the real seam—not only in isolated tests.
-8. The provenance view traces the actual WorkshopLM submission from raw brainstorm through sources, Map, brief, style, outputs, build evidence, and measured time-to-first-output.
-9. The under-three-minute public demo video shows the real working flow clearly enough that judges do not need to recreate the local plugin environment to understand or score it.
-10. The repository passes the documented deterministic checks, the live demo seam is recorded from the intended surface, and all judge-facing claims match captured evidence.
-11. The judge-visible interface uses real reusable implementations of the verified Apps in ChatGPT components—not identifying attributes or visual approximations—and a first-time professional can name the current object, active source scope, and next action within five seconds.
+1. The WorkshopLM plugin opens the visual Workshop in the ChatGPT/Codex in-app browser.
+2. ChatGPT text or voice becomes a durable Workshop transcript without adding a second browser chat.
+3. Local files, websites, and sanitized meeting notes become searchable Sources with an inspectable path from claim to exact source excerpt.
+4. GPT-5.6 turns the conversation and selected Sources into an editable Map with undo, evidence states, and a regenerable Sketch.
+5. `Approve brief` creates inspectable `FRAME.md`; a website or manual brand assets create reviewable, versioned `DESIGN.md` and Style data.
+6. `Create outputs` produces a source-traceable presentation, infographic, coherent GPT Image 2 image set, editable storyboard, and narrated local HyperFrames video.
+7. Storyboard approval, version changes, `Needs update` states, retry, cancel, and partial success work across the real end-to-end path—not only in isolated tests.
+8. `How this was built` traces the real submission from raw brainstorm through Sources, Map, Brief, Style, Outputs, build evidence, and measured time to first output.
+9. The public demo video is under three minutes and shows the real flow clearly enough that judges do not need to install the local plugin.
+10. The repository passes the documented checks, the live demo is recorded from the intended surface, and every judge-facing claim matches captured evidence.
+11. The judge-visible interface uses reusable implementations of the verified Apps in ChatGPT components, and a first-time professional can identify the current object, source scope, and next action within five seconds.
 
 All items above are committed scope for this hackathon version. Fallbacks may change implementation mechanics, but may not silently remove the user-visible capability they preserve.
 
@@ -61,6 +62,20 @@ The seam **voice/source capture → grounded Map → approved brief → branded 
 - **Track:** Work & Productivity
 
 The NotebookLM association is intentional category shorthand for hackathon judging. WorkshopLM must not imply affiliation with Google or present itself as an official OpenAI product. Keep Google's marks out of the project title, video title, thumbnails, and product UI; use the comparison only in explanatory copy or narration.
+
+## Locked interface contract
+
+WorkshopLM borrows NotebookLM's strongest orientation patterns, then expresses them with the official Apps in ChatGPT design system:
+
+1. **One Workshop, one current object.** The header always names the Workshop and the open object: Map, Brief, Outputs, Storyboard, or a selected Output.
+2. **Sources stay one click away.** The same `{n} sources` control opens the source list everywhere. Selecting a citation opens the exact excerpt and locator, and closing it returns focus to the originating claim.
+3. **The work owns the screen.** There are no persistent workflow tabs, three-column dashboard, duplicate chat, generic inspector, or always-open output rail. Drawers and sheets appear only when needed.
+4. **One obvious next action.** Each screen has at most one visually dominant action. The two blocking actions are `Approve brief` and `Approve storyboard`; video creation comes only after storyboard approval.
+5. **Outputs look like work, not records.** Every Output has a recognizable name, real preview, source coverage, freshness, and one obvious open action. Creation controls never compete with the Output history.
+
+`Apps in ChatGPT · OpenAI Official (Community)` is the only source for product chrome. Use verified primitives, variables, text styles, effects, icons, spacing, and display-mode templates from the recorded Figma inventory. If a needed pattern is absent, build a named WorkshopLM composite from those primitives and document its recipe before implementation. Never invent a parallel button, card, field, sheet, token, icon, type, radius, shadow, or interaction system. Custom visuals are allowed only for WorkshopLM's work itself: Map geometry, evidence paths, generated media, charts, slide previews, image tiles, and storyboard frames.
+
+All primary language is plain, professional, and action-first. Object names are `Workshop`, `Sources`, `Map`, `Brief`, `Style`, `Outputs`, `Storyboard`, and `Video`. Primary actions are `Add source`, `Show source`, `Show on map`, `Approve brief`, `Choose style`, `Create outputs`, `Approve storyboard`, and `Create video`. Technical terms such as gate, contract, package, artifact, provenance, render, Visual DNA, model ID, and version ID appear only in technical Details or generated file contents.
 
 ## Locked decisions
 
@@ -90,7 +105,7 @@ The NotebookLM association is intentional category shorthand for hackathon judgi
 - The primary demo scenario is meta: WorkshopLM creates the assets and final video used for its own Build Week submission.
 - WorkshopLM is organized into Workshops; each Workshop is the durable top-level container equivalent to a Notebook in NotebookLM.
 - A Workshop contains its sources, conversation, semantic map, approved brief, style, and outputs.
-- Preserve NotebookLM's familiar Sources → central work → Outputs mental model across two native surfaces, but remove permanent destination navigation: ChatGPT owns Conversation; the in-app browser renders one current Workshop object with optional Sources, Library, creation, and detail sheets.
+- Preserve NotebookLM's familiar Sources → central work → Outputs mental model across two native surfaces, but remove permanent destination navigation: ChatGPT owns Conversation; the in-app browser renders one current Workshop object with contextual Sources, creation, and evidence sheets.
 - Preserve the layout lessons visible in the NotebookLM reference screenshots: the Workshop identity stays fixed, Sources always open from the same place, the current work object owns the center, Outputs remain a durable history of recognizable objects, and citation selection reveals the exact source without changing products. Adapt these patterns to professional production rather than copying Google's chrome, terminology, three-column proportions, or education framing.
 - Product language is plain, professional, and action-first. Prefer familiar nouns (`Sources`, `Map`, `Brief`, `Outputs`, `Storyboard`, `Video`) and short verb–noun actions (`Add source`, `Approve brief`, `Create outputs`, `Show source`, `Create video`). Internal nouns such as gate, contract, package, artifact, provenance, render, Visual DNA, and version identifiers stay out of primary labels unless the user opens technical Details.
 - Deliver is the durable Outputs history over one shared grounded Workshop core, not a mandatory fixed package.
@@ -99,7 +114,7 @@ The NotebookLM association is intentional category shorthand for hackathon judgi
 - OpenAI project reasoning and structured operations use the Responses API with the GPT-5.6 routing policy: `gpt-5.6-sol` for quality-critical reasoning, `gpt-5.6-terra` for balanced structured work, and `gpt-5.6-luna` for repeatable high-volume work. Per-operation defaults may change only with recorded quality, latency, and cost evidence.
 - Project grounding uses local parsing, deterministic chunks/locators, SQLite FTS5/BM25, exact text search, and standard plugin `search`/`fetch` tools. GPT-5.6 receives retrieved evidence bundles and may not mark a factual claim `verified` without durable claim→chunk→source edges. Hosted OpenAI `file_search` is an optional adapter/comparison, not a requirement.
 - Native ChatGPT voice is the primary capture path. A live spike must prove durable thread/voice-turn synchronization into WorkshopLM. If the host cannot expose the needed durable capture, fall back to a narrow `gpt-realtime-2.1` WebRTC capture surface; standard API keys remain server-only.
-- Spike A has a hard decision deadline of July 14 end of day CT. If native voice-turn synchronization is not proven by then, activate the Realtime fallback automatically as a capture-only control in the host strip or top bar. It is visually distinct from a composer and does not duplicate ChatGPT conversation.
+- Spike A has a hard decision deadline of July 14 end of day CT. If native voice-turn synchronization is not proven by then, activate the Realtime fallback as a capture-only task control. It is visually distinct from a composer and does not duplicate ChatGPT conversation.
 - Narration uses `gpt-4o-mini-tts`, stores panel-level provenance, and clearly discloses that the voice is AI-generated.
 - Batch image generation uses the direct Image API with `gpt-image-2`; conversational image edits may use the Responses image-generation tool.
 - `Notedex`, `Notex`, and `ChatGPT Notes` are rejected names.
@@ -110,7 +125,7 @@ The NotebookLM association is intentional category shorthand for hackathon judgi
 - The submission is a local plugin/developer-tool experience. Provide concise installation instructions and the verified supported platform, but do not divert implementation time into making judges recreate the full local stack. The verified Spike E surface controls the README, Devpost, and video platform claim.
 - Workshop progress is represented by independent gate flags rather than one linear lifecycle: `transcript_ready`, `board_approved`, `brief_ready`, `style_locked`, `storyboard_approved`, and `video_rendered`. Staleness remains a per-object overlay.
 - Five live integration spikes gate only the provider- or host-dependent implementation they inform: native ChatGPT task/account/voice synchronization (with Realtime fallback), local plugin search/fetch grounding (with optional File Search comparison), GPT Image 2 batching, local HyperFrames rendering, and unified-plugin loading across the available Work/Codex surfaces. Monorepo foundation, domain work, deterministic adapters, GUI shell, and fixture work proceed in parallel.
-- The GUI is the flagship product proof. Plugin widgets remain compact doorways; they never duplicate the Map, Studio, storyboard editor, or asset browser.
+- The GUI is the flagship product proof. Plugin widgets remain compact doorways; they never duplicate the Map, Outputs, Storyboard editor, or asset browser.
 - Freeze `packages/domain` contracts before parallel feature work. Afterward, the integrator may approve compatible changes with tests; only product-changing breaking decisions escalate.
 - Freeze all provider-independent domain contracts by July 14 end of day. The transcript/turn schema may remain behind its adapter interface until Spike A resolves, but must freeze by July 15 morning without delaying independent lanes.
 - Use at most four concurrent execution slots: one primary integrator and three isolated implementation lanes.
@@ -161,29 +176,29 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Approve responsive and accessibility behavior.
 - [x] Approve verification strategy and judge-test path.
 - [x] Approve the meta-demo scenario in which WorkshopLM creates its own submission assets and video.
-- [x] Approve Studio / Output type / Output as the replacement for the rejected fixed package label.
+- [x] Approve Outputs / Output type / Output as the replacement for the rejected fixed-package label.
 - [x] Lock exactly two approval moments for the product and three-minute demo: brief and storyboard.
 - [x] Audit the live MVP against NotebookLM and the official Apps in ChatGPT UI guidance; record the simplification direction in `research/ui-ux-simplification-audit-2026-07-14.md`.
-- [x] Supersede both the persistent three-rail/six-tab MVP and the interim three-tab concept with one current object, a transient Workshop Library, and progressive disclosure in `DESIGN.md`.
-- [x] Implement the simplified OpenAI-aligned shell: system tokens/type, one current-object canvas, Sources drawer, Library/Create sheets, contextual inspector, and no persistent tabs or host strip.
+- [x] Supersede both the persistent three-rail/six-tab MVP and the interim three-tab concept with one current object, an optional Workshop switcher outside the active Workshop, and progressive disclosure in `DESIGN.md`.
+- [x] Implement the simplified OpenAI-aligned shell: official tokens and type, one current-object canvas, contextual Sources/evidence sheets, and no persistent tabs, generic Library drawer, or host strip.
 - [x] Move Style into Brief settings; move Sketch and Storyboard into Outputs; move Trace into citation/Details drawers.
-- [ ] Replace metadata-only Studio rows with a visual Outputs gallery and real deck, infographic, image-batch, storyboard, and video previews.
+- [ ] Complete the visual Outputs gallery with real presentation, infographic, image-set, storyboard, and video previews.
   - 2026-07-14: persisted deck and infographic HTML now render as real gallery previews and the completed local MP4 is served as a playable preview. Image generation still has only a planned manifest, not provider image bytes; keep this item open.
 - [x] Remove raw artifact paths, internal IDs, absent trace stages, and gate implementation language from normal UI while preserving them under Details.
 - [x] Make each screen expose no more than five immediate actions and exactly one visually dominant next action when a gate is ready.
 - [x] Add frontend tests for progressive disclosure, contextual citations, two approval bars, visual output previews, and suppression of incomplete provenance rows.
 - [x] Re-verify the simplified UI at 1200×800, 1024×768, and mobile review width; capture fresh screenshots for the demo storyboard.
 - [x] Adopt the six NotebookLM legibility gains as implementation acceptance criteria: instant explanation, stable geography, tangible source scope, real output previews, calm first run, and one-click citations.
-- [x] Capture a privacy-safe live UI gallery covering the reset and complete recorded fixtures, including Map, Sources, citation, Library, Brief, Style, Outputs, Storyboard, and mobile states.
-- [x] Rebuild the judge path around the official Apps in ChatGPT boundary: ChatGPT owns conversation; the fullscreen Workshop owns only Map/trace, Brief/Style, package, and Storyboard interactions.
+- [x] Capture a privacy-safe live UI gallery covering the reset and complete recorded fixtures, including Map, Sources, citation, Brief, Style, Outputs, Storyboard, focused Output, and mobile states.
+- [x] Rebuild the judge path around the official Apps in ChatGPT boundary: ChatGPT owns Conversation; the full-screen Workshop owns only Map, source trace, Brief, Style, Outputs, and Storyboard interactions.
 - [x] Replace the broken Excalidraw judge path with a constrained relational Map: source anchors, grounded claims, implications, labeled clusters, visible edges, path highlighting, and one adjacent claim/evidence inspector.
 - [x] Replace trivial approval states with a Brief coverage receipt, live Style contract, Storyboard coverage/runtime summary, and visibly named approved versions.
-- [x] Replace four equal output actions with one coherent package action and deduplicate deck/infographic cards so each artifact appears exactly once.
+- [x] Replace four equal creation actions with one `Create outputs` action and ensure each Output appears exactly once.
 - [x] Remove the persistent stage spine, generic Library, generic Details, browser capture composer, and other shell chrome that competed with ChatGPT.
 - [x] Inventory the exact components, variables, styles, icons, and display-mode templates in `Apps in ChatGPT · OpenAI Official (Community)` from an editable Figma design-file copy; record names and source identifiers without inference.
 - [x] Replace every approximated or custom WorkshopLM shell component and style with real reusable implementations of verified assets or documented compositions from the official Figma library. Permit custom rendering only for domain content such as Map geometry and generated artifact media. `data-oai-component` attributes and final-cascade CSS overrides do not satisfy this item.
 - [x] Replace the string-presence UI test with conformance checks that cover every judge-visible element, the full CSS cascade, rendered computed styles, interaction states, responsive layouts, icons, and accessibility behavior.
-- [x] Capture a fresh final screenshot set for the rebuilt Map, trace, Brief/Style, package, Storyboard, and mobile Evidence outline.
+- [x] Capture a fresh final screenshot set for the rebuilt Map, source trace, Brief/Style, Outputs, Storyboard, and mobile Evidence outline.
 - [x] Add frontend regression coverage for the six rebuilt states, including a duplicate-artifact assertion and one-dominant-action checks.
 - [x] Verify keyboard focus order, WCAG AA contrast, reduced motion, and 200% zoom on the rebuilt judge path.
   - 2026-07-14: the production UI passed at a real 600×800 Chrome viewport, the exact CSS-pixel reflow equivalent of 200% on a 1200px-wide browser, with no horizontal overflow. The automated browser boundary did not expose its native zoom-menu value, so no claim is made that the browser chrome itself was inspected at `200%`.
