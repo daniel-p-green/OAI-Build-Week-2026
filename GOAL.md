@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-16 06:09 CT
+Last updated: 2026-07-16 06:31 CT
 
 ## Status
 
@@ -75,6 +75,7 @@ WorkshopLM should preserve the clarity that makes NotebookLM useful while comple
   - 2026-07-16 image revision pass: `Request replacement` now opens a focused `Replace image` sheet where the professional describes exactly one visual correction. The current image remains visible while pending; the revision is bounded, versioned, source-preserving, Style-preserving, and proven to reach only the selected GPT Image 2 request. Keep this item open for final founder-Source dogfood and intended-audience review of the complete Output set.
 - [ ] Judge every visible Output against “would a serious professional send this?” Repair weak hierarchy, generic imagery, awkward narration, inconsistent art direction, and templated layouts before adding output breadth.
 - [ ] Continue simplifying language. Use familiar nouns and verbs—Sources, Map, Brief, Style, Presentation, Storyboard, Video, `Show source`, `Approve brief`, `Create outputs`—and remove implementation terms, file names, model names, IDs, and duplicated actions from the primary UI.
+  - 2026-07-16 object-first metadata pass: the default Outputs gallery and Create rail no longer repeat `Version`, artifact type, or Storyboard revision beside names that already communicate the object. Cards now foreground only source scope and freshness; the Brief shows its Source count; Video shows its scene count; and the ready total now counts every actually shareable deliverable, including approved Storyboard, current Audio Overview, and current Video. Revisions remain explicit in focused objects, accessible names, and Version history. The complete 29-case production-browser suite and refreshed desktop, compact, mobile, provider-backed, gallery, and film evidence passed.
   - 2026-07-16 live-Output pass: removed the fallback model name and timestamp from visible Presentation/Infographic citations, fixed singular Source counts, and moved prior Presentation, Infographic, Audio Overview, and Video versions behind the focused object. Exact locators and every immutable version remain available without crowding the main gallery. Keep this continuous item open through final founder-Source and film review.
   - 2026-07-16 voice-language pass: normalized capture-only and founder-recording Sources to plain titles and origins across navigation, replaced the fixture's `Voice capture fallback` Map card with `Voice stays available`, and retained the exact raw locator only inside the evidence view. The strict suite now separates professional language from inspectable trace data explicitly.
 

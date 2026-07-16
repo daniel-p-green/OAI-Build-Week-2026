@@ -9,7 +9,7 @@ Add material
 Back to Brief
 Back to Map
 Back to Outputs
-BriefVersion 3Approved
+Brief3 sourcesApproved
 Build notes · §2
 ChatAsk your sources
 Collapse Create
@@ -21,12 +21,12 @@ Expand Sources
 Goal · capture
 Image set
 Infographic
-InfographicInfographic · Version 1Up to date3 sources
+Infographic3 sourcesUp to date
 Outputs
-Outputs3 readyUp to date
+Outputs4 readyUp to date
 PDFBuild Week brief3 claims
 Presentation
-PresentationPresentation · Version 1Up to date3 sources
+Presentation3 sourcesUp to date
 Show source
 Storyboard
 Storyboard5 editable panelsApproved

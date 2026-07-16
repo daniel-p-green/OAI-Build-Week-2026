@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "current-workbench-gallery",
-  "builtAt": "2026-07-16T11:04:56.619Z",
+  "builtAt": "2026-07-16T11:29:36.770Z",
   "screenshots": [
     {
       "name": "01-start.png",
@@ -23,7 +23,7 @@
       "name": "03-grounded-map.png",
       "label": "Shape grounded claims on the semantic Map",
       "source": "apps/web/tests/visual/__screenshots__/desktop-map.png",
-      "sha256": "4af1d216c3e11310fda4da3647fc17579d2e70b18cb9aea5adc705dde4436e07",
+      "sha256": "b8d9e2460bfa58c60eaa9d6ada2e3511dd2ae714bd7bc4a9f9d732b6b309dc28",
       "width": 1200,
       "height": 800
     },
@@ -39,7 +39,7 @@
       "name": "05-source-evidence.png",
       "label": "Inspect the exact supporting Source",
       "source": "apps/web/tests/visual/__screenshots__/desktop-evidence.png",
-      "sha256": "915e26e4f3a5443958a5bcba288dde6fdeaa54481902c7144355b6d2e8f11f66",
+      "sha256": "62b8612a72f8450849598924c0be1692ce31cb49a8a119b4e850004176739487",
       "width": 1200,
       "height": 800
     },
@@ -47,7 +47,7 @@
       "name": "06-approved-brief.png",
       "label": "Review the approved executable Brief",
       "source": "apps/web/tests/visual/__screenshots__/desktop-brief.png",
-      "sha256": "7fa2fc0bc73f5502784aef8c5fda508192911c1515c22532e57c029f47eac415",
+      "sha256": "acb3c3ef13fb49c75f9880d85bbcdd9df901ac29abd24ee82b54c08a70da705f",
       "width": 1200,
       "height": 800
     },
@@ -55,7 +55,7 @@
       "name": "07-company-style.png",
       "label": "Apply one reviewable visual system",
       "source": "apps/web/tests/visual/__screenshots__/desktop-style.png",
-      "sha256": "68dd3ebb951f855d5b79a4a9dee477660212e93e3f32cf4f205c5a4038db57dd",
+      "sha256": "04dc8d9a0d5c56dc49b17652e4cb6089bf3e8d79eb2a9b47fc258db5feeecfac",
       "width": 1200,
       "height": 800
     },
@@ -63,9 +63,9 @@
       "name": "08-current-outputs.png",
       "label": "Review the current provider-backed deliverables",
       "source": "artifacts/ui-review/outputs-latest-only-desktop-2026-07-16.png",
-      "sha256": "0cd4d9d2678e43b56efea5da3003dad6b895d894eaa2a4eaf2253c2c7fd78b5a",
-      "width": 1280,
-      "height": 720
+      "sha256": "6c603c52dfcdbb43e3618d745b76e831742b27007518ec39a6b671ef44f78b16",
+      "width": 1200,
+      "height": 800
     },
     {
       "name": "09-presentation.png",
@@ -95,7 +95,7 @@
       "name": "12-storyboard.png",
       "label": "Edit and approve the Storyboard",
       "source": "apps/web/tests/visual/__screenshots__/desktop-storyboard.png",
-      "sha256": "39784303ed23f1d6c67f24b1e7a41210377b05010af90542e3f8961f2cacdca1",
+      "sha256": "e9fc9192bea0595908bf0e4df35e6b2e2caa00810580ad2d767eaaa7503ce958",
       "width": 1200,
       "height": 800
     },
@@ -103,7 +103,7 @@
       "name": "13-narrated-video.png",
       "label": "Review the locally rendered Video",
       "source": "apps/web/tests/visual/__screenshots__/desktop-video-viewer.png",
-      "sha256": "dc99d2be0d766ed4b7dec0948956b3d12b062a689c30ae95915df32f6bc405df",
+      "sha256": "3d6eaba02d44aff8c4f17fcc62644b51e3b2df5662d01363931862f0c70c8ce1",
       "width": 1200,
       "height": 800
     },
@@ -111,7 +111,7 @@
       "name": "14-original-reveal.png",
       "label": "Trace finished work back to the original thought",
       "source": "apps/web/tests/visual/__screenshots__/desktop-original-reveal.png",
-      "sha256": "8a928b17ec03129102f53c2121e01d19eb9d915029c161104f9891e5ad91ebe1",
+      "sha256": "7b86ebe2855f0ff8818297eb652954fb6d965ce3fdc988792e4415412d4780b6",
       "width": 1200,
       "height": 800
     },
@@ -127,14 +127,14 @@
       "name": "16-mobile-outputs.png",
       "label": "Review current Outputs on mobile",
       "source": "apps/web/tests/visual/__screenshots__/mobile-outputs.png",
-      "sha256": "1acb3fb4293e802915d6d7675aff62fa3e1c0cbba78d4b76e7a1d2683cc737a9",
+      "sha256": "a1bee1ec69cdf8728f590b86c6399d6bcb37b40bd8538e0411ccea2808c03f04",
       "width": 390,
       "height": 844
     }
   ],
   "contactSheet": {
     "name": "contact-sheet.png",
-    "sha256": "c356698ed0c581094a0fa35c2f0a336498c34cbc5c49795987224a23176a8b26",
+    "sha256": "6d86f6fac12ff2b6c03af3a0078569e5f0c6f7772d7030c64b12b9459b003a6e",
     "width": 1920,
     "height": 1280
   }

@@ -424,9 +424,10 @@ test("editing a saved Company Style is presented and submitted as a new version"
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
   await page.getByRole("button", { name: "View brief" }).click();
-  await expect(page.getByText(new RegExp(`${current.style.name} · Version ${current.style.libraryRevision ?? 1}`))).toBeVisible();
+  await expect(page.getByLabel("Style").getByText(current.style.name, { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Edit", exact: true }).click();
   const sheet = page.getByRole("dialog", { name: "Style" });
+  await expect(sheet.getByText(`Company style · Version ${current.style.libraryRevision ?? 1}`, { exact: true })).toBeVisible();
   await sheet.getByRole("textbox", { name: "Accent" }).fill("#6644AA");
   await sheet.getByRole("button", { name: "Save new version" }).click();
   await expect.poll(() => posted.at(-1)?.action).toBe(current.style.source === "website" ? "lockWebsiteStyle" : "lockManualStyle");
@@ -489,6 +490,8 @@ test.describe("completed Workshop judge path", () => {
       await expect(outputCards.first().getByRole("heading", { name: "Presentation" })).toBeVisible();
       await expect(page.locator('.output-grid [data-output-role="hero"]')).toHaveCount(1);
       await expect(page.getByRole("button", { name: "Show source" })).toHaveCount(0);
+      await expect(page.locator(".output-grid")).not.toContainText("Version");
+      if (viewport.width > 900) await expect(page.getByRole("complementary", { name: "Production" }).getByText("3 ready", { exact: true })).toBeVisible();
       await expectPreviewFramesReady(page);
       await expectScreen(page, `${viewport.name}-outputs`);
 
@@ -647,10 +650,11 @@ test("Outputs preserve recognizable version history and source coverage", async 
 
   await expect(page.getByRole("button", { name: "Open Presentation, version 2" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Open Presentation, version 1" })).toHaveCount(0);
-  await expect(page.getByText("Presentation · Version 2")).toBeVisible();
+  await expect(page.locator(".output-grid")).not.toContainText("Version");
   await expect(page.locator(".output-card").first()).toContainText(/\d+ sources?/);
   await expect(page.locator('.output-card iframe[title$="preview"]')).toHaveCount(2);
   await page.getByRole("button", { name: "Open Presentation, version 2" }).click();
+  await expect(page.getByText("Presentation · Version 2 · 3 sources", { exact: true })).toBeVisible();
   const history = page.getByRole("region", { name: "Version history" });
   await expect(history.getByRole("button", { name: "Open Presentation, version 2" })).toContainText("Current view");
   await expect(history.getByRole("button", { name: "Open Presentation, version 1" })).toContainText("Needs update");
@@ -689,7 +693,7 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
   await page.getByRole("button", { name: "Open Storyboard" }).click();
   const preview = page.locator(".panel-visual");
   await expect(preview.locator("img")).toHaveAttribute("src", "/api/workshop/artifacts/image-panel-1");
-  await expect(preview.getByText("Bound image")).toBeVisible();
+  await expect(preview.getByText("Image", { exact: true })).toBeVisible();
   await expectScreen(page, "desktop-storyboard-bound-image");
   await page.locator(".storyboard-strip button").nth(1).click();
   await expect(preview.locator("img")).toHaveAttribute("src", "/api/workshop/artifacts/image-panel-2");

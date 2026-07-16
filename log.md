@@ -7813,3 +7813,37 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 - Internal visual review passed, but the leadership or professional social-post `Send`/`Revise` review remains open and the GOAL checkbox remains unchecked.
 - Founder capture, the founder-derived final operator run, verified final package, final MP4, eligible Session ID, and public submission links remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 06:31 CT — Default workbench metadata becomes object-first
+
+**Area:** UI simplification / Outputs hierarchy / responsive judge evidence
+
+### Changed
+
+- Removed repeated artifact type and Version labels from the default Outputs gallery. Presentation, Infographic, Audio Overview, and Video cards now foreground only source scope, useful quantity, and freshness; revision mechanics remain in the focused object and Version history.
+- Removed revision numbers from the default Brief and Create rail. Brief now names its active Source count, and Video names its scene count. Style revision remains visible inside the editing sheet where choosing or creating a new revision has consequence.
+- Replaced `Company and intent`, `Map sign-off`, `Output set`, and `Bound image` with `Brand and format`, `Approve the Map`, `Outputs`, and `Image` in the relevant professional surfaces.
+- Corrected the Create rail's ready total to count every current shareable deliverable rather than only Presentation, Infographic, and Image set. A Storyboard counts only after approval; failed or stale Audio and Video never count as ready.
+- Rebuilt every production-browser baseline, the canonical sixteen-screen gallery, provider-backed Outputs screen, provider gallery film input, final-style overlay preview, and 2:20 rough cut.
+
+### Verified
+
+- The strict production-browser suite passed all 29 tests after two intentionally caught contract failures: the Brief revision assertion was moved into the Style sheet, and the gallery history test now proves Version is absent from cards but present in the focused object and Version history.
+- Visual inspection accepted the regenerated desktop, compact, mobile, stale-state, Video, provider-backed Outputs, sixteen-screen contact sheet, rough-cut contact sheet, and final-style overlay evidence. The live provider-backed screen shows five current deliverables, three Sources on the approved Brief, and five Video scenes without default revision clutter.
+- `pnpm check` passed all thirteen packages with 116 worker, 30 web, and 17 production tests. `pnpm demo:e2e` passed the complete recorded-fixture seam.
+- `pnpm submission:packet:verify` passed with Terra, six provider images, five product Cedar clips, ten editorial Cedar clips, the 2:20 film, eight ready/two blocked shots, sixteen current UI screens, and four honest founder/final-package gaps. `pnpm demo:film:verify` remained correctly in draft mode.
+
+### Decisions
+
+- Versioning is a trust feature, not the product's primary information architecture. It stays visible when reviewing history or a focused artifact and stays out of the default gallery when the professional is choosing what to open.
+- A ready count must describe work that can actually advance or ship. Planned Storyboards, failed audio, and stale media do not qualify merely because records exist.
+- Familiar object language outranks internal workflow vocabulary. Exact IDs, provider models, revisions, and locators remain available only in the evidence or provenance layer that needs them.
+- No provider request ran in this milestone. The evidence ledger remains 97 HTTP operations; exact dollar debit is unavailable and no exact spend is invented.
+
+### Open items
+
+- The language gate remains continuous through founder-Source and final-film review; this milestone does not claim uncoached-user or external `Send` evidence.
+- Founder capture, the founder-derived final operator run, verified final package, final MP4, external professional review, eligible Session ID, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
