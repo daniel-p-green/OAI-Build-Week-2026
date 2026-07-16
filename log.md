@@ -6990,3 +6990,35 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Put the rebuilt deck in front of its intended AI Collective audience and obtain a cold `Send` or specific `Revise`; treat any required revision as product work.
 - Provider-backed Map, Realtime, Images, narration, founder recording, final public Video and links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 23:59 CT — Intent-profile evidence catches up to the renderer
+
+**Area:** Product wedge / Intent Profiles / Evidence integrity / Editable exports
+
+### Changed
+
+- Audited every unchecked `GOAL.md` requirement after the external-deck quality pass. The remaining top-level gates require paid provider proof, intended-audience or uncoached-professional behavior, founder-only recording/session evidence, or the final public submission; none can be honestly closed by another deterministic check.
+- Found one unblocked evidence-integrity risk: the shared renderer had changed, while the checked-in three-Intent comparison set still represented its prior output.
+- Ran `pnpm dogfood:intents:build` to regenerate Client pitch, Board presentation, and Team workshop decks and infographics in HTML, editable PowerPoint, PDF, individual review frames, contact sheets, and the hash manifest.
+
+### Verified
+
+- Inspected the full-resolution nine-frame deck contact sheet. All profiles preserve their distinct cover and editorial language while sharing the current three-metric evidence composition and balanced four-week plan.
+- Inspected the full-resolution three-frame infographic contact sheet. Client, Board, and Team variants remain distinct, readable, balanced, and source-labeled.
+- Independently recomputed and matched all 18 output hashes recorded in the manifest.
+- Independently recomputed and matched both deck and infographic contact-sheet hashes.
+- `unzip -t` passed all six editable PowerPoint archives; `pdfinfo` recognized all six PDF exports.
+- No provider request or paid call ran.
+
+### Decisions
+
+- Renderer proof is part of the product evidence, so checked-in comparisons must be regenerated whenever shared layout behavior changes.
+- Deterministic evidence synchronization is useful progress, but it cannot be promoted into provider proof or a professional's `Send` decision.
+
+### Open items
+
+- The next product gate remains the intended-audience review of the external AI Collective deck: `Send` or one concrete `Revise`.
+- Provider-backed Map, Realtime, Images, narration, founder recording, final public Video and links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

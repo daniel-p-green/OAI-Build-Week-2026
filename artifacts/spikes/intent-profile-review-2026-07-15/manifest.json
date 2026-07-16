@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-07-16T04:05:53.080Z",
+  "recordedAt": "2026-07-16T04:58:09.950Z",
   "input": "outputs/dogfood-ai-collective-chapter-brief/deck-input.json",
   "comparison": "The same grounded brief and Company Style rendered through all three Workshop Intent Profiles.",
   "frames": [
@@ -18,32 +18,32 @@
     "board-presentation-infographic.png",
     "team-workshop-infographic.png"
   ],
-  "contactSheetSha256": "fd9c75436b7a14a0a8fe03b2f2827b6c30db67c0c9e099538a68c44e8c1e5515",
-  "infographicContactSheetSha256": "4077fbe409aa3d11661f55b5b73f767563fe42a0c4b75439d5c8203c0423cd97",
+  "contactSheetSha256": "58b806b35650e5c90de9b070e5432b12030c9b313bc69bc3763491082b2edf0c",
+  "infographicContactSheetSha256": "c874313f960de7095f32b20b20bf1e1c0dc5318953c54be3a26270901b464e78",
   "outputs": {
     "client_facing_pitch": {
-      "html": "d97c27e64ed8ae6c34858ceaa191b51cd0557987b9fb28de5e58924fcca45506",
-      "pptx": "6d392b01b3f87a51e604941bd0eb76ee1b0ef960ea07d0820ba11f9edc7be07e",
-      "pdf": "420283462585cf3aceba85dae71a8438747fa6053c99d228ffa23ecfc73b6756",
-      "infographicHtml": "90bb7f1d842371f0b971263277c51f7f0a99d13d9c3d322962a4dcc703fecda2",
-      "infographicPptx": "06bc813cc3931b07c6b3b2594250b1f60503d3464d575838182e6129ff6dd161",
-      "infographicPdf": "270ce34910ab6d6a21337eb6ce78a7bc096eeb5ef5b431cd53bfa01e82b1d7c6"
+      "html": "e22b7e3efad5051371da9e219885f798e9b20d9983b08e253c8b02fd196cd1d8",
+      "pptx": "aa9efcc2ddf726848fd2515cb9515d4d3dbc0bb28dc1afe3b2816de4bc25c725",
+      "pdf": "f6f61edbb38e758894e05ad2c62b63cf4ef5d99947e11f36f7145d55b9bddd70",
+      "infographicHtml": "dd02bbb291ad3e8058d01e57f45ef2aaf4a83a5fb88040b82518ff09e5adffc5",
+      "infographicPptx": "06f8c397bf4c3724d9937567374caa8aa052981b8f51acd995d484681e7af4bf",
+      "infographicPdf": "f6b656b46c2265df43b9497653d5a2bc984dbe967c2413a5dc3c2ae50c812845"
     },
     "board_deck": {
-      "html": "bc60cd82db6c767db7f2a60422c1dca6d4dbd38547f249af9f8278b911813c8a",
-      "pptx": "c8a63e8e59a3b6efe28037962b0c235b51dfaa5bc5039c071c2dbf2590c5843e",
-      "pdf": "5553d3a296da51817675eadeb923b08305d0e920d1cf4c4788a4bf1c35940f52",
-      "infographicHtml": "bdab66e0de3c83a76bb6c7ec173e1688ad8d4573fc2cf4cd5029fa7c5a0be033",
-      "infographicPptx": "037b57535bf96c83cbc45c5c5d575c99455691b738f18e1d8628495dddf995b0",
-      "infographicPdf": "5ed3e738bc474c33316675a030a7d420f655fbcf5b4455d5d3e7236bd8b0d548"
+      "html": "e5932f2417be5929d213fef9c258af16a1a7b95d8b0dd668c926b70232f6e4f8",
+      "pptx": "2f6ad37a5c292db802d616fb397d2417158af26c93db9eb239015b8f3ca235be",
+      "pdf": "ccda0b87e2cd250cedfea10ade4f0974f4d9276445f30fd3d3ae9647017dd364",
+      "infographicHtml": "22d557b0a3dd5e75e39f832242a26c1b1ec3af8d06819b35611039772d1ab609",
+      "infographicPptx": "774ee0aab42c0a33af2729489d19da3527df94d787f67eb6502df12a33a061c5",
+      "infographicPdf": "62d23ce9d4344b3dc7a60565213021310fa62715de1e3feee1f4c43a59ed9efd"
     },
     "internal_workshop": {
-      "html": "bdcb69eb3f754e22c38d8024772e43772595bbef89c2c4b59b8449ad82e3e01d",
-      "pptx": "fc7778e529841b955ee0ab595dcc77172aedddb08bdac03459c1128ee1ac2e97",
-      "pdf": "22407b6baf81a5562827d4422a4159032b3624ee72d07b37a4d62cb565ae7754",
-      "infographicHtml": "d37a496ec91d53ed8a7363bebe6007e8a99fcb08b6871247c42520958ca985fc",
-      "infographicPptx": "93e34edf7309311e19dc4167ae36b2044ef8e53672a2d909faac66ffd153e9c3",
-      "infographicPdf": "22fe8146661b473c426f67dfd0fbe3edb6a8976353b51b111b5ab391acc742a0"
+      "html": "aab489c03bc406fb71e67bc35b90af1b78b9b67d21456f12d6fd2d7193c6ed4c",
+      "pptx": "9d7d0fcc87d4bea71e5e400a9629119632737d073fbff66bd07b03812e33d6c0",
+      "pdf": "2552f49596c1ce2b0e1f636e6410067a40c3b5628f481c5914d82f2a650b70c4",
+      "infographicHtml": "1795a16ae361cb0af0d7189eed5c14d4fa8142800f1da4206dd6de8847c29815",
+      "infographicPptx": "145ee2d4fb4e58d754aafe97480f446bfe5e89d967730c8c223b8b921beab12c",
+      "infographicPdf": "c50b74730c6d522fa1c07f00ec6ef420f605f7f1286ec60b16a08f37998d2081"
     }
   }
 }
