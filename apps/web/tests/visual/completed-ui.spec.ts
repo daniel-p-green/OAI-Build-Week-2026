@@ -19,6 +19,20 @@ async function closeDialog(page: Page, name: string) {
   await expect(page.getByRole("dialog", { name })).toBeHidden();
 }
 
+async function openWorkshopView(page: Page, view: "chat" | "brief" | "outputs" | "storyboard") {
+  const directName = view === "chat" ? "Chat" : `View ${view}`;
+  const railName = view === "chat" ? "Sources" : "Production";
+  const direct = page.getByRole("complementary", { name: railName }).getByRole("button", { name: directName, exact: true });
+  if ((page.viewportSize()?.width ?? 0) > 900) {
+    await direct.click();
+    return;
+  }
+  await page.getByRole("button", { name: "Views", exact: true }).click();
+  const sheet = page.getByRole("dialog", { name: "Workshop views" });
+  await sheet.getByRole("button", { name: `View ${view}`, exact: true }).click();
+  await expect(sheet).toBeHidden();
+}
+
 async function expectPrimaryActions(page: Page, count: 0 | 1) {
   await expect(page.locator('.oai-button--primary:not(:disabled):visible')).toHaveCount(count);
 }
@@ -69,6 +83,17 @@ test("reset fixture is calm and responsive", async ({ page }) => {
     await expect(page.getByRole("button", { name: "Approve brief" }).first()).toBeVisible();
     await expectMapReady(page, viewport);
     await expectScreen(page, `${viewport.name}-reset-map`);
+    if (viewport.width <= 900) {
+      const views = page.getByRole("button", { name: "Views", exact: true });
+      await views.click();
+      const viewSheet = page.getByRole("dialog", { name: "Workshop views" });
+      await expect(viewSheet.getByRole("button")).toHaveCount(6);
+      await expect(viewSheet.getByRole("button", { name: "View map" })).toBeDisabled();
+      await expect(viewSheet.getByRole("button", { name: "View brief" })).toBeDisabled();
+      if (viewport.name === "mobile") await expectScreen(page, "mobile-workshop-views");
+      await closeDialog(page, "Workshop views");
+      await expect(views).toBeFocused();
+    }
     if (viewport.width > 900) {
       await expect(page.getByRole("complementary", { name: "Sources" })).toBeVisible();
       await expectScreen(page, `${viewport.name}-reset-sources`);
@@ -154,7 +179,7 @@ test("grounded Conversation preserves source scope, citations, and responsive wo
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/");
     if (viewport.width > 900) await page.getByRole("complementary", { name: "Sources" }).getByRole("button", { name: "Chat" }).click();
-    else await page.getByRole("button", { name: "Chat" }).click();
+    else await openWorkshopView(page, "chat");
     const surface = page.getByRole("region", { name: "WorkshopLM Conversation" });
     await expect(surface).toBeVisible();
     await expect(surface.getByText("What should lead the presentation?")).toBeVisible();
@@ -297,7 +322,7 @@ test("Style starts from a website and preserves the Workshop outcome", async ({ 
   for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/");
-    await page.getByRole("button", { name: "View brief" }).click();
+    await openWorkshopView(page, "brief");
     await page.getByRole("button", { name: "Choose style" }).click();
     const sheet = page.getByRole("dialog", { name: "Style" });
     const createAnother = sheet.getByRole("button", { name: "Create another style" });
@@ -423,7 +448,7 @@ test("editing a saved Company Style is presented and submitted as a new version"
 
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
-  await page.getByRole("button", { name: "View brief" }).click();
+  await openWorkshopView(page, "brief");
   await expect(page.getByLabel("Style").getByText(current.style.name, { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Edit", exact: true }).click();
   const sheet = page.getByRole("dialog", { name: "Style" });
@@ -470,7 +495,7 @@ test.describe("completed Workshop judge path", () => {
       await closeDialog(page, "Source");
       await page.getByRole("button", { name: "Close claim" }).click();
 
-      await page.getByRole("button", { name: "View brief" }).click();
+      await openWorkshopView(page, "brief");
       await expectPrimaryActions(page, 1);
       await expect(page.getByText("# FRAME.md", { exact: false })).toHaveCount(0);
       await expectScreen(page, `${viewport.name}-brief`);
@@ -479,7 +504,7 @@ test.describe("completed Workshop judge path", () => {
       await expectScreen(page, `${viewport.name}-style`);
       await closeDialog(page, "Style");
 
-      await page.getByRole("button", { name: "View outputs" }).click();
+      await openWorkshopView(page, "outputs");
       await expectPrimaryActions(page, 1);
       await expect(page.getByRole("heading", { name: "Presentation" })).toHaveCount(1);
       await expect(page.getByRole("heading", { name: "Infographic" })).toHaveCount(1);
@@ -547,7 +572,7 @@ test.describe("completed Workshop judge path", () => {
         const updateOutputs = page.getByRole("button", { name: "Update outputs" });
         if (await updateOutputs.isVisible()) {
           await updateOutputs.click();
-          await page.getByRole("button", { name: "View storyboard" }).click();
+          await openWorkshopView(page, "storyboard");
         }
         await pressTabUntil(page, "Approve storyboard");
         await page.keyboard.press("Enter");
@@ -610,8 +635,8 @@ test("empty, loading, partial, error, and needs-update states stay calm and acti
       return route.fulfill({ json: readyState });
     });
     await page.goto("/");
-    await page.getByRole("button", { name: "View brief" }).click();
-    await page.getByRole("button", { name: "View outputs" }).click();
+    await openWorkshopView(page, "brief");
+    await openWorkshopView(page, "outputs");
     await expect(page.getByRole("heading", { name: "Some Outputs are ready" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Review image", exact: true })).toBeVisible();
     await expectPrimaryActions(page, 1);
@@ -630,8 +655,8 @@ test("empty, loading, partial, error, and needs-update states stay calm and acti
       ? route.fulfill({ json: needsUpdateState })
       : route.fulfill({ json: readyState }));
     await page.goto("/");
-    await page.getByRole("button", { name: "View brief" }).click();
-    await page.getByRole("button", { name: "View outputs" }).click();
+    await openWorkshopView(page, "brief");
+    await openWorkshopView(page, "outputs");
     await expect(page.getByRole("heading", { name: "Outputs need an update" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Update outputs" })).toBeVisible();
     await expectPrimaryActions(page, 1);
@@ -654,8 +679,8 @@ test("Outputs preserve recognizable version history and source coverage", async 
     ? route.fulfill({ json: historyState })
     : route.continue());
   await page.goto("/");
-  await page.getByRole("button", { name: "View brief" }).click();
-  await page.getByRole("button", { name: "View outputs" }).click();
+  await openWorkshopView(page, "brief");
+  await openWorkshopView(page, "outputs");
 
   await expect(page.getByRole("button", { name: "Open Presentation, version 2" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Open Presentation, version 1" })).toHaveCount(0);
@@ -697,8 +722,8 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
   await page.route("**/api/workshop", async (route) => route.request().method() === "GET" ? route.fulfill({ json: boundState }) : route.continue());
   await page.route("**/api/workshop/artifacts/image-panel-*", async (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="1200" height="800" fill="#0d0d0d"/><rect x="90" y="90" width="410" height="620" rx="32" fill="#0285ff"/><circle cx="900" cy="280" r="190" fill="#ffffff" opacity=".9"/><rect x="660" y="560" width="390" height="36" rx="18" fill="#ffffff" opacity=".72"/></svg>' }));
   await page.goto("/");
-  await page.getByRole("button", { name: "View brief" }).click();
-  await page.getByRole("button", { name: "View outputs" }).click();
+  await openWorkshopView(page, "brief");
+  await openWorkshopView(page, "outputs");
   await page.getByRole("button", { name: "Open Storyboard" }).click();
   const preview = page.locator(".panel-visual");
   await expect(preview.locator("img")).toHaveAttribute("src", "/api/workshop/artifacts/image-panel-1");
@@ -725,8 +750,8 @@ test("Image set review exposes each visual job, exact source, and selective repl
   });
   await page.route("**/api/workshop/artifacts/image-panel-*", async (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><rect width="1000" height="1000" fill="#f4f2ec"/><path d="M90 810L450 120L710 810Z" fill="#0285ff"/><circle cx="760" cy="320" r="150" fill="#0d0d0d"/></svg>' }));
   await page.goto("/");
-  await page.getByRole("button", { name: "View brief" }).click();
-  await page.getByRole("button", { name: "View outputs" }).click();
+  await openWorkshopView(page, "brief");
+  await openWorkshopView(page, "outputs");
   await page.getByRole("button", { name: "Open Image set" }).click();
 
   const hero = page.getByRole("region", { name: "Hero concept" });
@@ -774,8 +799,8 @@ test("finished Video reveals the original brainstorm without adding navigation",
   for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/");
-    await page.getByRole("button", { name: "View brief" }).click();
-    await page.getByRole("button", { name: "View outputs" }).click();
+    await openWorkshopView(page, "brief");
+    await openWorkshopView(page, "outputs");
     await page.getByRole("button", { name: "Open Demo video" }).click();
     await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Edit storyboard" })).toHaveClass(/oai-button--primary/);
@@ -806,8 +831,8 @@ test("Video history preserves prior versions without adding another navigation s
   await page.route("**/api/workshop", async (route) => route.request().method() === "GET" ? route.fulfill({ json: historyState }) : route.continue());
   await page.route("**/api/workshop/artifacts/video-v*", async (route) => route.fulfill({ contentType: "video/mp4", body: "video" }));
   await page.goto("/");
-  await page.getByRole("button", { name: "View brief" }).click();
-  await page.getByRole("button", { name: "View outputs" }).click();
+  await openWorkshopView(page, "brief");
+  await openWorkshopView(page, "outputs");
   await expect(page.getByRole("button", { name: "Open Demo video, version 2" })).toContainText("Up to date");
   await expect(page.getByRole("button", { name: "Open Demo video, version 1" })).toHaveCount(0);
   await page.getByRole("button", { name: "Open Demo video, version 2" }).click();
@@ -997,9 +1022,9 @@ test("visible copy stays plain and stable", async ({ page }) => {
   await page.goto("/");
   const labels = new Set<string>();
   for (const next of ["Map", "Brief", "Outputs", "Storyboard"]) {
-    if (next === "Brief") await page.getByRole("button", { name: "View brief" }).click();
-    if (next === "Outputs") await page.getByRole("button", { name: "View outputs" }).click();
-    if (next === "Storyboard") await page.getByRole("button", { name: "View storyboard" }).click();
+    if (next === "Brief") await openWorkshopView(page, "brief");
+    if (next === "Outputs") await openWorkshopView(page, "outputs");
+    if (next === "Storyboard") await openWorkshopView(page, "storyboard");
     for (const value of await page.getByRole("button").allTextContents()) if (value.trim()) labels.add(value.replace(/\s+/g, " ").trim());
     for (const value of await page.getByRole("heading").allTextContents()) if (value.trim()) labels.add(value.replace(/\s+/g, " ").trim());
   }
@@ -1039,9 +1064,9 @@ test("queued local video work refreshes into the finished next action", async ({
   });
 
   await page.goto("/");
-  await page.getByRole("button", { name: "View brief" }).click();
-  await page.getByRole("button", { name: "View outputs" }).click();
-  await page.getByRole("button", { name: "View storyboard" }).click();
+  await openWorkshopView(page, "brief");
+  await openWorkshopView(page, "outputs");
+  await openWorkshopView(page, "storyboard");
   await page.getByRole("button", { name: "Create video" }).click();
   await expect(page.getByRole("button", { name: "View video" })).toBeVisible({ timeout: 3500 });
 });
@@ -1051,7 +1076,8 @@ test("reduced motion, contrast, and 200 percent logical zoom remain usable", asy
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(600);
-  await expect(page.getByText("Map", { exact: true }).first()).toBeVisible();
+  await expect(page.getByRole("region", { name: "Map" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Views", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: /sources$/ })).toBeVisible();
   await expect(page.locator(".oai-button").first()).toHaveCSS("transition-duration", "0s");
 
@@ -1079,8 +1105,8 @@ test("the local render becomes a real Video preview and the next action", async 
   for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/");
-    await page.getByRole("button", { name: "View brief" }).click();
-    await page.getByRole("button", { name: "View outputs" }).click();
+    await openWorkshopView(page, "brief");
+    await openWorkshopView(page, "outputs");
     const videoCard = page.getByRole("button", { name: "Open Demo video" });
     await expect(videoCard).toBeVisible();
     const previewVideo = videoCard.locator("video");
@@ -1094,7 +1120,7 @@ test("the local render becomes a real Video preview and the next action", async 
     });
     await expectScreen(page, `${viewport.name}-video-output`);
 
-    await page.getByRole("button", { name: "View storyboard" }).click();
+    await openWorkshopView(page, "storyboard");
     const viewVideo = page.getByRole("button", { name: "View video" });
     await expect(viewVideo).toBeVisible();
     await expect(page.getByRole("button", { name: "Create video" })).toHaveCount(0);
@@ -1135,7 +1161,7 @@ test("the local render becomes a real Video preview and the next action", async 
   await expect(page.getByText("Saving will require Storyboard approval and a new Video.", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Save changes" }).click();
   await expect(page.getByRole("button", { name: "Approve storyboard" })).toBeVisible();
-  await page.getByRole("button", { name: "View outputs" }).click();
+  await openWorkshopView(page, "outputs");
   await expect(page.getByRole("button", { name: /Open Demo video/ })).toContainText("Needs update");
 });
 
@@ -1202,8 +1228,8 @@ test("fresh Outputs keep the primary source trace clear and reveal the exact cla
     : route.fulfill({ json: readyState }));
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
-  await page.getByRole("button", { name: "View brief" }).click();
-  await page.getByRole("button", { name: "View outputs" }).click();
+  await openWorkshopView(page, "brief");
+  await openWorkshopView(page, "outputs");
   await page.getByRole("button", { name: "Update outputs" }).click();
   await expect(page.getByRole("status")).toContainText("Outputs created");
   const heroPresentation = page.locator('.output-grid [data-output-role="hero"]');

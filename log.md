@@ -8158,3 +8158,59 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - The professional-own-material, external `Send`/`Revise`, founder capture, final package, final MP4, eligible Session ID, and public submission gates remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 08:25 CT — The last persistent mobile tab strip is gone
+
+**Area:** Product / responsive navigation / official component compliance
+
+### Changed
+
+- Visual review of the accepted mobile Presentation exposed a remaining five-button `Chat / Map / Brief / Outputs / Story` strip. Although styled as small official buttons, it still behaved as a persistent tab bar and competed with Sources, the current object, and the next action.
+- Replaced that row with one secondary `Views` trigger in the compact header. It opens a focused `Workshop views` sheet built only from the locked SideSheet, ListGroup, ListRow, and ListRowAction primitives.
+- The sheet preserves one-interaction access to Chat, Map, Brief, Outputs, and Storyboard, labels each purpose in plain language, marks incomplete objects `Available later`, disables the current object, closes after selection, and restores keyboard focus to `Views`.
+- Removed the 42-pixel navigation row from the responsive workbench grid so the Map, Presentation, Outputs, Storyboard, Video, recovery states, and Conversation all regain vertical space.
+- Updated browser navigation helpers to exercise the visible desktop rails above 900 pixels and the real `Views` sheet below that boundary. Added a dedicated mobile screenshot and readiness assertions for the new sheet.
+- Rebuilt the sixteen-screen shareable UI gallery. Its mobile Map and Outputs now show the no-tab header, while the refreshed focused Presentation, Video, and original-reveal frames carry the prior finishing-action hierarchy.
+
+### Verified
+
+- The first strict production-browser run rejected the retired `mobile-reset-map` baseline. The current 390×844 Map visibly shows only `Views`, source count, and the next action above the reclaimed canvas.
+- Visual inspection rejected the first sheet render because title and detail ran together, then accepted the repaired stacked typography. The final `mobile-workshop-views.png` shows five calm object rows with clear readiness copy and no tab strip.
+- A stateful snapshot review passed all 29 production-browser cases after updating only materially affected mobile states. A subsequent strict production build passed all 29 cases in 1.1 minutes with no snapshot updates.
+- `pnpm ui:gallery:build` rebuilt sixteen screenshots, the contact sheet, and `outputs/workshoplm-current-ui.zip` with SHA-256 `0bedb7d9e0cc26af3362f61243f0475dd8b5e705bfdafd95ae509679faf8abc1`.
+
+### Decisions
+
+- Compact navigation is progressive disclosure, not a permanent stage list. The current object and next action remain visible; non-current destinations live in one predictable sheet.
+- The stale dated plan remains untouched and excluded from execution and staging. No provider request ran; the evidence ledger remains 98 HTTP operations.
+
+### Open items
+
+- Run the complete repository, recorded seam, and submission packet gates against the refreshed gallery before committing.
+- The professional-own-material, external `Send`/`Revise`, founder capture, final package, final MP4, eligible Session ID, and public submission gates remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 08:27 CT — No-tab workbench clears full acceptance
+
+**Area:** Integration / responsive UX / submission evidence
+
+### Verified
+
+- The strict production-browser suite rebuilt the current production app and passed all 29 desktop, compact, mobile, recovery, accessibility, source-trace, navigation, and revision states in 1.1 minutes without snapshot updates.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 118 worker, 30 web, and 19 production tests.
+- `pnpm demo:e2e` passed the complete recorded Capture → grounded Map → Brief → Style → editable Outputs → Storyboard → rendered Video seam.
+- `pnpm submission:packet:verify` passed against the refreshed sixteen-screen gallery with Terra, six GPT Image 2 panels, five product Cedar clips, the 2:20 Cedar editorial film, eight ready/two blocked shots, and four honest founder/final-package gaps.
+- `git diff --check` passed across the milestone while excluding only the preserved user-owned `PLAN-2026-07-13.md` modification.
+
+### Decisions
+
+- The no-tab compact navigation preserves the complete product seam and official-component boundary and is ready to ship as an isolated milestone. No provider request ran; the evidence ledger remains 98 HTTP operations.
+
+### Open items
+
+- The professional-own-material, external `Send`/`Revise`, founder capture, final package, final MP4, eligible Session ID, and public submission gates remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

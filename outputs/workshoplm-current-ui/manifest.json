@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "current-workbench-gallery",
-  "builtAt": "2026-07-16T12:26:13.441Z",
+  "builtAt": "2026-07-16T13:25:22.444Z",
   "screenshots": [
     {
       "name": "01-start.png",
@@ -71,7 +71,7 @@
       "name": "09-presentation.png",
       "label": "Open the hero presentation and its source trail",
       "source": "apps/web/tests/visual/__screenshots__/desktop-output-viewer.png",
-      "sha256": "bf5154f1535712eb7f61cd7cbfce682c3bb1f58eace902e3c0e9bc3cc180962f",
+      "sha256": "8c5ffa45b950f2005caf748a2e6b345340fc2ecdd86105036cdbe42b670e52c9",
       "width": 1200,
       "height": 800
     },
@@ -103,7 +103,7 @@
       "name": "13-narrated-video.png",
       "label": "Review the locally rendered Video",
       "source": "apps/web/tests/visual/__screenshots__/desktop-video-viewer.png",
-      "sha256": "d48a6c8e120c769d22cda0e07bcacdb6683ef360aba6497c04d7acbf8d18de90",
+      "sha256": "a66f64d6417a694f913f98a07c63c1aa826c9a6e1a1c02657a3b7f0d00da670f",
       "width": 1200,
       "height": 800
     },
@@ -111,7 +111,7 @@
       "name": "14-original-reveal.png",
       "label": "Trace finished work back to the original thought",
       "source": "apps/web/tests/visual/__screenshots__/desktop-original-reveal.png",
-      "sha256": "2ac679905471b33afe2b481b975d0ac51cad009fc9c89126f9d40169a8965661",
+      "sha256": "79232ef5ae80050fa03a6e402b5300aeb95e5d3d7f4390427ef04078254e84b5",
       "width": 1200,
       "height": 800
     },
@@ -119,7 +119,7 @@
       "name": "15-mobile-map.png",
       "label": "Review the Map on mobile",
       "source": "apps/web/tests/visual/__screenshots__/mobile-map.png",
-      "sha256": "efb2460e0d90f294ba8f71a788ef1cddaf0d24a9bed7cb9b27af6fb9e194bf6a",
+      "sha256": "ba5dd90f65e0da43b1ccfb81defe47015c6dd193d9ab0cf3d6dcfbe9d8d74254",
       "width": 390,
       "height": 844
     },
@@ -127,14 +127,14 @@
       "name": "16-mobile-outputs.png",
       "label": "Review current Outputs on mobile",
       "source": "apps/web/tests/visual/__screenshots__/mobile-outputs.png",
-      "sha256": "a1bee1ec69cdf8728f590b86c6399d6bcb37b40bd8538e0411ccea2808c03f04",
+      "sha256": "e0f7b7c992d48e47e28cf281077f188683f1757aa3d416f774931a119bc1fc03",
       "width": 390,
       "height": 844
     }
   ],
   "contactSheet": {
     "name": "contact-sheet.png",
-    "sha256": "62a7b7fe76d9c247f46141153244d78b2c5c4242bc3c0cc2610a027539367afc",
+    "sha256": "ec0e4e2f5bdbf09bfd1e133f0e04504f4bb59ff888bfff7a1875116b294ada0e",
     "width": 1920,
     "height": 1280
   }

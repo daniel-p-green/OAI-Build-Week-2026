@@ -76,17 +76,19 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(map).toContain("viewportZoomFactor: 0.88");
   });
 
-  it("keeps desktop source, current-object, and production context in one workbench", () => {
+  it("keeps desktop context persistent and moves compact navigation into one sheet", () => {
     expect(page).toContain('<Workbench className={`workbench ${leftRailOpen ? "" : "left-rail-collapsed"} ${rightRailOpen ? "" : "right-rail-collapsed"}`}>');
     expect(page).toContain('<WorkbenchRail side="left" className="sources-rail" aria-label="Sources"');
     expect(page).toContain('<WorkbenchRail side="right" className="production-rail" aria-label="Production"');
-    expect(page).toContain('<ObjectSwitcher className="mobile-object-switcher" aria-label="Workshop objects"');
+    expect(page).toContain('<Button className="mobile-object-trigger" variant="secondary" size="small" onClick={() => openSheet("objects")}>Views</Button>');
+    expect(page).toContain('<SideSheet title="Workshop views" onClose={onClose}>');
+    expect(page).not.toContain('mobile-object-switcher');
     expect(page).toContain('<ConversationSurface className="conversation-view" aria-label="WorkshopLM Conversation"');
     expect(page).toContain('className="next-action" aria-label="Next action"');
     expect(page).toContain('<ProductionItem title="Outputs"');
     expect(page).not.toContain('className="stage-progress"');
     expect(appCss).toContain("grid-template-columns: 216px minmax(0, 1fr) 220px");
-    expect(appCss).toContain(".mobile-sources-trigger, .mobile-workflow-action { display: none; }");
+    expect(appCss).toContain(".mobile-sources-trigger, .mobile-workflow-action, .mobile-object-trigger { display: none; }");
   });
 
   it("lets the canvas reclaim rail space without hiding source-scope consequences", () => {

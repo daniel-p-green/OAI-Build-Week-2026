@@ -25,7 +25,6 @@ import {
   Token,
   Workbench,
   WorkbenchRail,
-  ObjectSwitcher,
 } from "@workshoplm/ui";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { RealtimeCapture } from "./realtime-capture";
@@ -35,7 +34,7 @@ import { sourceInputKind, sourceTitleFromText } from "./source-input";
 import { realtimeFunctionOutput } from "./realtime-transcript";
 
 type ObjectView = "conversation" | "map" | "brief" | "outputs" | "storyboard" | "output";
-type Sheet = "workshops" | "sources" | "evidence" | "add-source" | "style" | "image-replacement" | "original" | "help" | null;
+type Sheet = "workshops" | "objects" | "sources" | "evidence" | "add-source" | "style" | "image-replacement" | "original" | "help" | null;
 type WorkshopSummary = { id: string; title: string; sources: number; outputs: number; updatedAt: string; active: boolean };
 type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string; permission: "private" | "sanitized" | "shareable" };
 type EvidenceTarget = { sourceId?: string; claimId?: string; locator?: string };
@@ -468,7 +467,7 @@ export default function WorkshopPage() {
       <NavigationHeader className="workshop-header">
         <div className="header-identity">
           {backTarget && <IconButton label={`Back to ${VIEW_TITLES[backTarget]}`} onClick={() => openView(backTarget)}><ArrowLeftIcon /></IconButton>}
-          <div className="workshop-identity"><ListRowAction className="workshop-picker" aria-label="Switch Workshop" onClick={() => openSheet("workshops")}><strong>{state?.title || "WorkshopLM"}</strong></ListRowAction><span aria-hidden="true">/</span><b>{currentTitle}</b></div>
+          <div className="workshop-identity"><ListRowAction className="workshop-picker" aria-label="Switch Workshop" onClick={() => openSheet("workshops")}><strong>{state?.title || "WorkshopLM"}</strong></ListRowAction><span aria-hidden="true">/</span><b>{currentTitle}</b><Button className="mobile-object-trigger" variant="secondary" size="small" onClick={() => openSheet("objects")}>Views</Button></div>
         </div>
         {loadState === "ready" && <div className="header-actions"><Button className="mobile-sources-trigger" variant="secondary" size="small" onClick={() => openSheet("sources")}>{visibleSourceCount} {visibleSourceCount === 1 ? "source" : "sources"}</Button><div className="mobile-workflow-action">{workflowAction}</div></div>}
       </NavigationHeader>
@@ -477,7 +476,6 @@ export default function WorkshopPage() {
 
       <Workbench className={`workbench ${leftRailOpen ? "" : "left-rail-collapsed"} ${rightRailOpen ? "" : "right-rail-collapsed"}`}>
         {loadState === "ready" && <SourcesRail open={leftRailOpen} sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} pending={sheet === "sources" ? null : pendingSourceScope} busy={busy} conversationActive={view === "conversation"} onConversation={() => openView("conversation")} onSelect={(source) => showSource({ sourceId: source.id })} onToggle={requestSourceScopeChange} onApplyScope={() => { void applySourceScopeChange(); }} onCancelScope={() => setPendingSourceScope(null)} onCollapse={() => setLeftRailOpen((current) => !current)} onAdd={() => openSheet("add-source")} />}
-        {loadState === "ready" && <ObjectSwitcher className="mobile-object-switcher" aria-label="Workshop objects"><Button variant="secondary" size="small" aria-pressed={view === "conversation"} onClick={() => openView("conversation")}>Chat</Button><Button variant="secondary" size="small" aria-pressed={view === "map"} onClick={() => openView("map")}>Map</Button><Button variant="secondary" size="small" aria-label="View brief" aria-pressed={view === "brief"} disabled={!state?.briefApproved} onClick={() => openView("brief")}>Brief</Button><Button variant="secondary" size="small" aria-label="View outputs" aria-pressed={view === "outputs" || view === "output"} disabled={!(state?.outputs.length || state?.imageBatch)} onClick={() => openView("outputs")}>Outputs</Button><Button variant="secondary" size="small" aria-label="View storyboard" aria-pressed={view === "storyboard"} disabled={!state?.storyboard.panels.length} onClick={() => openView("storyboard")}>Story</Button></ObjectSwitcher>}
         <section className="object-canvas" aria-label={currentTitle}>
           {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
           {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
@@ -492,6 +490,7 @@ export default function WorkshopPage() {
       </Workbench>
 
       {sheet === "workshops" && <WorkshopsSheet workshops={workshops} busy={busy} onClose={closeSheet} onSelect={(workshopId) => { void post({ action: "selectWorkshop", workshopId }); }} onCreate={(title) => post({ action: "createWorkshop", title }).then(Boolean)} onHelp={() => setSheet("help")} />}
+      {sheet === "objects" && <ObjectsSheet state={state} view={view} onClose={closeSheet} onSelect={(nextView) => { closeSheet(); openView(nextView); }} />}
       {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} pending={pendingSourceScope} busy={busy} onClose={closeSheet} onSelect={setSelectedSource} onToggle={requestSourceScopeChange} onApplyScope={() => { void applySourceScopeChange(); }} onCancelScope={() => setPendingSourceScope(null)} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "evidence" && selectedSource && <EvidenceSheet source={selectedSource} evidence={selectedEvidence} onClose={closeSheet} onShowMap={() => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === selectedSource.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "add-source" && <AddSourceSheet onClose={() => setSheet("sources")} onPost={post} />}
@@ -965,6 +964,21 @@ function WorkshopsSheet({ workshops, busy, onClose, onSelect, onCreate, onHelp }
     <ListGroup>{workshops.map((workshop) => <ListRow className={workshop.active ? "workshop-row selected" : "workshop-row"} key={workshop.id}><ListRowAction disabled={busy || workshop.active} onClick={() => onSelect(workshop.id)}><span><strong>{workshop.title}</strong><small>{workshop.sources} {workshop.sources === 1 ? "source" : "sources"} · {workshop.outputs} {workshop.outputs === 1 ? "output" : "outputs"}{workshop.active ? " · Open" : ""}</small></span></ListRowAction></ListRow>)}</ListGroup>
     <div className="new-workshop"><Input label="New Workshop" placeholder="Project name" value={title} onChange={(event) => setTitle(event.target.value)} /><Button disabled={busy || !title.trim()} onClick={() => { void onCreate(title.trim()).then((created) => { if (created) setTitle(""); }); }}><PlusIcon /> Create</Button></div>
     <Button variant="secondary" size="small" onClick={onHelp}>How WorkshopLM works</Button>
+  </SideSheet>;
+}
+
+function ObjectsSheet({ state, view, onClose, onSelect }: { state: PersistedWorkshop | null; view: ObjectView; onClose: () => void; onSelect: (view: Exclude<ObjectView, "output">) => void }) {
+  const items: Array<{ view: Exclude<ObjectView, "output">; title: string; detail: string; ready: boolean }> = [
+    { view: "conversation", title: "Chat", detail: "Ask across your Sources", ready: true },
+    { view: "map", title: "Map", detail: "Shape the grounded thinking", ready: Boolean(state?.mapNodes.length) },
+    { view: "brief", title: "Brief", detail: "Review the approved direction", ready: Boolean(state?.briefApproved) },
+    { view: "outputs", title: "Outputs", detail: "Presentation, visuals, and audio", ready: Boolean(state?.outputs.length || state?.imageBatch) },
+    { view: "storyboard", title: "Storyboard", detail: "Review the sequence before Video", ready: Boolean(state?.storyboard.panels.length) },
+  ];
+  const current = view === "output" ? "outputs" : view;
+  return <SideSheet title="Workshop views" onClose={onClose}>
+    <p className="sheet-intro">Move between the thinking and the work without leaving this Workshop.</p>
+    <ListGroup>{items.map((item) => <ListRow className={`object-view-row ${current === item.view ? "selected" : ""}`} key={item.view}><ListRowAction aria-current={current === item.view ? "page" : undefined} disabled={!item.ready || current === item.view} aria-label={`View ${item.title.toLowerCase()}`} onClick={() => onSelect(item.view)}><span><strong>{item.title}</strong><small>{item.ready ? item.detail : "Available later"}</small></span></ListRowAction></ListRow>)}</ListGroup>
   </SideSheet>;
 }
 
