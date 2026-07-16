@@ -111,6 +111,18 @@ describe("production renderers", () => {
     expect(deck).toContain('class="decision-item">Lead team</div>');
     expect(deck).toContain("03 · Decision required");
   });
+  it("renders a professional process as an editable sequence instead of a numbered statement", async () => {
+    const sequenceBrief = { ...brief, blocks: [{ id: "path", heading: "One continuous path from Capture to Deliver", body: "", items: ["Capture", "Shape", "Deliver"], citations: ["approved brief"], layout: "sequence" as const }] };
+    const deck = renderDeck(sequenceBrief);
+    expect(deck).toContain('class="slide sequence"');
+    expect(deck).toContain("02 · How it works");
+    expect(deck).toContain('<div class="sequence-step"><span>Capture</span></div>');
+    expect(deck).toContain('<div class="sequence-step"><span>Deliver</span></div>');
+    const root = await mkdtemp(join(tmpdir(), "workshoplm-sequence-"));
+    const artifact = await writeRenderedArtifact(root, "sequence", "deck", sequenceBrief);
+    expect((await readFile(join(root, artifact.editableRelativePath!))).byteLength).toBeGreaterThan(10_000);
+    await rm(root, { recursive: true, force: true });
+  });
   it("chooses readable foreground text for a light brand accent", () => {
     const deck = renderDeck({ ...brief, style: { ...brief.style, accent: "#FF97E2", ink: "#171816", paper: "#FFFFFF" } });
     expect(deck).toContain("--accent-foreground:#000000");

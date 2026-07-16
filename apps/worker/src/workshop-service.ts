@@ -1116,6 +1116,13 @@ function selectDeckClaims(state: WorkshopState) {
   });
 }
 function deckHeading(text: string, role: DeckRole) {
+  const transformation = text.match(/\b(?:should show how|shows? how)\s+(.+?)\s+(becomes?|turns? into)\s+([^,.;]+)/i);
+  if (transformation) {
+    const heading = `${transformation[1]} ${transformation[2]} ${transformation[3]}`.trim();
+    return `${heading.charAt(0).toUpperCase()}${heading.slice(1)}`;
+  }
+  const sequence = deckSequence(text);
+  if (sequence.length >= 3) return `One continuous path from ${sequence[0]} to ${sequence.at(-1)}`;
   if (role === "recommendation") {
     const action = text.match(/\b(?:start|launch|begin)\s+(?:a|the|your)\s+(?:chapter|project|program|workshop|pilot|team|deck)(?:\s+(?:in|for|with)\s+[^,.;]+)?/i)?.[0];
     if (action) return action.charAt(0).toUpperCase() + action.slice(1);
@@ -1124,6 +1131,12 @@ function deckHeading(text: string, role: DeckRole) {
   return outputHeading(clause.length >= 24 ? clause : text, role === "recommendation" ? 96 : 82);
 }
 function deckBody(text: string, heading: string) {
+  const transformation = text.match(/\b(?:should show how|shows? how)\s+(.+?)\s+(becomes?|turns? into)\s+([^,.;]+)/i);
+  if (transformation?.index !== undefined) {
+    const remainder = text.slice(transformation.index + transformation[0].length).replace(/^\s*,\s*/, "").replace(/[.]$/, "").trim();
+    if (remainder) return canonicalDeckObjects(`The path continues through ${remainder}.`);
+  }
+  if (deckSequence(text).length >= 3) return "";
   const headingPrefix = heading.replace(/…$/, "").trim();
   if (heading.endsWith("…") && text.toLowerCase().startsWith(headingPrefix.toLowerCase())) return text.slice(headingPrefix.length).replace(/^\s*[,;:—–-]\s*/, "").trim();
   if (!text.toLowerCase().startsWith(heading.toLowerCase())) return text;
@@ -1131,6 +1144,13 @@ function deckBody(text: string, heading: string) {
   const sentenceBreak = /^\s*[:;—–-]\s*/.test(remainder);
   const clean = remainder.replace(/^\s*[,;:—–-]\s*/, "").trim();
   return sentenceBreak ? `${clean.charAt(0).toUpperCase()}${clean.slice(1)}` : clean;
+}
+function canonicalDeckObjects(text: string) {
+  return text.replace(/\bbrief\b/g, "Brief").replace(/\bstoryboard\b/g, "Storyboard").replace(/\b(?:demo\s+)?video\b/g, "Video");
+}
+function deckSequence(text: string) {
+  const match = text.match(/\b([A-Z][\p{L}\p{N}-]{2,})\s*(?:→|to)\s*([A-Z][\p{L}\p{N}-]{2,})\s*(?:→|to)\s*([A-Z][\p{L}\p{N}-]{2,})\b/u);
+  return match ? match.slice(1, 4) : [];
 }
 function displaySourceTitle(title: string) {
   const clean = title.replace(/\.(?:pdf|docx?|pptx?|txt)$/i, "").trim();
@@ -1182,7 +1202,8 @@ export async function generateOutput(type: "deck" | "infographic", root?: string
   const blocks = selectedClaims.length ? selectedClaims.map(({ claim, text, role }) => {
     const heading = deckHeading(text, role);
     const body = deckBody(text, heading);
-    return { id: claim.id, heading, body: outputBody(body), citations: [claim.locator], citationLabel: citationLabel(current, claim.sourceId, claim.locator), layout: role };
+    const sequence = deckSequence(text);
+    return { id: claim.id, heading, body: outputBody(body), items: sequence.length >= 3 ? sequence : undefined, citations: [claim.locator], citationLabel: citationLabel(current, claim.sourceId, claim.locator), layout: sequence.length >= 3 ? "sequence" as const : role };
   }) : current.mapNodes.filter((node) => node.kind === "grounded").slice(0, 4).map((node, index, all) => ({ id: node.id, heading: outputHeading(prose(node.title)), body: outputBody(prose(node.body)), citations: [node.locator], layout: index === 0 ? "statement" as const : index === all.length - 1 ? "recommendation" as const : index % 2 ? "split" as const : "proof" as const }));
   const outputId = `${type}-v${current.outputs.filter((output) => output.type === type).length + 1}`;
   const logo = await embeddedLocalLogo(current.style, dataRoot);

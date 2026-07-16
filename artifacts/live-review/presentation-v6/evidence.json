@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "status": "internally-accepted",
+  "reviewedAt": "2026-07-16T12:06:14.000Z",
+  "output": {
+    "id": "deck-v6",
+    "slides": 5,
+    "pageSizePoints": "960.009 x 540",
+    "editablePowerPointSha256": "174c91330c066f7ca719aed9d73df175373c2e371e7b4daddac4b6eadf3413f5",
+    "pdfSha256": "5edc7a03865408741bac5b35dbc5207d003d1fe89213eee16a14d487663631a3",
+    "contactSheetSha256": "4ea967c3860983b0c45edb7253a9ea9d5d6d04dd3cd61d3d5267e021a56551a2"
+  },
+  "inputs": {
+    "imageBatchId": "image-batch-v1",
+    "coverImagePanelId": "image-panel-1",
+    "coverImagePanelVersion": 1,
+    "coverImageSha256": "c1caf61668ec6c1b364b938827cdac475a6115f122010afcabcd5c4fd4e7070a"
+  },
+  "checks": {
+    "powerPointArchiveValid": true,
+    "libreOfficeRoundTrip": true,
+    "sourceLabelsExtracted": true,
+    "completeHeadline": true,
+    "contentAwareSequence": true,
+    "observedOverflow": false,
+    "providerRequestsAdded": 0
+  },
+  "limitations": [
+    "Visual acceptance is internal and does not satisfy the open external Send or Revise gate.",
+    "The current deck is grounded in the authorized sample Source and must be rebuilt from the founder recording for the final meta-demo."
+  ]
+}

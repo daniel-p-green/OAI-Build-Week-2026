@@ -7912,3 +7912,40 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - Founder capture, the founder-derived final operator run, verified final package, final MP4, external professional review, eligible Session ID, and public submission links remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 07:01 CT — Provider Presentation becomes content-aware
+
+**Area:** Professional output quality / editable PowerPoint / real-artifact review
+
+### Changed
+
+- Audited the actual provider-backed Presentation Version 4 instead of treating prior generation tests as the quality bar. The contact sheet exposed a visibly clipped opening claim and a sparse process slide that reduced Capture → Shape → Deliver to a large decorative page number.
+- Taught the deck planner to recognize spoken transformation phrasing such as `should show how … becomes …`. It now produces a complete executive headline plus a grammatical supporting thought rather than splitting at an arbitrary character count.
+- Added a dedicated content-aware sequence layout in responsive HTML and editable PowerPoint. Explicit three-stage source language becomes aligned Capture, Shape, and Deliver process cards with clear order, restrained Accent treatment, and the exact source footer.
+- Preserved the approved GPT Image 2 cover binding, Style tokens, claim IDs, source locators, immutable Presentation history, and image-revision staleness contract.
+- Generated live Presentation Version 6 locally, refreshed the provider-backed Outputs evidence, rebuilt the canonical UI gallery, provider film input, final-style overlay preview, and 2:20 Cedar rough cut. No provider request was needed.
+
+### Verified
+
+- `@workshoplm/production` passed 18 tests and typecheck; the new regression verifies both HTML and editable PowerPoint sequence output.
+- `@workshoplm/worker` passed 117 tests and typecheck; the new regression starts from the same spoken sample structure and rejects the retired clipped headline.
+- The real Version 6 PowerPoint archive passed `unzip -t`. LibreOffice produced five 16:9 pages at 960.009×540 points; `pdftotext -layout` retained the complete headline, support, Capture/Shape/Deliver stages, recommendation, and all visible source labels.
+- Full-resolution contact-sheet inspection found no observed clipping or overflow. The editable PowerPoint SHA-256 is `174c91330c066f7ca719aed9d73df175373c2e371e7b4daddac4b6eadf3413f5`; the PDF is `5edc7a03865408741bac5b35dbc5207d003d1fe89213eee16a14d487663631a3`; the accepted contact sheet is `4ea967c3860983b0c45edb7253a9ea9d5d6d04dd3cd61d3d5267e021a56551a2`.
+- A live 1200×800 browser run opened current Outputs and Presentation Version 6 with zero horizontal overflow. The current-only gallery retained one hero Presentation and moved Versions 1–5 into focused history.
+- `pnpm check` passed all thirteen packages. `pnpm demo:e2e` passed the complete recorded seam. The strict production-browser suite passed all 29 tests.
+- `pnpm submission:packet:verify` passed with Terra, six GPT Image 2 panels, five product Cedar clips, the 2:20 Cedar film, eight ready/two blocked shots, sixteen current UI screens, and four honest founder/final-package gaps.
+- `git diff --check` passed outside the preserved user-owned `PLAN-2026-07-13.md` modification.
+
+### Decisions
+
+- Presentation layout must follow the semantic structure of the approved content. Alternating templates is not enough when the source explicitly describes a process, proof set, plan, or decision.
+- Source fidelity does not require preserving spoken scaffolding or arbitrary truncation. A professional headline may remove `should show how` while the supporting thought and exact source edge preserve the complete meaning.
+- Internal visual acceptance improves the artifact but does not satisfy the open intended-audience `Send`/`Revise` gate.
+- The provider evidence ledger remains 97 HTTP operations. Exact dollar debit is unavailable and no exact spend is invented.
+
+### Open items
+
+- Founder capture, the founder-derived final operator run, verified final package, final MP4, external professional review, eligible Session ID, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

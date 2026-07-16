@@ -305,6 +305,23 @@ it("rejects a website Style redirect into the local network", async () => {
 });
 it("creates, approves, and stales a versioned Visual DNA preview", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-dna-")); lockManualStyle({ references: ["editorial grid"], negativeRules: ["no gradients"] }, root); const preview = createVisualDna(root); expect(preview.visualDna).toMatchObject({ version: 1, styleVersion: 1, approved: false, stale: false, negativeRules: ["no gradients"] }); expect(approveVisualDna(root).visualDna?.approved).toBe(true); const relocked = lockManualStyle({ accent: "#1155AA" }, root); expect(relocked.visualDna).toMatchObject({ approved: false, stale: true }); await rm(root, { recursive: true, force: true }); });
 it("writes a source-traceable output after current brief and style approval", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-output-")); await ingestSource({ title: "Evidence", origin: "Fixture", text: "Turn raw thinking into finished work without losing the trail back to source material." }, root); applyWorkshopAction("approveBrief", root); applyWorkshopAction("lockManualStyle", root); const generated = await generateOutput("deck", root); expect(generated.outputs[0]).toMatchObject({ type: "deck", stale: false, editableRelativePath: expect.stringMatching(/\.pptx$/), editableArtifactPath: expect.stringMatching(/^artifacts\//), claimIds: expect.arrayContaining([expect.stringMatching(/^claim-/)]) }); expect(generated.outputs[0].artifactPath).toMatch(/^artifacts\//); const html = await readFile(join(root, generated.outputs[0]!.relativePath), "utf8"); const pptx = await readFile(join(root, generated.outputs[0]!.editableRelativePath!)); const editable = resolveWorkshopArtifact(generated.outputs[0]!.id, root, undefined, "editable"); expect(html).not.toContain("FRAME"); expect(html).toContain("Turn raw thinking into finished work"); expect(html).toContain("without losing the trail back to source"); expect(html).toContain('class="body">material</p>'); expect(html).toContain('data-source="Fixture · chunk 01"'); expect(html).toContain('class="slide statement'); expect(pptx.subarray(0, 2).toString()).toBe("PK"); expect(editable).toMatchObject({ contentType: "application/vnd.openxmlformats-officedocument.presentationml.presentation", fileName: "deck-v1.pptx" }); await rm(root, { recursive: true, force: true }); });
+it("turns spoken transformation and process language into complete professional slide copy", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-polished-deck-"));
+  createWorkshop("WorkshopLM Build Week", root);
+  await ingestSource({ title: "Founder brainstorm", origin: "Founder-provided recording", text: "WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved Brief, coherent visuals, an editable Storyboard, and the final demo Video. Judges need one continuous Capture to Shape to Deliver path. Every factual claim must retain a visible source locator. The public demo Video must remain under three minutes." }, root);
+  applyWorkshopAction("approveBrief", root);
+  lockManualStyle({}, root);
+  const generated = await generateOutput("deck", root);
+  const html = await readFile(join(root, generated.outputs.at(-1)!.relativePath), "utf8");
+  expect(html).toContain("A messy spoken idea becomes a grounded Map");
+  expect(html).toContain("The path continues through an approved Brief, coherent visuals, an editable Storyboard, and the final demo Video.");
+  expect(html).not.toContain("grounded Map, an…");
+  expect(html).toContain('class="slide sequence"');
+  expect(html).toContain('<div class="sequence-step"><span>Capture</span></div>');
+  expect(html).toContain('<div class="sequence-step"><span>Shape</span></div>');
+  expect(html).toContain('<div class="sequence-step"><span>Deliver</span></div>');
+  await rm(root, { recursive: true, force: true });
+});
 it("plans a professional deck from narrative evidence instead of source metadata", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-deck-plan-"));
   createWorkshop("Leadership strategy", root);
