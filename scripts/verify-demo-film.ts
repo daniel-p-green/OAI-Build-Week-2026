@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
+import { verifySubmissionOutputSet } from "../apps/worker/src/submission-package.js";
 
 type RequiredEvidence = { label: string; path: string; validator?: "ready-submission-manifest" | "provider-run" | "realtime-turn" | "film-narration" | "founder-capture" | "video-media" | "av-media" };
 type FilmShot = {
@@ -56,11 +57,15 @@ async function inspectEvidence(item: RequiredEvidence): Promise<{ exists: boolea
   if (!exists) return { exists: false, satisfied: false, issue: "Evidence file is missing or empty." };
   if (item.validator === "ready-submission-manifest") {
     try {
-      const manifest = JSON.parse(await readFile(resolve(repository, item.path), "utf8")) as { status?: string; limitations?: unknown[] };
+      const manifestPath = resolve(repository, item.path);
+      const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as { status?: string; limitations?: unknown[] };
       if (manifest.status !== "ready") return { exists: true, satisfied: false, issue: `Submission status is ${manifest.status ?? "missing"}, not ready.` };
       if (!Array.isArray(manifest.limitations) || manifest.limitations.length > 0) return { exists: true, satisfied: false, issue: "Submission manifest still records limitations." };
+      const dataRoot = dirname(dirname(dirname(manifestPath)));
+      const verification = await verifySubmissionOutputSet(dataRoot, manifestPath);
+      if (!verification.valid) return { exists: true, satisfied: false, issue: `Submission package integrity failed: ${verification.issues.join("; ")}` };
     } catch {
-      return { exists: true, satisfied: false, issue: "Submission manifest is not valid JSON." };
+      return { exists: true, satisfied: false, issue: "Submission manifest is invalid or cannot be verified against its Workshop state." };
     }
   }
   if (item.validator === "provider-run") {

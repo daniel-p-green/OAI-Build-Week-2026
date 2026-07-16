@@ -55,14 +55,6 @@
     },
     {
       "shotId": "meta-reveal",
-      "label": "Primary eligible Codex feedback Session ID record",
-      "path": "artifacts/submission/primary-session.json",
-      "exists": false,
-      "satisfied": false,
-      "issue": "Evidence file is missing or empty."
-    },
-    {
-      "shotId": "meta-reveal",
       "label": "Verified non-partial final submission Output set",
       "path": ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json",
       "validator": "ready-submission-manifest",

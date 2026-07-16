@@ -18,6 +18,8 @@
     "demo:thumbnail": "node scripts/render-thumbnail.mjs",
     "demo:capture-draft": "pnpm --filter @workshoplm/web capture:demo",
     "demo:film:rough": "node scripts/build-demo-rough-cut.mjs",
+    "demo:film:final": "node scripts/build-demo-rough-cut.mjs --final",
+    "demo:film:preview-final": "node scripts/build-demo-rough-cut.mjs --preview-final-style",
     "demo:film:prepare-live": "tsx scripts/prepare-live-film-evidence.ts",
     "demo:film:narrate": "tsx scripts/generate-demo-film-narration.ts",
     "demo:film:verify": "tsx scripts/verify-demo-film.ts",

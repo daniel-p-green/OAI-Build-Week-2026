@@ -2720,6 +2720,43 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-16 03:51 CT — Final film assembly is deterministic and fail-closed
+
+**Area:** Demo film / Meta reveal / Submission truth
+
+### Changed
+
+- Added `pnpm demo:film:final`, a one-command final compositor that preflights founder evidence and the final-operator submission package before touching final state.
+- Final mode uses the verified Cedar narration set, substitutes the hash-bound founder recording for the capture beat, generates a raw-transcript-versus-submission reveal from the verified package thumbnails, and emits the 2:20 H.264/AAC public-film candidate.
+- Final promotion is transactional: the plan becomes `final` only long enough to run the strict final verifier. Any error restores the original draft bytes and removes the emitted MP4 and manifest.
+- The ready-submission film validator now invokes the complete package verifier against the owning Workshop state instead of trusting a `ready` string and an empty limitations array.
+- Removed the Codex `/feedback` Session ID from film evidence. It remains an open Devpost form requirement, but it cannot truthfully block footage that proves the product workflow.
+- Added `pnpm demo:film:preview-final` plus inspected 1280×720 clean-overlay, ten-shot contact-sheet, and meta-reveal previews under `outputs/demo-film-plan/`.
+
+### Verified
+
+- Visual inspection accepted the quiet bottom-caption treatment without covering native WorkshopLM controls. The meta reveal renders bounded transcript text beside three real package thumbnails and labels fixture preview content as sample-only.
+- `pnpm check` passed all 13 packages, including 114 worker tests and 30 web tests.
+- `pnpm demo:e2e` passed the complete recorded fixture seam. `pnpm submission:build` and `pnpm submission:verify` produced and verified the expected honest `partial` acceptance package.
+- `pnpm demo:film:verify` passed in draft mode with eight ready shots, two blocked shots, a 140-second timeline, and exactly four open evidence items: founder MOV, founder transcript, final ready package, and final MP4.
+- A deliberate `pnpm demo:film:final` attempt failed before assembly on the three missing prerequisite artifacts. The film-plan SHA-256 remained `4fd16337804e51d3ca983098f9c8057fab3ee7a212c3d7dbd6aa15094154db9b` before and after, and no final MP4 existed.
+- `git diff --check` passed excluding the preserved unrelated `PLAN-2026-07-13.md` modification.
+
+### Decisions
+
+- Final film assembly should be repeatable and evidence-driven, not a last-minute editor checklist. The founder supplies only the genuinely human evidence; the repository now owns the remaining deterministic cut.
+- `/feedback` proves Build Week participation in the submission form. It does not prove any visual film claim and stays out of the film gate.
+- The rough cut retains its explicit fixture/pending labels. The clean editorial treatment is reserved for final mode and its non-claiming preview so draft truth is never visually laundered.
+
+### Open items
+
+- Founder MOV and transcript, final thirteen-request founder run, ready final-operator package, and final compositor execution remain open.
+- External professional review, public upload/link verification, and eligible Session ID remain human-gated after the product and film are ready.
+- No provider request ran in this milestone; the evidence ledger remains 97 HTTP operations and no exact-dollar total is invented.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-16 03:27 CT — Founder capture became a one-command, hash-bound final handoff
 
 **Area:** Final demo input / Grounding / Provenance / Operator recovery
@@ -7466,3 +7503,9 @@ The 03:27 CT founder-capture and final-operator milestone was inserted after an 
 - Eligible Session ID, external professional review, public links, and final Devpost actions remain human-gated.
 - No provider request ran in this milestone; the ledger remains 97 HTTP operations and no exact-dollar total is invented.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 03:53 CT — Final-film milestone placement correction
+
+The 03:51 CT deterministic final-film milestone was inserted after an earlier matching `Codex Session ID` marker instead of the physical end of this append-only file. Its implementation and verification evidence remain correct. This later note restores the chronological boundary without rewriting history. The current state is unchanged: the clean final compositor is verified to fail closed, while founder files, the ready final-operator package, and the actual final MP4 remain open.
