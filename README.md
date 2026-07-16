@@ -4,7 +4,7 @@
 
 WorkshopLM turns meetings, documents, and half-formed thinking into a branded deck a professional can defend, with every factual claim traced to its source. It is built for consultants, strategists, and enablement leads who produce client-facing or leadership-facing work every week.
 
-Notebook-style tools help people understand source material. WorkshopLM is designed to help them ship from it: speak or type in the focused Conversation, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create a presentation that remains editable in PowerPoint. A shareable hand-drawn Sketch, Infographic, Image set, Storyboard, and Video are supporting Outputs around that wedge.
+Notebook-style tools help people understand source material. WorkshopLM is designed to help them ship from it: speak or type in the focused Conversation, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create a presentation that remains editable in PowerPoint. A shareable hand-drawn Sketch with immutable versions, Infographic, Image set, Storyboard, and Video are supporting Outputs around that wedge.
 
 WorkshopLM runs locally in the Codex in-app browser as one focused workbench. Conversation, Sources, Map, Brief, Style, Outputs, and Storyboard stay in one product surface; contextual views and sheets preserve the full workflow without a persistent tab maze. Codex desktop/CLI is the verified plugin host and build environment. ChatGPT Work support is not claimed.
 

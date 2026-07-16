@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "current-workbench-gallery",
-  "builtAt": "2026-07-16T16:21:05.897Z",
+  "builtAt": "2026-07-16T17:51:49.305Z",
   "screenshots": [
     {
       "name": "01-start.png",
@@ -76,10 +76,10 @@
       "height": 800
     },
     {
-      "name": "10-image-set.png",
-      "label": "Review grounded image jobs before generation",
-      "source": "apps/web/tests/visual/__screenshots__/desktop-image-set.png",
-      "sha256": "80d5486250af2439943fc2db7a32e49b78e17907fffd7575e7c4f39058203f19",
+      "name": "10-sketch.png",
+      "label": "Open the source-traced hand-drawn Sketch",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-sketch-viewer.png",
+      "sha256": "62afadd87227155fd076a3ea76b894eeabb7e58bf3add8509f2e9479aad3d00b",
       "width": 1200,
       "height": 800
     },
@@ -111,7 +111,7 @@
       "name": "14-original-reveal.png",
       "label": "Trace finished work back to the original thought",
       "source": "apps/web/tests/visual/__screenshots__/desktop-original-reveal.png",
-      "sha256": "ffdfbd5119ad52238b9fccdb0b7864d1e81105cc6f607d9a5c3ae3e2f1ff11ff",
+      "sha256": "e32987370fd29e95ca8b5743795835e494f39961d2144a4450a37f647c5e0977",
       "width": 1200,
       "height": 800
     },
@@ -134,7 +134,7 @@
   ],
   "contactSheet": {
     "name": "contact-sheet.png",
-    "sha256": "36d7a5bd00f61a243a0c2bd04f894e7cbe88188223032dd18afce519326cd146",
+    "sha256": "5342126b42915edf99f0a5610db4d9b3950f579017b497dbca79559e7541cedf",
     "width": 1920,
     "height": 1280
   }

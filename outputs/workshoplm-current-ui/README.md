@@ -17,7 +17,7 @@ Sixteen current screens show the professional Capture → Shape → Deliver path
 | 07 | [Company Style](07-company-style.png) | Website or manual brand rules stay reviewable before production. |
 | 08 | [Current Outputs](08-current-outputs.png) | The provider-backed gallery shows only the current deliverables; history moves into focused objects. |
 | 09 | [Presentation](09-presentation.png) | The hero deliverable retains its source trail and editable export. |
-| 10 | [Image plan](10-image-set.png) | Grounded visual jobs remain reviewable before generation. |
+| 10 | [Hand-drawn Sketch](10-sketch.png) | The approved Map becomes a shareable, source-traced visual with immutable versions. |
 | 11 | [Replace image](11-replace-image.png) | A professional directs one revision without editing model prompts. |
 | 12 | [Storyboard](12-storyboard.png) | Panels remain editable before the second and final sign-off. |
 | 13 | [Narrated Video](13-narrated-video.png) | Only the approved current Storyboard reaches the local renderer. |
@@ -27,7 +27,7 @@ Sixteen current screens show the professional Capture → Shape → Deliver path
 
 ## Evidence boundary
 
-Screens 01–07 and 09–16 come from the strict production-route visual suite using a sanitized deterministic fixture; screen 10 deliberately shows the pre-generation plan. Screen 08 comes from an isolated copy of the inspected provider-backed Workshop and shows the real current output family. Provider provenance is recorded separately in `artifacts/live/provider-run.json`; the gallery does not claim that fixture pixels are provider results.
+Screens 01–07 and 09–16 come from the strict production-route visual suite using a sanitized deterministic fixture. Screen 08 comes from an isolated copy of the inspected provider-backed Workshop and shows the real current output family. Provider provenance is recorded separately in `artifacts/live/provider-run.json`; the gallery does not claim that fixture pixels are provider results.
 
 Rebuild the directory, manifest, contact sheet, and shareable ZIP with:
 

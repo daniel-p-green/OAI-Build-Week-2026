@@ -17,7 +17,7 @@ const gallery = [
   ["07-company-style.png", "apps/web/tests/visual/__screenshots__/desktop-style.png", "Apply one reviewable visual system"],
   ["08-current-outputs.png", "artifacts/ui-review/outputs-latest-only-desktop-2026-07-16.png", "Review the current provider-backed deliverables"],
   ["09-presentation.png", "apps/web/tests/visual/__screenshots__/desktop-output-viewer.png", "Open the hero presentation and its source trail"],
-  ["10-image-set.png", "apps/web/tests/visual/__screenshots__/desktop-image-set.png", "Review grounded image jobs before generation"],
+  ["10-sketch.png", "apps/web/tests/visual/__screenshots__/desktop-sketch-viewer.png", "Open the source-traced hand-drawn Sketch"],
   ["11-replace-image.png", "apps/web/tests/visual/__screenshots__/desktop-image-replacement.png", "Direct one image replacement without prompt editing"],
   ["12-storyboard.png", "apps/web/tests/visual/__screenshots__/desktop-storyboard.png", "Edit and approve the Storyboard"],
   ["13-narrated-video.png", "apps/web/tests/visual/__screenshots__/desktop-video-viewer.png", "Review the locally rendered Video"],

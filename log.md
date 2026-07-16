@@ -8914,3 +8914,38 @@ The 12:08 CT provider-backed judge-fixture entry was added after the 10:45 CT en
 ## 2026-07-16 12:43 CT — Log sequence correction
 
 The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched an earlier repeated footer rather than the true end of the append-only log. Their evidence and timestamps are correct; this note records their actual sequence after the 12:34 CT milestone without moving or rewriting prior entries.
+
+---
+
+## 2026-07-16 12:55 CT — Sketch versions become immutable professional history
+
+**Area:** Output editability / version integrity / Workshop truth / judge evidence
+
+### Changed
+
+- Audited the complete professional finishing path instead of assuming the new Sketch satisfied the same version contract as Presentation, Infographic, Audio Overview, images, Storyboard, and Video. The audit found that Sketch Version 1 bytes remained on disk after regeneration, but state and routes exposed only the newest object.
+- Added an additive `sketchHistory` state contract with backward-compatible normalization for existing Workshops. Regeneration now moves the prior record into immutable history, marks it honestly stale, and preserves its graph revision, Style version, Source claim IDs, artifact path, hash, and creation time.
+- Extended artifact resolution to serve and download exact `sketch-vN` SVGs. The focused object reuses the existing Version history pattern, opens a prior Sketch without replacing current work, and retains the same source trail and finishing actions. No tab, new editor, or navigation mode was added.
+- Corrected Workshop summaries to count Output families rather than every stored revision. Sketch, Audio Overview, Image set, Storyboard, and Video now participate alongside Presentation and Infographic, while repeated versions do not inflate the Workshop-list count.
+- Replaced the canonical gallery's lower-value pre-generation image-plan frame with the focused hand-drawn Sketch. Visual inspection then caught a stale desktop original-reveal baseline that still said `six connected Outputs`; it was regenerated from the production route and now says `Became a connected Output set` with Sketch in the deliverable list.
+
+### Verified
+
+- The worker suite passed all 120 tests. The Sketch contract test creates Version 1, stales it through a Map edit, reapproves the Brief, creates Version 2, verifies the immutable Version 1 record and downloadable version-specific route, and confirms the Workshop summary counts two families—Storyboard and Sketch—not two Sketch revisions.
+- The complete production-browser suite passed all 30 cases in 1.3 minutes. The expanded Sketch case proves desktop/mobile current views, Version 2 regeneration, visible history, Version 1 reopening, exact prior-version download URL, SVG response type, source trail, top-of-object entry, and zero horizontal overflow.
+- Visually inspected the dedicated history state at 1200×800. The current styled artifact remains dominant, Sources follow it, and the two compact version rows sit below without crowding the object. The baseline hashes to `68456d21af9b894511b0300b3dbc3dd30858fe35871ce65c269d167285f15688`.
+- Rebuilt and visually inspected the canonical sixteen-screen UI contact sheet. It now includes focused Sketch and current original-reveal copy; the contact sheet hashes to `5342126b42915edf99f0a5610db4d9b3950f579017b497dbca79559e7541cedf`, and the shareable ZIP hashes to `57de8a6131e71d97fc935ee9e68f6b083f2d5f9b58600a53833ef54310415da3`.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages. `pnpm demo:e2e` passed the complete recorded Source-to-Video seam with the source-traced Sketch. `pnpm submission:packet:verify` passed with Terra, six provider-backed GPT Image 2 panels, Cedar narration, sixteen current UI screens, eight ready film shots, two honest blocks, and four unchanged founder/final-package evidence slots.
+- No provider request ran. The evidence ledger remains at 104 OpenAI HTTP operations, and no exact dollar debit is inferred.
+
+### Decisions
+
+- Persisted bytes are not version history unless the professional can identify, reopen, trace, and export them. Sketch now meets the same user-visible preservation bar as the other versioned Outputs.
+- Workshop summaries describe distinct deliverables, not database rows. A regenerated Presentation or Sketch remains one Output family in the Workshop list.
+- The canonical gallery should optimize for finished-work proof. Directed image replacement still demonstrates image control; the pre-generation image-plan screenshot was the least valuable frame to trade for Sketch.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

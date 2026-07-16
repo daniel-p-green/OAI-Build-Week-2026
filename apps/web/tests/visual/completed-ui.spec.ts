@@ -330,6 +330,24 @@ test("the approved Map becomes a focused hand-drawn Sketch without another navig
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
     await expectScreen(page, `${viewport.name}-sketch-viewer`);
   }
+  const regenerated = await page.request.post("/api/workshop", { data: { action: "createSketch" } });
+  expect(regenerated.ok()).toBeTruthy();
+  await page.setViewportSize({ width: viewports[0].width, height: viewports[0].height });
+  await page.reload();
+  await openWorkshopView(page, "brief");
+  await openWorkshopView(page, "outputs");
+  await page.getByRole("button", { name: /Open Sketch/ }).click();
+  await expect(page.getByText(/Hand-drawn view · Version 2/)).toBeVisible();
+  const versionHistory = page.getByRole("heading", { name: "Version history" });
+  await expect(versionHistory).toBeVisible();
+  await versionHistory.scrollIntoViewIfNeeded();
+  await expectScreen(page, "desktop-sketch-history");
+  await page.getByRole("button", { name: "Open Sketch, version 1" }).click();
+  await expect(page.getByText(/Hand-drawn view · Version 1/)).toBeVisible();
+  await expect(page.getByRole("link", { name: "Download SVG" })).toHaveAttribute("href", "/api/workshop/artifacts/sketch-v1?format=editable");
+  const priorArtifact = await page.request.get("/api/workshop/artifacts/sketch-v1");
+  expect(priorArtifact.ok()).toBeTruthy();
+  expect(priorArtifact.headers()["content-type"]).toContain("image/svg+xml");
 });
 
 test("Style starts from a website and preserves the Workshop outcome", async ({ page }) => {
