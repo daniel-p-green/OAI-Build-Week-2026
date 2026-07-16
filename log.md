@@ -6330,6 +6330,9 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Dogfood one real external deck, obtain the cold professional `Send`/`Revise` decision, then address the first concrete revision before expanding output breadth.
 - Founder brainstorm, provider media, final public Video, public links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-15 20:26 CT — NotebookLM landing-page reference archived and translated for WorkshopLM
 
 **Area:** Public product story / research
@@ -6423,4 +6426,25 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Upgrade text Conversation to Responses streaming and voice to speech-to-speech Realtime; then live-verify one safe read, one visible write, interruption, and durable provider provenance after explicit request authorization.
 - Complete contextual affected-work disclosure and collapsible rails; obtain the external deck's cold `Send`/`Revise` decision.
 - Founder brainstorm, provider media, final public Video, public links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 20:51 CT — Installed Codex plugin cache refreshed to canonical tools
+
+**Area:** Plugin runtime verification
+
+### Changed
+
+- Fast-forwarded the installed WorkshopLM `0.1.3` Codex plugin cache from `e626eff` to source commit `4893436` after the source checkpoint reached public `main`.
+- Preserved the cache's untracked `submission/DEVPOST-DRAFT 2.md`: its SHA-256 exactly matched the newly tracked upstream file before the redundant untracked copy was removed and the cache was updated.
+
+### Verified
+
+- Imported the installed compiled `packages/plugin-mcp/dist/tools.js` from the real cache. It loaded twelve canonical tools and included `workshop_set_source_scope`.
+- The installed cache reports commit `4893436` and a clean working tree.
+
+### Open items
+
+- A fresh Codex task is still required to prove the host reloads the refreshed tool list; the current task cannot hot-reload its own plugin process.
 - Codex Session ID: unavailable on this surface; not inferred.
