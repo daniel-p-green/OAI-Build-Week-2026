@@ -156,6 +156,8 @@ test("reset fixture is calm and responsive", async ({ page }) => {
 });
 
 test("voice capture is bounded inside Add source and fails closed without live opt-in", async ({ page }) => {
+  const state = await (await page.request.get("/api/workshop")).json();
+  let posted: Record<string, unknown> | undefined;
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
   await page.getByRole("complementary", { name: "Sources" }).getByRole("button", { name: "Add material" }).click();
@@ -163,6 +165,14 @@ test("voice capture is bounded inside Add source and fails closed without live o
   await expect(page.locator(".capture-error")).toContainText("Live OpenAI capture is disabled");
   await expect(page.getByRole("dialog", { name: "Add source" })).toBeVisible();
   await expect(page.getByRole("textbox", { name: "Source" })).toBeVisible();
+  await page.route("**/api/workshop", async (route) => {
+    if (route.request().method() !== "POST") return route.continue();
+    posted = route.request().postDataJSON() as Record<string, unknown>;
+    return route.fulfill({ json: state });
+  });
+  await page.getByRole("textbox", { name: "Source" }).fill("Private client meeting notes should never be relabeled as demo-safe material.");
+  await page.getByRole("button", { name: "Add source", exact: true }).click();
+  expect(posted).toMatchObject({ action: "ingestSource", source: { origin: "Pasted notes", permission: "private" } });
 });
 
 test("grounded Conversation preserves source scope, citations, and responsive workbench context", async ({ page }) => {
@@ -196,7 +206,7 @@ test("grounded Conversation preserves source scope, citations, and responsive wo
     await closeDialog(page, "Source");
     await surface.getByRole("button", { name: "Voice" }).click();
     await expect(surface.getByRole("button", { name: "Start talking" })).toBeVisible();
-    await expect(surface.getByText("Speak naturally. Answers stay grounded in the selected Sources, and your transcript becomes a private Source.")).toBeVisible();
+    await expect(surface.getByText("Speak naturally. Answers use only your selected Sources, and your transcript stays private.")).toBeVisible();
     await surface.getByRole("button", { name: "Close voice" }).click();
   }
 });
@@ -1152,6 +1162,8 @@ test("the local render becomes a real Video preview and the next action", async 
     expect(traceResponse.ok()).toBeTruthy();
     expect(await traceResponse.text()).toContain("How this submission was built");
     await closeDialog(page, "Original brainstorm");
+    await expect(page.locator(".workshop-identity")).toContainText("WorkshopLM Build Week/Demo video");
+    await page.waitForTimeout(200);
     await expectScreen(page, `${viewport.name}-video-viewer`);
   }
 

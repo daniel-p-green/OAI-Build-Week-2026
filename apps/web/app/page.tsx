@@ -503,7 +503,7 @@ export default function WorkshopPage() {
 }
 
 const OUTCOME_OPTIONS: Array<{ id: WorkshopOutcome; title: string; detail: string; defaultName: string }> = [
-  { id: "client_facing_pitch", title: "Client pitch", detail: "A persuasive, source-defensible recommendation.", defaultName: "Client pitch" },
+  { id: "client_facing_pitch", title: "Client pitch", detail: "A persuasive recommendation with every claim sourced.", defaultName: "Client pitch" },
   { id: "board_deck", title: "Board presentation", detail: "A concise leadership narrative with evidence.", defaultName: "Board presentation" },
   { id: "internal_workshop", title: "Team workshop", detail: "A practical working session with clear actions.", defaultName: "Team workshop" },
 ];
@@ -732,7 +732,7 @@ function AudioOverviewView({ overview, history, busy, onPost, onOpenOutput, onSh
   return <article className="focused-output audio-overview-view"><div className="focused-output-heading"><div className="focused-output-context"><h1>Audio Overview</h1><p>Audio · Version {overview.version} · {words} words · {overview.claimIds.length} sourced points</p><Status tone={overview.stale || overview.status === "failed" ? "waiting" : "current"}>{overview.stale ? "Needs update" : overview.status === "failed" ? "Couldn't create" : overview.status === "audio_ready" ? "Audio ready" : "Ready for review"}</Status></div><div className="button-row">{dirty && <Button size="small" disabled={busy || overview.sections.some((section) => !sections[section.id]?.trim())} onClick={() => { void save(); }}>Save script</Button>}{!overview.stale && overview.status !== "audio_ready" && <Button variant="secondary" size="small" disabled={busy || dirty} onClick={() => { void onPost({ action: "generateAudioOverviewAudio" }); }}>{overview.status === "failed" ? "Try audio again" : "Create audio"}</Button>}{overview.audio && <ButtonLink variant="secondary" size="small" href={`/api/workshop/artifacts/${overview.id}`}>Download audio</ButtonLink>}</div></div>
     {overview.audio ? <Card className="audio-player"><audio controls src={`/api/workshop/artifacts/${overview.id}`} /><div><strong>{Math.round(overview.audio.durationSeconds)} seconds</strong><small>Cedar voice · {overview.disclosure}</small></div></Card> : <StateMessage state={overview.status === "failed" ? "error" : "empty"} title={overview.status === "failed" ? "Audio needs another try" : "Review the script first"}>{overview.error ?? "Edit any section, check its source, then create the AI-voiced briefing."}</StateMessage>}
     <section className="audio-script" aria-label="Audio Overview script">{overview.sections.map((section) => { const evidence = section.evidence[0]; return <Card className="audio-script-section" key={section.id}><div className="audio-script-heading"><div><small>{section.title}</small>{section.edited && <Status tone="waiting">Edited</Status>}</div><Button variant="secondary" size="small" onClick={() => onShowSource({ sourceId: evidence?.sourceId, claimId: evidence?.claimId, locator: evidence?.locator })}>Show source</Button></div><TextArea label={`${section.title} script`} value={sections[section.id] ?? ""} maxLength={1800} onChange={(event) => setSections((current) => ({ ...current, [section.id]: event.target.value }))} /></Card>; })}</section>
-    <p className="audio-disclosure">Voice disclosure: {overview.disclosure}. Script edits remain visible and source-linked before speech generation.</p>
+    <p className="audio-disclosure">AI voice: {overview.disclosure}. You can review every script edit and source before creating audio.</p>
     {history.length > 1 && <section className="artifact-source-trail output-version-history" aria-labelledby="audio-version-history-heading"><div><h2 id="audio-version-history-heading">Version history</h2><p>Open an earlier script or recording without replacing the current one.</p></div><ListGroup>{history.sort((left, right) => right.version - left.version).map((item) => <ListRowAction key={item.id} aria-label={`Open Audio Overview, version ${item.version}`} onClick={() => onOpenOutput(item.id)}><span><strong>Version {item.version}</strong><small>{item.id === overview.id ? "Current view" : item.stale ? "Needs update" : item.status === "audio_ready" ? "Audio ready" : "Script ready"}</small></span></ListRowAction>)}</ListGroup></section>}
   </article>;
 }
@@ -970,7 +970,7 @@ function WorkshopsSheet({ workshops, busy, onClose, onSelect, onCreate, onHelp }
 function ObjectsSheet({ state, view, onClose, onSelect }: { state: PersistedWorkshop | null; view: ObjectView; onClose: () => void; onSelect: (view: Exclude<ObjectView, "output">) => void }) {
   const items: Array<{ view: Exclude<ObjectView, "output">; title: string; detail: string; ready: boolean }> = [
     { view: "conversation", title: "Chat", detail: "Ask across your Sources", ready: true },
-    { view: "map", title: "Map", detail: "Shape the grounded thinking", ready: Boolean(state?.mapNodes.length) },
+    { view: "map", title: "Map", detail: "Organize your ideas", ready: Boolean(state?.mapNodes.length) },
     { view: "brief", title: "Brief", detail: "Review the approved direction", ready: Boolean(state?.briefApproved) },
     { view: "outputs", title: "Outputs", detail: "Presentation, visuals, and audio", ready: Boolean(state?.outputs.length || state?.imageBatch) },
     { view: "storyboard", title: "Storyboard", detail: "Review the sequence before Video", ready: Boolean(state?.storyboard.panels.length) },
@@ -985,7 +985,7 @@ function ObjectsSheet({ state, view, onClose, onSelect }: { state: PersistedWork
 function HowItWorksSheet({ onClose }: { onClose: () => void }) {
   const steps = [
     { title: "Capture", detail: "Talk, paste meeting notes, add a public page, or use a local PDF." },
-    { title: "Shape", detail: "Organize the grounded Map and approve it as the Brief." },
+    { title: "Shape", detail: "Organize your ideas on the Map and approve the Brief." },
     { title: "Deliver", detail: "Create the presentation and supporting Outputs, then approve the Storyboard before Video." },
   ];
   return <SideSheet title="How WorkshopLM works" onClose={onClose}>
@@ -1014,7 +1014,7 @@ function AddSourceSheet({ onClose, onPost }: { onClose: () => void; onPost: (bod
       ? { action: "ingestUrl", url: value }
       : kind === "pdf"
         ? { action: "ingestPdfFile", filePath: value, permission: "private" }
-        : { action: "ingestSource", source: { title: title.trim() || sourceTitleFromText(value), origin: "Pasted notes", text: value, permission: "sanitized" } };
+        : { action: "ingestSource", source: { title: title.trim() || sourceTitleFromText(value), origin: "Pasted notes", text: value, permission: "private" } };
     void onPost(body).then((next) => next && onClose());
   };
   return <SideSheet title="Add source" onClose={onClose}><RealtimeCapture onSave={async (transcript, capture) => Boolean(await onPost({ action: "captureFallbackTranscript", text: transcript, capture }).then((next) => { if (next) onClose(); return next; }))} /><div className="source-divider"><span>or add material</span></div><p className="sheet-intro">Paste notes, a public website, or an absolute local PDF path.</p><TextArea label="Source" hint="Text, https://…, or /path/to/file.pdf" value={source} onChange={(event) => setSource(event.target.value)} />{kind === "text" && source.trim() && <Input label="Title (optional)" value={title} onChange={(event) => setTitle(event.target.value)} />}<Button disabled={!source.trim()} onClick={add}>Add source</Button></SideSheet>;

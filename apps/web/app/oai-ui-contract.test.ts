@@ -47,7 +47,7 @@ describe("official Apps in ChatGPT UI implementation", () => {
   });
 
   it("keeps internal product language out of visible copy", () => {
-    for (const retired of ["Grounding this Workshop", "Evidence becomes structure", "Approve as brief", "Approve map as brief", "Production contract", "Visual contract", "Lock one coherent system", "Lock Style v1", "Update Style v1", "Coherent delivery package", "One system. Every format.", "Generate package", "Refresh package", "Open package", "Illuminate path on Map", "Highlight on Map", "Provider render pending", "Editable before the expensive step", "Prepare render", "FRAME.md", "DESIGN.md", "Visual DNA", "Brief approved", "Style in use", "Storyboard approved", "Approval needed", "In use"]) {
+    for (const retired of ["Grounding this Workshop", "Evidence becomes structure", "Approve as brief", "Approve map as brief", "Production contract", "Visual contract", "Lock one coherent system", "Lock Style v1", "Update Style v1", "Coherent delivery package", "One system. Every format.", "Generate package", "Refresh package", "Open package", "Illuminate path on Map", "Highlight on Map", "Provider render pending", "Provider transcript evidence is incomplete", "Editable before the expensive step", "Prepare render", "FRAME.md", "DESIGN.md", "Visual DNA", "Brief approved", "Style in use", "Storyboard approved", "Approval needed", "In use"]) {
       expect(page).not.toContain(retired);
     }
     for (const required of ["Approve brief", "Choose style", "Saved styles", "Use saved style", "Website", "Set manually", "Client pitch", "Board presentation", "Team workshop", "Add brand details", "Use this style", "Save new version", "How WorkshopLM works", "Create outputs", "Update outputs", "Review storyboard", "Show source", "Sources in this output", "Select a claim to see the exact source text", "Show on map", "Image set", "Audio Overview", "Save script", "Create audio", "Download audio", "AI-generated voice", "Ready for review", "Create video", "View video", "Download PowerPoint", "Open preview", "Open video", "Up to date", "Needs update"]) expect(page).toContain(required);
@@ -66,6 +66,8 @@ describe("official Apps in ChatGPT UI implementation", () => {
   it("starts with material before asking for production Style", () => {
     expect(page).toContain('title: title.trim(), outcome, onboardingStep: "sources"');
     expect(page).toContain("Choose the look after the thinking is clear.");
+    expect(page.match(/origin: "Pasted notes", text: value, permission: "private"/g)).toHaveLength(2);
+    expect(page).not.toContain('permission: "sanitized"');
     expect(page).not.toContain('title: title.trim(), outcome, onboardingStep: "style"');
   });
 

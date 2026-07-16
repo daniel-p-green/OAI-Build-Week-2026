@@ -115,7 +115,7 @@ export function RealtimeCapture({ disabled = false, mode = "capture", continuati
     if (!text.trim()) return;
     setPhase("saving");
     const provider = modelRef.current;
-    if (!provider || !providerEvents.itemIds.length || providerEvents.itemIds.length !== providerEvents.eventIds.length) { setError("Provider transcript evidence is incomplete. Record the thought again."); setPhase("review"); return; }
+    if (!provider || !providerEvents.itemIds.length || providerEvents.itemIds.length !== providerEvents.eventIds.length) { setError("We couldn't verify the transcript. Record the thought again."); setPhase("review"); return; }
     const saved = await onSave(text.trim(), { transport: "webrtc", ...provider, ...providerEvents, assistant: mode === "conversation" && assistant.text && assistant.responseId ? { text: assistant.text, responseId: assistant.responseId, eventIds: assistant.eventIds } : undefined, interruptions: interruptions.responseIds.length ? interruptions : undefined });
     if (saved) { release(); return; }
     setError("The transcript was captured but could not be added. Try again.");
@@ -125,7 +125,7 @@ export function RealtimeCapture({ disabled = false, mode = "capture", continuati
   const transcriptError = transcript.error || error;
   return <Card className="realtime-capture" aria-label="Record voice">
     <audio ref={audioRef} autoPlay aria-hidden="true" />
-    <div className="realtime-capture-copy"><h3>{mode === "conversation" ? "Talk with WorkshopLM" : "Record voice"}</h3><p>{mode === "conversation" ? "Speak naturally. Answers stay grounded in the selected Sources, and your transcript becomes a private Source." : "Your spoken thought becomes a private Source and stays in this Conversation."}</p></div>
+    <div className="realtime-capture-copy"><h3>{mode === "conversation" ? "Talk with WorkshopLM" : "Record voice"}</h3><p>{mode === "conversation" ? "Speak naturally. Answers use only your selected Sources, and your transcript stays private." : "Your spoken thought becomes a private Source and stays in this Conversation."}</p></div>
     <div className="realtime-capture-status" aria-live="polite">
       {phase === "connecting" && <p>Connecting to voice…</p>}
       {phase === "recording" && <p><span className="recording-dot" aria-hidden="true" /> Listening</p>}

@@ -8249,3 +8249,39 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - The professional-own-material, external `Send`/`Revise`, founder capture, final ready package, public under-three-minute Video, eligible `/feedback` Session ID, release tag, Devpost fields, and final logged-out link checks remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 09:02 CT — Real pasted notes retain the private-source boundary
+
+**Area:** Product privacy / language / browser regression
+
+### Changed
+
+- Audited every remaining visible grounding, provider, file, model, and implementation term in the primary web surface while reconciling the unchecked plain-language goal.
+- Found that pasted notes added during onboarding were correctly stored as `private`, but the same notes added later through the main `Add source` sheet were sent as `sanitized`. Corrected the workbench request to preserve real professional material as private. Public URLs retain their existing public-content path, while local PDFs and Realtime transcripts were already private.
+- Added a production-browser assertion that fills the real workbench Source field, captures the outgoing request, and requires `origin: Pasted notes` plus `permission: private` without mutating the shared fixture.
+- Replaced visible `source-defensible`, `grounded thinking`, and provider-transcript language with direct copy about sourced claims, organizing ideas, using only selected Sources, and retrying a transcript WorkshopLM could not verify.
+- Simplified the Audio Overview disclosure to explain that every script edit and Source remains reviewable before audio is created.
+- Stabilized the focused Video visual check by requiring the correct Workshop and object identity before the screenshot is taken; the existing accepted baseline remained unchanged.
+
+### Verified
+
+- `pnpm --filter @workshoplm/web test` passed all 30 unit and UI-contract tests. The contract now requires both pasted-note entry points to use `private` and rejects the retired provider-evidence error.
+- The strict production-browser suite rebuilt the optimized app and passed all 29 desktop, compact, mobile, privacy-request, source-scope, Realtime, artifact, recovery, accessibility, and revision scenarios in 1.1 minutes without snapshot updates.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 118 worker tests, 30 web tests, and 19 production tests.
+- `pnpm demo:e2e` passed the recorded Capture → Map → Brief → Style → Outputs → Storyboard → Video seam.
+- `pnpm submission:packet:verify` passed with Terra, six GPT Image 2 panels, five product Cedar clips, the 2:20 editorial rough cut, sixteen current UI screens, eight ready shots, two blocked shots, and four honest founder/final-package gaps.
+- `git diff --check` passed. The stale user-owned `PLAN-2026-07-13.md` modification remained untouched.
+
+### Decisions
+
+- `sanitized` is an explicit demo/share classification, never the implicit default for notes a professional enters in the live product. Local-first storage does not justify weakening that semantic boundary.
+- Implementation provenance remains inspectable in trace details, but primary UI copy describes the user's material, action, and consequence rather than the provider mechanism.
+- No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Open items
+
+- Founder-Source dogfood and the intended-audience `Send`/`Revise` decision remain necessary before closing the continuous language, last-10-percent, and send-it gates.
+- The founder recording, final ready package, public Video, eligible `/feedback` Session ID, release tag, Devpost fields, and final submitted-link checks remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
