@@ -118,6 +118,12 @@ async function metaRevealSvg(finalManifestPath, options = {}) {
   const transcript = options.transcript || (await readFile(resolve(repository, "outputs/demo-film-inputs/founder-brainstorm.txt"), "utf8")).trim();
   const transcriptLines = wrappedLines(transcript, 36, 9);
   const packageRoot = dirname(finalManifestPath);
+  const submission = JSON.parse(await readFile(finalManifestPath, "utf8"));
+  const trace = JSON.parse(await readFile(resolve(packageRoot, "BUILD-TRACE.json"), "utf8"));
+  const outputCount = trace.outputs.length;
+  const claimCount = trace.workshop.groundedClaims;
+  const signOffCount = Number(Boolean(trace.inputs.briefVersion)) + Number(Boolean(trace.inputs.storyboardVersion));
+  const assetCount = submission.assets.length;
   const thumbnailNames = ["thumbnail-opening.png", "thumbnail-process.png", "thumbnail-result.png"];
   const thumbnails = await Promise.all(thumbnailNames.map(async (name) => `data:image/png;base64,${(await readFile(resolve(packageRoot, name))).toString("base64")}`));
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
@@ -134,6 +140,9 @@ async function metaRevealSvg(finalManifestPath, options = {}) {
   <image href="${thumbnails[0]}" x="596" y="148" width="292" height="213" preserveAspectRatio="xMidYMid meet"/>
   <image href="${thumbnails[1]}" x="908" y="148" width="292" height="213" preserveAspectRatio="xMidYMid meet"/>
   <image href="${thumbnails[2]}" x="596" y="381" width="604" height="241" preserveAspectRatio="xMidYMid meet"/>
+  <rect x="596" y="568" width="604" height="54" fill="#ffffff" fill-opacity="0.96"/>
+  <text x="620" y="590" font-family="Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="1.1" fill="#6b6b6b">HOW THIS WAS BUILT</text>
+  <text x="620" y="610" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0d0d0d">${outputCount} Outputs · ${claimCount} source-linked claims · ${signOffCount} sign-offs · ${assetCount} hashed assets</text>
   <rect x="596" y="148" width="604" height="474" rx="22" fill="none" stroke="#dededb" stroke-width="2"/>
   <text x="1198" y="670" text-anchor="end" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0d0d0d">WORKSHOPLM · BUILT WITH OPENAI + CODEX</text>
 </svg>`;

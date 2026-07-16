@@ -8735,6 +8735,45 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 ---
 
+## 2026-07-16 14:29 CT — Log-order correction
+
+- The complete `14:28 CT — The final reveal visibly proves its build record` milestone was appended using an ambiguous repeated anchor and therefore appears earlier in this append-only file than the 13:10, 13:20, 13:42, and 14:21 entries that were already present.
+- No historical entry was moved or rewritten. Treat the entry's explicit 14:28 timestamp as authoritative and this correction as the chronological tail marker.
+
+---
+
+## 2026-07-16 14:28 CT — The final reveal visibly proves its build record
+
+**Area:** Judge film / meta-demo / provenance / final-package integrity
+
+### Changed
+
+- Audited the current 2:20 rough cut, ten midpoint frames, clean final overlay, and meta-reveal layout against the judge-visible send-it bar. The product sequence and Cedar edit remain strong, but the final frame said `traced body of work` while showing only the brainstorm and three Output thumbnails.
+- Bound the meta-reveal directly to the final submission manifest and `BUILD-TRACE.json`. The compositor now derives and displays the actual connected Output count, source-linked claim count, two recorded sign-offs, and hashed asset count. It does not carry acceptance numbers into the founder build.
+- Added `build-record` to the film's required-moment contract. A plan that drops the visible provenance proof now fails verification even if the narration still mentions it.
+- Preserved the existing 140-second, ten-shot edit. This improvement adds no navigation, shot, provider request, runtime, or unsupported claim.
+
+### Verified
+
+- Rebuilt and visually inspected the 1280×720 final-style preview. The final frame now reads `7 Outputs · 6 source-linked claims · 2 sign-offs · 24 hashed assets`, all derived from the rebuilt acceptance package. The text is legible, subordinate to the original → submission transformation, and contained inside the finished-work frame. Its SHA-256 is `cb2797d772dd056742bc828e446e38bee48254e1fc968fa5b3564421ccfc97bc`.
+- The complete ten-frame clean overlay preview remains coherent and hashes to `200377b4829a46a2e66c14b490674f1d0a990afd75ef7a74e0725119504918ed`; its representative first frame hashes to `990befc347ffbd679db8e21ef9033800df0a13d21c89a07189fef29735c59505`.
+- `pnpm demo:film:verify` passes the 140-second plan at 129.4 narration words per minute, keeps eight shots ready, and reports only the same honest two blocked shots plus the final export. `pnpm check` passes all thirteen packages, including 30 web tests and 120 worker tests. `pnpm submission:packet:verify` remains green with Terra, six provider-backed images, five Cedar product clips, sixteen UI screenshots, and four unresolved founder slots.
+- No OpenAI request ran. The provider-operation ledger remains at 104 and exact dollar debit remains unavailable from response metadata.
+
+### Decisions
+
+- The meta-reveal must show the provenance claim, not merely say it. One compact manifest-derived proof strip is more persuasive than adding another technical screen or extending the film.
+- Final numbers are render-time evidence. Hard-coded acceptance counts would make the founder reveal visually polished but potentially false.
+- The two approvals remain the visible human-control story; raw implementation evidence stays inside the linked build record rather than crowding the final frame.
+- `PLAN-2026-07-13.md` remained advisory only for enduring acceptance principles. Its pre-existing user modification was untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-16 13:41 CT — Image replacements preserve the last good visual and exact history
 
 **Area:** GPT Image 2 revision control / artifact integrity / progressive disclosure / responsive UX
@@ -9091,3 +9130,10 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 14:30 CT — Log-order correction
+
+- The complete `14:28 CT — The final reveal visibly proves its build record` milestone and its first `14:29 CT` correction were appended using ambiguous repeated anchors and therefore appear earlier in this append-only file than later entries that were already present.
+- No historical entry was moved or rewritten. Treat the milestone's explicit 14:28 timestamp as authoritative and this correction as the chronological tail marker.

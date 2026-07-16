@@ -40,7 +40,7 @@ const repository = resolve(import.meta.dirname, "..");
 const planPath = resolve(repository, "submission/demo-film-plan.json");
 const reportRoot = resolve(repository, "outputs/demo-film-plan");
 const finalMode = process.argv.includes("--final");
-const requiredMomentIds = ["plugin-doorway", "founder-brainstorm", "realtime-voice", "gpt-5.6-map", "source-trace", "edit-control", "brief-approval", "provider-image-set", "storyboard-approval", "provider-narration", "original-reveal", "codex-evidence", "final-submission-output-set"];
+const requiredMomentIds = ["plugin-doorway", "founder-brainstorm", "realtime-voice", "gpt-5.6-map", "source-trace", "edit-control", "brief-approval", "provider-image-set", "storyboard-approval", "provider-narration", "original-reveal", "build-record", "codex-evidence", "final-submission-output-set"];
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);

@@ -182,7 +182,7 @@
       "captureBeats": ["original-reveal"],
       "captureEndHoldbackSeconds": 0.7,
       "narration": "Now the reveal: that rough brainstorm became the submission you just watched. The source trail, two human decisions, and build record stayed attached. WorkshopLM produced its own assets, while Codex accelerated the implementation and verification.",
-      "requiredMoments": ["original-reveal", "codex-evidence", "final-submission-output-set"],
+      "requiredMoments": ["original-reveal", "build-record", "codex-evidence", "final-submission-output-set"],
       "requiredEvidence": [
         {
           "label": "Verified non-partial final submission Output set",
