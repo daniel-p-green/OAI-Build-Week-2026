@@ -6093,6 +6093,32 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Provider-backed Map, six-image gallery, narration, founder brainstorm, cold professional `Send`/`Revise`, final public Video, and `/feedback` Session ID remain open under `GOAL.md`.
 - Codex Session ID: unavailable on this surface; not inferred.
 
+## 2026-07-15 19:09 CT — NotebookLM comparison identifies the next structural UX pass
+
+**Area:** Product UX / Competitive reference audit
+
+### Changed
+
+- Added `research/NOTEBOOKLM-FLOW-AUDIT-2026-07-15.md`, a read-only flow audit comparing all seven saved NotebookLM reference screens against the current WorkshopLM desktop and mobile flow.
+- Defined a target workbench that preserves WorkshopLM's Map, approvals, source scope, exact citations, Style, and immutable Outputs while adopting NotebookLM's stable `Sources | current object | production rail` geography.
+- Ranked two critical, five high, five medium, and two low findings and split the recommended work into information architecture, contextual trust, and professional-finish phases.
+
+### Verified
+
+- Inspected the seven live local NotebookLM reference files, twelve representative current WorkshopLM flow captures, current `WorkshopPage` view/sheet orchestration, responsive CSS, `GOAL.md`, the execution plan, and the latest build log.
+- Confirmed the top issue is structural rather than a missing feature: current full-screen views and transient sheets repeatedly remove source, current-object, or output context, while the underlying domain and acceptance path already preserve the stronger professional-work contract.
+
+### Decisions
+
+- Phase 1 should precede more per-screen polish. It should add stable desktop geography, a persistent/collapsible Sources rail, a persistent production rail, operational stage status, and one explicit next-action model without changing domain contracts.
+- NotebookLM is a reference for orientation and continuity, not a product template. WorkshopLM's editable Map and approval/provenance system remain the differentiation.
+
+### Open items
+
+- Implement and visually verify Phase 1 at desktop, tablet, and mobile widths if authorized.
+- Preserve all existing deterministic seam, stale-version, accessibility, and source-trace contracts during the redesign.
+- Codex Session ID: unavailable on this surface; not inferred.
+
 ---
 
 ## 2026-07-15 19:13 CT — Mobile Video keeps playback and every source claim reachable
@@ -6211,4 +6237,32 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Obtain the cold professional `Send`/`Revise` decision and run the provider-backed Map, image, Realtime, and narration path after explicit authorization.
 - Founder brainstorm, final public Video, final submission Output set, public links, and `/feedback` Session ID remain open under `GOAL.md`.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+## 2026-07-15 19:51 CT — Three-column WorkshopLM workbench replaces the Codex-chat split
+
+**Area:** Product direction / User-flow architecture
+
+### Changed
+
+- Updated `GOAL.md` to lock one NotebookLM-like WorkshopLM application with persistent `Sources | Conversation and current work | Studio` geography on desktop and an adaptive single-column object switcher on mobile.
+- Made WorkshopLM's own grounded text and Realtime voice Conversation the primary user-facing chat surface. Codex remains the verified plugin/build/orchestration host and optional doorway, not the product's visible Conversation layer.
+- Reopened the structural UX implementation and verification items while preserving the completed July 14 one-current-object shell as historical evidence and reusable accessibility, language, component, and test work.
+- Made the established Apps in ChatGPT Figma library non-negotiable for the rebuild. New rails, composer, splitters, inspectors, collapse controls, and responsive patterns require documented WorkshopLM composites built only from verified primitives.
+
+### Verified
+
+- Reconciled the new decision against the objective, definition of done, locked interface contract, locked architecture decisions, Product Design checklist, current evidence, and the July 15 NotebookLM flow audit.
+- Confirmed the decision changes composition and Conversation ownership but does not change the domain contracts for Sources, Map, Brief, Style, approvals, Outputs, staleness, source trace, or immutable Video history.
+
+### Decisions
+
+- Stable three-column geography is now the product architecture, not merely a reference pattern or optional layout.
+- WorkshopLM will borrow NotebookLM's interaction continuity without copying Google's chrome, marks, language, education framing, or exact proportions.
+- Provider-backed media and external `Send`/`Revise` proof remain active in parallel, but the three-column workbench is the next structural product increment.
+
+### Open items
+
+- Implement, visually inspect, and regression-test the new workbench and in-product Conversation surface.
+- Reconcile root `DESIGN.md`, the Figma component inventory, and visual baselines as part of implementation rather than inventing page-local chrome.
 - Codex Session ID: unavailable on this surface; not inferred.

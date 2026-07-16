@@ -276,6 +276,21 @@ export default function WorkshopPage() {
     : sourceCount;
   const currentTitle = view === "output" ? (selectedOutput ? outputTitle(selectedOutput.type) : selectedOutputId === "images" ? "Image set" : "Demo video") : VIEW_TITLES[view];
   const backTarget: ObjectView | null = view === "map" ? null : view === "brief" ? "map" : view === "outputs" ? "brief" : "outputs";
+  const workflowAction = !state?.mapNodes.length
+    ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => openSheet("add-source")}>Add source</Button>
+    : !state.briefApproved || state.frame?.stale
+      ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => { void post({ action: "approveBrief" }).then((next) => next && openView("brief")); }}>Approve brief</Button>
+      : !canDeliver
+        ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => openSheet("style")}>Choose style</Button>
+        : !(state.outputs.length || state.imageBatch) || outputsNeedUpdate
+          ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => { void createOutputs(); }}>{state.outputs.length ? "Update outputs" : "Create outputs"}</Button>
+          : !state.storyboardApproved
+            ? view === "storyboard"
+              ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy || state.storyboard.stale || !state.storyboard.panels.length} onClick={() => { void post({ action: "approveStoryboard" }); }}>Approve storyboard</Button>
+              : <Button variant={sheet ? "secondary" : "primary"} onClick={() => openView("storyboard")}>Review storyboard</Button>
+            : state.videoState === "rendered"
+              ? <Button variant={sheet ? "secondary" : "primary"} onClick={() => openOutput([...state.videos].reverse().find((video) => !video.stale)?.id ?? "video")}>View video</Button>
+              : <Button variant={sheet ? "secondary" : "primary"} disabled={busy || state.videoState === "queued" || state.videoState === "rendering"} onClick={() => { void post({ action: "renderVideo" }); }}>{state.videoState === "queued" || state.videoState === "rendering" ? "Creating…" : "Create video"}</Button>;
 
   if (loadState === "ready" && state && state.onboarding.step !== "complete") {
     return <OnboardingFlow state={state} styleLibrary={styleLibrary} busy={busy} notice={notice} onPost={post} />;
@@ -288,38 +303,25 @@ export default function WorkshopPage() {
           {backTarget && <IconButton label={`Back to ${VIEW_TITLES[backTarget]}`} onClick={() => openView(backTarget)}><ArrowLeftIcon /></IconButton>}
           <div className="workshop-identity"><ListRowAction className="workshop-picker" aria-label="Switch Workshop" onClick={() => openSheet("workshops")}><strong>{state?.title || "WorkshopLM"}</strong></ListRowAction><span aria-hidden="true">/</span><b>{currentTitle}</b></div>
         </div>
-        {loadState === "ready" && <div className="header-actions">
-          <Button variant="secondary" size="small" onClick={() => openSheet("sources")}>{visibleSourceCount} {visibleSourceCount === 1 ? "source" : "sources"}</Button>
-          {view === "map" && Boolean(state?.mapNodes.length) && (state?.briefApproved && !state.frame?.stale
-            ? <Button variant={sheet ? "secondary" : "primary"} onClick={() => openView("brief")}>View brief</Button>
-            : <Button variant={sheet ? "secondary" : "primary"} disabled={busy || !state?.mapNodes.length} onClick={() => { void post({ action: "approveBrief" }).then((next) => next && openView("brief")); }}>Approve brief</Button>)}
-          {view === "brief" && (canDeliver
-            ? (state?.outputs.length || state?.imageBatch
-                ? <Button onClick={() => openView("outputs")}>View outputs</Button>
-                : <Button disabled={busy} onClick={() => { void createOutputs(); }}>Create outputs</Button>)
-            : <Button disabled={busy} onClick={() => openSheet("style")}>Choose style</Button>)}
-          {view === "outputs" && ((state?.outputs.length ?? 0) === 0 || outputsNeedUpdate
-            ? <Button disabled={busy || !canDeliver} onClick={() => { void createOutputs(); }}>{state?.outputs.length ? "Update outputs" : "Create outputs"}</Button>
-            : (state?.storyboard.panels.length ?? 0) > 0 && <Button onClick={() => openView("storyboard")}>View storyboard</Button>)}
-          {view === "storyboard" && (!state?.storyboardApproved
-            ? <Button disabled={busy || state?.storyboard.stale || !state?.storyboard.panels.length} onClick={() => { void post({ action: "approveStoryboard" }); }}>Approve storyboard</Button>
-            : state?.videoState === "rendered"
-              ? <Button onClick={() => openOutput([...state.videos].reverse().find((video) => !video.stale)?.id ?? "video")}>View video</Button>
-              : <Button disabled={busy || state?.videoState === "queued" || state?.videoState === "rendering"} onClick={() => { void post({ action: "renderVideo" }); }}>{state?.videoState === "queued" || state?.videoState === "rendering" ? "Creating…" : "Create video"}</Button>)}
-        </div>}
+        {loadState === "ready" && <div className="header-actions"><Button className="mobile-sources-trigger" variant="secondary" size="small" onClick={() => openSheet("sources")}>{visibleSourceCount} {visibleSourceCount === 1 ? "source" : "sources"}</Button><div className="mobile-workflow-action">{workflowAction}</div></div>}
       </NavigationHeader>
 
       {notice && <Card className={`notice notice--${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}><span>{notice.message}</span><IconButton label="Dismiss" onClick={() => setNotice(null)}><CloseIcon /></IconButton></Card>}
 
-      <section className="object-canvas" aria-label={currentTitle}>
-        {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
-        {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
-        {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onAddSource={() => openSheet("add-source")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "map" }); }} onReviewStyle={() => openSheet("style")} onRetryStyle={(url) => { void post({ action: "beginWebsiteStyleAnalysis", url }); }} onUseDefaultStyle={() => { void post({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: state?.onboarding.outcome } }); }} />}
-        {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
-        {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
-        {loadState === "ready" && view === "storyboard" && <StoryboardView storyboard={state?.storyboard} imageBatch={state?.imageBatch} approved={Boolean(state?.storyboardApproved)} panel={selectedPanel} busy={busy} onSelect={setSelectedPanelId} onPost={post} onShowSource={showSource} />}
-        {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} busy={busy} onShowSource={showSource} onShowOriginal={() => openSheet("original")} onRequestReplacement={async (panelId) => { const next = await post({ action: "regenerateImagePanel", panelId }); if (next) setNotice({ message: "Replacement requested. Review the new image in Storyboard before approving Video.", tone: "status" }); }} />}
-      </section>
+      <div className="workbench">
+        {loadState === "ready" && <SourcesRail sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => openSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
+        {loadState === "ready" && <div className="mobile-object-switcher" aria-label="Workshop objects"><Button variant="secondary" size="small" aria-pressed={view === "map"} onClick={() => openView("map")}>Map</Button><Button variant="secondary" size="small" aria-label="View brief" aria-pressed={view === "brief"} disabled={!state?.briefApproved} onClick={() => openView("brief")}>Brief</Button><Button variant="secondary" size="small" aria-label="View outputs" aria-pressed={view === "outputs" || view === "output"} disabled={!(state?.outputs.length || state?.imageBatch)} onClick={() => openView("outputs")}>Outputs</Button><Button variant="secondary" size="small" aria-label="View storyboard" aria-pressed={view === "storyboard"} disabled={!state?.storyboard.panels.length} onClick={() => openView("storyboard")}>Story</Button></div>}
+        <section className="object-canvas" aria-label={currentTitle}>
+          {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
+          {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
+          {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "map" }); }} onReviewStyle={() => openSheet("style")} onRetryStyle={(url) => { void post({ action: "beginWebsiteStyleAnalysis", url }); }} onUseDefaultStyle={() => { void post({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: state?.onboarding.outcome } }); }} />}
+          {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
+          {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
+          {loadState === "ready" && view === "storyboard" && <StoryboardView storyboard={state?.storyboard} imageBatch={state?.imageBatch} approved={Boolean(state?.storyboardApproved)} panel={selectedPanel} busy={busy} onSelect={setSelectedPanelId} onPost={post} onShowSource={showSource} />}
+          {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} busy={busy} onShowSource={showSource} onShowOriginal={() => openSheet("original")} onRequestReplacement={async (panelId) => { const next = await post({ action: "regenerateImagePanel", panelId }); if (next) setNotice({ message: "Replacement requested. Review the new image in Storyboard before approving Video.", tone: "status" }); }} />}
+        </section>
+        {loadState === "ready" && <ProductionRail state={state} view={view} action={workflowAction} onOpenView={openView} onOpenOutput={openOutput} onOpenStyle={() => openSheet("style")} onAddSource={() => openSheet("add-source")} />}
+      </div>
 
       {sheet === "workshops" && <WorkshopsSheet workshops={workshops} busy={busy} onClose={closeSheet} onSelect={(workshopId) => { void post({ action: "selectWorkshop", workshopId }); }} onCreate={(title) => post({ action: "createWorkshop", title }).then(Boolean)} onHelp={() => setSheet("help")} />}
       {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} onClose={closeSheet} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
@@ -401,7 +403,7 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
   </FullScreenShell>;
 }
 
-function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShowSource, onAddSource, onDismissOrientation, onReviewStyle, onRetryStyle, onUseDefaultStyle }: { state: PersistedWorkshop | null; selectedNode?: MapNode; busy: boolean; onSelect: (id: string) => void; onSync: (nodes: Pick<MapNode, "id" | "title" | "x" | "y" | "width" | "height">[]) => void; onUndo: () => void; onShowSource: (target?: EvidenceTarget) => void; onAddSource: () => void; onDismissOrientation: () => void; onReviewStyle: () => void; onRetryStyle: (url: string) => void; onUseDefaultStyle: () => void }) {
+function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShowSource, onDismissOrientation, onReviewStyle, onRetryStyle, onUseDefaultStyle }: { state: PersistedWorkshop | null; selectedNode?: MapNode; busy: boolean; onSelect: (id: string) => void; onSync: (nodes: Pick<MapNode, "id" | "title" | "x" | "y" | "width" | "height">[]) => void; onUndo: () => void; onShowSource: (target?: EvidenceTarget) => void; onDismissOrientation: () => void; onReviewStyle: () => void; onRetryStyle: (url: string) => void; onUseDefaultStyle: () => void }) {
   const sources = (state?.sourceItems ?? []).filter((source) => state?.activeSourceIds.includes(source.id));
   const nodes = (state?.mapNodes ?? []).filter((node) => !node.sourceId || state?.activeSourceIds.includes(node.sourceId));
   const relatedSourceId = (node: MapNode, index: number) => node.sourceId ?? sources[index % Math.max(1, sources.length)]?.id;
@@ -411,7 +413,7 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
   const analysis = state?.onboarding.styleAnalysis;
   const analysisDomain = analysis ? new URL(analysis.url).hostname : "";
 
-  if (!nodes.length) return <div className="state-surface"><StateMessage state="empty" title="Start with a source" action={<Button onClick={onAddSource}>Add source</Button>}>From your meetings and documents to a deck you can defend, with every claim traced to its source.</StateMessage></div>;
+  if (!nodes.length) return <div className="state-surface"><StateMessage state="empty" title="Start with a source">From your meetings and documents to a deck you can defend, with every claim traced to its source.</StateMessage></div>;
 
   return <div className="map-canvas" data-domain-ui="map-canvas">
     <div className="map-caption" data-domain-ui="map-caption"><span>{nodes.length} ideas · Drag to organize · Double-click to edit</span>{canUndo && <Button variant="secondary" size="small" disabled={busy} onClick={onUndo}>Undo</Button>}</div>
@@ -601,6 +603,52 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
     <ListGroup>{deliverables.map((item) => <ListRow className="original-output-row" key={item.title}><FileIcon /><span><strong>{item.title}</strong><small>{item.detail}</small></span></ListRow>)}</ListGroup>
     {currentVideo?.buildTrace && <ButtonLink variant="secondary" href={`/api/workshop/artifacts/build-trace-v${currentVideo.version}`} target="_blank" rel="noreferrer">How this was built</ButtonLink>}
   </SideSheet>;
+}
+
+function SourcesRail({ sources, activeIds, selected, onSelect, onToggle, onAdd, onShowMap }: { sources: SourceItem[]; activeIds: string[]; selected: SourceItem | null; onSelect: (source: SourceItem) => void; onToggle: (id: string) => void; onAdd: () => void; onShowMap: (source: SourceItem) => void }) {
+  const active = selected ?? sources[0];
+  return <aside className="sources-rail" aria-label="Sources">
+    <header className="rail-heading"><div><strong>Sources</strong><small>{activeIds.length} of {sources.length} selected</small></div><IconButton label="Add material" onClick={onAdd}><PlusIcon /></IconButton></header>
+    {sources.length ? <ListGroup className="rail-source-list">{sources.map((source) => <ListRow className={active?.id === source.id ? "source-row selected" : "source-row"} key={source.id}><Checkbox aria-label={`Use ${source.title}`} checked={activeIds.includes(source.id)} onChange={() => onToggle(source.id)} /><ListRowAction onClick={() => onSelect(source)}><FileIcon label={source.type} /><span><strong>{source.title}</strong><small>{source.claimCount} claims</small></span></ListRowAction></ListRow>)}</ListGroup> : <p className="rail-empty">Add a meeting, document, or conversation.</p>}
+    {active && <section className="rail-source-preview" aria-label={`Selected source: ${active.title}`}><strong>{active.title}</strong><p>“{active.excerpt}”</p><small>{active.locator}</small><Button variant="secondary" size="small" onClick={() => onShowMap(active)}>Show on map</Button></section>}
+  </aside>;
+}
+
+function ProductionItem({ title, detail, status, tone = "waiting", onClick, ariaLabel }: { title: string; detail: string; status: string; tone?: "current" | "waiting"; onClick?: () => void; ariaLabel?: string }) {
+  const content = <><span className="production-item-copy"><strong>{title}</strong><small>{detail}</small></span><Status tone={tone}>{status}</Status></>;
+  return <ListRow className="production-item">{onClick ? <ListRowAction aria-label={ariaLabel} onClick={onClick}>{content}</ListRowAction> : <div className="production-item-static">{content}</div>}</ListRow>;
+}
+
+function ProductionRail({ state, view, action, onOpenView, onOpenOutput, onOpenStyle, onAddSource }: { state: PersistedWorkshop | null; view: ObjectView; action: ReactNode; onOpenView: (view: ObjectView) => void; onOpenOutput: (id: string) => void; onOpenStyle: () => void; onAddSource: () => void }) {
+  const latest = (type: "deck" | "infographic") => [...(state?.outputs ?? [])].reverse().find((output) => output.type === type);
+  const deck = latest("deck");
+  const infographic = latest("infographic");
+  const currentVideo = [...(state?.videos ?? [])].reverse().find((video) => !video.stale) ?? [...(state?.videos ?? [])].reverse()[0];
+  const generatedImages = state?.imageBatch?.panels.filter((panel) => panel.state === "generated").length ?? 0;
+  const failedImages = state?.imageBatch?.panels.some((panel) => panel.state === "failed");
+  const briefReady = Boolean(state?.briefApproved && !state.frame?.stale);
+  const styleReady = Boolean(state?.style && !state.style.stale);
+  const hasOutputs = Boolean(deck || infographic || state?.imageBatch || state?.storyboard.panels.length || currentVideo);
+  const deliverStatus = !briefReady ? "Blocked by Brief" : !styleReady ? "Choose Style" : hasOutputs ? outputSetStatus(state).actionRequired ? "Needs update" : "In progress" : "Ready";
+
+  return <aside className="production-rail" aria-label="Production">
+    <header className="rail-heading"><div><strong>Production</strong><small>From thinking to finished work</small></div></header>
+    <section className="stage-progress" aria-label="Workshop progress">
+      <ListRowAction aria-current={view === "map" ? "step" : undefined} onClick={onAddSource}><span><strong>Capture</strong><small>{state?.activeSourceIds.length ?? 0} active sources</small></span><Status tone={(state?.activeSourceIds.length ?? 0) > 0 ? "current" : "waiting"}>{(state?.activeSourceIds.length ?? 0) > 0 ? "Ready" : "Start"}</Status></ListRowAction>
+      <ListRowAction aria-current={view === "map" || view === "brief" ? "step" : undefined} onClick={() => onOpenView(briefReady ? "brief" : "map")}><span><strong>Shape</strong><small>Map and Brief</small></span><Status tone={briefReady ? "current" : "waiting"}>{briefReady ? "Approved" : "Needs review"}</Status></ListRowAction>
+      <ListRowAction aria-label={hasOutputs ? "View outputs" : "Open Deliver"} aria-current={view === "outputs" || view === "storyboard" || view === "output" ? "step" : undefined} onClick={() => onOpenView(hasOutputs ? "outputs" : "brief")}><span><strong>Deliver</strong><small>Style and Outputs</small></span><Status tone={hasOutputs && !outputSetStatus(state).actionRequired ? "current" : "waiting"}>{deliverStatus}</Status></ListRowAction>
+    </section>
+    <section className="next-action" aria-label="Next action"><small>Next</small>{action}</section>
+    <ListGroup className="production-list">
+      <ProductionItem title="Brief" detail={briefReady ? `Version ${state?.frame?.version ?? 1}` : "Map sign-off"} status={state?.frame?.stale ? "Needs update" : briefReady ? "Approved" : "Needs review"} tone={briefReady && !state?.frame?.stale ? "current" : "waiting"} onClick={() => onOpenView(briefReady ? "brief" : "map")} ariaLabel={briefReady ? "View brief" : "Review Brief"} />
+      <ProductionItem title="Style" detail={styleReady ? state?.style?.name ?? "Company Style" : "Company and intent"} status={state?.style?.stale ? "Needs update" : styleReady ? "Ready" : "Not selected"} tone={styleReady ? "current" : "waiting"} onClick={onOpenStyle} />
+      <ProductionItem title="Presentation" detail={deck ? `Version ${outputVersion(deck, state?.outputs ?? [])}` : "Editable PowerPoint"} status={deck?.stale ? "Needs update" : deck ? "Up to date" : "Planned"} tone={deck && !deck.stale ? "current" : "waiting"} onClick={deck ? () => onOpenOutput(deck.id) : undefined} />
+      <ProductionItem title="Infographic" detail="One-page visual" status={infographic?.stale ? "Needs update" : infographic ? "Up to date" : "Planned"} tone={infographic && !infographic.stale ? "current" : "waiting"} onClick={infographic ? () => onOpenOutput(infographic.id) : undefined} />
+      <ProductionItem title="Image set" detail={state?.imageBatch ? `${generatedImages} of ${state.imageBatch.panels.length} ready` : "Six coherent visuals"} status={state?.imageBatch?.stale ? "Needs update" : failedImages ? "Incomplete" : state?.imageBatch && generatedImages === state.imageBatch.panels.length ? "Up to date" : "Planned"} tone={state?.imageBatch && !state.imageBatch.stale && !failedImages && generatedImages === state.imageBatch.panels.length ? "current" : "waiting"} onClick={state?.imageBatch ? () => onOpenOutput("images") : undefined} />
+      <ProductionItem title="Storyboard" detail={state?.storyboard.panels.length ? `${state.storyboard.panels.length} editable panels` : "Review before Video"} status={state?.storyboard.stale ? "Needs update" : state?.storyboardApproved ? "Approved" : state?.storyboard.panels.length ? "Needs review" : "Planned"} tone={state?.storyboardApproved && !state.storyboard.stale ? "current" : "waiting"} onClick={state?.storyboard.panels.length ? () => onOpenView("storyboard") : undefined} ariaLabel="View storyboard" />
+      <ProductionItem title="Video" detail={currentVideo ? `Version ${currentVideo.version}` : "From approved Storyboard"} status={currentVideo?.stale ? "Needs update" : currentVideo ? "Up to date" : state?.videoState === "queued" || state?.videoState === "rendering" ? "Creating" : "Planned"} tone={currentVideo && !currentVideo.stale ? "current" : "waiting"} onClick={currentVideo ? () => onOpenOutput(currentVideo.id) : undefined} />
+    </ListGroup>
+  </aside>;
 }
 
 function StoryboardView({ storyboard, imageBatch, approved, panel, busy, onSelect, onPost, onShowSource }: { storyboard?: PersistedWorkshop["storyboard"]; imageBatch?: PersistedWorkshop["imageBatch"]; approved: boolean; panel?: PersistedWorkshop["storyboard"]["panels"][number]; busy: boolean; onSelect: (id: string) => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onShowSource: (target?: EvidenceTarget) => void }) {

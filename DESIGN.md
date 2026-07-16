@@ -14,9 +14,9 @@ The memorable visual remains **evidence becoming structure**: a native ChatGPT c
 
 ## Simplification rule
 
-The product may be technically deep, but the default viewport must not expose the whole system. WorkshopLM renders **one current object at a time**. It has no persistent tabs, stage selector, generic Library, or destination rail inside a Workshop. Map, Brief, Outputs, Storyboard, Video, and each selected Output are reached through Back, a direct link, the host conversation, or the current screen's one contextual action.
+The product may be technically deep, but its geography must stay obvious. On desktop, WorkshopLM uses one stable **Sources | current object | Production** workbench. These are not tabs or competing destinations: Sources answers what material is active, the center holds the one object being worked on, and Production shows what is ready, blocked, current, or stale.
 
-Sources, Style, source evidence, creation controls, jobs, versions, and technical details are contextual sheets, inspectors, or disclosures. The default view shows the current work, `{n} sources`, and one next action—nothing else.
+The persistent rails stay narrow and operational. The Production rail owns the single next action and compact Capture → Shape → Deliver status; the header carries identity and Back only. Style editing, source evidence, capture, versions, and technical detail remain contextual sheets or focused views. Mobile collapses the rails into one compact object switcher and the same linear object model rather than squeezing three columns onto a phone.
 
 ## Surface model
 
@@ -92,24 +92,22 @@ Design first for the ChatGPT in-app browser at approximately 1200×800, then ver
 
 ```text
 ┌──────────────────────────────────────────────────────────────────────┐
-│ ‹  Workshop / current object       Sources 3        primary action  │ 52
+│ ‹  Workshop / current object                                      │ 52
 ├──────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│                     one focused canvas                               │
-│              Map / Brief / selected Output                           │
-│                                                                      │
-│  optional Sources sheet                    optional claim inspector │
-│                                                                      │
-│                 contextual approval bar when ready                   │
+│ Sources       │             current object             │ Production │
+│ active scope  │       Map / Brief / selected Output    │ progress   │
+│ source detail │                                        │ next action│
+│ add/capture   │                                        │ Outputs    │
 └──────────────────────────────────────────────────────────────────────┘
 ```
 
-- Top bar: 52px, flat white `Navigation/Header`. It contains Back when needed, `Workshop / current object`, the `{n} sources` secondary Button, and at most one context-sensitive primary Button.
-- The current object title is not navigation. Object changes come from the active workflow, direct links, Back, or the host conversation.
-- Sources: closed by default; the same control opens an official SideSheet from every object and returns focus to its trigger when closed.
+- Top bar: 52px, flat white `Navigation/Header`. It contains Back when needed and `Workshop / current object`; workflow actions do not change meaning inside the header.
+- Sources: a persistent Sources rail on desktop with active scope, source title/type, claim count, add/capture, and contextual source detail. The official Sources SideSheet remains the compact/mobile equivalent.
+- Production: a persistent Production rail on desktop with operational Capture → Shape → Deliver status, one explicit next action, and the accumulating Output set. Planned items are visible before generation and become openable when real artifacts exist.
+- The current object remains the visual center. Clicking a source, stage, or produced artifact changes context without changing the location or meaning of the rails.
 - Creation: `Create outputs` produces the configured deliverables from the approved Brief, current Style, and active Sources. `Update outputs` replaces it when dependencies change or creation is partial.
 - Context inspector: closed by default and appears only after selecting a Map claim. Its title and actions are specific; source evidence always opens the `Source` sheet.
-- Center: at least 80% of default workspace width and never narrower than 640px on desktop.
+- Center: receives all remaining width after the two narrow rails. Focused editors adapt at compact desktop widths rather than hiding source or production context.
 - Technical state is absent from the default path. Do not reserve a permanent host strip, activity strip, status bar, or bottom approval bar.
 
 ## Primary screens
@@ -123,17 +121,17 @@ Open the last active Workshop or sanitized demo Workshop immediately on its Map.
 The Map is the product's hero screen and opens by default after a task is linked.
 
 - A quiet white Excalidraw canvas is the interaction engine. Its menus, toolbar, export controls, context menu, zoom controls, and other native product chrome stay hidden; the Apps in ChatGPT primitives remain the only WorkshopLM chrome.
-- Sources occupy a stable left region. Semantic nodes occupy the open work field, with grounded, derived, and creative states distinguished by restrained green, orange, and blue treatments.
+- Sources occupy the stable left rail. Semantic nodes occupy the open work field, with grounded, derived, and creative states distinguished by restrained green, orange, and blue treatments.
 - Thin arrows expose direct source→node evidence and semantic node→node relationships. The canonical graph and durable locators remain the truth; Excalidraw owns presentation geometry only.
 - Users drag and resize semantic nodes directly and double-click their bound text to edit it. Position, size, and title changes persist through typed graph operations, invalidate approved downstream work, and can be restored through WorkshopLM's `Undo` action.
 - Selecting a node opens one contextual claim inspector. `Show source` opens the exact source excerpt and locator, and closing the sheet returns to the selected Map context.
 - Source nodes are reference anchors rather than freeform content. Selecting one opens the Source sheet instead of introducing a second inspector or navigation system.
 - Desktop and compact widths render the spatial canvas. Mobile renders a calm review outline over the same semantic graph; it does not pretend to be a miniature whiteboard.
-- The approval action reads `Approve brief`; after approval, the same position becomes `View brief`.
+- The Production rail reads `Approve brief`; after approval, it advances to the next unmet professional action and keeps the Brief available in the production history.
 
 The hackathon path does not depend on ingestion animation. New nodes may appear with a short standard transition only when it helps the user understand what changed; reduced-motion mode removes it.
 
-### 3. Sources sheet
+### 3. Sources rail and sheet
 
 Source rows show:
 
@@ -143,7 +141,7 @@ Source rows show:
 - grounded-claim count;
 - a selected-source preview with exact excerpt and locator.
 
-Clicking a row updates the preview without navigating. `Show on map` closes the sheet, returns to Map, and selects the related semantic node. A factual citation uses `Show source` to open the exact excerpt and locator in the Source sheet.
+Clicking a row updates the inline rail preview without navigating. `Show on map` returns to Map and selects the related semantic node. At compact/mobile widths, the same content uses the official Sources SideSheet and returns focus to its trigger. A factual citation uses `Show source` to open the exact excerpt and locator without changing the active source scope.
 
 ### 4. Brief and Style
 
@@ -153,14 +151,14 @@ Style opens as the `StyleSetup` composite: official SideSheet, selectable ListRo
 
 Technical exports such as `FRAME.md`, `DESIGN.md`, tokens, model IDs, hashes, and version mechanics appear only under technical Details or export. They never replace the formatted Brief or Style views.
 
-### 5. Outputs history
+### 5. Outputs history and Production rail
 
-After Brief approval and Style selection, Outputs becomes the durable history of professional work. Every completed Output has a distinct real thumbnail or playable preview above quiet metadata.
+The Production rail shows the planned family from the start and becomes the compact accumulating index as work is created. After Brief approval and Style selection, the centered Outputs view remains the durable, visually rich history of professional work. Every completed Output has a distinct real thumbnail or playable preview above quiet metadata.
 
 - `Create outputs` creates the selected types from the same Brief, Style, and source scope.
 - Presentation and infographic versions remain visible newest-first with a real preview, type, version, freshness, source coverage, and one card-level open action.
 - Video follows the same rule: the first render remains one ordinary peer card; after a re-render, immutable versions appear newest-first as `Video · Version N`, with older versions labeled `Needs update` and still openable at their original bytes.
-- Presentation, infographic, image set, Storyboard, and Video are peers in one responsive card grid. None is demoted into a secondary rail or carousel.
+- Presentation, infographic, image set, Storyboard, and Video are peers in the centered responsive card grid. The Production rail indexes their state and opens them; it does not replace their full review surface.
 - Image set and Storyboard cards use compact domain previews inside the official media-card boundary; each opens its one focused review surface.
 - `Needs update` and partial messages appear only when they change the next action; current, stale, failed, and partial work remains visible without internal paths.
 - A focused factual Output and the focused image set use `Show source`; the focused Video uses `Show original` for the meta-demo before/after reveal.
@@ -172,7 +170,7 @@ The Outputs card uses a compact contact sheet for six visually coherent panels. 
 
 ### 7. Storyboard
 
-Use a horizontal filmstrip above a large selected-panel editor. Every panel displays duration, editable title and narration, source access, and stale status. `Show source` resolves the selected panel's stored claim, chunk, source, and locator; it may not fall back to an unrelated first source. When an image set exists, each panel binds one exact image-panel ID and version; the filmstrip, selected-panel preview, and local video renderer must resolve those same bytes. Regenerating a bound image to a new version marks the affected Storyboard path `Needs update` and revokes its approval. The second and final blocking action is `Approve storyboard`. Only after approval does the same header position become `Create video`.
+Use a horizontal filmstrip above a large selected-panel editor. Every panel displays duration, editable title and narration, source access, and stale status. `Show source` resolves the selected panel's stored claim, chunk, source, and locator; it may not fall back to an unrelated first source. When an image set exists, each panel binds one exact image-panel ID and version; the filmstrip, selected-panel preview, and local video renderer must resolve those same bytes. Regenerating a bound image to a new version marks the affected Storyboard path `Needs update` and revokes its approval. The second and final blocking action is `Approve storyboard`. Only after approval does the Production rail advance to `Create video`.
 
 ### 8. Source evidence and original reveal
 
@@ -213,9 +211,9 @@ No looping ambient animation. Standard transitions are 140–220ms; the signatur
 
 ## Responsive behavior
 
-- **Wide desktop (≥1200):** one current object with an optional Sources sheet or claim inspector; both are closed by default.
-- **Compact desktop/tablet (621–1199):** one current object; only one sheet or inspector may be open at a time.
-- **Mobile (≤620):** review and approval companion. Map becomes a semantic outline; Sources, evidence, Brief, Outputs, Storyboard, Video, and the original reveal remain readable. Do not render a fake miniature whiteboard or full slide editor.
+- **Wide desktop (≥1200):** persistent Sources rail, one current object, and persistent Production rail. Contextual evidence may open beside the selected object.
+- **Compact desktop/tablet (901–1199):** the same three-region geography with narrower rails and single-column focused editors.
+- **Mobile/tablet (≤900):** one linear current object with the Sources SideSheet and compact context controls. Map becomes a semantic outline; Sources, evidence, Brief, Outputs, Storyboard, Video, and the original reveal remain readable. Do not render a fake miniature whiteboard or full slide editor.
 
 The judged desktop path must be visually complete at 1200×800 and remain usable at 1024×768.
 

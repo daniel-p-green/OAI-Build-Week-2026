@@ -49,7 +49,7 @@ describe("official Apps in ChatGPT UI implementation", () => {
     for (const retired of ["Grounding this Workshop", "Evidence becomes structure", "Approve as brief", "Approve map as brief", "Production contract", "Visual contract", "Lock one coherent system", "Lock Style v1", "Update Style v1", "Coherent delivery package", "One system. Every format.", "Generate package", "Refresh package", "Open package", "Illuminate path on Map", "Highlight on Map", "Provider render pending", "Editable before the expensive step", "Prepare render", "FRAME.md", "DESIGN.md", "Visual DNA", "Brief approved", "Style in use", "Storyboard approved", "Approval needed", "In use"]) {
       expect(page).not.toContain(retired);
     }
-    for (const required of ["Approve brief", "Choose style", "Saved styles", "Use saved style", "Website", "Set manually", "Client pitch", "Board presentation", "Team workshop", "Add brand details", "Use this style", "Save new version", "How WorkshopLM works", "Create outputs", "Update outputs", "View outputs", "Show source", "Sources in this output", "Select a claim to see the exact source text", "Show on map", "Image set", "Ready for review", "Create video", "View video", "Download PowerPoint", "Open preview", "Open video", "Up to date", "Needs update"]) expect(page).toContain(required);
+    for (const required of ["Approve brief", "Choose style", "Saved styles", "Use saved style", "Website", "Set manually", "Client pitch", "Board presentation", "Team workshop", "Add brand details", "Use this style", "Save new version", "How WorkshopLM works", "Create outputs", "Update outputs", "Review storyboard", "Show source", "Sources in this output", "Select a claim to see the exact source text", "Show on map", "Image set", "Ready for review", "Create video", "View video", "Download PowerPoint", "Open preview", "Open video", "Up to date", "Needs update"]) expect(page).toContain(required);
     expect(page).not.toMatch(/>\s*(Current|Stale|Trace)\s*</);
   });
 
@@ -62,6 +62,16 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(page).not.toMatch(/role="tab(list)?"|<nav\b/);
   });
 
+  it("keeps desktop source, current-object, and production context in one workbench", () => {
+    expect(page).toContain('className="workbench"');
+    expect(page).toContain('className="sources-rail" aria-label="Sources"');
+    expect(page).toContain('className="production-rail" aria-label="Production"');
+    expect(page).toContain('className="next-action" aria-label="Next action"');
+    expect(page).toContain('className="stage-progress" aria-label="Workshop progress"');
+    expect(appCss).toContain("grid-template-columns: 220px minmax(0, 1fr) 252px");
+    expect(appCss).toContain(".mobile-sources-trigger, .mobile-workflow-action { display: none; }");
+  });
+
   it("keeps reusable Styles inside the existing Style sheet", () => {
     expect(page).toContain('fetch("/api/workshop?view=styles")');
     expect(page).toContain('action: "applyStyleLibrary"');
@@ -70,10 +80,10 @@ describe("official Apps in ChatGPT UI implementation", () => {
   });
 
   it("keeps the governing design document aligned with the simplified interface", () => {
-    for (const retired of ["### 3. Source rail", "### 4. Brief and Design review", "### 5. Coherent output package", "one `Generate package` action", "`Approve storyboard & render`", "`Approve map as brief`", "brief sheet folds into Studio inputs", "small ink pulses enter from the host strip", "Sources, Map, FRAME.md/DESIGN.md review, Studio"]) {
+    for (const retired of ["one current object at a time", "Sources sheet or claim inspector; both are closed by default", "one `Generate package` action", "`Approve storyboard & render`", "`Approve map as brief`", "brief sheet folds into Studio inputs", "small ink pulses enter from the host strip"]) {
       expect(design).not.toContain(retired);
     }
-    for (const required of ["one current object at a time", "Sources sheet", "Brief and Style", "Outputs history", "`Approve brief`", "`Create outputs`", "`Approve storyboard`", "`Create video`", "`Show source`", "`Show original`", "packages/ui/src/contract.ts"]) {
+    for (const required of ["Sources | current object | Production", "persistent Sources rail", "Production rail", "Brief and Style", "Outputs history", "`Approve brief`", "`Create outputs`", "`Approve storyboard`", "`Create video`", "`Show source`", "`Show original`", "packages/ui/src/contract.ts"]) {
       expect(design).toContain(required);
     }
   });

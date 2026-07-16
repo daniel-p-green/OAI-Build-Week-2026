@@ -5,27 +5,37 @@
 03Image set4s
 04Storyboard4s
 05Demo video6s
-3 sources
+Add material
 Back to Brief
 Back to Map
 Back to Outputs
+BriefVersion 3Approved
 Build notes · §2
+Capture3 active sourcesReady
 Create video
+DeliverStyle and OutputsIn progress
 Edit
 Evidence
 Goal · capture
 Image set
+Image set0 of 6 readyPlanned
 Infographic
 InfographicInfographic · Version 1Up to date3 sources
+InfographicOne-page visualUp to date
 Outputs
+PDFBuild Week brief3 claims
 Presentation
 PresentationPresentation · Version 1Up to date3 sources
+PresentationVersion 1Up to date
+ShapeMap and BriefApproved
+Show on map
 Show source
 Storyboard
+Storyboard5 editable panelsApproved
+StyleWorkshopLM editorialReady
 Success looks like
+TXTRaw voice brainstorm5 claims
 The product promise
 Undo
-View brief
-View outputs
-View storyboard
+WEBWorkshopLM direction2 claims
 WorkshopLM Build Week
