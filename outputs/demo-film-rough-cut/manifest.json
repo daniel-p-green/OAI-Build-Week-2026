@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "editorial-rough-cut",
   "disclosure": "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video.",
-  "builtAt": "2026-07-16T17:06:01.284Z",
+  "builtAt": "2026-07-16T17:40:47.655Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "voice": {
@@ -15,7 +15,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-rough-cut.mp4",
-    "sha256": "4280adfd66ae8e723cf8b9e83a03b1bec008cf6b8671e5e1b3a79f2630f72ba4",
+    "sha256": "b662b5913d160ac0dc52ec31d16d1babff6c951285a8aedce54ac60b4f81182d",
     "durationSeconds": 140.021333,
     "streams": [
       {
@@ -33,12 +33,12 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "15f383a5aab6a46d62a04c39c89048c8b5762f814c1b90fbade73feb7e3b8917"
+    "sha256": "a3cc99f2ea4eedeab37868f0a0621cd583bcd9c99192caebb0fabedb3f659ec9"
   },
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "4a8a909e3a339e41e5ba88955b5fbfa4c1c6a232b85f31948870b7d7bc94fdcc"
+      "sha256": "d34502428f54fbac32f99002a2e31460075097600700d524ac629c7a6ce7c38a"
     },
     {
       "relativePath": "review/02.jpg",
@@ -46,27 +46,27 @@
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "075ce9526756afa0f327c9bf254c5526d91c1f10dd52e1d636db5f7766596f49"
+      "sha256": "f5abf7315a003158f0cda51468b6f84f3ddaaecec4b58d1e72afb8409740e79d"
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "546a1d10a7bbb81bf2659e9da39cd06584fc8393e8aaab10257920a87bb7834e"
+      "sha256": "2123f35a26811dccaf74526a1d069d4812d13498c02be588d83fad00759ea309"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "34cc9d3953b12f8f17dcbe716ec74a5f5b1d4097cd372da687f11092032811b4"
+      "sha256": "8f925c825e7769b4e477460040cae839bb19d1812d073bde2aa0080374e36956"
     },
     {
       "relativePath": "review/06.jpg",
-      "sha256": "7023a92eb8219379b6bef6bf7a84f6b5b5a1b57c88771fd53a89161386147136"
+      "sha256": "f7395756d3c129cc3d9248e2c0a2b811bdedeac7e8f04811232d8e57deae365c"
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "77c5ffd5a7f840fa8ace1348b7039577d4382da37dfa17c1aceaffd4c36e27dd"
+      "sha256": "8a7c20028d5782d9db609c3b77ecfed83f5784d45b9ca9f3abe14dbc361f26cd"
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "75bc0614d67718943ec7c7ad13515cadb65773a9a8b4f44e947beacbfc90b169"
+      "sha256": "ce9609d7f40ee625da147f598708348f5ed7492f8ccdc00398c26c1a8159517e"
     },
     {
       "relativePath": "review/09.jpg",
@@ -74,7 +74,7 @@
     },
     {
       "relativePath": "review/10.jpg",
-      "sha256": "94b306f1c8fd06ebfdad599e2544975a2d91b8de55cd2b14d805bf86eb9e4c97"
+      "sha256": "62a6465857ae69b6fb99906786d4011f83e1c39dd5bc92ce17bbdb1e1438629e"
     }
   ],
   "shots": [
@@ -91,8 +91,8 @@
       "sourceBeats": [
         "map"
       ],
-      "sourceStartSeconds": 0.715,
-      "sourceEndSeconds": 2.415,
+      "sourceStartSeconds": 0.631,
+      "sourceEndSeconds": 2.332,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
@@ -131,8 +131,8 @@
       "sourceBeats": [
         "sources"
       ],
-      "sourceStartSeconds": 2.915,
-      "sourceEndSeconds": 4.42,
+      "sourceStartSeconds": 2.832,
+      "sourceEndSeconds": 4.335,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
@@ -153,8 +153,8 @@
         "source-trace",
         "map-edit"
       ],
-      "sourceStartSeconds": 5.12,
-      "sourceEndSeconds": 7.617,
+      "sourceStartSeconds": 5.035,
+      "sourceEndSeconds": 7.529,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
@@ -174,8 +174,8 @@
       "sourceBeats": [
         "brief-approval"
       ],
-      "sourceStartSeconds": 8.543,
-      "sourceEndSeconds": 9.89,
+      "sourceStartSeconds": 8.46,
+      "sourceEndSeconds": 9.801,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
@@ -195,8 +195,8 @@
       "sourceBeats": [
         "style"
       ],
-      "sourceStartSeconds": 10.79,
-      "sourceEndSeconds": 11.783,
+      "sourceStartSeconds": 10.701,
+      "sourceEndSeconds": 11.689,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
@@ -213,9 +213,12 @@
         "requestId": "req_cee65297a43e44c990ad429ad397fc4a",
         "sha256": "5ec1b60cc990cda57a53f234366fb1faa8acee61817cd7fe6580cc06e0df3ef1"
       },
-      "sourceBeats": [],
-      "externalVideo": "outputs/demo-film-inputs/provider-image-gallery.mov",
-      "sourceDurationSeconds": 6,
+      "sourceBeats": [
+        "create-outputs",
+        "output-evidence"
+      ],
+      "sourceStartSeconds": 12.608,
+      "sourceEndSeconds": 18.289,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
@@ -236,8 +239,8 @@
         "storyboard-edit",
         "storyboard-approval"
       ],
-      "sourceStartSeconds": 17.643,
-      "sourceEndSeconds": 20.763,
+      "sourceStartSeconds": 18.476,
+      "sourceEndSeconds": 21.593,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
@@ -276,8 +279,8 @@
       "sourceBeats": [
         "original-reveal"
       ],
-      "sourceStartSeconds": 55.987,
-      "sourceEndSeconds": 58.536,
+      "sourceStartSeconds": 54.807,
+      "sourceEndSeconds": 57.375,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,

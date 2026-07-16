@@ -8733,6 +8733,45 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 - Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
 
+---
+
+## 2026-07-16 12:42 CT — Log sequence correction
+
+The 12:41 CT judge-film Sketch entry was appended after an earlier repeated Open-items footer rather than after the already-existing 12:34 CT entry. Its evidence and timestamp are correct; this note preserves the append-only record instead of moving or rewriting history.
+
+---
+
+## 2026-07-16 12:41 CT — Sketch enters the judge-facing film seam
+
+**Area:** Demo truth / film assembly / visual verification
+
+### Changed
+
+- Audited the refreshed capture against the actual rough-cut assembly and found that the new focused Sketch was present in raw footage but could still be omitted because the Outputs chapter preferred its external GPT Image 2 gallery evidence.
+- Assigned the full `create-outputs` → `output-evidence` capture span to the Outputs chapter and added an explicit, shot-local `preferCapture` decision. The rough-cut builder now shows the integrated workbench for that chapter while retaining the provider image gallery and sanitized provider run as required evidence.
+- Removed the reversed `video-render` → `output-evidence` span from the render chapter. That chapter now uses only the separately verified provider-narrated render it is meant to prove.
+- Reconciled the current fixture duration and Output-set language across `GOAL.md`, the demo script, and the completion evidence audit.
+
+### Verified
+
+- Rebuilt the ten-shot Cedar rough cut. The 140.021333-second H.264/AAC file hashes to `b662b5913d160ac0dc52ec31d16d1babff6c951285a8aedce54ac60b4f81182d`; its contact sheet hashes to `a3cc99f2ea4eedeab37868f0a0621cd583bcd9c99192caebb0fabedb3f659ec9`.
+- Extracted and visually inspected the judge-film frame at 85.2 seconds. It shows the real focused `Sketch`, `Download SVG`, `Open full size`, the hand-drawn styled artifact, Source count, and captured-fixture disclosure. The frame hashes to `d4fb1e9804b5c1dc2f8f9728703f2e0b4c44f3018025fb712e8f4c3b1ac2c660`.
+- The rough-cut manifest records `sourceBeats: [create-outputs, output-evidence]` and the exact 12.608–18.289-second fixture span for the Outputs shot.
+- `pnpm demo:film:verify` passed the 140-second, 302-word plan with the current 58.0-second capture, twelve referenced beats, eight ready shots, and two honest blocked shots.
+- `pnpm submission:packet:verify` passed with Terra, six provider-backed GPT Image 2 panels, Cedar narration, the sixteen-screen UI gallery, zero paid judge-replay calls, and the unchanged four founder/final-package evidence slots.
+- No provider request ran. The evidence ledger remains at 104 OpenAI HTTP operations, and no exact dollar debit is inferred.
+
+### Decisions
+
+- Judge-visible product integration outranks showing a provider asset in isolation when the same chapter still retains hash-bound provider evidence. Sketch is now visible as part of the actual professional workflow, not as an unconnected capability claim.
+- Shot source selection is explicit and local. `preferCapture` is used only where a chapter must show the integrated workbench despite also carrying external media evidence.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
 ## 2026-07-16 10:51 CT — Current public main survives a clean-room judge run
 
 **Area:** Distribution truth / clean installation / optional judge path
@@ -8833,3 +8872,45 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 ## 2026-07-16 12:09 CT — Log sequence correction
 
 The 12:08 CT provider-backed judge-fixture entry was added after the 10:45 CT entry but before the already-existing 10:51, 11:29, and 11:35 CT entries because its append patch matched an earlier repeated footer. Its evidence and timestamp are correct; this note preserves the append-only record rather than silently relocating it.
+
+---
+
+## 2026-07-16 12:34 CT — Hand-drawn Sketch becomes a real source-traced Output
+
+**Area:** Whiteboard modes / progressive disclosure / responsive UX / provenance
+
+### Changed
+
+- Audited the locked Sketch requirement against the actual product and found a false-completion gap: service state and isolated tests existed, but professionals could not see, share, or regenerate the hand-drawn whiteboard mode anywhere in the workbench.
+- Replaced the state-only object with a deterministic 1600×900 SVG artifact built from the approved semantic Map. It inherits the active Style's paper, ink, Accent, and heading type; preserves semantic Sourced, Derived, and Creative color; draws exact recorded graph edges; and records graph revision, Style version, claim IDs, file path, and SHA-256.
+- Added Sketch to the standard `Create outputs` / `Update outputs` path and exposed it as one supporting card in Outputs. It opens in the existing focused-object pattern with a full artifact first, source claims second, `Download SVG` as the finishing action, and `Open full size` as a quiet secondary action. No tab, new editor, approval gate, or permanent navigation was added.
+- Map edits, Source-scope changes, and Style changes now mark Sketch `Needs update` without deleting its bytes. The focused object offers `Update sketch`; the standard Output refresh also writes the next version. The approved semantic Map remains the only editing engine.
+- Replaced the brittle numbered original-reveal claim with `Became a connected Output set`, then added Sketch to the exact deliverable list. This preserves the meta-demo's clarity as the package evolves.
+- Fixed browser scroll anchoring discovered during visual review so opening Sketch from a lower gallery card always shows its object title. Contextual Source sheets still preserve the professional's later reading position.
+
+### Verified
+
+- The worker suite passed all 120 tests. The expanded Sketch test verifies the SVG file, 64-character hash, source claims, artifact resolution, version, approval state, and Map-driven staleness.
+- The full production-browser suite passed all 30 cases after desktop and mobile Sketch proof was added. It verifies the served SVG's 1600-pixel natural width, source-trail region, download route, focused-entry scroll position, zero horizontal overflow, official component contracts, visible copy, and the unchanged broader Workshop path.
+- Visually inspected the standalone six-idea SVG and the focused workbench at 1200×800 and 390×844. The desktop baseline hashes to `62afadd87227155fd076a3ea76b894eeabb7e58bf3add8509f2e9479aad3d00b`; the mobile baseline hashes to `2a93cd4689f405b3d60a34ec410936ac5b0453cf213c02eb0104dbfb429a013b`.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 30 web tests and 120 worker tests.
+- `pnpm demo:e2e` passed the full recorded Source-to-Video seam and now reports Sketch Version 1, six ideas, and `generated/sketch-v1.svg`; the current SVG hashes to `b6cf254a42d51107cf3b3e709b64051d5c9745fa5a45638c1585ac6945c2b510`.
+- `pnpm submission:packet:verify` remains green with Terra, six provider-backed judge images, Cedar narration, the 2:20 rough film, the current UI gallery, eight ready shots, and two honest founder/final-package blocks.
+- No provider request ran. The evidence ledger remains 104 OpenAI HTTP operations, and no exact dollar debit is inferred.
+
+### Decisions
+
+- Sketch belongs in Outputs as the shareable whiteboard view, not beside Map as a peer navigation mode. This satisfies the two-whiteboard promise while preserving the simplified object model.
+- SVG is the right finishing format for this pass: it is local, deterministic, inspectable, infinitely scalable, and editable in common professional design tools without introducing a second in-product canvas engine.
+- Hand-drawn character comes from bounded double strokes, slight deterministic rotation, and curved links; typography, spacing, palette, evidence semantics, and source truth remain professional and Style-controlled.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 12:43 CT — Log sequence correction
+
+The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched an earlier repeated footer rather than the true end of the append-only log. Their evidence and timestamps are correct; this note records their actual sequence after the 12:34 CT milestone without moving or rewriting prior entries.

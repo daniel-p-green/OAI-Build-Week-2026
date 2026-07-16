@@ -124,7 +124,8 @@
       "startSeconds": 82,
       "endSeconds": 96,
       "state": "ready",
-      "captureBeats": ["create-outputs"],
+      "captureBeats": ["create-outputs", "output-evidence"],
+      "preferCapture": true,
       "narration": "The hero output is a branded deck I can edit and defend. Every factual claim keeps exact evidence, while the infographic and coherent GPT Image 2 set support the same story and visual system.",
       "requiredMoments": ["provider-image-set"],
       "requiredEvidence": [
@@ -160,7 +161,7 @@
       "startSeconds": 109,
       "endSeconds": 124,
       "state": "ready",
-      "captureBeats": ["video-render", "output-evidence"],
+      "captureBeats": ["video-render"],
       "narration": "The local HyperFrames worker accepts only that approved current Storyboard, synchronizes the OpenAI narration, and renders the Video. Show source still follows a finished claim back through the Brief and Map to evidence.",
       "requiredMoments": ["provider-narration"],
       "requiredEvidence": [

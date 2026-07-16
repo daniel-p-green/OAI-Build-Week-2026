@@ -74,6 +74,7 @@ type PersistedWorkshop = {
   mapEdges: MapEdge[];
   graphState?: string;
   frame?: { version: number; markdown: string; stale: boolean };
+  sketch?: { version: number; graphRevision: number; styleVersion?: number; nodes: Pick<MapNode, "id" | "title" | "body" | "kind" | "locator">[]; edges: MapEdge[]; claimIds: string[]; relativePath: string; sha256: string; stale: boolean; approved: boolean; createdAt: string };
   style?: { version: number; source: "manual" | "website"; name: string; accent: string; ink: string; paper: string; paletteRoles: StylePaletteRoles; typographyRoles: StyleTypographyRoles; brandAssets: BrandAsset[]; logos: string[]; licensedFonts: string[]; references: string[]; negativeRules: string[]; intentProfile: ManualStylePayload["intentProfile"]; referenceUrl?: string; libraryId?: string; libraryFamilyId?: string; libraryRevision?: number; stale: boolean };
   assetPlan?: { version: number; stale: boolean; evidenceClaimIds: string[] };
   storyboard: { version: number; stale: boolean; panels: { id: string; title: string; narration: string; durationSeconds: number; claimIds: string[]; evidence: { claimId?: string; sourceId: string; chunkId?: string; locator: string }[]; imagePanelId?: string; imagePanelVersion?: number; approved: boolean; stale: boolean }[] };
@@ -112,11 +113,11 @@ function outputSetStatus(state: PersistedWorkshop | null) {
   const latest = (type: "deck" | "infographic") => [...state.outputs].reverse().find((output) => output.type === type);
   const deck = latest("deck");
   const infographic = latest("infographic");
-  const generationStarted = Boolean(state.outputs.length || state.audioOverviews.length || state.assetPlan || state.imageBatch);
+  const generationStarted = Boolean(state.outputs.length || state.audioOverviews.length || state.assetPlan || state.imageBatch || state.sketch);
   const audioOverview = [...(state.audioOverviews ?? [])].reverse().find((item) => !item.stale);
   const failedImages = Boolean(state.imageBatch?.panels.some((panel) => panel.state === "failed"));
   const failedOutputs = Boolean(state.outputRecovery && Object.keys(state.outputRecovery).length);
-  const incomplete = Boolean(generationStarted && (!deck || !infographic || !state.imageBatch || !state.storyboard.panels.length)) || failedImages || failedOutputs || audioOverview?.status === "failed";
+  const incomplete = Boolean(generationStarted && (!deck || !infographic || !state.sketch || !state.imageBatch || !state.storyboard.panels.length)) || failedImages || failedOutputs || audioOverview?.status === "failed";
   const replacementIds = new Set(state.imageBatch?.panels.filter((panel) => panel.state === "selected_for_regeneration").map((panel) => panel.id) ?? []);
   const replacementOnlyStoryboardStale = replacementIds.size > 0
     && state.storyboard.stale
@@ -124,6 +125,7 @@ function outputSetStatus(state: PersistedWorkshop | null) {
   const stale = Boolean(
     deck?.stale
     || infographic?.stale
+    || state.sketch?.stale
     || state.assetPlan?.stale
     || state.imageBatch?.stale
     || state.audioOverviews.at(-1)?.stale
@@ -153,6 +155,7 @@ function affectedWorkForSourceScope(state: PersistedWorkshop | null) {
   if (!state) return [];
   const affected = state.mapNodes.length ? ["Map"] : [];
   if (state.frame || state.briefApproved) affected.push("Brief");
+  if (state.sketch) affected.push("Sketch");
   if (state.outputs.some((output) => output.type === "deck")) affected.push("Presentation");
   if (state.outputs.some((output) => output.type === "infographic")) affected.push("Infographic");
   if (state.imageBatch) affected.push("Image set");
@@ -423,6 +426,7 @@ export default function WorkshopPage() {
     const run = async (body: Record<string, unknown>) => { const next = await post(body); complete = Boolean(next) && complete; return next; };
     if (state?.outputRecovery?.deck || !state?.outputs.some((output) => output.type === "deck" && !output.stale)) await run({ action: "generateOutput", outputType: "deck" });
     if (state?.outputRecovery?.infographic || !state?.outputs.some((output) => output.type === "infographic" && !output.stale)) await run({ action: "generateOutput", outputType: "infographic" });
+    if (!state?.sketch || state.sketch.stale) await run({ action: "createSketch" });
     if (!state?.audioOverviews.some((overview) => !overview.stale)) await run({ action: "generateAudioOverview" });
     await run({ action: "generateAssetPlan" });
     if (!state?.imageBatch || state.imageBatch.stale || state.imageBatch.panels.some((panel) => panel.state === "failed" || panel.state === "selected_for_regeneration")) await run({ action: "createImageBatch" });
@@ -459,7 +463,7 @@ export default function WorkshopPage() {
   const visibleSourceCount = view === "output" && selectedOutput
     ? outputSourceCount(selectedOutput, state)
     : sourceCount;
-  const currentTitle = view === "output" ? (selectedOutput ? outputTitle(selectedOutput.type) : selectedOutputId?.startsWith("audio-overview-") ? "Audio Overview" : selectedOutputId === "images" ? "Image set" : "Demo video") : VIEW_TITLES[view];
+  const currentTitle = view === "output" ? (selectedOutput ? outputTitle(selectedOutput.type) : selectedOutputId?.startsWith("audio-overview-") ? "Audio Overview" : selectedOutputId === "sketch" ? "Sketch" : selectedOutputId === "images" ? "Image set" : "Demo video") : VIEW_TITLES[view];
   const backTarget: ObjectView | null = view === "conversation" || view === "map" ? null : view === "brief" ? "map" : view === "outputs" ? "brief" : "outputs";
   const workflowAction = !state?.mapNodes.length
     ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => openSheet("add-source")}>Add source</Button>
@@ -722,7 +726,7 @@ function OutputsView({ state, onOpenOutput, onOpenStoryboard, onDismissOrientati
     <h1 className="visually-hidden">Outputs</h1>
     {!ready ? <StateMessage state="empty" title="Choose a Style">Your Brief is ready. Add a Style to create Outputs.</StateMessage> : <>
       {!state?.onboarding.outputsOrientationDismissed && heroDeckId && <Card className="outputs-orientation"><div><strong>Your presentation is ready.</strong><p>Show source traces a claim back to its material. The Storyboard is your second and final approval before Video.</p></div><div className="button-row"><Button variant="secondary" size="small" onClick={() => onOpenOutput(heroDeckId)}>Open presentation</Button><Button variant="secondary" size="small" onClick={onDismissOrientation}>Got it</Button></div></Card>}
-      {(state?.outputs.length ?? 0) === 0 && !state?.imageBatch && !state?.audioOverviews.length && <StateMessage state="empty" title="Create your first Outputs">Turn this Brief into a presentation, infographic, Audio Overview, image set, and Storyboard.</StateMessage>}
+      {(state?.outputs.length ?? 0) === 0 && !state?.sketch && !state?.imageBatch && !state?.audioOverviews.length && <StateMessage state="empty" title="Create your first Outputs">Turn this Brief into a presentation, hand-drawn Sketch, infographic, Audio Overview, image set, and Storyboard.</StateMessage>}
       {partial && !needsUpdate && <StateMessage state="partial" title="Some Outputs are ready">Review what is finished, then update Outputs to complete the set.</StateMessage>}
       {needsUpdate && <StateMessage state="needs-update" title="Outputs need an update">Your Sources, Brief, or Style changed. Update Outputs before sharing them.</StateMessage>}
       <section className="output-grid">{outputs.map((output) => {
@@ -734,6 +738,7 @@ function OutputsView({ state, onOpenOutput, onOpenStoryboard, onDismissOrientati
         return <EntityCardAction className={`output-card ${isHero ? "output-card--hero" : ""} ${output.stale ? "needs-update" : ""}`} data-output-role={isHero ? "hero" : "supporting"} key={output.id} aria-label={`Open ${name}`} onClick={() => onOpenOutput(output.id)}><div className="artifact-preview" data-domain-ui="artifact-preview"><iframe title={`${name} preview`} sandbox="allow-same-origin" src={`/api/workshop/artifacts/${output.id}`} /></div><div className="output-card-body"><h2>{outputTitle(output.type)}</h2><div className="output-meta"><span>{sources} {sources === 1 ? "source" : "sources"}</span><Status tone={output.stale ? "waiting" : "current"}>{output.stale ? "Needs update" : "Up to date"}</Status></div></div></EntityCardAction>;
       })}
       {audioOverviews.map((overview) => <EntityCardAction className={`output-card ${overview.stale ? "needs-update" : ""}`} key={overview.id} aria-label={`Open Audio Overview, version ${overview.version}`} onClick={() => onOpenOutput(overview.id)}><div className="artifact-preview audio-overview-preview" data-domain-ui="artifact-preview"><div className="audio-wave" aria-hidden="true">{[26, 54, 38, 72, 44, 64, 32, 58, 40, 68, 30, 50].map((height, index) => <i key={index} style={{ height: `${height}%` }} />)}</div><span>{overview.audio ? `${Math.round(overview.audio.durationSeconds)} sec` : `${overview.script.split(/\s+/).filter(Boolean).length} words`}</span></div><div className="output-card-body"><h2>Audio Overview</h2><div className="output-meta"><span>{overview.claimIds.length} sourced points</span><Status tone={!overview.stale && overview.status !== "failed" ? "current" : "waiting"}>{overview.stale ? "Needs update" : overview.status === "failed" ? "Couldn't create" : overview.status === "audio_ready" ? "Up to date" : "Ready for review"}</Status></div></div></EntityCardAction>)}
+      {state?.sketch?.relativePath && <EntityCardAction className={`output-card ${state.sketch.stale ? "needs-update" : ""}`} aria-label={`Open Sketch, version ${state.sketch.version}`} onClick={() => onOpenOutput("sketch")}><div className="artifact-preview sketch-preview" data-domain-ui="artifact-preview"><img alt="" src="/api/workshop/artifacts/sketch" /></div><div className="output-card-body"><h2>Sketch</h2><div className="output-meta"><span>{state.sketch.nodes.length} ideas</span><Status tone={state.sketch.stale ? "waiting" : "current"}>{state.sketch.stale ? "Needs update" : "Up to date"}</Status><span>{state.activeSourceIds.length} {state.activeSourceIds.length === 1 ? "source" : "sources"}</span></div></div></EntityCardAction>}
       {state?.imageBatch && <EntityCardAction className={`output-card ${state.imageBatch.stale ? "needs-update" : ""}`} aria-label="Open Image set" onClick={() => onOpenOutput("images")}><div className="artifact-preview image-contact-sheet" data-domain-ui="artifact-preview">{state.imageBatch.panels.map((panel, index) => <div className={`image-tile ${panel.state === "generated" ? "generated" : ""}`} data-domain-ui="image-tile" key={panel.id} style={{ "--tile": index } as CSSProperties}>{panel.state === "generated" && <img alt="" src={`/api/workshop/artifacts/${panel.id}`} />}<span>{String(index + 1).padStart(2, "0")}</span></div>)}</div><div className="output-card-body"><h2>Image set</h2><div className="output-meta"><span>{state.imageBatch.panels.length} images</span><Status tone={state.imageBatch.stale || failedImages ? "waiting" : generatedImages === state.imageBatch.panels.length ? "current" : "waiting"}>{state.imageBatch.stale ? "Needs update" : failedImages ? "Incomplete" : generatedImages === state.imageBatch.panels.length ? "Up to date" : "Planned"}</Status><span>{state?.activeSourceIds.length ?? 0} {(state?.activeSourceIds.length ?? 0) === 1 ? "source" : "sources"}</span></div></div></EntityCardAction>}
       {(state?.storyboard.panels.length ?? 0) > 0 && <EntityCardAction className={`output-card ${state?.storyboard.stale ? "needs-update" : ""}`} aria-label="Open Storyboard" onClick={onOpenStoryboard}><div className="artifact-preview storyboard-card-preview" data-domain-ui="artifact-preview">{state?.storyboard.panels.slice(0, 6).map((panel, index) => { const image = boundImage(panel, state?.imageBatch); return <div className={`storyboard-card-frame ${image ? "has-image" : ""}`} key={panel.id} style={{ "--panel": index } as CSSProperties}>{image && <img alt="" src={`/api/workshop/artifacts/${image.id}`} />}<span>{String(index + 1).padStart(2, "0")}</span><strong>{panel.title}</strong></div>; })}</div><div className="output-card-body"><h2>Storyboard</h2><div className="output-meta"><span>{state?.storyboard.panels.length ?? 0} panels</span><Status tone={state?.storyboard.stale ? "waiting" : "current"}>{state?.storyboard.stale ? "Needs update" : state?.storyboardApproved ? "Approved" : "Ready for review"}</Status><span>{state?.activeSourceIds.length ?? 0} {(state?.activeSourceIds.length ?? 0) === 1 ? "source" : "sources"}</span></div></div></EntityCardAction>}
       {videos.map((video) => <EntityCardAction className={`output-card ${video.stale ? "needs-update" : ""}`} key={video.id} aria-label={`Open Demo video, version ${video.version}`} onClick={() => onOpenOutput(video.id)}><div className="artifact-preview" data-domain-ui="artifact-preview"><video muted src={`/api/workshop/artifacts/${video.id}`} /></div><div className="output-card-body"><h2>Demo video</h2><div className="output-meta"><span>{state?.storyboard.panels.length ?? 0} scenes</span><Status tone={video.stale ? "waiting" : "current"}>{video.stale ? "Needs update" : "Up to date"}</Status><span>{state?.activeSourceIds.length ?? 0} {(state?.activeSourceIds.length ?? 0) === 1 ? "source" : "sources"}</span></div></div></EntityCardAction>)}</section>
@@ -765,23 +770,27 @@ function AudioOverviewView({ overview, history, busy, onPost, onOpenOutput, onSh
 }
 
 function FocusedOutputView({ state, outputId, busy, onPost, onOpenOutput, onShowSource, onShowOriginal, onEditStoryboard, onRequestReplacement }: { state: PersistedWorkshop | null; outputId: string; busy: boolean; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onOpenOutput: (id: string) => void; onShowSource: (target?: EvidenceTarget) => void; onShowOriginal: () => void; onEditStoryboard: () => void; onRequestReplacement: (panelId: string) => void }) {
+  const sketchViewRef = useRef<HTMLElement | null>(null);
   const output = state?.outputs.find((item) => item.id === outputId);
   const audioOverview = state?.audioOverviews.find((item) => item.id === outputId);
   const isVideo = outputId === "video" || outputId.startsWith("video-v");
   const video = isVideo ? (outputId === "video" ? state?.videos?.find((item) => !item.stale) : state?.videos?.find((item) => item.id === outputId)) : undefined;
   const isImages = outputId === "images";
-  const title = output ? outputTitle(output.type) : audioOverview ? "Audio Overview" : isImages ? "Image set" : "Demo video";
+  const isSketch = outputId === "sketch";
+  useEffect(() => { if (isSketch) sketchViewRef.current?.scrollTo({ top: 0 }); }, [isSketch, outputId]);
+  const title = output ? outputTitle(output.type) : audioOverview ? "Audio Overview" : isSketch ? "Sketch" : isImages ? "Image set" : "Demo video";
   const sourceCount = output ? outputSourceCount(output, state) : state?.activeSourceIds.length ?? 0;
   const detail = output
     ? `${outputType(output.type)} · Version ${outputVersion(output, state?.outputs ?? [])} · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`
+    : isSketch ? `Hand-drawn view · Version ${state?.sketch?.version ?? 1} · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`
     : isImages ? `${state?.imageBatch?.panels.length ?? 0} images · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}` : `Video · Version ${video?.version ?? 1} · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`;
-  const artifactClaims = claimsForArtifact(output?.claimIds ?? video?.claimIds ?? [], state?.claims ?? []);
+  const artifactClaims = claimsForArtifact(output?.claimIds ?? (isSketch ? state?.sketch?.claimIds : undefined) ?? video?.claimIds ?? [], state?.claims ?? []);
   const href = `/api/workshop/artifacts/${outputId}`;
   const versionHistory = output
     ? (state?.outputs.filter((item) => item.type === output.type).sort((left, right) => right.createdAt.localeCompare(left.createdAt)) ?? [])
     : video ? ([...(state?.videos ?? [])].sort((left, right) => right.version - left.version)) : [];
   if (audioOverview) return <AudioOverviewView overview={audioOverview} history={[...(state?.audioOverviews ?? [])]} busy={busy} onPost={onPost} onOpenOutput={onOpenOutput} onShowSource={onShowSource} />;
-  if (!output && (!isVideo || !video) && !isImages) return <div className="state-surface"><StateMessage state="error" title="Couldn't open Output">Return to Outputs and try opening it again.</StateMessage></div>;
+  if (!output && (!isVideo || !video) && !isImages && (!isSketch || !state?.sketch?.relativePath)) return <div className="state-surface"><StateMessage state="error" title="Couldn't open Output">Return to Outputs and try opening it again.</StateMessage></div>;
   if (isImages) return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail} · One shared Style</p>{state?.imageBatch?.stale && <Status tone="waiting">Needs update</Status>}</div></div><div className="focused-image-grid" data-domain-ui="image-review-grid">{state?.imageBatch?.panels.map((panel, index) => {
     const { role, idea } = imagePanelCopy(panel.prompt, index);
     const status = panel.state === "generated" ? "Ready" : panel.state === "failed" ? "Couldn't create" : panel.state === "selected_for_regeneration" ? "Replacement requested" : "Planned";
@@ -790,6 +799,7 @@ function FocusedOutputView({ state, outputId, busy, onPost, onOpenOutput, onShow
     const evidence = panel.evidence[0];
     return <section className="focused-image-card" key={panel.id} aria-label={role}>{hasPreview ? <a href={`/api/workshop/artifacts/${panel.id}`} target="_blank" rel="noreferrer" aria-label={`Open ${role}`}>{preview}</a> : preview}<div className="focused-image-caption"><strong>{role}</strong><Status tone={panel.state === "generated" ? "current" : "waiting"}>{status}</Status></div><p>{panel.revisionRequest && panel.state === "selected_for_regeneration" ? `Change requested: ${panel.revisionRequest}` : idea}</p><div className="focused-image-actions"><Button variant="secondary" size="small" onClick={() => onShowSource({ sourceId: evidence?.sourceId, claimId: evidence?.claimId, locator: evidence?.locator })}>Show source</Button>{panel.state !== "planned" && <Button variant="secondary" size="small" disabled={busy || panel.state === "selected_for_regeneration"} onClick={() => { onRequestReplacement(panel.id); }}>{panel.state === "selected_for_regeneration" ? "Requested" : "Request replacement"}</Button>}</div></section>;
   })}</div></article>;
+  if (isSketch && state?.sketch) return <article ref={sketchViewRef} className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>Sketch</h1><p>{detail} · From the approved Map</p>{state.sketch.stale && <Status tone="waiting">Needs update</Status>}</div><div className="button-row">{state.sketch.stale && <Button size="small" disabled={busy} onClick={() => { void onPost({ action: "createSketch" }); }}>Update sketch</Button>}<ButtonLink variant={state.sketch.stale ? "secondary" : "primary"} size="small" href="/api/workshop/artifacts/sketch?format=editable">Download SVG</ButtonLink><ButtonLink variant="secondary" size="small" href="/api/workshop/artifacts/sketch" target="_blank" rel="noreferrer">Open full size</ButtonLink></div></div><div className="focused-output-preview sketch-focused-preview" data-domain-ui="artifact-preview"><img alt={`${state?.title ?? "Workshop"} hand-drawn Sketch`} src="/api/workshop/artifacts/sketch" /></div>{artifactClaims.length > 0 && <section className="artifact-source-trail" aria-labelledby="sketch-source-heading"><div><h2 id="sketch-source-heading">Sources in this Sketch</h2><p>Select an idea to see the exact source text.</p></div><ListGroup>{artifactClaims.map((claim) => <ListRowAction key={claim.id} aria-label={`Show source for ${claim.text}`} onClick={() => onShowSource({ sourceId: claim.sourceId, claimId: claim.id, locator: claim.locator })}><span><strong>{claim.text}</strong><small>{claimDisplayLocator(claim, state)}</small></span></ListRowAction>)}</ListGroup></section>}</article>;
   return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail}</p>{(output?.stale || video?.stale) && <Status tone="waiting">Needs update</Status>}</div><div className="button-row">{isVideo && <Button size="small" onClick={onEditStoryboard}>Edit storyboard</Button>}{output?.editableRelativePath && <ButtonLink size="small" href={`${href}?format=editable`}>Download PowerPoint</ButtonLink>}{isVideo && <Button variant="secondary" size="small" onPointerDown={(event) => event.preventDefault()} onClick={(event) => { event.currentTarget.focus({ preventScroll: true }); onShowOriginal(); }}>Show original</Button>}<ButtonLink variant="secondary" size="small" href={href} target="_blank" rel="noreferrer">{isVideo ? "Open video" : "Open preview"}</ButtonLink></div></div><div className={`focused-output-preview ${isVideo ? "video-preview" : ""}`} data-domain-ui="artifact-preview">{isVideo ? <video controls src={href} /> : <iframe title={title} sandbox="allow-same-origin" src={href} />}</div>{artifactClaims.length > 0 && <section className="artifact-source-trail" aria-labelledby="artifact-source-heading"><div><h2 id="artifact-source-heading">Sources in this output</h2><p>Select a claim to see the exact source text.</p></div><ListGroup>{artifactClaims.map((claim) => <ListRowAction key={claim.id} aria-label={`Show source for ${claim.text}`} onClick={() => onShowSource({ sourceId: claim.sourceId, claimId: claim.id, locator: claim.locator })}><span><strong>{claim.text}</strong><small>{claimDisplayLocator(claim, state)}</small></span></ListRowAction>)}</ListGroup></section>}{versionHistory.length > 1 && <section className="artifact-source-trail output-version-history" aria-labelledby="output-version-history-heading"><div><h2 id="output-version-history-heading">Version history</h2><p>Open earlier work without replacing the current version.</p></div><ListGroup>{versionHistory.map((item) => { const version = "type" in item ? outputVersion(item, state?.outputs ?? []) : item.version; return <ListRowAction key={item.id} aria-label={`Open ${title}, version ${version}`} onClick={() => onOpenOutput(item.id)}><span><strong>Version {version}</strong><small>{item.id === outputId ? "Current view" : item.stale ? "Needs update" : "Up to date"}</small></span></ListRowAction>; })}</ListGroup></section>}</article>;
 }
 
@@ -817,6 +827,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   const currentVideo = [...(state?.videos ?? [])].reverse().find((video) => !video.stale);
   const deliverables = [
     { title: "Presentation", detail: `${state?.outputs.filter((output) => output.type === "deck").length ?? 0} version${state?.outputs.filter((output) => output.type === "deck").length === 1 ? "" : "s"}` },
+    { title: "Sketch", detail: state?.sketch ? `Version ${state.sketch.version} · ${state.sketch.nodes.length} ideas` : "Not created yet" },
     { title: "Infographic", detail: `${state?.outputs.filter((output) => output.type === "infographic").length ?? 0} version${state?.outputs.filter((output) => output.type === "infographic").length === 1 ? "" : "s"}` },
     { title: "Audio Overview", detail: state?.audioOverviews.at(-1)?.audio ? `Version ${state.audioOverviews.at(-1)!.version} ready` : state?.audioOverviews.length ? "Script ready" : "Not created yet" },
     { title: "Image set", detail: `${state?.imageBatch?.panels.length ?? 0} ${state?.imageBatch?.panels.every((panel) => panel.state === "generated") ? "ready" : "planned"} images` },
@@ -827,7 +838,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   return <SideSheet title="Original brainstorm" className="original-reveal" onClose={onClose}>
     <p className="sheet-intro">The finished submission started with this.</p>
     <Card className="original-transcript"><small>Before · {sourceKind}</small><blockquote>“{original}”</blockquote>{sourceLocator && <p className="source-locator">{sourceLocator}</p>}</Card>
-    <div className="original-result"><small>After</small><h3>Became six connected Outputs</h3>{elapsedSeconds !== null && <p>{elapsedSeconds} seconds from first transcript to first rendered Output</p>}</div>
+    <div className="original-result"><small>After</small><h3>Became a connected Output set</h3>{elapsedSeconds !== null && <p>{elapsedSeconds} seconds from first transcript to first rendered Output</p>}</div>
     <ListGroup>{deliverables.map((item) => <ListRow className="original-output-row" key={item.title}><FileIcon /><span><strong>{item.title}</strong><small>{item.detail}</small></span></ListRow>)}</ListGroup>
     {currentVideo?.buildTrace && <ButtonLink variant="secondary" href={`/api/workshop/artifacts/build-trace-v${currentVideo.version}`} target="_blank" rel="noreferrer">How this was built</ButtonLink>}
   </SideSheet>;
@@ -948,9 +959,9 @@ function ProductionRail({ open, state, view, action, onCollapse, onOpenView, onO
   const currentVideo = [...(state?.videos ?? [])].reverse().find((video) => !video.stale) ?? [...(state?.videos ?? [])].reverse()[0];
   const briefReady = Boolean(state?.briefApproved && !state.frame?.stale);
   const styleReady = Boolean(state?.style && !state.style.stale);
-  const hasOutputs = Boolean(deck || infographic || state?.imageBatch || state?.storyboard.panels.length || currentVideo);
+  const hasOutputs = Boolean(deck || infographic || state?.sketch || state?.imageBatch || state?.storyboard.panels.length || currentVideo);
   const currentAudio = [...(state?.audioOverviews ?? [])].reverse().find((overview) => !overview.stale && overview.status !== "failed");
-  const outputCount = [deck && !deck.stale, infographic && !infographic.stale, currentAudio, state?.imageBatch && !state.imageBatch.stale, state?.storyboardApproved && !state.storyboard.stale, currentVideo && !currentVideo.stale].filter(Boolean).length;
+  const outputCount = [deck && !deck.stale, infographic && !infographic.stale, state?.sketch && !state.sketch.stale, currentAudio, state?.imageBatch && !state.imageBatch.stale, state?.storyboardApproved && !state.storyboard.stale, currentVideo && !currentVideo.stale].filter(Boolean).length;
   const outputsCurrent = hasOutputs && !outputSetStatus(state).actionRequired;
 
   return <WorkbenchRail side="right" className="production-rail" aria-label="Production" data-collapsed={!open || undefined}>

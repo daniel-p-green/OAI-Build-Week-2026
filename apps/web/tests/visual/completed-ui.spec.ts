@@ -313,6 +313,25 @@ test("an empty Workshop reaches an editable deck through one obvious path", asyn
   }
 });
 
+test("the approved Map becomes a focused hand-drawn Sketch without another navigation mode", async ({ page }) => {
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
+  for (const viewport of [viewports[0], viewports[2]]) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto("/");
+    await openWorkshopView(page, "brief");
+    await openWorkshopView(page, "outputs");
+    await page.getByRole("button", { name: /Open Sketch/ }).click();
+    await expect(page.getByRole("heading", { name: "Sketch", exact: true })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Download SVG" })).toHaveAttribute("href", "/api/workshop/artifacts/sketch?format=editable");
+    await expect(page.getByRole("region", { name: "Sources in this Sketch" })).toBeVisible();
+    await expect.poll(() => page.locator(".sketch-focused-preview img").evaluate((image) => (image as HTMLImageElement).naturalWidth)).toBe(1600);
+    await expect.poll(() => page.locator(".focused-output").evaluate((element) => element.scrollTop)).toBe(0);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
+    await expectScreen(page, `${viewport.name}-sketch-viewer`);
+  }
+});
+
 test("Style starts from a website and preserves the Workshop outcome", async ({ page }) => {
   await page.request.post("/api/workshop", { data: { action: "approveBrief" } });
   const readyState = await (await page.request.get("/api/workshop")).json();
@@ -518,6 +537,7 @@ test.describe("completed Workshop judge path", () => {
       await expectPrimaryActions(page, 1);
       await expect(page.getByRole("heading", { name: "Presentation" })).toHaveCount(1);
       await expect(page.getByRole("heading", { name: "Infographic" })).toHaveCount(1);
+      await expect(page.getByRole("heading", { name: "Sketch" })).toHaveCount(1);
       await expect(page.getByRole("heading", { name: "Image set" })).toHaveCount(1);
       await expect(page.getByRole("heading", { name: "Storyboard" })).toHaveCount(1);
       const outputCards = page.locator(".output-grid .output-card");
@@ -526,7 +546,7 @@ test.describe("completed Workshop judge path", () => {
       await expect(page.locator('.output-grid [data-output-role="hero"]')).toHaveCount(1);
       await expect(page.getByRole("button", { name: "Show source" })).toHaveCount(0);
       await expect(page.locator(".output-grid")).not.toContainText("Version");
-      if (viewport.width > 900) await expect(page.getByRole("complementary", { name: "Production" }).getByText("3 ready", { exact: true })).toBeVisible();
+      if (viewport.width > 900) await expect(page.getByRole("complementary", { name: "Production" }).getByText("4 ready", { exact: true })).toBeVisible();
       await expectPreviewFramesReady(page);
       await expectScreen(page, `${viewport.name}-outputs`);
 
@@ -820,7 +840,7 @@ test("finished Video reveals the original brainstorm without adding navigation",
     const sheet = page.getByRole("dialog", { name: "Original brainstorm" });
     await expect(sheet).toContainText("Before · Voice transcript");
     await expect(sheet).not.toContainText("fixture");
-    await expect(sheet).toContainText("Became six connected Outputs");
+    await expect(sheet).toContainText("Became a connected Output set");
     await expect(sheet).toContainText("102 seconds from first transcript to first rendered Output");
     await expect(sheet.getByText("Presentation", { exact: true })).toBeVisible();
     await expect(sheet.getByText("Demo video", { exact: true })).toBeVisible();

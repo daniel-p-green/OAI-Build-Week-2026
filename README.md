@@ -4,7 +4,7 @@
 
 WorkshopLM turns meetings, documents, and half-formed thinking into a branded deck a professional can defend, with every factual claim traced to its source. It is built for consultants, strategists, and enablement leads who produce client-facing or leadership-facing work every week.
 
-Notebook-style tools help people understand source material. WorkshopLM is designed to help them ship from it: speak or type in the focused Conversation, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create a presentation that remains editable in PowerPoint. Infographic, Image set, Storyboard, and Video are supporting Outputs around that wedge.
+Notebook-style tools help people understand source material. WorkshopLM is designed to help them ship from it: speak or type in the focused Conversation, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create a presentation that remains editable in PowerPoint. A shareable hand-drawn Sketch, Infographic, Image set, Storyboard, and Video are supporting Outputs around that wedge.
 
 WorkshopLM runs locally in the Codex in-app browser as one focused workbench. Conversation, Sources, Map, Brief, Style, Outputs, and Storyboard stay in one product surface; contextual views and sheets preserve the full workflow without a persistent tab maze. Codex desktop/CLI is the verified plugin host and build environment. ChatGPT Work support is not claimed.
 
@@ -45,7 +45,7 @@ pnpm judge:start
 
 `pnpm judge:start` recreates the no-credential acceptance Workshop and serves that exact data root in one command. It does not require OpenAI credentials or paid model calls. The fixture completes first-use onboarding, dismisses tutorial cues, and opens directly on the grounded Map. `pnpm demo:render` can independently rerun the approved sanitized fixture through the local HyperFrames worker, and `pnpm demo:thumbnail` builds a hash-bound 1280×720 product thumbnail from the rendered Video, locked film plan, and current Outputs proof. Ordinary `pnpm dev` intentionally opens the default product workspace rather than the judge fixture.
 
-After `pnpm judge:start` starts the server, open the printed local URL in the Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, real presentation and infographic previews, editable PowerPoint files, six hash-bound GPT Image 2 visuals, an editable image-bound Storyboard, and the local Video rendered from those reviewed frames. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
+After `pnpm judge:start` starts the server, open the printed local URL in the Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, a source-traced hand-drawn Sketch, real presentation and infographic previews, editable PowerPoint files, six hash-bound GPT Image 2 visuals, an editable image-bound Storyboard, and the local Video rendered from those reviewed frames. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
 
 Two paid routing benchmark passes compared Sol, Terra, and Luna on compact grounded-graph, brief, and claim-triage cases. Their recorded latency, token usage, and deterministic JSON/evidence checks selected `gpt-5.6-terra` at medium reasoning as the current product default. Any rerun remains explicitly spend-gated and must not infer dollar costs from token counts.
 

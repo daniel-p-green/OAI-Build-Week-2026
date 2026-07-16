@@ -138,6 +138,10 @@ async function main(): Promise<void> {
     }, 2600);
 
     await beat("output-evidence", "Follow a presentation back to its source", async () => {
+      await page.getByRole("button", { name: /^Open Sketch/ }).click();
+      await expect(page.getByRole("heading", { name: "Sketch", exact: true })).toBeVisible();
+      await page.waitForTimeout(900);
+      await page.getByRole("button", { name: "Back to Outputs" }).click();
       await page.getByRole("button", { name: /^Open Presentation/ }).click();
       await page.getByRole("button", { name: /^Show source for / }).first().click();
       await expect(page.getByRole("dialog", { name: "Source" })).toBeVisible();
@@ -170,7 +174,7 @@ async function main(): Promise<void> {
       await page.getByRole("button", { name: "View video" }).click();
       await expect(page.locator(".focused-output-preview video")).toBeVisible();
       await page.getByRole("button", { name: "Show original" }).click();
-      await expect(page.getByRole("dialog", { name: "Original brainstorm" })).toContainText("Became six connected Outputs");
+      await expect(page.getByRole("dialog", { name: "Original brainstorm" })).toContainText("Became a connected Output set");
     }, 3000);
 
     const finalState = readWorkshopState(dataRoot);

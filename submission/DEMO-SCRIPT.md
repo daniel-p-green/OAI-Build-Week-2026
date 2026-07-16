@@ -66,7 +66,7 @@ This production-build command resets an isolated sanitized recording root, captu
 - `outputs/demo-recording-draft/contact-sheet.png` for quick editorial review;
 - `outputs/demo-recording-draft/original-reveal.png` as final-beat proof.
 
-The current draft is 58.8 seconds of screen-only fixture footage, not the final submission video. It proves the current workbench and deterministic no-credential path with six hash-bound GPT Image 2 replay files. The rough-cut builder combines it with separately verified Codex doorway and provider media inserts.
+The current draft is 58.0 seconds of screen-only fixture footage, not the final submission video. It proves the current workbench and deterministic no-credential path with six hash-bound GPT Image 2 replay files and the focused source-traced Sketch. The rough-cut builder combines it with separately verified Codex doorway and provider media inserts.
 
 ## Editorial rough cut
 

@@ -27,7 +27,7 @@ export type WorkshopConversationContinuation = { responseId: string; model?: str
 export type WorkshopMapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
 export type CanvasNodePatch = { id: string; title: string; x: number; y: number; width: number; height: number };
 export type WorkshopFrame = { version: number; markdown: string; markdownPath: string; executablePath: string; stale: boolean; approvedAt: string };
-export type WorkshopSketch = { version: number; graphRevision: number; nodes: Pick<WorkshopMapNode, "id" | "title" | "body" | "kind" | "locator">[]; stale: boolean; approved: boolean; createdAt: string };
+export type WorkshopSketch = { version: number; graphRevision: number; styleVersion?: number; nodes: Pick<WorkshopMapNode, "id" | "title" | "body" | "kind" | "locator">[]; edges: WorkshopMapEdge[]; claimIds: string[]; relativePath: string; sha256: string; stale: boolean; approved: boolean; createdAt: string };
 export type StyleEvidenceSource = "website" | "manual" | "default";
 export type StylePaletteRoles = {
   accent: { value: string; source: StyleEvidenceSource };
@@ -315,6 +315,13 @@ export function readWorkshopState(root?: string, requestedWorkshopId?: string): 
 }
 export function resolveWorkshopArtifact(id: string, root?: string, workshopId?: string, format?: "preview" | "editable"): { path: string; contentType: string; fileName?: string } | undefined {
   const state = readWorkshopState(root, workshopId); const dataRoot = root ?? repositoryDataRoot();
+  if (id === "sketch" || id.startsWith("sketch-v")) {
+    const sketch = state.sketch;
+    if (!sketch?.relativePath || (id.startsWith("sketch-v") && id !== `sketch-v${sketch.version}`)) return undefined;
+    const path = resolve(dataRoot, sketch.relativePath);
+    if (!path.startsWith(`${resolve(dataRoot)}/`)) return undefined;
+    return { path, contentType: "image/svg+xml; charset=utf-8", fileName: format === "editable" ? `workshop-sketch-v${sketch.version}.svg` : undefined };
+  }
   if (id === "video" || id.startsWith("video-v")) {
     const video = id === "video"
       ? [...state.videos].reverse().find((candidate) => !candidate.stale)
@@ -987,7 +994,7 @@ function materializeDesignArtifact(style: WorkshopStyle, workshopId: string, roo
   mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, tokensPath), `${JSON.stringify(tokens, null, 2)}\n`, "utf8");
   return { version: style.version, styleVersion: style.version, markdownPath, tokensPath, stale: false, createdAt: style.lockedAt };
 }
-function staleStyleDependents(current: WorkshopState) { return { visualDna: current.visualDna ? { ...current.visualDna, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, audioOverviews: staleAudioOverviews(current), outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), storyboardApproved: false, videoState: "blocked" as const }; }
+function staleStyleDependents(current: WorkshopState) { return { sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, visualDna: current.visualDna ? { ...current.visualDna, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, audioOverviews: staleAudioOverviews(current), outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), storyboardApproved: false, videoState: "blocked" as const }; }
 export function lockManualStyle(input: ManualStyleInput = {}, root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
   const accent = color(input.accent, "#1668E3"); const ink = color(input.ink, "#171816"); const paper = color(input.paper, "#F4F2EC"); assertReadablePalette(ink, paper);
@@ -1007,7 +1014,52 @@ export function applyStyleLibrary(styleId: string, requestedIntent?: WorkshopSty
   return applyLockedStyle(current, style, root, false);
 }
 export function createVisualDna(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.style || current.style.stale) throw new Error("Visual DNA requires a current locked Style Foundation."); const createdAt = new Date().toISOString(); const profileRule = current.style.intentProfile === "board_deck" ? "Executive hierarchy with source-visible proof points." : current.style.intentProfile === "internal_workshop" ? "Facilitation-first working canvas with writable space." : "Client-ready narrative sequence with a decisive opening."; return write({ ...current, visualDna: { version: (current.visualDna?.version ?? 0) + 1, styleVersion: current.style.version, palette: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, compositionRules: [profileRule, "Repeat one accent-colored folded-plane motif across the complete image set.", ...current.style.references], textureRules: ["Matte paper forms, restrained depth, soft directional shadow, and clean negative space."], imageRules: ["Create diagrammatic concept visuals and section art suitable for direct placement in a professional deck.", "Prefer object-led editorial composition over people, devices, screens, or generic workplace scenes."], negativeRules: current.style.negativeRules, approved: false, stale: false, createdAt }, updatedAt: createdAt }, root); }
-export function createSketch(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.briefApproved || !current.frame || current.frame.stale) throw new Error("Sketch requires an approved current Map."); const createdAt = new Date().toISOString(); return write({ ...current, sketch: { version: (current.sketch?.version ?? 0) + 1, graphRevision: graphFor(current).graph.revision, nodes: current.mapNodes.map(({ id, title, body, kind, locator }) => ({ id, title, body, kind, locator })), stale: false, approved: false, createdAt }, updatedAt: createdAt }, root); }
+function escapeSvg(value: string) { return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;"); }
+function sketchLines(value: string, maxCharacters: number, maxLines: number) {
+  const words = value.trim().split(/\s+/).filter(Boolean); const lines: string[] = []; let line = "";
+  for (const word of words) {
+    const next = line ? `${line} ${word}` : word;
+    if (next.length <= maxCharacters) { line = next; continue; }
+    if (line) lines.push(line);
+    line = word;
+    if (lines.length === maxLines - 1) break;
+  }
+  if (line && lines.length < maxLines) lines.push(line);
+  const consumed = lines.join(" ").split(/\s+/).filter(Boolean).length;
+  if (consumed < words.length && lines.length) lines[lines.length - 1] = `${lines.at(-1)!.replace(/[.,;:]?$/, "")}…`;
+  return lines;
+}
+function sketchOffset(id: string, salt: string, amplitude: number) {
+  const value = createHash("sha256").update(`${id}:${salt}`).digest().readUInt16BE(0) / 65535;
+  return (value * 2 - 1) * amplitude;
+}
+function renderSketchSvg(current: WorkshopState, version: number) {
+  const width = 1600; const height = 900; const nodes = current.mapNodes.slice(0, 12); const columns = nodes.length <= 6 ? Math.min(3, Math.max(1, nodes.length)) : 4; const rows = Math.max(1, Math.ceil(nodes.length / columns));
+  const gap = 34; const left = 70; const top = 128; const usableWidth = width - left * 2; const usableHeight = height - top - 88; const cardWidth = (usableWidth - gap * (columns - 1)) / columns; const cardHeight = Math.min(250, (usableHeight - gap * (rows - 1)) / rows);
+  const style = current.style; const accent = style?.accent ?? "#1668E3"; const ink = style?.ink ?? "#171816"; const paper = style?.paper ?? "#F4F2EC"; const font = escapeSvg(style?.typographyRoles.heading.family ?? "system-ui");
+  const positions = new Map(nodes.map((node, index) => [node.id, { x: left + (index % columns) * (cardWidth + gap), y: top + Math.floor(index / columns) * (cardHeight + gap) }]));
+  const connectors = current.mapEdges.flatMap((edge) => { const from = positions.get(edge.from); const to = positions.get(edge.to); if (!from || !to) return []; const x1 = from.x + cardWidth / 2; const y1 = from.y + cardHeight / 2; const x2 = to.x + cardWidth / 2; const y2 = to.y + cardHeight / 2; const bend = sketchOffset(edge.id, "bend", 34); const path = `M ${x1.toFixed(1)} ${y1.toFixed(1)} C ${(x1 + (x2 - x1) * .38 + bend).toFixed(1)} ${(y1 + (y2 - y1) * .12).toFixed(1)}, ${(x1 + (x2 - x1) * .62 - bend).toFixed(1)} ${(y1 + (y2 - y1) * .88).toFixed(1)}, ${x2.toFixed(1)} ${y2.toFixed(1)}`; return [`<path d="${path}" fill="none" stroke="${accent}" stroke-width="4" stroke-linecap="round" opacity=".48"/>`, `<path d="${path}" transform="translate(${sketchOffset(edge.id, "x", 2).toFixed(1)} ${sketchOffset(edge.id, "y", 2).toFixed(1)})" fill="none" stroke="${ink}" stroke-width="1.4" stroke-linecap="round" opacity=".28"/>`]; }).join("");
+  const cards = nodes.map((node, index) => { const position = positions.get(node.id)!; const rotation = sketchOffset(node.id, "rotation", 1.2); const title = sketchLines(node.title, Math.max(18, Math.floor(cardWidth / 13)), cardHeight >= 240 ? 3 : 2); const body = sketchLines(node.body === node.title ? node.locator : node.body, Math.max(24, Math.floor(cardWidth / 10)), cardHeight >= 240 ? 4 : cardHeight < 155 ? 2 : 3); const semantic = node.kind === "grounded" ? accent : node.kind === "derived" ? "#A15C00" : "#7A45B8"; const titleStart = 78; const bodyStart = titleStart + title.length * 28 + 10; return `<g transform="translate(${position.x.toFixed(1)} ${position.y.toFixed(1)}) rotate(${rotation.toFixed(2)} ${(cardWidth / 2).toFixed(1)} ${(cardHeight / 2).toFixed(1)})">
+  <rect x="2" y="2" width="${(cardWidth - 4).toFixed(1)}" height="${(cardHeight - 4).toFixed(1)}" rx="24" fill="#FFFFFF" stroke="${ink}" stroke-width="2.4"/>
+  <path d="M 18 9 Q ${(cardWidth * .46).toFixed(1)} ${sketchOffset(node.id, "top", 5).toFixed(1)} ${(cardWidth - 18).toFixed(1)} 12 M ${(cardWidth - 9).toFixed(1)} 19 Q ${(cardWidth + sketchOffset(node.id, "right", 5)).toFixed(1)} ${(cardHeight * .5).toFixed(1)} ${(cardWidth - 12).toFixed(1)} ${(cardHeight - 18).toFixed(1)} M ${(cardWidth - 18).toFixed(1)} ${(cardHeight - 9).toFixed(1)} Q ${(cardWidth * .52).toFixed(1)} ${(cardHeight + sketchOffset(node.id, "bottom", 5)).toFixed(1)} 18 ${(cardHeight - 12).toFixed(1)}" fill="none" stroke="${ink}" stroke-width="1.2" stroke-linecap="round" opacity=".48"/>
+  <circle cx="26" cy="28" r="7" fill="${semantic}"/><text x="43" y="33" fill="${ink}" font-family="${font}, system-ui, sans-serif" font-size="15" font-weight="600">${node.kind === "grounded" ? "SOURCED" : node.kind.toUpperCase()}</text>
+  ${title.map((line, lineIndex) => `<text x="26" y="${titleStart + lineIndex * 28}" fill="${ink}" font-family="${font}, system-ui, sans-serif" font-size="22" font-weight="700">${escapeSvg(line)}</text>`).join("")}
+  ${body.map((line, lineIndex) => `<text x="26" y="${bodyStart + lineIndex * 22}" fill="${ink}" font-family="system-ui, sans-serif" font-size="15" opacity=".68">${escapeSvg(line)}</text>`).join("")}
+</g>`; }).join("");
+  const sourceCount = current.activeSourceIds.length; return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-labelledby="title description">
+<title id="title">${escapeSvg(current.title)} hand-drawn Sketch</title><desc id="description">A source-grounded hand-drawn view of the approved Map.</desc>
+<rect width="${width}" height="${height}" fill="${paper}"/><path d="M 0 76 H ${width}" stroke="${accent}" stroke-width="3" opacity=".22"/>
+<text x="70" y="58" fill="${ink}" font-family="${font}, system-ui, sans-serif" font-size="30" font-weight="700">${escapeSvg(current.title)}</text><text x="1530" y="56" text-anchor="end" fill="${ink}" font-family="system-ui, sans-serif" font-size="16" opacity=".58">HAND-DRAWN SKETCH · V${version}</text>
+${connectors}${cards}
+<text x="70" y="858" fill="${ink}" font-family="system-ui, sans-serif" font-size="16" opacity=".58">From approved Map · ${nodes.length} ideas · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}</text><path d="M 70 872 Q 360 866 650 873" fill="none" stroke="${accent}" stroke-width="4" stroke-linecap="round" opacity=".62"/>
+</svg>`; }
+export function createSketch(root?: string): WorkshopState {
+  const current = readWorkshopState(root); if (!current.briefApproved || !current.frame || current.frame.stale) throw new Error("Sketch requires an approved current Map.");
+  const dataRoot = root ?? repositoryDataRoot(); const version = (current.sketch?.version ?? 0) + 1; const relativePath = workshopGeneratedPath(current.id, `sketch-v${version}.svg`); const svg = renderSketchSvg(current, version); const createdAt = new Date().toISOString();
+  mkdirSync(join(dataRoot, dirname(relativePath)), { recursive: true }); writeFileSync(join(dataRoot, relativePath), svg, "utf8");
+  const claimIds = activeClaimsFor(current).map((claim) => claim.id);
+  return write({ ...current, sketch: { version, graphRevision: graphFor(current).graph.revision, styleVersion: current.style?.version, nodes: current.mapNodes.map(({ id, title, body, kind, locator }) => ({ id, title, body, kind, locator })), edges: current.mapEdges, claimIds, relativePath, sha256: createHash("sha256").update(svg).digest("hex"), stale: false, approved: false, createdAt }, updatedAt: createdAt }, root);
+}
 export function approveSketch(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.sketch || current.sketch.stale) throw new Error("A current Sketch preview is required."); return write({ ...current, sketch: { ...current.sketch, approved: true }, updatedAt: new Date().toISOString() }, root); }
 export function approveVisualDna(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.visualDna || current.visualDna.stale) throw new Error("A current Visual DNA preview is required."); return write({ ...current, visualDna: { ...current.visualDna, approved: true }, updatedAt: new Date().toISOString() }, root); }
 export function generateAssetPlan(root?: string): WorkshopState {

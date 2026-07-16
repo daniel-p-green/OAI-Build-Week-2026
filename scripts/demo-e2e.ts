@@ -8,7 +8,7 @@ import { renderDeck, renderInfographic } from "../packages/production/src/render
 import { openLocalDatabase } from "../apps/worker/src/db/client.ts";
 import { migrate } from "../apps/worker/src/db/migrate.ts";
 import { executeOne } from "../apps/worker/src/executor.ts";
-import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDna, dismissWorkshopOrientation, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, updateWorkshopOnboarding } from "../apps/worker/src/workshop-service.ts";
+import { applyWorkshopAction, approveVisualDna, createImageBatch, createSketch, createVisualDna, dismissWorkshopOrientation, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, updateWorkshopOnboarding } from "../apps/worker/src/workshop-service.ts";
 import { seedJudgeProviderImages } from "./seed-judge-images.ts";
 
 async function main() {
@@ -45,6 +45,8 @@ dismissWorkshopOrientation("map", root);
 dismissWorkshopOrientation("outputs", root);
 applyWorkshopAction("approveBrief", root);
 lockManualStyle({}, root);
+const sketch = createSketch(root).sketch;
+if (!sketch || sketch.stale || !(await stat(resolve(root, sketch.relativePath))).isFile()) throw new Error("recorded fixture did not produce a current hand-drawn Sketch");
 createVisualDna(root);
 approveVisualDna(root);
 createImageBatch(root);
@@ -82,7 +84,7 @@ if (!buildTrace || !(await stat(resolve(root, buildTrace.htmlPath))).isFile() ||
 const finalGates = deriveGates({ transcriptSegments: 2, boardApprovedCurrent: true, briefCurrent: finalState.briefApproved, styleLockedCurrent: Boolean(finalState.style && !finalState.style.stale), storyboardApprovedCurrent: finalState.storyboardApproved, videoRenderedCurrent: finalState.videoState === "rendered" });
 if (!finalGates.video_rendered) throw new Error("video-rendered gate was not recorded");
 
-console.log(JSON.stringify({ mode: "recorded-fixture", status: "passed", grounding: answer.citations.length, gates: finalGates, outputs: finalState.outputs.map((output) => output.relativePath), audioOverview: { id: audioOverview.id, sections: audioOverview.sections.length, status: audioOverview.status }, imagePanels: finalState.imageBatch.panels.length, imageMode: "hash-bound-provider-fixture", assetPlanItems: assetPlan.items.length, storyboardPanels: generatedStoryboard.panels.length, videoArtifact: video.artifact?.relativePath, buildTrace: buildTrace.htmlPath, elapsed: "deterministic" }));
+console.log(JSON.stringify({ mode: "recorded-fixture", status: "passed", grounding: answer.citations.length, gates: finalGates, outputs: finalState.outputs.map((output) => output.relativePath), sketch: { version: sketch.version, ideas: sketch.nodes.length, artifact: sketch.relativePath }, audioOverview: { id: audioOverview.id, sections: audioOverview.sections.length, status: audioOverview.status }, imagePanels: finalState.imageBatch.panels.length, imageMode: "hash-bound-provider-fixture", assetPlanItems: assetPlan.items.length, storyboardPanels: generatedStoryboard.panels.length, videoArtifact: video.artifact?.relativePath, buildTrace: buildTrace.htmlPath, elapsed: "deterministic" }));
 }
 
 main().catch((error: unknown) => { console.error(error); process.exitCode = 1; });

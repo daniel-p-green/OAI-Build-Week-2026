@@ -233,7 +233,7 @@ async function main() {
 
     const selectedBeats = shot.captureBeats.map((id) => beatsById.get(id)).filter(Boolean);
     const effectiveState = finalBuild ? "ready" : shot.state;
-    const externalVideo = effectiveState === "ready"
+    const externalVideo = effectiveState === "ready" && !shot.preferCapture
       ? shot.requiredEvidence.map((item) => resolve(repository, item.path)).find((path) => /\.(?:mov|mp4)$/i.test(path) && existsSync(path))
       : undefined;
     if (finalBuild && shot.id === "meta-reveal") {
