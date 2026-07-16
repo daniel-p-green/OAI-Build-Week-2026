@@ -9379,3 +9379,29 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Founder recording and transcript, founder-derived ready Output set, final HyperFrames run, founder/target-audience film taste review, intended-audience Slides review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+## 2026-07-16 16:31 CT — The opening five seconds now prove the product
+
+### Changed
+
+- Audited the real film against `submission/DEMO-SCRIPT.md` and found a material mismatch: the script promised finished work before the Map, but the rendered opening showed only the Map. Rebuilt shot one so the first 4.5 seconds display the current submission package's hash-verified, DESIGN-bound finished-work thumbnail, then HyperFrames performs the DESIGN Accent wipe into the grounded Map.
+- Added explicit opening provenance to the film plan and sample manifest: proof type, exact source path and SHA-256, proof duration, transition identity, and a dedicated rendered opening review frame. The sample-film and submission-packet verifiers now fail closed if this outcome-first sequence, its rendered frame, or the complete untruncated sample transcript is missing or altered.
+- The first render exposed a real seek-risk warning from sparse source keyframes. Interrupted that attempt, prepared every shot segment with a one-second GOP, reran HyperFrames lint/check/render, and eliminated the sparse-keyframe warning. Removed the unnecessary system-font alias so the composition uses only the DESIGN typography binding plus generic sans-serif fallback.
+
+### Verified
+
+- Visually inspected `outputs/demo-film-sample/review/opening-proof.jpg`: the literal rendered frame shows WorkshopLM, `SOURCE-GROUNDED`, `From rough thought to finished work`, the generated branded visual, and the promise `From meetings and documents to finished work you can defend`.
+- Extracted and inspected eight real movie frames spanning 3.9–4.9 seconds. They show a continuous finished-work frame → blue Accent wipe → Map sequence with no black, blank, frozen, or unrelated frame.
+- Local HyperFrames 0.7.60 rendered the 7.5 MB H.264/AAC film in 55.5 seconds. The movie is 140.010667 seconds with SHA-256 `b10db6660ea593281f49aa111862793b0cf598d6927c6fcb3de4de1d537aefcb`; transition-aware runtime, layout, and transition checks reported zero errors. The sole remaining non-blocking HyperFrames warning is timeline density from ten intentionally timed transitions.
+- `pnpm demo:film:verify-sample` and `pnpm submission:packet:verify` passed, including the opening source/frame hashes, DESIGN/FRAME provenance, Cedar narration, complete nine-line transcript, and two honest founder/final-package blocks. `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 120 worker tests. No OpenAI request ran; the evidence ledger remains at 107 provider HTTP operations.
+
+### Decisions
+
+- The first five seconds must demonstrate the finished outcome before explaining the workflow. The Map remains the thinking layer, but it is more persuasive after the viewer sees what WorkshopLM produces.
+- Film input segments use a fixed one-second GOP so editorial seeking is deterministic. HyperFrames remains the sole compositor and owns all brand transitions through the active DESIGN and approved FRAME identities.
+- `PLAN-2026-07-13.md` remained advisory only for enduring principles. Its pre-existing user modification was untouched and will be excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final HyperFrames run, founder/target-audience film taste review, intended-audience Slides review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

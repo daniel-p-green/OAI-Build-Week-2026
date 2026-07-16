@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceCapturedAt": "2026-07-16T17:36:06.987Z",
+  "sourceCapturedAt": "2026-07-16T20:15:58.596Z",
   "mode": "draft",
   "planStatus": "draft",
   "finalReady": false,
@@ -8,13 +8,13 @@
     "durationSeconds": 140,
     "maxDurationSeconds": 175,
     "shots": 10,
-    "narrationWords": 302,
-    "narrationWordsPerMinute": 129.4
+    "narrationWords": 294,
+    "narrationWordsPerMinute": 126
   },
   "capture": {
     "status": "fixture-draft",
-    "durationSeconds": 58,
-    "sha256": "3380056b50cae60c5111b5d9b87f3060e143ed3f099d2a67849a04605d87d808",
+    "durationSeconds": 58.44,
+    "sha256": "7f62d5009d892a3cce828bde11a38b21b0a88ab65ddff889edc64e1cdca1e9a1",
     "referencedBeats": 12
   },
   "finalVideo": {

@@ -32,6 +32,10 @@ async function main() {
   assert(await matches(resolve(repository, manifest.compositor.design.source), manifest.compositor.design.sha256), "The DESIGN.md used by the sample film no longer matches its manifest hash.");
   assert(await matches(resolve(repository, manifest.compositor.frame.source), manifest.compositor.frame.sha256), "The FRAME.md used by the sample film no longer matches its manifest hash.");
   assert(manifest.shots.filter((shot) => shot.state === "blocked").length === 2, "The sample film must retain the two final-evidence blocks.");
+  const opening = manifest.shots.find((shot) => shot.id === "promise");
+  assert(opening?.openingProof?.type === "finished-work-to-map" && opening.openingProof.durationSeconds >= 3 && opening.openingProof.durationSeconds <= 6 && opening.openingProof.transition === "design-accent-wipe", "The sample film must open on verified finished work before revealing the Map.");
+  assert(opening.motion?.transition === "opening-proof-wipe" && await matches(resolve(repository, opening.openingProof.relativePath), opening.openingProof.sha256), "The sample opening proof no longer matches its package asset or HyperFrames transition.");
+  assert(manifest.openingProofFrame?.atSeconds > 0 && manifest.openingProofFrame.atSeconds < opening.openingProof.durationSeconds && await matches(resolve(outputRoot, manifest.openingProofFrame.relativePath), manifest.openingProofFrame.sha256), "The rendered sample film is missing its hash-verified opening proof frame.");
   const doorway = manifest.shots.find((shot) => shot.id === "codex-doorway");
   assert(doorway?.editorialCue === "codex-to-workshoplm", "The clean film must make the real Codex-to-Workshop doorway visually explicit.");
   const metaReveal = manifest.shots.find((shot) => shot.id === "meta-reveal");

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance Output set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-16T21:16:31.221Z",
+  "builtAt": "2026-07-16T21:30:42.824Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "compositor": {
@@ -32,7 +32,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "dac2154da706f60354c4f9d07f013dcb4e1b3c4ecb81a0d97a82afb99e37d4e7",
+    "sha256": "b10db6660ea593281f49aa111862793b0cf598d6927c6fcb3de4de1d537aefcb",
     "durationSeconds": 140.010667,
     "streams": [
       {
@@ -50,48 +50,53 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "59c34e3665338871516a27fe41f81b724f56cacf6478fe21a58a2e13a08e5005"
+    "sha256": "30f3a736f4081f0522ed2d65c741a512fcd4eba1fa43ee5a7a06dcce1080e1ee"
+  },
+  "openingProofFrame": {
+    "relativePath": "review/opening-proof.jpg",
+    "sha256": "08c07311f98d63a889aaabf08b30fa183e7a9505b08b47505b9fc021d48fda1f",
+    "atSeconds": 2.25
   },
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "2a56114cd2a8a4745b9d2405e1bb505428100758b31dcb501b0f2df2cfdecbba"
+      "sha256": "58e6d587c9aeb2fa83e101257dc1165955061d0251cbd9969ed6206e3f40b8d7"
     },
     {
       "relativePath": "review/02.jpg",
-      "sha256": "1949b718bacf3cd989ec5c243be19e2cc054be03590f9e4234a28768777319cd"
+      "sha256": "36f7320b6298f8429c19ca16ee2ae8ad5b0cb2a5d269166d2f717c3de0ba60e3"
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "067ae323c1ebf0fcafeff29bee34afe9c9f90fbc487197c92ec484d33903838e"
+      "sha256": "2e884fe5be8e10878e1433462eb937f2bb44a1cd060942aa1c19d3aa3f3a709e"
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "c64bc5c727901aa716aff799cca4d1f790034665acc57dda6397ef5aaf02096c"
+      "sha256": "06a0db66d4fadcb3eed539bb1e5dfd5058a0b5ae0a3d21b079eb0a323d75fccc"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "75b75ba3dc161060cc29d9bf89fa7bd3ce4a48d87bf44e655f8eeaf52f8e39eb"
+      "sha256": "ecc72df06398c6504b13ff824648528157a8348a44c8a605b08a9634bb030f25"
     },
     {
       "relativePath": "review/06.jpg",
-      "sha256": "a6d1db231a79422e80f2407d51e25a9b16602fc9171ec1469fa01395986b6ee2"
+      "sha256": "571e09addb9dff3f3359b4ebe2dbc256dec9fa81957fb10dc6ef8d920f4815ed"
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "d853b5668a0763e3e14b99324909cf97d1cf3c48284b6250a8f39b59c5df7d2a"
+      "sha256": "8808b1b34833a2ae6e8e1d274573f89540a97a303d8df7dacb7597f0e946d7e8"
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "e503fec348fd5314f650cee86e782a99b21c9b1d59bb3c27735c76da08c75ca5"
+      "sha256": "4531c58bfee3a432cc619baee35f59de809486584272df4767a0b75fe7abbfa4"
     },
     {
       "relativePath": "review/09.jpg",
-      "sha256": "58450970c92b5ec454102ca2d9ce45b85b5166ef41d4f1d894380ccd48a0db5d"
+      "sha256": "63487da466a4856ac4c967eeff6eb89d0d3982f6de31ab50366e2fa1b64c5465"
     },
     {
       "relativePath": "review/10.jpg",
-      "sha256": "a0ec68fbb589f84f8f9b750c70ce731ade7213aeafb8239604c4f1b2b1d478c8"
+      "sha256": "1b4beda48e2e3c98ff6457ec057ddde60db15cdfe0af0d6d13223e4c4efa557a"
     }
   ],
   "metaRevealEvidence": {
@@ -131,9 +136,16 @@
       ],
       "sourceStartSeconds": 0.854,
       "sourceEndSeconds": 2.553,
+      "openingProof": {
+        "type": "finished-work-to-map",
+        "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/thumbnail-opening.png",
+        "sha256": "df901e73ff166860d3be1fdaee0537b324b8b5733ccbd36ee6df69410bb64ef8",
+        "durationSeconds": 4.5,
+        "transition": "design-accent-wipe"
+      },
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "opening-hold",
+        "transition": "opening-proof-wipe",
         "jitterProneZoompan": false
       }
     },

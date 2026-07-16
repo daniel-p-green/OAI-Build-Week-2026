@@ -93,9 +93,14 @@ assert(Math.round(roughCut.video?.durationSeconds) === 140 && roughCut.video.str
 assert(sampleCut.status === "sample-editorial-cut" && /authorized sample/i.test(sampleCut.disclosure) && /not founder footage or the public submission video/i.test(sampleCut.disclosure), "The clean review film does not preserve its authorized-sample boundary.");
 assert(sampleCut.voice?.provider === "OpenAI" && sampleCut.voice.name === "cedar" && sampleCut.voice.finalProviderNarration === true, "The clean review film has regressed from verified Cedar narration.");
 assert(sampleCut.shots?.length === 10 && sampleCut.shots.filter((shot) => shot.state === "blocked").length === 2, "The clean review film no longer retains ten shots and two final-evidence blocks.");
+const sampleOpening = sampleCut.shots.find((shot) => shot.id === "promise");
+assert(sampleOpening?.openingProof?.type === "finished-work-to-map" && sampleOpening.openingProof.transition === "design-accent-wipe" && sampleOpening.motion?.transition === "opening-proof-wipe", "The clean review film no longer opens on finished work before the Map.");
+assert(createHash("sha256").update(await readFile(resolve(repository, sampleOpening.openingProof.relativePath))).digest("hex") === sampleOpening.openingProof.sha256, "The clean review film opening proof no longer matches its package asset.");
+assert(sampleCut.openingProofFrame?.atSeconds > 0 && createHash("sha256").update(await readFile(resolve(repository, "outputs/demo-film-sample", sampleCut.openingProofFrame.relativePath))).digest("hex") === sampleCut.openingProofFrame.sha256, "The clean review film is missing its rendered opening proof frame.");
 assert(sampleCut.shots.find((shot) => shot.id === "codex-doorway")?.editorialCue === "codex-to-workshoplm", "The clean review film no longer makes the Codex doorway explicit.");
 assert(sampleCut.shots.find((shot) => shot.id === "meta-reveal")?.generatedMetaReveal === true, "The clean review film no longer contains its generated trace reveal.");
 assert(sampleCut.metaRevealEvidence?.mode === "authorized-sample", "The clean review film no longer identifies its sample transcript boundary.");
+assert(sampleCut.metaRevealEvidence?.transcript?.display?.mode === "complete" && sampleCut.metaRevealEvidence.transcript.display.truncated === false, "The clean review film no longer proves a complete untruncated sample transcript.");
 const sampleRoot = resolve(repository, "outputs/demo-film-sample");
 const sampleVideoBytes = await readFile(resolve(sampleRoot, sampleCut.video.relativePath));
 assert(createHash("sha256").update(sampleVideoBytes).digest("hex") === sampleCut.video.sha256, "The clean review film no longer matches its manifest hash.");

@@ -11,11 +11,16 @@
     {
       "id": "promise",
       "title": "The promise",
-      "caption": "From meetings and documents to polished slides and more",
+      "caption": "From meetings and documents to finished work you can defend",
       "startSeconds": 0,
       "endSeconds": 13,
       "state": "ready",
       "captureBeats": ["map"],
+      "openingSequence": {
+        "type": "finished-work-to-map",
+        "proofSeconds": 4.5,
+        "transition": "design-accent-wipe"
+      },
       "captureEndHoldbackSeconds": 0.7,
       "narration": "From your meetings and documents to polished slides and supporting work, with every claim traced to its source. WorkshopLM turns raw professional thinking into finished work without separating conversation from production.",
       "requiredMoments": [],

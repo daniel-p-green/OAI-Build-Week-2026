@@ -14,6 +14,7 @@ type FilmShot = {
   endSeconds: number;
   state: "ready" | "blocked";
   captureBeats: string[];
+  openingSequence?: { type: "finished-work-to-map"; proofSeconds: number; transition: "design-accent-wipe" };
   narration: string;
   requiredMoments: string[];
   requiredEvidence: RequiredEvidence[];
@@ -170,11 +171,17 @@ async function main(): Promise<void> {
     assert(wordCount(shot.narration) <= (shot.endSeconds - shot.startSeconds) * 2.7, `Narration for ${shot.id} is too dense for its slot.`);
     assert(Boolean(shot.caption?.trim()) && shot.caption.length <= 80, `Caption for ${shot.id} must be present and at most 80 characters.`);
     if (shot.captureBeats.length) assert((shot.captureEndHoldbackSeconds ?? 0.3) >= 0.2 && (shot.captureEndHoldbackSeconds ?? 0.3) <= 2, `Capture holdback for ${shot.id} must be between 0.2 and 2 seconds.`);
+    if (shot.openingSequence) {
+      assert(shot === plan.shots[0] && shot.openingSequence.type === "finished-work-to-map", "Only the first film shot may own the finished-work opening sequence.");
+      assert(shot.openingSequence.proofSeconds >= 3 && shot.openingSequence.proofSeconds <= 6 && shot.openingSequence.proofSeconds < shot.endSeconds - shot.startSeconds, "The opening proof must remain a three-to-six-second introduction before the Map.");
+      assert(shot.openingSequence.transition === "design-accent-wipe", "The opening proof must use the DESIGN Accent wipe.");
+    }
     if (shot.state === "blocked") assert(shot.requiredEvidence.length > 0, `Blocked shot ${shot.id} must name its missing evidence.`);
     shot.requiredMoments.forEach((moment) => seenMoments.add(moment));
     cursor = shot.endSeconds;
   }
   assert(cursor === plan.targetDurationSeconds, `Timeline ends at ${cursor}s, not the ${plan.targetDurationSeconds}s target.`);
+  assert(plan.shots[0]?.openingSequence?.type === "finished-work-to-map", "The demo must open on finished work before revealing the grounded Map.");
   for (const moment of requiredMomentIds) assert(seenMoments.has(moment), `Required judge moment is absent: ${moment}`);
 
   const captureManifestPath = resolve(repository, plan.captureManifest);
