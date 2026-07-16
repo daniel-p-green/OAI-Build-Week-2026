@@ -1,6 +1,6 @@
 # WorkshopLM Interface Design System
 
-Status: locked simplified interface for the hackathon build (updated 2026-07-15)
+Status: locked three-column conversation workbench for the hackathon build (updated 2026-07-15)
 
 This file governs WorkshopLM's product UI. A Workshop's generated brand system is a separate technical export stored as `DESIGN.md` plus machine-readable tokens; it does not control WorkshopLM chrome.
 
@@ -8,26 +8,25 @@ This file governs WorkshopLM's product UI. A Workshop's generated brand system i
 
 WorkshopLM is a **conversation-native thinking and production canvas**, not an AI dashboard.
 
-It should feel native inside ChatGPT/Codex: one calm artifact surface, a clear next action, and complexity revealed only in context. Customer brand expression belongs inside generated work; WorkshopLM's structural chrome inherits the host's neutral system language without copying OpenAI marks or implying an official OpenAI product.
+It should feel like one calm OpenAI-native professional workspace: persistent Sources, a grounded browser Conversation that can directly operate the work, and accumulating Production. Customer brand expression belongs inside generated work; WorkshopLM's structural chrome uses the verified Apps in ChatGPT Figma library without copying OpenAI marks or implying an official OpenAI product.
 
-The memorable visual remains **evidence becoming structure**: a native ChatGPT conversation creates cited cards on a spacious Map, those cards become an approved Brief, and the same content becomes recognizable professional Outputs.
+The memorable visual remains **conversation becoming finished work**: text or live voice creates cited structure on the Map, that structure becomes an approved Brief, and the same grounded content becomes recognizable professional Outputs and Audio Overviews.
 
 ## Simplification rule
 
-The product may be technically deep, but its geography must stay obvious. On desktop, WorkshopLM uses one stable **Sources | current object | Production** workbench. These are not tabs or competing destinations: Sources answers what material is active, the center holds the one object being worked on, and Production shows what is ready, blocked, current, or stale.
+The product may be technically deep, but its geography must stay obvious. On desktop, WorkshopLM uses one stable **Sources | current object | Production** workbench. These are not separate applications or competing destinations: Sources answers what material is active, the center holds the grounded Conversation or object being worked on, and Production shows what is ready, blocked, current, or stale.
 
-The persistent rails stay narrow and operational. The Production rail owns the single next action and compact Capture → Shape → Deliver status; the header carries identity and Back only. Style editing, source evidence, capture, versions, and technical detail remain contextual sheets or focused views. Mobile collapses the rails into one compact object switcher and the same linear object model rather than squeezing three columns onto a phone.
+The persistent rails stay narrow and operational. Production owns the single next action and compact Capture → Shape → Deliver status; the header carries identity and Back only. Source evidence may expand inside the left rail, while Style editing, versions, and technical detail remain contextual sheets or focused views. Mobile collapses the three regions into one compact object switcher and the same linear object model rather than squeezing three columns onto a phone.
 
 ## Surface model
 
-WorkshopLM has two coordinated native surfaces:
+WorkshopLM has one user-facing product surface: the in-app-browser Workshop. It contains Sources, grounded text and Realtime voice Conversation, Map, Brief, Style, Production, Storyboard, Audio Overview, Video, and exact source evidence.
 
-1. **Codex task** — conversation, questions, reasoning, and plugin commands; voice enters through the Workshop's capture control.
-2. **In-app browser Workshop** — Sources, Map, Brief, Style, Outputs, Storyboard, Video, and exact source evidence.
+The center browser composer is the primary interaction surface. Text turns use Responses plus durable Conversation state. Live voice uses a browser WebRTC Realtime voice-agent session that can respond naturally, handle interruption, and invoke the same typed Workshop tools as text. Every accepted user turn persists under the Workshop's transcript/Source contract so Conversation, Map, and Outputs cannot silently drift apart.
 
-The browser contains no second chat transcript or general chat composer. Codex remains the verified conversation surface. The final demo voice path is a narrow capture-only Realtime control inside `Add source`; it records a transcript Source and disappears when the sheet closes. ChatGPT Work parity is not part of the verified hackathon surface.
+Codex remains a verified development, plugin, orchestration, and launch host. It is not the professional's primary Conversation UI and does not need to stay visible while WorkshopLM is in use. ChatGPT Work parity is not part of the verified hackathon surface.
 
-The inline plugin widget is a single-purpose doorway. It shows Workshop title, source count, current outcome/status, and at most two actions: one primary `Open workshop` action and one optional contextual secondary action. It has no tabs, nested navigation, or duplicate composer.
+The inline plugin widget is a single-purpose doorway. It shows Workshop title, source count, current outcome/status, and at most two actions: one primary `Open workshop` action and one optional contextual secondary action. It has no tabs, nested navigation, or composer.
 
 ## Official component boundary
 
@@ -116,7 +115,19 @@ Design first for the ChatGPT in-app browser at approximately 1200×800, then ver
 
 Open the last active Workshop or sanitized demo Workshop immediately on its Map. Do not insert a dashboard, chooser, onboarding carousel, or Workshop library into the judged path.
 
-### 2. Map — default visual home
+### 2. Conversation and live voice
+
+The center column opens as a grounded Workshop conversation rather than relying on a separate Codex task.
+
+- The composer accepts text and exposes one clear voice action.
+- Text and voice share one durable turn history, active Source scope, typed tool surface, and approval rules.
+- Realtime voice supports natural turn taking, barge-in, spoken responses, and typed Workshop tool calls such as add Source, select Source scope, extract candidates, edit Map, approve Brief, choose Style, create Outputs, open evidence, update Storyboard, and create Audio Overview. Consequential approvals remain visibly confirmed in the UI.
+- Tool execution produces visible progress and a concrete UI result; the assistant does not merely narrate an action.
+- Selecting a response citation reveals the exact excerpt in the Sources rail while preserving the response and current work object.
+- Conversation may bring the Map, Brief, Storyboard, or Output into the center as the current work object. Returning to Conversation preserves position and state.
+- The browser receives only a server-minted ephemeral Realtime credential. The standard OpenAI API key remains server-only.
+
+### 3. Map — default visual work object
 
 The Map is the product's hero screen and opens by default after a task is linked.
 
@@ -131,7 +142,7 @@ The Map is the product's hero screen and opens by default after a task is linked
 
 The hackathon path does not depend on ingestion animation. New nodes may appear with a short standard transition only when it helps the user understand what changed; reduced-motion mode removes it.
 
-### 3. Sources rail and sheet
+### 4. Sources rail and sheet
 
 Source rows show:
 
@@ -143,7 +154,7 @@ Source rows show:
 
 Clicking a row updates the inline rail preview without navigating. `Show on map` returns to Map and selects the related semantic node. At compact/mobile widths, the same content uses the official Sources SideSheet and returns focus to its trigger. A factual citation uses `Show source` to open the exact excerpt and locator without changing the active source scope.
 
-### 4. Brief and Style
+### 5. Brief and Style
 
 The Brief is a readable product view, not raw Markdown. It shows the approved outcome, evidence, success condition, source locators, and current Style in one centered document.
 
@@ -151,9 +162,9 @@ Style opens as the `StyleSetup` composite: official SideSheet, selectable ListRo
 
 Technical exports such as `FRAME.md`, `DESIGN.md`, tokens, model IDs, hashes, and version mechanics appear only under technical Details or export. They never replace the formatted Brief or Style views.
 
-### 5. Outputs history and Production rail
+### 6. Production and Outputs history
 
-The Production rail shows the planned family from the start and becomes the compact accumulating index as work is created. After Brief approval and Style selection, the centered Outputs view remains the durable, visually rich history of professional work. Every completed Output has a distinct real thumbnail or playable preview above quiet metadata.
+Production shows the planned family from the start and becomes the compact accumulating index as work is created. After Brief approval and Style selection, the centered Outputs view remains the durable, visually rich history of professional work. Every completed Output has a distinct real thumbnail or playable preview above quiet metadata.
 
 - `Create outputs` creates the selected types from the same Brief, Style, and source scope.
 - Presentation and infographic versions remain visible newest-first with a real preview, type, version, freshness, source coverage, and one card-level open action.
@@ -164,15 +175,26 @@ The Production rail shows the planned family from the start and becomes the comp
 - A focused factual Output and the focused image set use `Show source`; the focused Video uses `Show original` for the meta-demo before/after reveal.
 - Provider-planned images remain explicitly labeled until genuine provider bytes exist.
 
-### 6. Image batch
+### 7. Audio Overview
+
+Audio Overview is a first-class Production Output, not the live voice assistant recorded to a file.
+
+- WorkshopLM first creates a grounded, editable overview script from the approved Brief and active Sources.
+- The user can choose a concise executive briefing, a deeper conversational overview, or a decision-focused review without changing the factual source set.
+- The script preserves claim/source edges and remains editable before speech generation.
+- The Speech API renders the approved script with a supported built-in voice and explicit AI-voice disclosure. Generated audio is stored as a versioned local Output with script, source coverage, model/voice metadata, file hash, and duration.
+- Playback streams when practical, supports download in a standard format, and exposes `Show source` for the script's factual sections.
+- A later two-host conversational format may alternate separately generated segments, but the first implementation is one coherent narrated briefing; it does not pretend that two generated voices held an unscripted discussion.
+
+### 8. Image batch
 
 The Outputs card uses a compact contact sheet for six visually coherent panels. Opening it replaces the gallery with a calm six-up review surface: three columns on wide desktop and two on compact/mobile. Each tile says `Planned`, `Ready`, `Needs update`, or `Couldn't create`; a ready tile opens its real image file. Shared Style, references, palette, and selective regeneration remain batch state rather than new permanent UI. Regenerating one panel may not disturb sibling IDs or versions.
 
-### 7. Storyboard
+### 9. Storyboard
 
 Use a horizontal filmstrip above a large selected-panel editor. Every panel displays duration, editable title and narration, source access, and stale status. `Show source` resolves the selected panel's stored claim, chunk, source, and locator; it may not fall back to an unrelated first source. When an image set exists, each panel binds one exact image-panel ID and version; the filmstrip, selected-panel preview, and local video renderer must resolve those same bytes. Regenerating a bound image to a new version marks the affected Storyboard path `Needs update` and revokes its approval. The second and final blocking action is `Approve storyboard`. Only after approval does the Production rail advance to `Create video`.
 
-### 8. Source evidence and original reveal
+### 10. Source evidence and original reveal
 
 `Show source` opens the contextual Source sheet from a factual claim. It answers “why is this here?” and displays only the complete available chain:
 

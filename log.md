@@ -6266,3 +6266,67 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Implement, visually inspect, and regression-test the new workbench and in-product Conversation surface.
 - Reconcile root `DESIGN.md`, the Figma component inventory, and visual baselines as part of implementation rather than inventing page-local chrome.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+## 2026-07-15 20:09 CT — Browser Conversation, collaborative voice, and Audio Overview become locked OpenAI-native scope
+
+**Area:** Product architecture / OpenAI API research / Repository hygiene
+
+### Changed
+
+- Committed the complete pre-rebuild worktree as `69f5ee9` (`feat(web): checkpoint professional workflow polish`) after staging and reviewing all intended UI, visual-baseline, goal, audit, log, and submission-draft changes.
+- Reconciled `DESIGN.md` so WorkshopLM owns one browser-based `Sources | Conversation and current work | Studio` product instead of splitting Conversation into Codex.
+- Added `research/openai-api-capability-roadmap-2026-07-15.md`, mapping current official OpenAI APIs to WorkshopLM user value, priority, architecture, P0 tools, safety boundaries, and explicit deferrals.
+- Locked two related but distinct audio experiences: Realtime speech-to-speech collaboration with typed canvas/tool control, and a durable source-grounded Audio Overview created through editable script review plus text-to-speech.
+- Added the corresponding unchecked implementation and proof gates to `GOAL.md`.
+
+### Verified
+
+- Before the checkpoint commit, `git diff --check` passed, the intended files contained no detected OpenAI key/Bearer credential pattern, and `pnpm check` passed lint, typecheck, and tests across all 13 packages, including 20 web and 85 worker tests.
+- Reviewed current official OpenAI documentation for Responses/Conversation state, tools, Structured Outputs, Realtime/WebRTC conversations, voice agents, speech-to-text, text-to-speech, File Search, image generation, and background mode.
+- Official docs confirm browser WebRTC voice-agent sessions support low-latency speech-to-speech, natural turn taking, interruptions, and realtime tool use; Realtime conversations support text/audio generation, image input, and function calling; the Speech endpoint supports controllable TTS and streaming output with required AI-voice disclosure.
+
+### Decisions
+
+- OpenAI replaces Google's model/tool stack, not NotebookLM's proven information architecture.
+- Local deterministic retrieval remains the core private grounding path. Hosted File Search, web search, multi-agent handoffs, translation, telephony, custom voices, and fine-tuning remain optional or deferred until the primary seam proves their need.
+- Audio Overview is a finished Output; Realtime voice is an interaction mode. Neither substitutes for the other.
+- The user's OpenAI API key is authorized for testing, but bounded provider execution must still record and enforce an explicit request ceiling before a paid batch begins.
+
+### Open items
+
+- Implement the three-column shell, browser Conversation, shared typed tool registry, upgraded Realtime voice agent, and first grounded Audio Overview in that order.
+- Obtain and record the exact paid-request ceiling before provider-backed batch execution.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 20:12 CT — Stable workbench and professional replacement test become the execution hierarchy
+
+**Area:** Product direction / Interface architecture / Verification
+
+### Changed
+
+- Replaced the swapping-header workflow with one stable desktop workbench: Sources stay left, the current Map/Brief/Output stays centered, and Production stays right with Capture → Shape → Deliver state and one explicit next action.
+- Added reusable `Workbench`, `WorkbenchRail`, and `ObjectSwitcher` composites to the shared UI layer, documented their exact official Figma primitive recipes, and extended the UI conformance contract to require those recipes and exports.
+- Preserved the same geography on compact screens and replaced the broken narrow-grid placement on mobile with a direct Map / Brief / Outputs / Story switcher.
+- Reconciled `GOAL.md` and `DESIGN.md` around plain-language `Production` terminology and the professional replacement test: Presentation is the wedge, `Would I send this?` is the quality bar, the hackathon submission is dogfood zero, and grounded in-product Conversation is the next structural increment.
+
+### Verified
+
+- `pnpm check`, `pnpm demo:e2e`, `pnpm submission:build`, `pnpm submission:verify`, `pnpm demo:film:verify`, and `git diff --check` passed. The submission verifier correctly retained `partial` status because provider-backed Map, image, narration, and Realtime evidence remain absent.
+- The web contract suite passed 20 tests. The production-browser suite passed all 27 cases across 1200px desktop, 1024px compact, 390px mobile, reduced motion, contrast, and 200% logical zoom.
+- Inspected the final desktop Map screenshot: source scope, current work, production state, and `Review storyboard` next action are simultaneously visible without tabs or duplicate creation controls.
+
+### Decisions
+
+- `Production` is the user-facing name for the accumulating right rail. `Studio` remains retired from this shell because it is less direct and was inconsistent with the implemented UI.
+- The stable workbench is Phase 1, not completion of the three-column goal. Conversation, collapse controls, and contextual evidence/affected-work disclosure remain open.
+- No paid provider call ran in this increment.
+
+### Open items
+
+- Build WorkshopLM's grounded center Conversation with one text composer, integrated Realtime voice, typed Workshop tools, and persisted source-grounded turns.
+- Make exact evidence and affected downstream work visible without losing the claim under review; complete rail collapse/retry behavior.
+- Dogfood one real external deck, obtain the cold professional `Send`/`Revise` decision, then address the first concrete revision before expanding output breadth.
+- Founder brainstorm, provider media, final public Video, public links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

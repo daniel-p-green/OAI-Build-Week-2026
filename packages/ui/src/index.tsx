@@ -13,7 +13,7 @@ import {
   useRef,
 } from "react";
 
-export { DOMAIN_UI_EXCEPTIONS, OAI_UI_COMPONENTS, OAI_UI_SOURCE, OAI_UI_TOKENS } from "./contract.js";
+export { DOMAIN_UI_EXCEPTIONS, OAI_UI_COMPONENTS, OAI_UI_COMPOSITES, OAI_UI_SOURCE, OAI_UI_TOKENS } from "./contract.js";
 
 function classes(...values: Array<string | false | null | undefined>) {
   return values.filter(Boolean).join(" ");
@@ -25,6 +25,18 @@ export function FullScreenShell({ className, ...props }: HTMLAttributes<HTMLElem
 
 export function NavigationHeader({ className, ...props }: HTMLAttributes<HTMLElement>) {
   return <header className={classes("oai-navigation-header", className)} data-oai-component="NavigationHeader" {...props} />;
+}
+
+export function Workbench({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={classes("oai-workbench", className)} data-oai-component="Workbench" {...props} />;
+}
+
+export function WorkbenchRail({ side, className, ...props }: HTMLAttributes<HTMLElement> & { side: "left" | "right" }) {
+  return <aside className={classes("oai-workbench-rail", `oai-workbench-rail--${side}`, className)} data-oai-component="WorkbenchRail" {...props} />;
+}
+
+export function ObjectSwitcher({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
+  return <div className={classes("oai-object-switcher", className)} data-oai-component="ObjectSwitcher" {...props} />;
 }
 
 export type ButtonVariant = "primary" | "secondary" | "destructive" | "secondary-destructive";

@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
-import { DOMAIN_UI_EXCEPTIONS, OAI_UI_COMPONENTS, OAI_UI_SOURCE } from "@workshoplm/ui";
+import { DOMAIN_UI_EXCEPTIONS, OAI_UI_COMPONENTS, OAI_UI_COMPOSITES, OAI_UI_SOURCE } from "@workshoplm/ui";
 
 const root = resolve(process.cwd(), "../..");
 const page = readFileSync(resolve(process.cwd(), "app/page.tsx"), "utf8");
@@ -14,9 +14,10 @@ const design = readFileSync(resolve(root, "DESIGN.md"), "utf8");
 describe("official Apps in ChatGPT UI implementation", () => {
   it("pins every reusable shell family to the inspected Figma inventory", () => {
     for (const id of Object.values(OAI_UI_COMPONENTS)) expect(inventory).toContain(`\`${id}\``);
-    for (const component of ["FullScreenShell", "NavigationHeader", "Button", "ButtonLink", "IconButton", "Token", "Checkbox", "Input", "TextArea", "Card", "ListGroup", "ListRow", "ListRowAction", "EntityCard", "EntityCardAction", "Carousel", "CarouselRow", "SideSheet", "StateMessage"]) {
+    for (const component of ["FullScreenShell", "NavigationHeader", "Workbench", "WorkbenchRail", "ObjectSwitcher", "Button", "ButtonLink", "IconButton", "Token", "Checkbox", "Input", "TextArea", "Card", "ListGroup", "ListRow", "ListRowAction", "EntityCard", "EntityCardAction", "Carousel", "CarouselRow", "SideSheet", "StateMessage"]) {
       expect(ui).toContain(`function ${component}`);
     }
+    for (const ids of Object.values(OAI_UI_COMPOSITES)) for (const id of ids) expect(inventory).toContain(`\`${id}\``);
   });
 
   it("uses official primitives for ordinary controls and marks raw domain interactions", () => {
@@ -63,9 +64,10 @@ describe("official Apps in ChatGPT UI implementation", () => {
   });
 
   it("keeps desktop source, current-object, and production context in one workbench", () => {
-    expect(page).toContain('className="workbench"');
-    expect(page).toContain('className="sources-rail" aria-label="Sources"');
-    expect(page).toContain('className="production-rail" aria-label="Production"');
+    expect(page).toContain('<Workbench className="workbench"');
+    expect(page).toContain('<WorkbenchRail side="left" className="sources-rail" aria-label="Sources"');
+    expect(page).toContain('<WorkbenchRail side="right" className="production-rail" aria-label="Production"');
+    expect(page).toContain('<ObjectSwitcher className="mobile-object-switcher" aria-label="Workshop objects"');
     expect(page).toContain('className="next-action" aria-label="Next action"');
     expect(page).toContain('className="stage-progress" aria-label="Workshop progress"');
     expect(appCss).toContain("grid-template-columns: 220px minmax(0, 1fr) 252px");

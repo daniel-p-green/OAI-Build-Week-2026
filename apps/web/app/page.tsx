@@ -22,6 +22,9 @@ import {
   StateMessage,
   TextArea,
   Token,
+  Workbench,
+  WorkbenchRail,
+  ObjectSwitcher,
 } from "@workshoplm/ui";
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { RealtimeCapture } from "./realtime-capture";
@@ -308,9 +311,9 @@ export default function WorkshopPage() {
 
       {notice && <Card className={`notice notice--${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}><span>{notice.message}</span><IconButton label="Dismiss" onClick={() => setNotice(null)}><CloseIcon /></IconButton></Card>}
 
-      <div className="workbench">
+      <Workbench className="workbench">
         {loadState === "ready" && <SourcesRail sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => openSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
-        {loadState === "ready" && <div className="mobile-object-switcher" aria-label="Workshop objects"><Button variant="secondary" size="small" aria-pressed={view === "map"} onClick={() => openView("map")}>Map</Button><Button variant="secondary" size="small" aria-label="View brief" aria-pressed={view === "brief"} disabled={!state?.briefApproved} onClick={() => openView("brief")}>Brief</Button><Button variant="secondary" size="small" aria-label="View outputs" aria-pressed={view === "outputs" || view === "output"} disabled={!(state?.outputs.length || state?.imageBatch)} onClick={() => openView("outputs")}>Outputs</Button><Button variant="secondary" size="small" aria-label="View storyboard" aria-pressed={view === "storyboard"} disabled={!state?.storyboard.panels.length} onClick={() => openView("storyboard")}>Story</Button></div>}
+        {loadState === "ready" && <ObjectSwitcher className="mobile-object-switcher" aria-label="Workshop objects"><Button variant="secondary" size="small" aria-pressed={view === "map"} onClick={() => openView("map")}>Map</Button><Button variant="secondary" size="small" aria-label="View brief" aria-pressed={view === "brief"} disabled={!state?.briefApproved} onClick={() => openView("brief")}>Brief</Button><Button variant="secondary" size="small" aria-label="View outputs" aria-pressed={view === "outputs" || view === "output"} disabled={!(state?.outputs.length || state?.imageBatch)} onClick={() => openView("outputs")}>Outputs</Button><Button variant="secondary" size="small" aria-label="View storyboard" aria-pressed={view === "storyboard"} disabled={!state?.storyboard.panels.length} onClick={() => openView("storyboard")}>Story</Button></ObjectSwitcher>}
         <section className="object-canvas" aria-label={currentTitle}>
           {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
           {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
@@ -321,7 +324,7 @@ export default function WorkshopPage() {
           {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} busy={busy} onShowSource={showSource} onShowOriginal={() => openSheet("original")} onRequestReplacement={async (panelId) => { const next = await post({ action: "regenerateImagePanel", panelId }); if (next) setNotice({ message: "Replacement requested. Review the new image in Storyboard before approving Video.", tone: "status" }); }} />}
         </section>
         {loadState === "ready" && <ProductionRail state={state} view={view} action={workflowAction} onOpenView={openView} onOpenOutput={openOutput} onOpenStyle={() => openSheet("style")} onAddSource={() => openSheet("add-source")} />}
-      </div>
+      </Workbench>
 
       {sheet === "workshops" && <WorkshopsSheet workshops={workshops} busy={busy} onClose={closeSheet} onSelect={(workshopId) => { void post({ action: "selectWorkshop", workshopId }); }} onCreate={(title) => post({ action: "createWorkshop", title }).then(Boolean)} onHelp={() => setSheet("help")} />}
       {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} onClose={closeSheet} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
@@ -607,11 +610,11 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
 
 function SourcesRail({ sources, activeIds, selected, onSelect, onToggle, onAdd, onShowMap }: { sources: SourceItem[]; activeIds: string[]; selected: SourceItem | null; onSelect: (source: SourceItem) => void; onToggle: (id: string) => void; onAdd: () => void; onShowMap: (source: SourceItem) => void }) {
   const active = selected ?? sources[0];
-  return <aside className="sources-rail" aria-label="Sources">
+  return <WorkbenchRail side="left" className="sources-rail" aria-label="Sources">
     <header className="rail-heading"><div><strong>Sources</strong><small>{activeIds.length} of {sources.length} selected</small></div><IconButton label="Add material" onClick={onAdd}><PlusIcon /></IconButton></header>
     {sources.length ? <ListGroup className="rail-source-list">{sources.map((source) => <ListRow className={active?.id === source.id ? "source-row selected" : "source-row"} key={source.id}><Checkbox aria-label={`Use ${source.title}`} checked={activeIds.includes(source.id)} onChange={() => onToggle(source.id)} /><ListRowAction onClick={() => onSelect(source)}><FileIcon label={source.type} /><span><strong>{source.title}</strong><small>{source.claimCount} claims</small></span></ListRowAction></ListRow>)}</ListGroup> : <p className="rail-empty">Add a meeting, document, or conversation.</p>}
     {active && <section className="rail-source-preview" aria-label={`Selected source: ${active.title}`}><strong>{active.title}</strong><p>“{active.excerpt}”</p><small>{active.locator}</small><Button variant="secondary" size="small" onClick={() => onShowMap(active)}>Show on map</Button></section>}
-  </aside>;
+  </WorkbenchRail>;
 }
 
 function ProductionItem({ title, detail, status, tone = "waiting", onClick, ariaLabel }: { title: string; detail: string; status: string; tone?: "current" | "waiting"; onClick?: () => void; ariaLabel?: string }) {
@@ -631,7 +634,7 @@ function ProductionRail({ state, view, action, onOpenView, onOpenOutput, onOpenS
   const hasOutputs = Boolean(deck || infographic || state?.imageBatch || state?.storyboard.panels.length || currentVideo);
   const deliverStatus = !briefReady ? "Blocked by Brief" : !styleReady ? "Choose Style" : hasOutputs ? outputSetStatus(state).actionRequired ? "Needs update" : "In progress" : "Ready";
 
-  return <aside className="production-rail" aria-label="Production">
+  return <WorkbenchRail side="right" className="production-rail" aria-label="Production">
     <header className="rail-heading"><div><strong>Production</strong><small>From thinking to finished work</small></div></header>
     <section className="stage-progress" aria-label="Workshop progress">
       <ListRowAction aria-current={view === "map" ? "step" : undefined} onClick={onAddSource}><span><strong>Capture</strong><small>{state?.activeSourceIds.length ?? 0} active sources</small></span><Status tone={(state?.activeSourceIds.length ?? 0) > 0 ? "current" : "waiting"}>{(state?.activeSourceIds.length ?? 0) > 0 ? "Ready" : "Start"}</Status></ListRowAction>
@@ -648,7 +651,7 @@ function ProductionRail({ state, view, action, onOpenView, onOpenOutput, onOpenS
       <ProductionItem title="Storyboard" detail={state?.storyboard.panels.length ? `${state.storyboard.panels.length} editable panels` : "Review before Video"} status={state?.storyboard.stale ? "Needs update" : state?.storyboardApproved ? "Approved" : state?.storyboard.panels.length ? "Needs review" : "Planned"} tone={state?.storyboardApproved && !state.storyboard.stale ? "current" : "waiting"} onClick={state?.storyboard.panels.length ? () => onOpenView("storyboard") : undefined} ariaLabel="View storyboard" />
       <ProductionItem title="Video" detail={currentVideo ? `Version ${currentVideo.version}` : "From approved Storyboard"} status={currentVideo?.stale ? "Needs update" : currentVideo ? "Up to date" : state?.videoState === "queued" || state?.videoState === "rendering" ? "Creating" : "Planned"} tone={currentVideo && !currentVideo.stale ? "current" : "waiting"} onClick={currentVideo ? () => onOpenOutput(currentVideo.id) : undefined} />
     </ListGroup>
-  </aside>;
+  </WorkbenchRail>;
 }
 
 function StoryboardView({ storyboard, imageBatch, approved, panel, busy, onSelect, onPost, onShowSource }: { storyboard?: PersistedWorkshop["storyboard"]; imageBatch?: PersistedWorkshop["imageBatch"]; approved: boolean; panel?: PersistedWorkshop["storyboard"]["panels"][number]; busy: boolean; onSelect: (id: string) => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onShowSource: (target?: EvidenceTarget) => void }) {
