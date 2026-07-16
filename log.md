@@ -9137,3 +9137,37 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The complete `14:28 CT — The final reveal visibly proves its build record` milestone and its first `14:29 CT` correction were appended using ambiguous repeated anchors and therefore appear earlier in this append-only file than later entries that were already present.
 - No historical entry was moved or rewritten. Treat the milestone's explicit 14:28 timestamp as authoritative and this correction as the chronological tail marker.
+
+---
+
+## 2026-07-16 14:39 CT — The clean judge-film treatment becomes a complete reviewable movie
+
+**Area:** Judge film / editorial quality / evidence integrity / truthful fallback
+
+### Changed
+
+- Added `pnpm demo:film:sample`, a clean 2:20 editorial rehearsal that uses the final caption and motion treatment without weakening `pnpm demo:film:final`. It reuses the verified ten-shot OpenAI Cedar narration, the authorized sample transcript, the deterministic current walkthrough, the inspected provider-backed image and Video footage, and the acceptance submission package.
+- The final beat is now generated inside the sample movie instead of existing only as a still preview. It is visibly labeled `AUTHORIZED SAMPLE · EDITORIAL CUT`, shows the sample transcript beside the finished-work thumbnails, and derives `7 Outputs · 6 source-linked claims · 2 sign-offs · 24 hashed assets` from the acceptance `BUILD-TRACE.json` and manifest at render time.
+- Added `pnpm demo:film:verify-sample`. The verifier rejects a missing disclosure, changed Cedar identity, changed movie, missing H.264/AAC streams, a changed contact sheet or review frame, a changed acceptance manifest/build trace, fewer than ten shots, or any attempt to hide the two still-blocked final-evidence beats. The generated folder includes a concise README, movie, manifest, contact sheet, and one full-resolution review frame per shot.
+- Bound the exact authorized sample transcript, acceptance manifest, and build trace into the sample-film manifest by SHA-256. Final mode continues to require the founder transcript and final-operator package and remains transactionally fail-closed.
+
+### Verified
+
+- `pnpm demo:film:sample` rendered `outputs/demo-film-sample/workshoplm-demo-sample.mp4`: 140.021333 seconds, 1280×720 H.264, 48 kHz AAC, SHA-256 `a880b39194a48e430d5ec83b04a4e15b0bb46c42ee30bb2eb5ca671378f7e09e`.
+- `pnpm demo:film:verify-sample` passed all transcript, package, trace, narration, stream, movie, contact-sheet, ten-frame, and blocked-state integrity checks. The sample transcript hash is `a82500834d6cccaf325971623048633facc707c570f72a128c07c79662616519`; the acceptance manifest and build-trace hashes are `5c2a9cd874aee29e4dcc77b4231ba82376a4cb2ab6511443faa191501db80a79` and `3db2c7adc4837a645c00cdbc4d8a0c67386445746a975ea30b5f9e0cf87af77a`.
+- Visually inspected the ten-shot contact sheet, the complete meta-reveal frame, and the Codex doorway at multiple points. The clean captions remain readable, the final trace is subordinate but legible, and the film no longer shows fixture-state banners. Objective `blackdetect`, `freezedetect`, and `silencedetect` found no black interval, freeze longer than 3.5 seconds, or silence longer than 2.5 seconds. Audio measures -22.9 LUFS integrated, 4.4 LU range, and -2.9 dB true peak.
+- The ordinary draft verifier still reports exactly eight ready shots, two blocked shots, and four missing founder/final-export evidence items. `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 30 web tests and 120 worker tests. `pnpm submission:packet:verify` passed with Terra, six provider-backed images, five product Cedar clips, ten editorial Cedar clips, sixteen UI screenshots, and the two honest film blocks.
+- The first `pnpm demo:film:verify` attempt hit a sandbox-only `tsx` IPC permission error. Running the same TypeScript entry through `node --import tsx` passed; no application or evidence failure was hidden.
+- No OpenAI request ran. The evidence ledger remains at 104 provider HTTP operations and exact dollar debit remains unavailable from provider responses.
+
+### Decisions
+
+- A full clean rehearsal is materially stronger verification than a contact sheet alone, but it must remain visibly and structurally distinct from founder evidence. The sample mode therefore gets the final visual system and trace while preserving explicit sample language, two blocked states, and four limitations.
+- The final compositor remains the only path allowed to write the public demo location or promote the film plan to final. Sample mode writes a separate Output root and cannot satisfy the final verifier.
+- `PLAN-2026-07-13.md` remained advisory only for enduring acceptance principles. Its pre-existing user modification was untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, founder/target-audience film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- The existing Codex doorway footage proves the correct in-app-browser surface but foregrounds the Workshop more than the host conversation. If the founder recording permits, the final capture should make the one plugin invocation visually unmistakable without exposing private task content.
+- Codex Session ID: unavailable on this surface; not inferred.

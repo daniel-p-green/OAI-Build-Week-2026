@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "status": "sample-editorial-cut",
+  "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance Output set. This is not founder footage or the public submission video.",
+  "builtAt": "2026-07-16T19:38:28.202Z",
+  "plan": "submission/demo-film-plan.json",
+  "sourceCapture": "outputs/demo-recording-draft/manifest.json",
+  "voice": {
+    "provider": "OpenAI",
+    "model": "gpt-4o-mini-tts",
+    "name": "cedar",
+    "disclosure": "AI-generated voice",
+    "requestCount": 10,
+    "finalProviderNarration": true
+  },
+  "video": {
+    "relativePath": "workshoplm-demo-sample.mp4",
+    "sha256": "a880b39194a48e430d5ec83b04a4e15b0bb46c42ee30bb2eb5ca671378f7e09e",
+    "durationSeconds": 140.021333,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "48000"
+      }
+    ]
+  },
+  "contactSheet": {
+    "relativePath": "contact-sheet.jpg",
+    "sha256": "9811056d8b6ecc41d17fb45ce719b42a3603a18755c14c2eb03f725a305f4912"
+  },
+  "reviewFrames": [
+    {
+      "relativePath": "review/01.jpg",
+      "sha256": "09d133f40ee058d9f57533e83df8bcc088ffa6b48694d1df904b0a736bef3fa4"
+    },
+    {
+      "relativePath": "review/02.jpg",
+      "sha256": "467d7922d0859b55caa6522719a6b0632be2ec659ff25ad97eeea45c7f2708c0"
+    },
+    {
+      "relativePath": "review/03.jpg",
+      "sha256": "9d095e518f698bc4c23225be15f4cf898113fcd3d4bf1be5b77b53254368a7b0"
+    },
+    {
+      "relativePath": "review/04.jpg",
+      "sha256": "4d23809947b4175b315b553ad0639c07693e9c5527ac77a37b72d25f68b9aad8"
+    },
+    {
+      "relativePath": "review/05.jpg",
+      "sha256": "03d3fd247269619330886428be22346f8ccccf9e4877df0ce6d6d01b88ec5ce7"
+    },
+    {
+      "relativePath": "review/06.jpg",
+      "sha256": "611f92c6cbc62b06c693a219def6aa5d2e491cc11260e9161569492ed039ffc5"
+    },
+    {
+      "relativePath": "review/07.jpg",
+      "sha256": "b601924b1e32761b1cd10fa0d4d5e8671fc1f15f8f3d338140aa8b0e57ee6a9d"
+    },
+    {
+      "relativePath": "review/08.jpg",
+      "sha256": "2cdd6be2b6930526681812e31088e255c1b1d74f098b9431102598b90c48a47b"
+    },
+    {
+      "relativePath": "review/09.jpg",
+      "sha256": "68324b4a6dfa1b1831d455401db967b4b5c97fe2520ea747bdb2cee1c3342f3f"
+    },
+    {
+      "relativePath": "review/10.jpg",
+      "sha256": "2292a7f8d27a42765747d1f82b2e8cb61fe4634ae0111eb7ef1caa1217eb8429"
+    }
+  ],
+  "metaRevealEvidence": {
+    "mode": "authorized-sample",
+    "transcript": {
+      "relativePath": null,
+      "sha256": "a82500834d6cccaf325971623048633facc707c570f72a128c07c79662616519",
+      "byteCount": 397
+    },
+    "submissionManifest": {
+      "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
+      "sha256": "5c2a9cd874aee29e4dcc77b4231ba82376a4cb2ab6511443faa191501db80a79"
+    },
+    "buildTrace": {
+      "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/BUILD-TRACE.json",
+      "sha256": "3db2c7adc4837a645c00cdbc4d8a0c67386445746a975ea30b5f9e0cf87af77a"
+    }
+  },
+  "shots": [
+    {
+      "id": "promise",
+      "state": "ready",
+      "durationSeconds": 13,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_4baf607eaff0434582f45ec597ce3b1f",
+        "sha256": "daa3849d77c11e767dae8965c48c9952bd4d7b071291997d67deac7a8912f4e6"
+      },
+      "sourceBeats": [
+        "map"
+      ],
+      "sourceStartSeconds": 0.631,
+      "sourceEndSeconds": 2.332,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
+    },
+    {
+      "id": "codex-doorway",
+      "state": "ready",
+      "durationSeconds": 13,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_9bad20020f4e456fb6f1332b0349d06f",
+        "sha256": "594f855355d7c4599c7f86fc0e25615f46d211bf8784467e7b9f10e63c9988b6"
+      },
+      "sourceBeats": [],
+      "externalVideo": "outputs/demo-film-inputs/codex-doorway.mov",
+      "sourceDurationSeconds": 12,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
+    },
+    {
+      "id": "capture-and-shape",
+      "state": "blocked",
+      "durationSeconds": 18,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_ab4cb9c79aac41eaa8b4ab799e7e7194",
+        "sha256": "b33fb99ffe9e5b80f719d5da00286dbd3dc1e41c8dabb4aa0408b9446442dca8"
+      },
+      "sourceBeats": [
+        "sources"
+      ],
+      "sourceStartSeconds": 2.832,
+      "sourceEndSeconds": 4.335,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
+    },
+    {
+      "id": "evidence-and-control",
+      "state": "ready",
+      "durationSeconds": 14,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_5fa723425b8e4b3ca80634aff4a43407",
+        "sha256": "015d7239d7f96f16138fca7efd0f0588ef920a84660d23727964b8359906392d"
+      },
+      "sourceBeats": [
+        "source-trace",
+        "map-edit"
+      ],
+      "sourceStartSeconds": 5.035,
+      "sourceEndSeconds": 7.529,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
+    },
+    {
+      "id": "brief-approval",
+      "state": "ready",
+      "durationSeconds": 12,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_230ab49a7db24e2da5e71c45e0699b08",
+        "sha256": "c4518deb635ab11e9fbf5dc95799a8689915135ef9e09c59032c1468f795d3e7"
+      },
+      "sourceBeats": [
+        "brief-approval"
+      ],
+      "sourceStartSeconds": 8.46,
+      "sourceEndSeconds": 9.801,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
+    },
+    {
+      "id": "style",
+      "state": "ready",
+      "durationSeconds": 12,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_c956e59b23ad4b7692290f9530da43b5",
+        "sha256": "b1c0e7bd172ddc834e0667cb2faa2084d9f56925bdc68e39d2cac1069d388139"
+      },
+      "sourceBeats": [
+        "style"
+      ],
+      "sourceStartSeconds": 10.701,
+      "sourceEndSeconds": 11.689,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
+    },
+    {
+      "id": "outputs",
+      "state": "ready",
+      "durationSeconds": 14,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_cee65297a43e44c990ad429ad397fc4a",
+        "sha256": "5ec1b60cc990cda57a53f234366fb1faa8acee61817cd7fe6580cc06e0df3ef1"
+      },
+      "sourceBeats": [
+        "create-outputs",
+        "output-evidence"
+      ],
+      "sourceStartSeconds": 12.608,
+      "sourceEndSeconds": 18.289,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
+    },
+    {
+      "id": "storyboard-approval",
+      "state": "ready",
+      "durationSeconds": 13,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_522fec504ce14669bb8bd04f24392951",
+        "sha256": "bdbe295821c5171219c37b52189fb36caae685acb361e9b182e4844873178516"
+      },
+      "sourceBeats": [
+        "storyboard-edit",
+        "storyboard-approval"
+      ],
+      "sourceStartSeconds": 18.476,
+      "sourceEndSeconds": 21.593,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
+    },
+    {
+      "id": "render-and-trace",
+      "state": "ready",
+      "durationSeconds": 15,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_40ffbda194c94f4e962eba94b5c34f04",
+        "sha256": "31564a35f685b9882848fcde315db9e7639e69cf161c723259a858c4d4085552"
+      },
+      "sourceBeats": [],
+      "externalVideo": "outputs/demo-film-inputs/provider-narrated-video.mp4",
+      "sourceDurationSeconds": 25.002667,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
+    },
+    {
+      "id": "meta-reveal",
+      "state": "blocked",
+      "durationSeconds": 16,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_6f9db693871c4236b851c35c49e057b9",
+        "sha256": "8dcf9dfa2ed9070751cad3737ab6d4c7eebe7f4b04ed1bda7a1c35b906aa8e17"
+      },
+      "sourceBeats": [],
+      "generatedMetaReveal": true,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
+    }
+  ],
+  "limitations": [
+    "2 final-evidence shots use explicitly labeled sample or fixture material in this review cut.",
+    "The walkthrough uses the sanitized deterministic fixture and six hash-bound GPT Image 2 replay files; it makes no paid image call during replay.",
+    "OpenAI Cedar narration is present; founder footage and final public export remain pending.",
+    "Founder brainstorm, final Source-derived Output set, and public-export evidence remain gated elsewhere."
+  ]
+}

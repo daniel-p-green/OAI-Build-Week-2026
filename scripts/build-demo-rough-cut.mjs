@@ -2,16 +2,18 @@ import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
+import { dirname, relative, resolve } from "node:path";
 
 const repository = resolve(import.meta.dirname, "..");
 const planPath = resolve(repository, "submission/demo-film-plan.json");
 const finalBuild = process.argv.includes("--final");
+const sampleEditorialBuild = process.argv.includes("--sample-editorial");
 const previewFinalStyle = process.argv.includes("--preview-final-style");
-const cleanEditorialStyle = finalBuild || previewFinalStyle;
-const outputRoot = resolve(repository, finalBuild ? "outputs/demo-film-final" : "outputs/demo-film-rough-cut");
+if ([finalBuild, sampleEditorialBuild, previewFinalStyle].filter(Boolean).length > 1) throw new Error("Choose only one film build mode.");
+const cleanEditorialStyle = finalBuild || sampleEditorialBuild || previewFinalStyle;
+const outputRoot = resolve(repository, finalBuild ? "outputs/demo-film-final" : sampleEditorialBuild ? "outputs/demo-film-sample" : "outputs/demo-film-rough-cut");
 const temporaryRoot = resolve(outputRoot, ".build");
-const outputVideo = resolve(outputRoot, finalBuild ? "workshoplm-demo.mp4" : "workshoplm-demo-rough-cut.mp4");
+const outputVideo = resolve(outputRoot, finalBuild ? "workshoplm-demo.mp4" : sampleEditorialBuild ? "workshoplm-demo-sample.mp4" : "workshoplm-demo-rough-cut.mp4");
 const contactSheet = resolve(outputRoot, "contact-sheet.jpg");
 const manifestPath = resolve(outputRoot, "manifest.json");
 const reviewRoot = resolve(outputRoot, "review");
@@ -26,6 +28,7 @@ const height = 720;
 const editorialPushInMaxScale = 1.06;
 const editorialPushInRatePerFrame = 0.0001;
 const editorialPushIn = (duration) => `zoompan=z='min(1+on*${editorialPushInRatePerFrame},${editorialPushInMaxScale})':x='(iw-iw/zoom)*on/(${duration}*30)':y='ih/2-(ih/zoom/2)':d=1:s=${width}x${height}:fps=30`;
+const authorizedSampleTranscript = "I want a workspace where a professional can talk through a messy idea, ground it in their meetings and documents, shape it on a visual Map, approve the thinking, and ship a coherent deck, image set, audio overview, storyboard, and video without losing the source trail. The product should feel as simple as NotebookLM but built for work, with OpenAI quality and two clear moments of human control.";
 let finalAssemblyStarted = false;
 
 function run(command, args) {
@@ -131,9 +134,9 @@ async function metaRevealSvg(finalManifestPath, options = {}) {
   <text x="56" y="62" font-family="Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="1.5" fill="#6b6b6b">THE ORIGINAL → THE SUBMISSION</text>
   <text x="56" y="110" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#0d0d0d">One raw thought. One traced body of work.</text>
   <rect x="56" y="148" width="500" height="474" rx="22" fill="#ffffff" stroke="#dededb"/>
-  <text x="84" y="184" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1.2" fill="#6b6b6b">${options.preview ? "LAYOUT PREVIEW · SAMPLE EXCERPT" : "FOUNDER BRAINSTORM · VERBATIM EXCERPT"}</text>
+  <text x="84" y="184" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1.2" fill="#6b6b6b">${options.sample ? "AUTHORIZED SAMPLE · EDITORIAL CUT" : options.preview ? "LAYOUT PREVIEW · SAMPLE EXCERPT" : "FOUNDER BRAINSTORM · VERBATIM EXCERPT"}</text>
   ${transcriptLines.map((line, index) => `<text x="84" y="${226 + index * 36}" font-family="Arial, sans-serif" font-size="22" font-weight="500" fill="#0d0d0d">${escapeXml(line)}</text>`).join("\n  ")}
-  <text x="84" y="594" font-family="Arial, sans-serif" font-size="13" fill="#6b6b6b">${options.preview ? "Sample only · final mode requires hash-bound founder evidence" : "Verbatim excerpt · full hash-bound Source remains in the Workshop"}</text>
+  <text x="84" y="594" font-family="Arial, sans-serif" font-size="13" fill="#6b6b6b">${options.sample || options.preview ? "Sample only · final mode requires hash-bound founder evidence" : "Verbatim excerpt · full hash-bound Source remains in the Workshop"}</text>
   <rect x="596" y="148" width="292" height="213" fill="#0d0d0d"/>
   <rect x="908" y="148" width="292" height="213" fill="#0d0d0d"/>
   <rect x="596" y="381" width="604" height="241" fill="#0d0d0d"/>
@@ -178,7 +181,7 @@ async function main() {
       const metaSvgPath = resolve(previewRoot, "meta-reveal.svg");
       await writeFile(metaSvgPath, await metaRevealSvg(previewSubmissionManifest, {
         preview: true,
-        transcript: "I want a workspace where a professional can talk through a messy idea, ground it in their meetings and documents, shape it on a visual Map, approve the thinking, and ship a coherent deck, image set, audio overview, storyboard, and video without losing the source trail. The product should feel as simple as NotebookLM but built for work, with OpenAI quality and two clear moments of human control."
+        transcript: authorizedSampleTranscript
       }), "utf8");
       run("rsvg-convert", ["-w", String(width), "-h", String(height), metaSvgPath, "-o", metaPreviewPath]);
     }
@@ -195,6 +198,9 @@ async function main() {
     const finalManifestEvidence = plan.shots.flatMap((shot) => shot.requiredEvidence).find((item) => item.validator === "ready-submission-manifest");
     if (!finalManifestEvidence) throw new Error("The film plan does not name the final submission manifest.");
     finalSubmissionManifestPath = resolve(repository, finalManifestEvidence.path);
+  } else if (sampleEditorialBuild) {
+    finalSubmissionManifestPath = resolve(repository, ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json");
+    if (!existsSync(finalSubmissionManifestPath)) throw new Error("The acceptance submission package is required for the sample editorial cut.");
   }
   const providerNarration = narrationManifestPath ? JSON.parse(await readFile(narrationManifestPath, "utf8")) : undefined;
   if (providerNarration) {
@@ -245,10 +251,10 @@ async function main() {
     const externalVideo = effectiveState === "ready" && !shot.preferCapture
       ? shot.requiredEvidence.map((item) => resolve(repository, item.path)).find((path) => /\.(?:mov|mp4)$/i.test(path) && existsSync(path))
       : undefined;
-    if (finalBuild && shot.id === "meta-reveal") {
+    if ((finalBuild || sampleEditorialBuild) && shot.id === "meta-reveal") {
       const metaSource = resolve(temporaryRoot, `${stem}-meta.svg`);
       const metaImage = resolve(temporaryRoot, `${stem}-meta.png`);
-      await writeFile(metaSource, await metaRevealSvg(finalSubmissionManifestPath), "utf8");
+      await writeFile(metaSource, await metaRevealSvg(finalSubmissionManifestPath, sampleEditorialBuild ? { sample: true, transcript: authorizedSampleTranscript } : {}), "utf8");
       run("rsvg-convert", ["-w", String(width), "-h", String(height), metaSource, "-o", metaImage]);
       run("ffmpeg", ["-y", "-loop", "1", "-i", metaImage, "-t", String(duration), "-vf", `scale=${width}:${height},${editorialPushIn(duration)},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "20", basePath]);
       shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 }, sourceBeats: [], generatedMetaReveal: true });
@@ -292,26 +298,42 @@ async function main() {
   const videoBytes = await readFile(outputVideo);
   const sheetBytes = await readFile(contactSheet);
   const inspected = probe(outputVideo);
+  let metaRevealEvidence;
+  if (finalSubmissionManifestPath) {
+    const submissionManifestBytes = await readFile(finalSubmissionManifestPath);
+    const buildTracePath = resolve(dirname(finalSubmissionManifestPath), "BUILD-TRACE.json");
+    const buildTraceBytes = await readFile(buildTracePath);
+    const transcriptPath = finalBuild ? resolve(repository, "outputs/demo-film-inputs/founder-brainstorm.txt") : undefined;
+    const transcriptBytes = transcriptPath ? await readFile(transcriptPath) : Buffer.from(authorizedSampleTranscript, "utf8");
+    metaRevealEvidence = {
+      mode: finalBuild ? "founder" : "authorized-sample",
+      transcript: { relativePath: transcriptPath ? relative(repository, transcriptPath) : null, sha256: sha256(transcriptBytes), byteCount: transcriptBytes.byteLength },
+      submissionManifest: { relativePath: relative(repository, finalSubmissionManifestPath), sha256: sha256(submissionManifestBytes) },
+      buildTrace: { relativePath: relative(repository, buildTracePath), sha256: sha256(buildTraceBytes) },
+    };
+  }
   const manifest = {
     schemaVersion: 1,
-    status: finalBuild ? "final-public-demo" : "editorial-rough-cut",
-    disclosure: finalBuild ? "Final WorkshopLM demo with OpenAI Cedar narration, hash-bound founder evidence, and a verified traced submission Output set." : providerNarration ? "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video." : "Truthful fixture rough cut with a local macOS guide voice. This is not provider narration, final host footage, or the public submission video.",
+    status: finalBuild ? "final-public-demo" : sampleEditorialBuild ? "sample-editorial-cut" : "editorial-rough-cut",
+    disclosure: finalBuild ? "Final WorkshopLM demo with OpenAI Cedar narration, hash-bound founder evidence, and a verified traced submission Output set." : sampleEditorialBuild ? "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance Output set. This is not founder footage or the public submission video." : providerNarration ? "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video." : "Truthful fixture rough cut with a local macOS guide voice. This is not provider narration, final host footage, or the public submission video.",
     builtAt: new Date().toISOString(),
     plan: "submission/demo-film-plan.json",
     sourceCapture: plan.captureManifest,
     voice: providerNarration ? { provider: "OpenAI", model: providerNarration.model, name: providerNarration.voice, disclosure: providerNarration.disclosure, requestCount: providerNarration.requestCount, finalProviderNarration: true } : { provider: "local macOS say", name: voice, ratePolicy: fixedSpeechRate ? `fixed ${fixedSpeechRate}` : "adaptive 120–180 words per minute", finalProviderNarration: false },
-    video: { relativePath: finalBuild ? "workshoplm-demo.mp4" : "workshoplm-demo-rough-cut.mp4", sha256: sha256(videoBytes), durationSeconds: Number(inspected.format?.duration || 0), streams: inspected.streams || [] },
+    video: { relativePath: finalBuild ? "workshoplm-demo.mp4" : sampleEditorialBuild ? "workshoplm-demo-sample.mp4" : "workshoplm-demo-rough-cut.mp4", sha256: sha256(videoBytes), durationSeconds: Number(inspected.format?.duration || 0), streams: inspected.streams || [] },
     contactSheet: { relativePath: "contact-sheet.jpg", sha256: sha256(sheetBytes) },
     reviewFrames: await Promise.all(reviewFrames.map(async (path) => ({ relativePath: `review/${path.split("/").at(-1)}`, sha256: sha256(await readFile(path)) }))),
+    ...(metaRevealEvidence ? { metaRevealEvidence } : {}),
     shots: shotRecords,
     limitations: finalBuild ? [] : [
-      `${plan.shots.filter((shot) => shot.state === "blocked").length} shots remain visibly marked FINAL EVIDENCE PENDING.`,
+      sampleEditorialBuild ? `${plan.shots.filter((shot) => shot.state === "blocked").length} final-evidence shots use explicitly labeled sample or fixture material in this review cut.` : `${plan.shots.filter((shot) => shot.state === "blocked").length} shots remain visibly marked FINAL EVIDENCE PENDING.`,
       "The walkthrough uses the sanitized deterministic fixture and six hash-bound GPT Image 2 replay files; it makes no paid image call during replay.",
-      providerNarration ? "OpenAI Cedar narration is present; founder footage and final editorial export remain pending." : "The guide voice is local macOS speech synthesis, not OpenAI narration.",
+      providerNarration ? "OpenAI Cedar narration is present; founder footage and final public export remain pending." : "The guide voice is local macOS speech synthesis, not OpenAI narration.",
       providerNarration ? "Founder brainstorm, final Source-derived Output set, and public-export evidence remain gated elsewhere." : "Founder brainstorm, Realtime, GPT-5.6, GPT Image 2, provider narration, final Output set, and public-export evidence remain gated elsewhere."
     ]
   };
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+  if (sampleEditorialBuild) await writeFile(resolve(outputRoot, "README.md"), `# WorkshopLM sample editorial cut\n\nThis 2:20 review cut uses the authorized sample transcript, the verified acceptance Output set, and the existing OpenAI Cedar narration. It is intentionally not founder footage or the public submission video.\n\n- Watch: \`workshoplm-demo-sample.mp4\`\n- Scan all ten shots: \`contact-sheet.jpg\` and \`review/\`\n- Inspect hashes, disclosures, and remaining final-evidence gates: \`manifest.json\`\n- Rebuild: \`pnpm demo:film:sample\`\n- Verify: \`pnpm demo:film:verify-sample\`\n\nThe final command remains fail-closed until the founder recording and founder-derived ready submission package exist.\n`, "utf8");
   await rm(temporaryRoot, { recursive: true, force: true });
   if (finalBuild) {
     const finalPlan = { ...plan, status: "final", shots: plan.shots.map((shot) => ({ ...shot, state: "ready" })) };
