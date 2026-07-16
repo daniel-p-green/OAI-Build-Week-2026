@@ -56,6 +56,22 @@ describe("production renderers", () => {
     expect(deck).toContain("--accent-foreground:#000000");
     expect(deck).toContain("color:var(--accent-foreground)");
   });
+  it("turns Intent Profiles into distinct visual and editorial systems", () => {
+    const client = renderDeck(brief);
+    const board = renderDeck({ ...brief, style: { ...brief.style, intent: "board_deck" } });
+    const workshop = renderDeck({ ...brief, style: { ...brief.style, intent: "internal_workshop" } });
+    expect(client).toContain('class="deck intent-client-facing-pitch" data-intent="client_facing_pitch"');
+    expect(client).toContain("02 · Core insight");
+    expect(board).toContain('class="deck intent-board-deck" data-intent="board_deck"');
+    expect(board).toContain("WorkshopLM · Board presentation");
+    expect(board).toContain("02 · Executive summary");
+    expect(board).toContain(".intent-board-deck .cover{background:var(--paper)");
+    expect(workshop).toContain('class="deck intent-internal-workshop" data-intent="internal_workshop"');
+    expect(workshop).toContain("02 · Working point");
+    expect(workshop).toContain(".intent-internal-workshop .cover{background:var(--accent)");
+    expect(workshop).toContain(".intent-internal-workshop .split.is-sparse{background:color-mix");
+    expect(new Set([client, board, workshop]).size).toBe(3);
+  });
   it("writes an inspectable preview and an editable PowerPoint deck", async () => {
     const root = await mkdtemp(join(tmpdir(), "workshoplm-production-"));
     const artifact = await writeRenderedArtifact(root, "out-1", "deck", brief);

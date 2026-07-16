@@ -1,0 +1,34 @@
+{
+  "recordedAt": "2026-07-16T00:32:00.553Z",
+  "input": "outputs/dogfood-ai-collective-chapter-brief/deck-input.json",
+  "comparison": "The same grounded brief and Company Style rendered through all three Workshop Intent Profiles.",
+  "frames": [
+    "client-pitch-cover.png",
+    "client-pitch-middle.png",
+    "client-pitch-recommendation.png",
+    "board-presentation-cover.png",
+    "board-presentation-middle.png",
+    "board-presentation-recommendation.png",
+    "team-workshop-cover.png",
+    "team-workshop-middle.png",
+    "team-workshop-recommendation.png"
+  ],
+  "contactSheetSha256": "a39f5cb74b81037221018a63d7ad24fe981e935959b732498876decd23edcc64",
+  "outputs": {
+    "client_facing_pitch": {
+      "html": "5596e1b80b8fadf01f2b49822897309f8e8497840f757150482a8b677cab2fee",
+      "pptx": "7e4efa977dd755a38965b9eb7a13069e4768b9efe263399f35413836240157e3",
+      "pdf": "26c721ce37072d37b366fc438a41ad94bd90e35b4bb930386a9cb07f2dd6d3d4"
+    },
+    "board_deck": {
+      "html": "e4c860fb46652a6b9dda547448c0158129636c83696b41187a8bf9a45823c7de",
+      "pptx": "c2bf92f5e8ff3aa643366779e97751762065182dd1d8d44daa11e3a1b09526b8",
+      "pdf": "e10413d58663743dd99312c5ecb9739de08ecef54300aec7d0c4267b57ff986a"
+    },
+    "internal_workshop": {
+      "html": "077f5f38ffe75707e15427c8abed86efe696f0767fed479581603b6e4f4ebb38",
+      "pptx": "b38c24b5c3e60efed895d70ee16df58305825503d619308d39dc07f06c709eaa",
+      "pdf": "f9fd71c7fa8e9258bbdb8d9cda989395db1a7f7b86962625512fe6fe9d00cbc8"
+    }
+  }
+}

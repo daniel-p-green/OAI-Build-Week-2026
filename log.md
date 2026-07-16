@@ -6152,3 +6152,33 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Obtain the intended audience's cold `Send`/`Revise` decision on the refreshed external-use deck.
 - Provider-backed Map, image set, Realtime turn, narration, founder brainstorm, final public Video, and `/feedback` Session ID remain open under `GOAL.md`.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 19:33 CT — Intent Profiles now change the work, not just its label
+
+**Area:** Deliver / Presentation quality / Style system
+
+### Changed
+
+- Audited Client pitch, Board presentation, and Team workshop against the same grounded AI Collective Brief and Company Style. The saved profile previously changed only the cover label; HTML and editable PowerPoint otherwise shared one visual and editorial system.
+- Made the profile executable in both renderers. Client pitch retains spacious editorial contrast and recommendation emphasis. Board presentation uses a restrained paper/ink cover, decision-oriented language, conservative rules, tighter hierarchy, and a dark leadership-decision close. Team workshop uses action language, an energetic cover, protected logo contrast, a light scan-first working slide, and a direct next-action close.
+- Added `pnpm dogfood:intents:build`, which regenerates all three five-slide HTML, PowerPoint, and PDF variants from the exact same traced external Brief and Style, then produces nine review frames, a contact sheet, and a hash manifest under `artifacts/spikes/intent-profile-review-2026-07-15/`.
+
+### Verified
+
+- The first visual comparison exposed three defects not covered by tests: the Board label clipped, the Accent-colored Team logo disappeared on its Accent cover, and Team's sparse middle slide inherited the formal dark treatment. Rebuilt after each repair and inspected the final Board cover, Team middle slide, and nine-frame comparison at full resolution.
+- The final comparison preserves the same title, selected logo, grounded claims, visible citations, and recommendation across all three profiles while changing the intended hierarchy, language, cover, working-slide treatment, and close. The three HTML, PowerPoint, and PDF hashes are distinct and recorded in the manifest.
+- Added a production contract proving distinct profile classes, labels, and scan treatment. `pnpm check` passed all 13 packages with ten production tests, 19 web tests, and 85 worker tests.
+- `pnpm demo:e2e` passed all six gates. `pnpm submission:build` and `pnpm submission:verify` validated the truthful 17-asset `partial` set; `pnpm demo:film:verify` retained six ready shots and four explicitly evidence-blocked shots; `git diff --check` passed.
+
+### Decisions
+
+- Company identity remains stable across Workshops, but Intent Profile must materially alter the deliverable's hierarchy, density, language, and meeting posture. Persisting a profile that only renames the cover is not an executable Style system.
+- This is renderer and visual-comparison proof. It does not substitute for a cold professional `Send` decision or provider-backed output-quality evidence.
+
+### Open items
+
+- Obtain the intended audience's cold `Send`/`Revise` decision and run the provider-backed Map, image, Realtime, and narration path after explicit authorization.
+- Founder brainstorm, final public Video, final submission Output set, public links, and `/feedback` Session ID remain open under `GOAL.md`.
+- Codex Session ID: unavailable on this surface; not inferred.
