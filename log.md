@@ -8562,3 +8562,36 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - The thumbnail is ready as a local candidate, but the founder-derived final Output set, public Video and Devpost upload, and logged-out submitted-link check remain open. Founder capture, intended-audience deck review, film taste review, `/feedback`, and release also remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 10:07 CT — Styled thumbnail reaches the traced Output set
+
+**Area:** Submission package / Style integration / visual evidence
+
+### Changed
+
+- Traced the new standalone thumbnail through `buildSubmissionOutputSet` and found the real meta-demo package still generated all three thumbnails as automatic Video frame grabs. A polished preview therefore did not yet prove that WorkshopLM's own traced Output set contained the send-it asset.
+- Replaced the packaged opening frame with a deterministic 1280×720 cover generated from the current Workshop's locked ink, paper, Accent, Style name, active Source count, and traced claim count. A ready provider package embeds the first current hash-verified generated image; the no-provider fixture uses an honest editorial fallback motif.
+- Preserved `thumbnail-process.png` and `thumbnail-result.png` as timestamped frames from the actual rendered Video so the package includes both a designed public cover and direct process/result media proof.
+- Kept the injectable frame renderer used by unit tests and added a pure SVG contract test for the product promise, exact Style tokens, evidence counts, and third-party-mark boundary.
+- Corrected the public README so `pnpm demo:thumbnail` names all three inputs it now binds rather than claiming a simple Video frame extraction.
+
+### Verified
+
+- The worker suite passed 120 tests and typecheck. The new contract test verifies the locked Style and current evidence state enter the cover without introducing NotebookLM branding.
+- `pnpm submission:build` produced the real 18-asset acceptance Output set with the styled `thumbnail-opening.png`; `pnpm submission:verify` returned `valid: true`, `stale: false`, and `tampered: false` with the five expected fixture-only limitations unchanged.
+- Inspected the rendered 1280×720 packaged cover through a JPEG review conversion because the local PNG viewer intermittently displayed incomplete tiles. The accepted frame has a dominant promise, quiet evidence count, exact fixture Style, visible Style name, and no collision or overflow.
+- `pnpm demo:e2e` passed the complete recorded Source-to-render seam. A fresh post-reset `submission:build` and `submission:verify` reproduced the valid 18-asset package, `pnpm submission:packet:verify` passed the full judge packet, and `pnpm check` passed lint, typecheck, and tests across all thirteen packages.
+- No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Decisions
+
+- The first thumbnail is the public cover; the second and third are proof frames. Treating all three as interchangeable timestamp captures weakens both communication and provenance.
+- Provider images enter the cover only after their persisted SHA-256 passes the same fail-closed check used for package copying. A missing generated image uses an explicit deterministic motif rather than a fake provider visual.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- The package integration is complete for both fixture and provider-ready mechanics, but the founder-derived ready package, public upload, film taste review, intended-audience deck review, `/feedback`, release, Devpost, and link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

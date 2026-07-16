@@ -43,7 +43,7 @@ pnpm install --frozen-lockfile
 pnpm judge:start
 ```
 
-`pnpm judge:start` recreates the no-credential acceptance Workshop and serves that exact data root in one command. It does not require OpenAI credentials or paid model calls. The fixture completes first-use onboarding, dismisses tutorial cues, and opens directly on the grounded Map. `pnpm demo:render` can independently rerun the approved sanitized fixture through the local HyperFrames worker, and `pnpm demo:thumbnail` derives a hash-bound PNG from that Video. Ordinary `pnpm dev` intentionally opens the default product workspace rather than the judge fixture.
+`pnpm judge:start` recreates the no-credential acceptance Workshop and serves that exact data root in one command. It does not require OpenAI credentials or paid model calls. The fixture completes first-use onboarding, dismisses tutorial cues, and opens directly on the grounded Map. `pnpm demo:render` can independently rerun the approved sanitized fixture through the local HyperFrames worker, and `pnpm demo:thumbnail` builds a hash-bound 1280×720 product thumbnail from the rendered Video, locked film plan, and current Outputs proof. Ordinary `pnpm dev` intentionally opens the default product workspace rather than the judge fixture.
 
 After `pnpm judge:start` starts the server, open the printed local URL in the Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, real presentation and infographic previews, editable PowerPoint files, planned Image set, editable Storyboard, and local Video. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
 

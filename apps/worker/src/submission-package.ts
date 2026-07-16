@@ -119,7 +119,51 @@ const renderThumbnail: ThumbnailRenderer = async (videoPath, outputPath, second)
   await execFile("ffmpeg", ["-y", "-ss", second.toFixed(2), "-i", videoPath, "-frames:v", "1", "-vf", "scale=1280:-2", outputPath], { maxBuffer: 5_000_000 });
 };
 
-export type BuildSubmissionOptions = { outputDirectory?: string; renderThumbnail?: ThumbnailRenderer };
+type CoverThumbnailRenderer = (state: WorkshopState, root: string, outputPath: string) => Promise<void>;
+
+function safeHex(value: string, fallback: string): string {
+  return /^#[0-9a-f]{6}$/i.test(value) ? value : fallback;
+}
+
+function escapeXml(value: string): string {
+  return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+}
+
+export function submissionCoverSvg(state: WorkshopState, heroImage?: Uint8Array): string {
+  const ink = safeHex(state.style?.ink ?? "", "#0D0D0D");
+  const paper = safeHex(state.style?.paper ?? "", "#FFFFFF");
+  const accent = safeHex(state.style?.accent ?? "", "#10A37F");
+  const hero = heroImage ? `<image href="data:image/png;base64,${Buffer.from(heroImage).toString("base64")}" x="630" y="80" width="586" height="560" preserveAspectRatio="xMidYMid slice"/>` : `<g transform="translate(648 112)"><path d="M88 414V84l170-56v330z" fill="${paper}" opacity=".92"/><path d="M258 358V28l170 92v330z" fill="${accent}" opacity=".92"/><path d="M88 414l170-56 170 92-170 58z" fill="${paper}" opacity=".5"/><circle cx="268" cy="248" r="62" fill="${ink}" opacity=".82"/></g>`;
+  const sourceCount = state.activeSourceIds.length;
+  const claimCount = state.claims.filter((claim) => state.activeSourceIds.includes(claim.sourceId)).length;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+  <defs><clipPath id="hero"><rect x="630" y="80" width="586" height="560" rx="28"/></clipPath><filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#000" flood-opacity=".22"/></filter></defs>
+  <rect width="1280" height="720" fill="${ink}"/>
+  <circle cx="1180" cy="-38" r="210" fill="${accent}"/>
+  <text x="64" y="76" fill="${paper}" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700">WorkshopLM</text>
+  <rect x="64" y="112" width="171" height="32" rx="16" fill="${paper}" opacity=".1" stroke="${paper}" stroke-opacity=".22"/>
+  <text x="149.5" y="133" text-anchor="middle" fill="${paper}" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" letter-spacing="1.4">SOURCE-GROUNDED</text>
+  <text x="64" y="238" fill="${paper}" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="500" letter-spacing="-3.4"><tspan x="64">From rough</tspan><tspan x="64" dy="82">thought to</tspan><tspan x="64" dy="82">finished work</tspan></text>
+  <text x="64" y="536" fill="${paper}" opacity=".78" font-family="Arial, Helvetica, sans-serif" font-size="20">Sources → Map → Brief → finished work</text>
+  <line x1="64" y1="578" x2="516" y2="578" stroke="${paper}" stroke-opacity=".18"/>
+  <text x="64" y="618" fill="${paper}" opacity=".56" font-family="Arial, Helvetica, sans-serif" font-size="15">${sourceCount} ${sourceCount === 1 ? "source" : "sources"} · ${claimCount} traced ${claimCount === 1 ? "claim" : "claims"}</text>
+  <g filter="url(#shadow)"><rect x="630" y="80" width="586" height="560" rx="28" fill="${paper}"/></g>
+  <g clip-path="url(#hero)">${hero}</g>
+  <rect x="630.5" y="80.5" width="585" height="559" rx="27.5" fill="none" stroke="${paper}" stroke-opacity=".2"/>
+  <text x="1180" y="612" text-anchor="end" fill="${ink}" opacity=".58" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" letter-spacing="1.2">${escapeXml(state.style?.name ?? "Workshop style")}</text>
+</svg>`;
+}
+
+const renderSubmissionCover: CoverThumbnailRenderer = async (state, root, outputPath) => {
+  const panel = state.imageBatch?.panels.find((candidate) => candidate.state === "generated" && candidate.relativePath && candidate.sha256);
+  const heroImage = panel ? await assertRecordedHash(root, panel.relativePath!, panel.sha256!, `Thumbnail image panel ${panel.id}`) : undefined;
+  const svgPath = `${outputPath}.svg`;
+  await writeFile(svgPath, submissionCoverSvg(state, heroImage), "utf8");
+  try { await execFile("rsvg-convert", ["-w", "1280", "-h", "720", svgPath, "-o", outputPath]); }
+  finally { await rm(svgPath, { force: true }); }
+};
+
+export type BuildSubmissionOptions = { outputDirectory?: string; renderThumbnail?: ThumbnailRenderer; renderCoverThumbnail?: CoverThumbnailRenderer };
 
 function devpostCopy(state: WorkshopState, limitations: string[], elapsed: string): string {
   const liveMap = state.aiRuns.length ? `GPT-5.6 runs recorded: ${state.aiRuns.length}.` : "No live GPT-5.6 run is claimed by this package.";
@@ -248,7 +292,11 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   const thumbnail = options.renderThumbnail ?? renderThumbnail;
   const duration = state.storyboard.panels.reduce((total, panel) => total + panel.durationSeconds, 0);
   const thumbnailSpecs = [["thumbnail-opening.png", Math.min(0.2, duration / 10)], ["thumbnail-process.png", duration * 0.45], ["thumbnail-result.png", Math.max(0, duration * 0.82)]] as const;
-  for (const [name, second] of thumbnailSpecs) await thumbnail(videoPath, join(packageRoot, name), second);
+  const openingPath = join(packageRoot, thumbnailSpecs[0][0]);
+  if (options.renderCoverThumbnail) await options.renderCoverThumbnail(state, dataRoot, openingPath);
+  else if (options.renderThumbnail) await thumbnail(videoPath, openingPath, thumbnailSpecs[0][1]);
+  else await renderSubmissionCover(state, dataRoot, openingPath);
+  for (const [name, second] of thumbnailSpecs.slice(1)) await thumbnail(videoPath, join(packageRoot, name), second);
 
   if (state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version) {
     await mkdir(join(packageRoot, "narration"), { recursive: true });

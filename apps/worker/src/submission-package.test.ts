@@ -3,7 +3,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { buildSubmissionOutputSet, submissionLimitations, verifySubmissionOutputSet } from "./submission-package.js";
+import { buildSubmissionOutputSet, submissionCoverSvg, submissionLimitations, verifySubmissionOutputSet } from "./submission-package.js";
 import { buildWorkshopVideoProvenance } from "./executor.js";
 import { applyWorkshopAction, createImageBatch, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, recordAudioOverviewAudio, recordRenderedVideo } from "./workshop-service.js";
 
@@ -41,6 +41,19 @@ async function buildableWorkshop() {
 const fakeThumbnail = async (_videoPath: string, outputPath: string, second: number) => { await writeFile(outputPath, `png-at-${second.toFixed(2)}`); };
 
 describe("submission Output set", () => {
+  it("turns the locked Workshop Style and current evidence counts into a real submission cover", async () => {
+    const root = await buildableWorkshop(); const state = readWorkshopState(root); const svg = submissionCoverSvg(state);
+    expect(svg).toContain("From rough");
+    expect(svg).toContain("thought to");
+    expect(svg).toContain("finished work");
+    expect(svg).toContain(state.style!.ink);
+    expect(svg).toContain(state.style!.paper);
+    expect(svg).toContain(state.style!.accent);
+    expect(svg).toContain(`${state.activeSourceIds.length} source`);
+    expect(svg).toContain(`${state.claims.length} traced claim`);
+    expect(svg).not.toContain("NotebookLM");
+  });
+
   it("refuses to package work before the approval and render gates", async () => {
     const root = await mkdtemp(join(tmpdir(), "workshop-submission-gate-"));
     roots.push(root);
