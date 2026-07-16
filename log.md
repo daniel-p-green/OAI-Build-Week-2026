@@ -6846,3 +6846,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Put the refreshed nine-slide deck in front of its intended professional audience and record `Send` or the first blocking revision.
 - Provider-backed text, speech, image, and narration proof; founder recording; final public Video and links; and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 23:15 CT — Empty Workshops capture before they style
+
+**Area:** First five minutes / Onboarding / Excalidraw framing / Responsive UX
+
+### Changed
+
+- Removed Company Style as a prerequisite for adding the first Source. A new professional now chooses the outcome and Workshop name, then lands directly on voice, notes, public URL, or local PDF intake.
+- Simplified the material screen to say `Choose the look after the thinking is clear.` Back returns to the outcome choice. The legacy Style onboarding state remains readable for durable compatibility, but new Workshops do not enter it.
+- Preserved the real production requirement at the right boundary: after Brief approval, `Choose style` becomes the one next action, and Outputs remain unavailable until a reviewed current Style exists.
+- Added initial Excalidraw scene fitting. WorkshopLM waits for the converted scene, then fits the complete Source card, claim nodes, and edges into 88% of the visible center canvas instead of clipping the final idea behind Production.
+- Reconciled the first-use contract in `GOAL.md` to the actual Capture → Shape → Deliver order. Company Style is now explicitly post-Brief production setup rather than pre-Capture friction.
+
+### Verified
+
+- Started from an empty isolated data root in the real Codex in-app browser. Choosing `Client pitch` went directly to `Add the thinking` with `Record voice`, one unified Source field, `Add source`, and `Build my Map`; no Company Style decision appeared first.
+- Pasted one realistic meeting note. The product created one private Source and three separately grounded Map ideas, preserved the exact excerpt and locator, and exposed `Approve brief` as the sole next action.
+- The first 1280×720 run revealed the third idea clipping behind the right rail. After the fit repair, the Source card and all three claims were simultaneously visible with Sources and Production open; no manual pan, zoom, or rail collapse was required.
+- At 390×844, the same three claims rendered as readable verified cards. Measured `innerWidth`, document width, and body width were all exactly 390px; there was no horizontal overflow.
+- Approving the Brief moved to the Brief view and changed the Production next action to `Choose style`, proving Style moved to the intended boundary rather than being removed.
+- Browser console and warning logs were empty. Evidence screenshots are checked in at `artifacts/ui/capture-first-map-desktop-2026-07-15.png` and `artifacts/ui/capture-first-map-mobile-2026-07-15.png`.
+- Added onboarding and visible-scene-fit regressions. `pnpm check` passed all 13 packages, including 27 web, 106 worker, 16 domain, 13 production, and seven plugin tests.
+- `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. The 18-asset submission remains valid, current, untampered, and honestly `partial` with five provider-evidence gaps. `pnpm demo:film:verify` passed its 162-second draft truth gate. No paid provider request ran.
+
+### Decisions
+
+- A professional should not configure production aesthetics before WorkshopLM proves it understands the work. The first magic moment is grounded structure; Style becomes consequential only after the Brief is approved.
+- Scene fitting changes only the viewport, not graph geometry. It therefore cannot create false Map edits, revoke approvals, or alter persisted semantic positions.
+- The full initial Map must be legible with both professional context rails open. Rail collapse remains optional workspace control, not a prerequisite for understanding the product.
+
+### Open items
+
+- The same under-two-minute path must still run with provider-backed GPT-5.6 organization and a real Realtime microphone turn before the live first-five-minutes gate can close.
+- The external deck cold `Send`/`Revise` judgment, provider media, founder recording, final public Video and links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

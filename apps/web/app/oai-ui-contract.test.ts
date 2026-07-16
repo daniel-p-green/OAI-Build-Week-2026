@@ -63,6 +63,19 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(page).not.toMatch(/role="tab(list)?"|<nav\b/);
   });
 
+  it("starts with material before asking for production Style", () => {
+    expect(page).toContain('title: title.trim(), outcome, onboardingStep: "sources"');
+    expect(page).toContain("Choose the look after the thinking is clear.");
+    expect(page).not.toContain('title: title.trim(), outcome, onboardingStep: "style"');
+  });
+
+  it("fits the complete first Map inside the visible workbench canvas", () => {
+    const map = readFileSync(resolve(process.cwd(), "app/excalidraw-map.tsx"), "utf8");
+    expect(map).toContain("api.scrollToContent(elements");
+    expect(map).toContain("fitToViewport: true");
+    expect(map).toContain("viewportZoomFactor: 0.88");
+  });
+
   it("keeps desktop source, current-object, and production context in one workbench", () => {
     expect(page).toContain('<Workbench className={`workbench ${leftRailOpen ? "" : "left-rail-collapsed"} ${rightRailOpen ? "" : "right-rail-collapsed"}`}>');
     expect(page).toContain('<WorkbenchRail side="left" className="sources-rail" aria-label="Sources"');

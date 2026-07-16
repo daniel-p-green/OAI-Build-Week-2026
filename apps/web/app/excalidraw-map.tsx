@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef } from "react";
+import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
 import { baselineFromScene, patchesFromScene, type CanvasNodePatch, type MapSceneElement, type SceneNodeBaseline } from "./excalidraw-map-state";
 
 const Excalidraw = dynamic(() => import("@excalidraw/excalidraw").then((module) => module.Excalidraw), { ssr: false });
@@ -146,6 +147,8 @@ export function ExcalidrawMap({ nodes, sources, edges, selectedNodeId, onSelectN
   onSync: (nodes: CanvasNodePatch[]) => void;
 }) {
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const fitFrame = useRef<number | null>(null);
+  const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
   const baseline = useRef<Map<string, SceneNodeBaseline> | null>(null);
   const lastSent = useRef("");
   const lastSelection = useRef("");
@@ -156,12 +159,28 @@ export function ExcalidrawMap({ nodes, sources, edges, selectedNodeId, onSelectN
     return { elements: convertToExcalidrawElements(skeleton, { regenerateIds: false }), appState: { viewBackgroundColor: "#ffffff", selectedElementIds: selectedNodeId ? { [shapeId(selectedNodeId)]: true } : {} } };
   }, [skeleton, selectedNodeId]);
 
-  useEffect(() => () => { if (timeout.current) clearTimeout(timeout.current); }, []);
+  useEffect(() => () => {
+    if (timeout.current) clearTimeout(timeout.current);
+    if (fitFrame.current !== null) cancelAnimationFrame(fitFrame.current);
+  }, []);
   useEffect(() => {
     baseline.current = null;
     lastSent.current = "";
     if (timeout.current) clearTimeout(timeout.current);
+    fitScene();
   }, [sceneKey]);
+
+  function fitScene(api = apiRef.current) {
+    if (!api) return;
+    if (fitFrame.current !== null) cancelAnimationFrame(fitFrame.current);
+    fitFrame.current = requestAnimationFrame(() => {
+      fitFrame.current = requestAnimationFrame(() => {
+        const elements = api.getSceneElements();
+        if (elements.length) api.scrollToContent(elements, { fitToViewport: true, viewportZoomFactor: 0.88, minZoom: 0.35, maxZoom: 1, animate: false });
+        fitFrame.current = null;
+      });
+    });
+  }
 
   function onChange(scene: readonly SceneElement[], appState: SceneAppState) {
     const selectedIds = Object.keys(appState.selectedElementIds).filter((id) => appState.selectedElementIds[id]);
@@ -195,6 +214,7 @@ export function ExcalidrawMap({ nodes, sources, edges, selectedNodeId, onSelectN
       <Excalidraw
         key={sceneKey}
         initialData={initialData}
+        excalidrawAPI={(api: ExcalidrawImperativeAPI) => { apiRef.current = api; fitScene(api); }}
         onChange={onChange}
         autoFocus={false}
         handleKeyboardGlobally={false}

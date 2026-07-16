@@ -12,15 +12,12 @@ it("opens a genuinely fresh data root in durable onboarding and preserves outcom
   try {
     const fresh = readWorkshopState(root);
     expect(fresh).toMatchObject({ sources: 0, mapNodes: [], onboarding: { step: "welcome", mapOrientationDismissed: false, outputsOrientationDismissed: false } });
-    const styledStep = updateWorkshopOnboarding({ title: "Acme leadership update", outcome: "board_deck", step: "style" }, root);
-    expect(styledStep).toMatchObject({ title: "Acme leadership update", onboarding: { step: "style", outcome: "board_deck" } });
-    expect(() => updateWorkshopOnboarding({ step: "sources" }, root)).toThrow(/Company Style/);
-    expect(lockManualStyle({}, root).style).toMatchObject({ name: "Clean professional", intentProfile: "board_deck" });
-    expect(updateWorkshopOnboarding({ step: "sources" }, root).onboarding.step).toBe("sources");
+    const sourceStep = updateWorkshopOnboarding({ title: "Acme leadership update", outcome: "board_deck", step: "sources" }, root);
+    expect(sourceStep).toMatchObject({ title: "Acme leadership update", style: undefined, onboarding: { step: "sources", outcome: "board_deck" } });
     expect(() => updateWorkshopOnboarding({ step: "complete" }, root)).toThrow(/source/);
     await ingestSource({ title: "Leadership notes", origin: "Fixture", text: "Leadership needs a source-defensible recommendation." }, root);
     const complete = updateWorkshopOnboarding({ step: "complete" }, root);
-    expect(complete.onboarding).toMatchObject({ step: "complete", outcome: "board_deck", mapOrientationDismissed: false });
+    expect(complete).toMatchObject({ style: undefined, onboarding: { step: "complete", outcome: "board_deck", mapOrientationDismissed: false } });
     expect(dismissWorkshopOrientation("map", root).onboarding.mapOrientationDismissed).toBe(true);
     expect(readWorkshopState(root)).toMatchObject({ title: "Acme leadership update", onboarding: { step: "complete", outcome: "board_deck", mapOrientationDismissed: true } });
   } finally {

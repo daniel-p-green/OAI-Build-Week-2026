@@ -534,7 +534,7 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
         <div className="onboarding-copy"><small>New Workshop</small><h1>Turn raw thinking into finished work.</h1><p>What are you making?</p></div>
         <div className="outcome-grid" role="radiogroup" aria-label="What are you making?">{OUTCOME_OPTIONS.map((option) => <ListRowAction key={option.id} className={`outcome-choice ${outcome === option.id ? "selected" : ""}`} role="radio" aria-checked={outcome === option.id} onClick={() => { setOutcome(option.id); if (!title.trim()) setTitle(option.defaultName); }}><span><strong>{option.title}</strong><small>{option.detail}</small></span></ListRowAction>)}</div>
         {outcome && <Input autoFocus label="Workshop name" value={title} onChange={(event) => setTitle(event.target.value)} />}
-        <Button disabled={busy || !outcome || !title.trim()} onClick={() => { void onPost({ action: "updateOnboarding", title: title.trim(), outcome, onboardingStep: "style" }); }}>Continue</Button>
+        <Button disabled={busy || !outcome || !title.trim()} onClick={() => { void onPost({ action: "updateOnboarding", title: title.trim(), outcome, onboardingStep: "sources" }); }}>Continue</Button>
       </Card>}
 
       {state.onboarding.step === "style" && <Card className="onboarding-card style-start-card">
@@ -545,14 +545,14 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
       </Card>}
 
       {state.onboarding.step === "sources" && <Card className="onboarding-card source-start-card">
-        <div className="onboarding-copy"><small>{selectedOutcome?.title ?? "Workshop"}</small><h1>Add the thinking.</h1><p>Record the conversation or add meeting notes, a public content URL, or a local PDF. Your Company Style stays separate from factual Sources.</p></div>
+        <div className="onboarding-copy"><small>{selectedOutcome?.title ?? "Workshop"}</small><h1>Add the thinking.</h1><p>Record the conversation or add meeting notes, a public content URL, or a local PDF. Choose the look after the thinking is clear.</p></div>
         <RealtimeCapture onSave={async (transcript, capture) => Boolean(await onPost({ action: "captureFallbackTranscript", text: transcript, capture }))} />
         <div className="source-divider"><span>or add material</span></div>
         <TextArea label="Source" hint="Paste notes, https://…, or /path/to/file.pdf" value={source} onChange={(event) => setSource(event.target.value)} />
         {sourceKind === "text" && source.trim() && <Input label="Title (optional)" value={sourceTitle} onChange={(event) => setSourceTitle(event.target.value)} />}
         <div className="source-start-actions"><Button variant="secondary" disabled={busy || !source.trim()} onClick={() => { void addSource(); }}>Add source</Button><Button disabled={busy || state.sourceItems.length === 0} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "complete" }); }}>Build my Map</Button></div>
         {state.sourceItems.length > 0 && <p className="source-ready" role="status">{state.sourceItems.length} {state.sourceItems.length === 1 ? "source" : "sources"} ready</p>}
-        <Button variant="secondary" disabled={busy} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "style" }); }}>Back</Button>
+        <Button variant="secondary" disabled={busy} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "welcome" }); }}>Back</Button>
       </Card>}
     </section>
   </FullScreenShell>;

@@ -214,7 +214,6 @@ export function updateWorkshopOnboarding(input: { title?: string; outcome?: Work
   const step = input.step ?? current.onboarding.step;
   if (!(["welcome", "style", "sources", "complete"] as const).includes(step)) throw new Error("Invalid onboarding step.");
   if (step !== "welcome" && !outcome) throw new Error("Choose what you are making before continuing.");
-  if (step === "sources" && !current.style && !current.onboarding.styleAnalysis) throw new Error("Choose, create, reuse, or start reviewing a Company Style before adding material.");
   if (step === "complete" && current.sourceItems.length === 0) throw new Error("Add at least one source before building the Map.");
   const updatedAt = new Date().toISOString();
   return write({

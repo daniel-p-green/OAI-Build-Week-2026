@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 23:09 CT
+Last updated: 2026-07-15 23:15 CT
 
 ## Status
 
@@ -88,6 +88,7 @@ These gates measure replacement value, not implementation breadth. Automated che
 
 - [x] A first-time professional can identify the current object, source scope, and next action within five seconds across the required recorded screens. This is screenshot-orientation evidence, not uncoached empty-Workshop use.
 - [ ] On the provider-backed path, a professional can add their own material and see the grounded Map organize it within two minutes.
+  - 2026-07-15 capture-first browser proof: a genuinely empty local Workshop in the Codex in-app browser now moves directly from the chosen outcome to voice/notes/URL/PDF intake; Company Style no longer blocks the first Source. One realistic pasted meeting note became three separately grounded ideas, and the complete source card plus all three claims fit inside the 1280×720 center canvas with both context rails open. At 390×844, the same Map became three readable verified cards with document width equal to viewport width. Brief approval then made `Choose style` the one next action. This proves the no-spend product order and responsive deterministic path, not the still-open provider-backed two-minute gate.
 - [ ] From an empty Workshop and the professional's own material, the first editable, source-defensible deck is ready within 15 minutes. Record elapsed time and every manual repair.
   - 2026-07-15 mechanical proof: a new empty Workshop accepted fresh pasted meeting notes, derived the Source title, built the grounded Map, approved the Brief, applied a Style, created Outputs directly from the Brief, and opened an editable `.pptx` presentation in 2.6 seconds of automated production-browser time with no manual repair. The same source field now routes pasted notes, a public URL, or an absolute local PDF path without a mode picker. The human gate stays open until a representative professional repeats this with their own material and no coaching.
   - 2026-07-15 composition proof: the isolated Codex-browser clean start now turns six realistic verified claims into six separately editable, claim-backed Map ideas instead of one oversized Source summary. The approved Brief selects one concise outcome and three exact evidence sentences, each with an attached locator that opens the precise source text. This closes the deterministic first-draft composition defect; it does not close the provider-backed or uncoached-professional gates.
@@ -130,9 +131,9 @@ This is the next implementation increment. The product already proves the downst
 
 ### Outcome and completion bar
 
-A new professional should be able to open WorkshopLM, state what they are making, create or select a reusable Company Style, add their own material, and reach a useful grounded Map without learning the internal architecture. Company Style analysis may run beside source ingestion and Map creation, but a reviewed saved Style is required before Outputs. The user should understand the permanent workflow from one short orientation on the real Map.
+A new professional should be able to open WorkshopLM, state what they are making, add their own material, and reach a useful grounded Map without learning the internal architecture. After the Brief is approved, they create or select a reusable Company Style before Outputs. The user should understand the permanent workflow from one short orientation on the real Map.
 
-The memorable first-use moment is: the professional chooses an outcome, enters the company or client website, adds the messy meeting or source material, and sees a grounded Map while WorkshopLM reports that the Company Style is ready to review.
+The memorable first-use moment is: the professional chooses an outcome, adds the messy meeting or source material, and sees the complete grounded Map before WorkshopLM asks how the finished work should look.
 
 This onboarding is complete only when a fresh local data root passes the empty-Workshop browser path, the company URL produces visibly reviewable exact hex colors and font candidates, a selected Company Style is reused by a second Workshop, orientation state survives reload, and all existing acceptance/demo paths remain green.
 
@@ -155,21 +156,9 @@ The first screen uses the existing WorkshopLM/OpenAI component system and one do
 - Present three outcome choices: `Client pitch`, `Board presentation`, and `Team workshop`.
 - Ask for the Workshop name after the outcome is chosen; offer a useful generated default and permit correction.
 - Do not ask for output formats, model choices, audience taxonomies, tutorial preferences, or technical configuration.
-- The primary action advances to Company Style setup. Back preserves entered state.
+- The primary action advances directly to material capture. Back preserves entered state.
 
-#### 2. Start the Company Style
-
-The primary path asks for `Company website` and offers `Find my company style`. The supporting copy states that WorkshopLM will suggest colors, type, and brand assets for review and will not add the website to Sources.
-
-Alternative paths are:
-
-- `Use a saved style` when the Style Library is non-empty;
-- `Set it manually` for exact brand rules or a blocked website;
-- `Use a clean default for now` for users without a website or brand system.
-
-Submitting a website begins analysis and moves the user to source intake without waiting for a fake progress experience. Source ingestion and Map creation remain usable while analysis runs. Show only honest task states: `Reviewing company.com…`, `Company style ready to review`, `Couldn't review this website`, and `{Name} style saved`. No invented percentages or simulated stages.
-
-#### 3. Add the thinking
+#### 2. Add the thinking
 
 Reuse one unified Source surface rather than separate mode cards. It supports:
 
@@ -178,9 +167,9 @@ Reuse one unified Source surface rather than separate mode cards. It supports:
 - a public content URL;
 - an absolute local PDF path.
 
-Use short outcome-specific examples only when they help the user choose material. Keep the company Style URL visually and semantically separate from factual Source scope. With one valid Source, enable `Build my Map`. Source ingestion errors stay on this surface with a useful retry or correction.
+Use short outcome-specific examples only when they help the user choose material. Do not ask for Company Style before the first Source. With one valid Source, enable `Build my Map`. Source ingestion errors stay on this surface with a useful retry or correction.
 
-#### 4. First Map orientation
+#### 3. First Map orientation
 
 Land on the real editable Map as soon as it is useful. Show one dismissible orientation card, not a hotspot tour:
 
@@ -188,7 +177,19 @@ Land on the real editable Map as soon as it is useful. Show one dismissible orie
 
 The card has one `Got it` action, dismisses durably, and is available later through a quiet `How WorkshopLM works` entry. It must not obscure the Map, the Source count, or `Approve brief` at the recorded desktop and compact sizes.
 
-If Company Style analysis is incomplete, show its quiet status without blocking Map edits or Brief approval. When results are ready, expose one `Review style` action. If analysis fails, offer `Try again`, `Set manually`, and `Use a clean default` without failing the Workshop.
+Fit the complete initial Source-to-claim scene into the visible center canvas while both context rails remain open. The first useful structure must not require panning, zooming, or collapsing a rail to understand.
+
+#### 4. Start the Company Style
+
+After Brief approval, the primary path asks for `Company website` and offers `Find my company style`. The supporting copy states that WorkshopLM will suggest colors, type, and brand assets for review and will not add the website to Sources.
+
+Alternative paths are:
+
+- `Use a saved style` when the Style Library is non-empty;
+- `Set it manually` for exact brand rules or a blocked website;
+- `Use a clean default for now` for users without a website or brand system.
+
+Submitting a website begins honest review without blocking already-completed Source, Map, or Brief work. Show only honest task states: `Reviewing company.com…`, `Company style ready to review`, `Couldn't review this website`, and `{Name} style saved`. No invented percentages or simulated stages.
 
 #### 5. Review Company Style
 
