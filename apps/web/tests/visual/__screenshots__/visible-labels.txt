@@ -37,5 +37,7 @@ Success looks like
 TXTVoice brainstorm5 claims
 The product promise
 Undo
+Version 1Earlier version · 3 panels
+Version history
 WEBWorkshopLM direction2 claims
 WorkshopLM Build Week

@@ -8949,3 +8949,37 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 13:10 CT — Approved Storyboards preserve exact reviewed history
+
+**Area:** Storyboard control / image-version integrity / Video provenance / progressive disclosure
+
+### Changed
+
+- Audited Storyboard and Video revision integrity after completing immutable Sketch history. Video already preserved immutable render versions, but Storyboard edits overwrote the reviewed object and a regenerated image could rebind new bytes without incrementing the Storyboard version.
+- Added backward-compatible `storyboardHistory` persistence and an explicit per-version approval record. Storyboard generation, panel edits, and version-changing image rebinding now archive the prior object before creating a new unapproved version.
+- Bound every generated Storyboard panel to its exact image relative path and SHA-256 in addition to image-panel ID and version. A version-specific artifact route now resolves the historical bytes instead of consulting the current image batch.
+- Image replacement still revokes Storyboard approval, stales narration, blocks Video creation, and marks prior Videos `Needs update`. The completed replacement now also increments the Storyboard version, so the reviewed and replacement compositions cannot share an identity.
+- Added one subordinate `Version history` section below the current Storyboard. Earlier versions open read-only in the existing official `SideSheet`, `CarouselRow`, `Card`, `ListGroup`, `ListRow`, `ListRowAction`, `Status`, and `Button` primitives. The sheet shows approval state, exact reviewed visual, narration, duration, and Source access without exposing edit or save actions.
+
+### Verified
+
+- The worker suite passed all 120 tests. Focused regressions prove that five initial image bindings can be approved, a replacement creates the next Storyboard version, the former approved version retains its Version 1 image path/hash, the version-specific route returns the original bytes, and a panel edit preserves the former approved title and narration.
+- The complete production-browser suite passed all 30 cases in 1.3 minutes. It verifies the current exact image binding, visible Storyboard history, approved-version status, historical title and narration, version-specific image URL, absent save action, desktop/compact/mobile behavior, accessibility states, and the unchanged end-to-end workbench.
+- Visually inspected the 1200×800 history state. The current Storyboard remains dominant, history is a quiet lower section, and the selected prior version stays focused inside the standard sheet. The accepted baseline is `apps/web/tests/visual/__screenshots__/desktop-storyboard-history.png`, SHA-256 `013a0d026b2d6a51d0e17ad26d88dfbb19cdc60e481fb3970979bc114eeac40e`.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages. `pnpm demo:e2e` passed the complete recorded Source-to-Video seam. `pnpm submission:packet:verify` passed with Terra, six provider-backed GPT Image 2 panels, Cedar narration, sixteen gallery screens, eight ready film shots, two honest blocks, and four unchanged founder/final-package slots.
+- No provider request ran. The evidence ledger remains at 104 OpenAI HTTP operations; exact dollar debit is still not inferred.
+
+### Decisions
+
+- A Storyboard version is the reviewed production contract, not merely a mutable sequence number. Any new visual binding or narrative edit creates a distinct approval target.
+- Historical Storyboards are recovery and provenance, not another navigation mode. They remain read-only and subordinate to the current editable Storyboard.
+- Historical media must resolve from the path and hash stored on that Storyboard version. Resolving through the mutable current image batch would make the provenance claim false.
+- `PLAN-2026-07-13.md` was treated only as enduring acceptance guidance. Its pre-existing user modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

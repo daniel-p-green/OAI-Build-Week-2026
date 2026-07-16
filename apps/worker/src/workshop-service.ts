@@ -67,8 +67,8 @@ export type WebsiteStyleSuggestion = { referenceUrl: string; name: string; accen
 export type WorkshopVisualDna = { version: number; styleVersion: number; palette: { accent: string; ink: string; paper: string }; compositionRules: string[]; textureRules: string[]; imageRules: string[]; negativeRules: string[]; approved: boolean; stale: boolean; createdAt: string };
 export type WorkshopEvidenceReference = { claimId?: string; sourceId: string; chunkId?: string; locator: string };
 export type WorkshopAssetPlan = { version: number; graphRevision: number; briefVersion: number; styleVersion: number; visualDnaVersion?: number; evidenceClaimIds: string[]; items: { id: string; outputType: "deck" | "infographic" | "images" | "storyboard" | "video"; title: string; prompt: string; locator: string; evidence: WorkshopEvidenceReference[] }[]; stale: boolean; createdAt: string };
-export type StoryboardPanel = { id: string; title: string; narration: string; durationSeconds: number; claimIds: string[]; evidence: WorkshopEvidenceReference[]; imagePanelId?: string; imagePanelVersion?: number; approved: boolean; stale: boolean };
-export type WorkshopStoryboard = { version: number; panels: StoryboardPanel[]; stale: boolean };
+export type StoryboardPanel = { id: string; title: string; narration: string; durationSeconds: number; claimIds: string[]; evidence: WorkshopEvidenceReference[]; imagePanelId?: string; imagePanelVersion?: number; imageRelativePath?: string; imageSha256?: string; approved: boolean; stale: boolean };
+export type WorkshopStoryboard = { version: number; panels: StoryboardPanel[]; stale: boolean; approved: boolean };
 export type ImageBatchPanel = {
   id: string;
   version: number;
@@ -98,7 +98,7 @@ export type WorkshopVideo = { id: string; version: number; storyboardVersion: nu
 export type RenderedVideoInput = Omit<WorkshopVideo, "id" | "version" | "stale" | "createdAt">;
 export type WorkshopVideoRecovery = { outcome: "failed" | "cancelled"; message: string; attempts: number; updatedAt: string };
 export type WorkshopOutputRecovery = { message: string; attempts: number; updatedAt: string };
-export type WorkshopState = { id: string; title: string; onboarding: WorkshopOnboarding; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered" | "failed" | "cancelled"; videoRecovery?: WorkshopVideoRecovery; outputRecovery?: Partial<Record<"deck" | "infographic", WorkshopOutputRecovery>>; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; conversationTurns: WorkshopConversationTurn[]; toolCalls: WorkshopToolInvocation[]; conversationContinuation?: WorkshopConversationContinuation; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; sketchHistory: WorkshopSketch[]; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; audioOverviews: WorkshopAudioOverview[]; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
+export type WorkshopState = { id: string; title: string; onboarding: WorkshopOnboarding; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered" | "failed" | "cancelled"; videoRecovery?: WorkshopVideoRecovery; outputRecovery?: Partial<Record<"deck" | "infographic", WorkshopOutputRecovery>>; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; conversationTurns: WorkshopConversationTurn[]; toolCalls: WorkshopToolInvocation[]; conversationContinuation?: WorkshopConversationContinuation; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; sketchHistory: WorkshopSketch[]; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; storyboardHistory: WorkshopStoryboard[]; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; audioOverviews: WorkshopAudioOverview[]; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
 export type WorkshopSummary = { id: string; title: string; sources: number; outputs: number; updatedAt: string; active: boolean };
 export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string; permission?: WorkshopSource["permission"] };
 const execFile = promisify(execFileCallback);
@@ -118,7 +118,7 @@ const seedClaims: WorkshopClaim[] = [
   { id: "claim-seed-brief-review", sourceId: "source-brief", chunkId: "chunk-seed-brief", text: "The Map and Storyboard remain reviewable before delivery.", evidenceState: "verified", locator: "Build notes · §2" },
   { id: "claim-seed-design-system", sourceId: "source-design", chunkId: "chunk-seed-design", text: "Evidence becomes an editable production system.", evidenceState: "verified", locator: "Design · Map" },
 ];
-const emptyStoryboard = (): WorkshopStoryboard => ({ version: 0, stale: false, panels: [] });
+const emptyStoryboard = (): WorkshopStoryboard => ({ version: 0, stale: false, approved: false, panels: [] });
 const defaultState = (id = defaultWorkshopId, title = defaultWorkshopTitle, seeded = false): WorkshopState => ({ id, title, onboarding: { step: seeded ? "complete" : "welcome", outcome: seeded ? "client_facing_pitch" : undefined, mapOrientationDismissed: seeded, outputsOrientationDismissed: seeded, completedAt: seeded ? new Date().toISOString() : undefined }, briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: seeded ? 3 : 0, groundedClaims: seeded ? 5 : 0, sourceItems: seeded ? [
   { id: "source-raw", type: "TXT", title: "Raw voice brainstorm", origin: "ChatGPT task", claimCount: 5, excerpt: "The judge should be able to see the messy original thought become a cited map, a real brief, and a finished piece of work.", locator: "ChatGPT task · 12:41 · chunk 04", permission: "sanitized" },
   { id: "source-brief", type: "PDF", title: "Build Week brief", origin: "Local", claimCount: 3, excerpt: "One visible chain links capture, approved work, and finished delivery.", locator: "Build notes · §2", permission: "sanitized" },
@@ -127,7 +127,7 @@ const defaultState = (id = defaultWorkshopId, title = defaultWorkshopTitle, seed
   { id: "edge-promise-proof", from: "promise", to: "proof", kind: "supports" },
   { id: "edge-proof-visual", from: "proof", to: "visual", kind: "depends_on" },
   { id: "edge-proof-risk", from: "proof", to: "risk", kind: "depends_on" },
-] : [], storyboard: seeded ? { version: 1, stale: false, panels: [{ id: "panel-1", title: "Raw thought", narration: "Start with the messy original thinking.", durationSeconds: 3, claimIds: [], evidence: [{ sourceId: "source-raw", locator: "ChatGPT task · 12:41 · chunk 04" }], approved: true, stale: false }, { id: "panel-2", title: "Cited Map", narration: "Show the editable Map and evidence locators.", durationSeconds: 5, claimIds: [], evidence: [{ sourceId: "source-brief", locator: "Build notes · §2" }], approved: true, stale: false }, { id: "panel-3", title: "Finished work", narration: "End with traceable production output.", durationSeconds: 4, claimIds: [], evidence: [{ sourceId: "source-design", locator: "Design · Map" }], approved: true, stale: false }] } : emptyStoryboard(), sketchHistory: [], audioOverviews: [], aiRuns: [], outputs: [], videos: [], mapNodes: seeded ? [
+] : [], storyboard: seeded ? { version: 1, stale: false, approved: false, panels: [{ id: "panel-1", title: "Raw thought", narration: "Start with the messy original thinking.", durationSeconds: 3, claimIds: [], evidence: [{ sourceId: "source-raw", locator: "ChatGPT task · 12:41 · chunk 04" }], approved: true, stale: false }, { id: "panel-2", title: "Cited Map", narration: "Show the editable Map and evidence locators.", durationSeconds: 5, claimIds: [], evidence: [{ sourceId: "source-brief", locator: "Build notes · §2" }], approved: true, stale: false }, { id: "panel-3", title: "Finished work", narration: "End with traceable production output.", durationSeconds: 4, claimIds: [], evidence: [{ sourceId: "source-design", locator: "Design · Map" }], approved: true, stale: false }] } : emptyStoryboard(), storyboardHistory: [], sketchHistory: [], audioOverviews: [], aiRuns: [], outputs: [], videos: [], mapNodes: seeded ? [
   { id: "promise", title: "The product promise", body: "Turn raw thinking into finished work without losing the trail back to source material.", kind: "grounded", locator: "Meeting · 12:41", sourceId: "source-raw", x: 11, y: 12, width: 24, height: 18 },
   { id: "proof", title: "Judge proof", body: "Show one continuous capture → map → brief → storyboard → rendered video seam.", kind: "grounded", locator: "Build notes · §2", sourceId: "source-brief", x: 48, y: 36, width: 24, height: 18 },
   { id: "visual", title: "Visual behavior", body: "Evidence first becomes an editable production system, not a static report.", kind: "creative", locator: "Design · Map", sourceId: "source-design", x: 39, y: 58, width: 24, height: 18 },
@@ -136,9 +136,9 @@ const defaultState = (id = defaultWorkshopId, title = defaultWorkshopTitle, seed
 const repositoryDataRoot = () => resolve(process.env.WORKSHOPLM_DATA_ROOT ?? join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", ".workshoplm"));
 export const workshopDataRoot = repositoryDataRoot;
 function dbFor(root = repositoryDataRoot()) { const db = openLocalDatabase(join(root, "data", "workshoplm.sqlite")); migrate(db); return db; }
-function normalizeStoryboard(storyboard: WorkshopStoryboard | undefined, fallback: WorkshopStoryboard): WorkshopStoryboard {
+function normalizeStoryboard(storyboard: WorkshopStoryboard | undefined, fallback: WorkshopStoryboard, approved = false): WorkshopStoryboard {
   const value = storyboard ?? fallback;
-  return { ...value, panels: value.panels.map((panel) => { const evidence = panel.evidence ?? []; return { ...panel, evidence, claimIds: panel.claimIds ?? evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []) }; }) };
+  return { ...value, approved: value.approved ?? approved, panels: value.panels.map((panel) => { const evidence = panel.evidence ?? []; return { ...panel, evidence, claimIds: panel.claimIds ?? evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []) }; }) };
 }
 function paletteRoles(accent: string, ink: string, paper: string, source: StyleEvidenceSource): StylePaletteRoles {
   return { accent: { value: accent, source }, text: { value: ink, source }, background: { value: paper, source } };
@@ -309,12 +309,12 @@ export function readWorkshopState(root?: string, requestedWorkshopId?: string): 
     const state = JSON.parse(row.state_json) as Partial<WorkshopState>;
     const fallback = defaultState(workshopId, state.title ?? (workshopId === defaultWorkshopId ? defaultWorkshopTitle : "Untitled Workshop"), workshopId === defaultWorkshopId && Boolean(state.sourceItems?.length));
     if (state.sourceItems && state.mapNodes && state.sourceChunks && state.claims) {
-      const normalized = withSeedEvidence({ ...fallback, ...state, id: workshopId, onboarding: state.onboarding ?? fallback.onboarding, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], conversationTurns: state.conversationTurns ?? [], toolCalls: state.toolCalls?.map((call) => WorkshopToolCall.parse(call)) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), sketchHistory: state.sketchHistory ?? [], style: state.style ? normalizeStyleMetadata({ ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" }) : undefined, storyboard: normalizeStoryboard(state.storyboard, fallback.storyboard), audioOverviews: state.audioOverviews ?? [], aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
+      const normalized = withSeedEvidence({ ...fallback, ...state, id: workshopId, onboarding: state.onboarding ?? fallback.onboarding, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], conversationTurns: state.conversationTurns ?? [], toolCalls: state.toolCalls?.map((call) => WorkshopToolCall.parse(call)) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), sketchHistory: state.sketchHistory ?? [], style: state.style ? normalizeStyleMetadata({ ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" }) : undefined, storyboard: normalizeStoryboard(state.storyboard, fallback.storyboard, Boolean(state.storyboardApproved)), storyboardHistory: (state.storyboardHistory ?? []).map((item) => normalizeStoryboard(item, emptyStoryboard())), audioOverviews: state.audioOverviews ?? [], aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
       if (normalized.sourceChunks !== state.sourceChunks) return write(normalized, root);
       ensureEvidenceIndex(db, normalized);
       return normalized;
     }
-    if (state.sourceItems && state.mapNodes) return write(withSeedEvidence({ ...fallback, ...state, id: workshopId, activeSourceIds: state.sourceItems.map((source) => source.id), transcriptSegments: [], conversationTurns: [], toolCalls: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), sketchHistory: state.sketchHistory ?? [], storyboard: fallback.storyboard, audioOverviews: state.audioOverviews ?? [], aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [] } as WorkshopState), root);
+    if (state.sourceItems && state.mapNodes) return write(withSeedEvidence({ ...fallback, ...state, id: workshopId, activeSourceIds: state.sourceItems.map((source) => source.id), transcriptSegments: [], conversationTurns: [], toolCalls: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), sketchHistory: state.sketchHistory ?? [], storyboard: fallback.storyboard, storyboardHistory: state.storyboardHistory ?? [], audioOverviews: state.audioOverviews ?? [], aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [] } as WorkshopState), root);
     return write({ ...fallback, ...state, id: workshopId } as WorkshopState, root);
   }
   throw new Error(`Workshop not found: ${workshopId}.`);
@@ -358,6 +358,16 @@ export function resolveWorkshopArtifact(id: string, root?: string, workshopId?: 
     if (!path.startsWith(`${resolve(dataRoot)}/`)) return undefined;
     return { path, contentType: "audio/wav", fileName: `${audioOverview.id}.wav` };
   }
+  const storyboardImage = id.match(/^storyboard-v(\d+)-panel-(\d+)-image$/);
+  if (storyboardImage) {
+    const version = Number(storyboardImage[1]); const panelIndex = Number(storyboardImage[2]) - 1;
+    const storyboard = [state.storyboard, ...state.storyboardHistory].find((item) => item.version === version);
+    const panel = storyboard?.panels[panelIndex];
+    if (!panel?.imageRelativePath) return undefined;
+    const path = resolve(dataRoot, panel.imageRelativePath);
+    if (!path.startsWith(`${resolve(dataRoot)}/`)) return undefined;
+    return { path, contentType: "image/png" };
+  }
   const output = state.outputs.find((item) => item.id === id);
   if (!output) return undefined;
   const editable = format === "editable" && output.editableRelativePath;
@@ -390,6 +400,10 @@ function ensureEvidenceIndex(db: ReturnType<typeof dbFor>, state: WorkshopState)
 function write(next: WorkshopState, root?: string) { const db = dbFor(root); const result = db.prepare("UPDATE workshop_state SET state_json=?, updated_at=? WHERE workshop_id=?").run(JSON.stringify(next), next.updatedAt, next.id); if (!result.changes) throw new Error(`Workshop not found: ${next.id}.`); db.prepare("UPDATE workshop SET title=? WHERE id=?").run(next.title, next.id); syncEvidenceIndex(db, next); return next; }
 function staleVideos(state: WorkshopState): WorkshopVideo[] { return state.videos.map((video) => video.stale ? video : { ...video, stale: true }); }
 function staleAudioOverviews(state: WorkshopState): WorkshopAudioOverview[] { return state.audioOverviews.map((overview) => overview.stale ? overview : { ...overview, stale: true }); }
+function storyboardHistoryWithCurrent(state: WorkshopState): WorkshopStoryboard[] {
+  if (!state.storyboard.version || !state.storyboard.panels.length || state.storyboardHistory.some((item) => item.version === state.storyboard.version)) return state.storyboardHistory;
+  return [...state.storyboardHistory, state.storyboard];
+}
 function activeClaimsFor(state: WorkshopState) { return state.claims.filter((claim) => state.activeSourceIds.includes(claim.sourceId)); }
 export function assertStoryboardGrounding(state: WorkshopState): void {
   for (const panel of state.storyboard.panels) {
@@ -1103,9 +1117,9 @@ export function generateStoryboard(root?: string): WorkshopState {
     const evidence = item.evidence ?? [];
     const narration = prose(item.prompt);
     const durationSeconds = Math.max(4, Math.ceil(narration.split(/\s+/).filter(Boolean).length / 2.5) + 1);
-    return { id: `storyboard-v${current.storyboard.version + 1}-panel-${index + 1}`, title: item.title, narration, durationSeconds, claimIds: evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []), evidence, imagePanelId: image?.id, imagePanelVersion: image?.version, approved: true, stale: false };
+    return { id: `storyboard-v${current.storyboard.version + 1}-panel-${index + 1}`, title: item.title, narration, durationSeconds, claimIds: evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []), evidence, imagePanelId: image?.id, imagePanelVersion: image?.version, imageRelativePath: image?.relativePath, imageSha256: image?.sha256, approved: true, stale: false };
   });
-  return write({ ...current, storyboard: { version: current.storyboard.version + 1, panels, stale: false }, narration: current.narration ? { ...current.narration, stale: true } : undefined, videos: staleVideos(current), storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
+  return write({ ...current, storyboard: { version: current.storyboard.version + 1, panels, stale: false, approved: false }, storyboardHistory: storyboardHistoryWithCurrent(current), narration: current.narration ? { ...current.narration, stale: true } : undefined, videos: staleVideos(current), storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
 function outputHeading(text: string, limit = 82) { if (text.length <= limit) return text; const clipped = text.slice(0, limit).trimEnd(); return `${clipped.slice(0, clipped.lastIndexOf(" ")).trim()}…`; }
 function outputBody(text: string) { if (text.length <= 240) return text; const clipped = text.slice(0, 240).trimEnd(); return `${clipped.slice(0, clipped.lastIndexOf(" ")).trim()}…`; }
@@ -1450,16 +1464,18 @@ export function recordGeneratedImagePanel(panelId: string, artifact: Pick<ImageB
   if (!artifact.relativePath || !artifact.sha256 || !artifact.provenance) throw new Error("Generated image provenance is incomplete.");
   const generatedPanel = current.imageBatch.panels.find((panel) => panel.id === panelId);
   if (!generatedPanel) throw new Error(`Image panel not found: ${panelId}.`);
+  const boundPanel = current.storyboard.panels.find((panel) => panel.imagePanelId === panelId);
+  const storyboardBindingChanged = Boolean(boundPanel && boundPanel.imagePanelVersion !== generatedPanel.version);
   const storyboardPanels = current.storyboard.panels.map((panel) => panel.imagePanelId === panelId
-    ? { ...panel, imagePanelVersion: generatedPanel.version, approved: true, stale: false }
+    ? { ...panel, imagePanelVersion: generatedPanel.version, imageRelativePath: artifact.relativePath, imageSha256: artifact.sha256, approved: true, stale: false }
     : panel);
-  const storyboard = current.storyboard.panels.some((panel) => panel.imagePanelId === panelId)
-    ? { ...current.storyboard, panels: storyboardPanels, stale: storyboardPanels.some((panel) => panel.stale) }
+  const storyboard = boundPanel
+    ? { ...current.storyboard, version: storyboardBindingChanged ? current.storyboard.version + 1 : current.storyboard.version, panels: storyboardPanels, stale: storyboardPanels.some((panel) => panel.stale), approved: storyboardBindingChanged ? false : current.storyboard.approved }
     : current.storyboard;
   const panels = current.imageBatch.panels.map((panel) => panel.id === panelId ? { ...panel, ...artifact, state: "generated" as const, error: undefined } : panel);
   const completed = panels.every((panel) => panel.state === "generated");
   const outputs = completed ? current.outputs.map((output) => output.type === "deck" && !output.imageBatchId ? { ...output, stale: true } : output) : current.outputs;
-  return write({ ...current, imageBatch: { ...current.imageBatch, panels }, outputs, storyboard, updatedAt: new Date().toISOString() }, root);
+  return write({ ...current, imageBatch: { ...current.imageBatch, panels }, outputs, storyboard, storyboardHistory: storyboardBindingChanged ? storyboardHistoryWithCurrent(current) : current.storyboardHistory, narration: storyboardBindingChanged && current.narration ? { ...current.narration, stale: true } : current.narration, videos: storyboardBindingChanged ? staleVideos(current) : current.videos, storyboardApproved: storyboardBindingChanged ? false : current.storyboardApproved, videoState: storyboardBindingChanged ? "blocked" : current.videoState, updatedAt: new Date().toISOString() }, root);
 }
 export function recordNarration(narration: WorkshopNarration, root?: string): WorkshopState {
   const current = readWorkshopState(root);
@@ -1486,7 +1502,7 @@ export function updateStoryboardPanel(panelId: string, patch: Pick<StoryboardPan
   const current = readWorkshopState(root); const index = current.storyboard.panels.findIndex((panel) => panel.id === panelId); if (index < 0) throw new Error(`Storyboard panel not found: ${panelId}.`);
   if (!patch.title.trim() || !patch.narration.trim() || patch.durationSeconds <= 0) throw new Error("Storyboard panel requires a title, narration, and positive duration.");
   const panels = [...current.storyboard.panels]; panels[index] = { ...panels[index], ...patch, approved: true, stale: false };
-  return write({ ...current, storyboard: { version: current.storyboard.version + 1, panels, stale: false }, narration: current.narration ? { ...current.narration, stale: true } : undefined, videos: staleVideos(current), storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
+  return write({ ...current, storyboard: { version: current.storyboard.version + 1, panels, stale: false, approved: false }, storyboardHistory: storyboardHistoryWithCurrent(current), narration: current.narration ? { ...current.narration, stale: true } : undefined, videos: staleVideos(current), storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
 export function recordRenderedVideo(input: RenderedVideoInput, root?: string, workshopId?: string): WorkshopState {
   const current = readWorkshopState(root, workshopId);
@@ -1515,7 +1531,7 @@ export function applyWorkshopAction(action: "approveBrief" | "lockManualStyle" |
     if (current.storyboard.stale || current.storyboard.panels.some((panel) => panel.stale || !panel.approved)) throw new Error("Storyboard approval requires current approved panels.");
     assertStoryboardGrounding(current);
     for (const panel of current.storyboard.panels) { if (!panel.imagePanelId) continue; const image = current.imageBatch?.panels.find((candidate) => candidate.id === panel.imagePanelId); if (!current.imageBatch || current.imageBatch.stale || !image || image.version !== panel.imagePanelVersion) throw new Error(`Storyboard panel ${panel.id} requires its current bound image version.`); }
-    return write({ ...current, storyboardApproved: true, updatedAt }, root);
+    return write({ ...current, storyboard: { ...current.storyboard, approved: true }, storyboardApproved: true, updatedAt }, root);
   }
   if (!current.storyboardApproved) throw new Error("Video render requires an approved current storyboard.");
   const db = dbFor(root); enqueue(db, { id: `job-video-${Date.now()}`, workshopId: current.id, kind: "render_video", inputKey: `${current.id}:storyboard-approved:${current.updatedAt}`, payload: { workshopId: current.id } });

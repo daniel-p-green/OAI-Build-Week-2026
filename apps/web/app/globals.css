@@ -316,6 +316,17 @@ button { -webkit-tap-highlight-color: transparent; }
 .panel-fields { display: grid; align-content: start; gap: 18px; padding: 24px; }
 .panel-fields .status { justify-self: start; }
 .panel-change-note { margin: -6px 0 0; color: #5d5d5d; font-size: 12px; line-height: 17px; }
+.storyboard-view > .output-version-history { max-width: 1180px; margin: 22px auto 0; }
+.storyboard-history-strip { margin-bottom: 16px; }
+.oai-side-sheet .storyboard-history-strip { margin-inline: 0; }
+.oai-side-sheet .storyboard-history-strip .film-frame { flex-basis: 132px; }
+.historical-panel { grid-template-columns: 1fr; margin: 0; }
+.historical-panel .panel-visual { min-height: 230px; padding: 24px; }
+.historical-panel .panel-visual span { font-size: 22px; line-height: 28px; }
+.historical-panel .panel-fields { gap: 10px; }
+.historical-panel .panel-fields > small { color: #5d5d5d; }
+.historical-panel .panel-fields h3, .historical-panel .panel-fields p { margin: 0; }
+.historical-panel .panel-fields p { color: #5d5d5d; font-size: 14px; line-height: 21px; }
 
 .focused-output { height: 100%; display: flex; flex-direction: column; overflow-y: auto; overflow-anchor: none; padding: 24px; background: #f3f3f3; }
 .focused-output-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 0 20px; }

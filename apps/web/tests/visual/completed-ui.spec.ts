@@ -766,9 +766,11 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
     approved: true,
     stale: false,
   }));
-  const boundState = { ...readyState, storyboardApproved: false, videoState: "blocked", imageBatch: { ...readyState.imageBatch, panels }, storyboard: { ...readyState.storyboard, stale: false, panels: storyboardPanels } };
+  const historicalPanels = storyboardPanels.map((panel: Record<string, unknown>, index: number) => ({ ...panel, title: index === 0 ? "Original presentation" : panel.title, narration: index === 0 ? "This is the reviewed narration from the approved Storyboard." : panel.narration, imageRelativePath: `generated/images/${panel.imagePanelId}-v1.png`, imageSha256: "a".repeat(64) }));
+  const boundState = { ...readyState, storyboardApproved: false, videoState: "blocked", imageBatch: { ...readyState.imageBatch, panels }, storyboard: { ...readyState.storyboard, version: 3, approved: false, stale: false, panels: storyboardPanels }, storyboardHistory: [{ version: 2, approved: true, stale: true, panels: historicalPanels }] };
   await page.route("**/api/workshop", async (route) => route.request().method() === "GET" ? route.fulfill({ json: boundState }) : route.continue());
   await page.route("**/api/workshop/artifacts/image-panel-*", async (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="1200" height="800" fill="#0d0d0d"/><rect x="90" y="90" width="410" height="620" rx="32" fill="#0285ff"/><circle cx="900" cy="280" r="190" fill="#ffffff" opacity=".9"/><rect x="660" y="560" width="390" height="36" rx="18" fill="#ffffff" opacity=".72"/></svg>' }));
+  await page.route("**/api/workshop/artifacts/storyboard-v2-panel-*-image", async (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800"><rect width="1200" height="800" fill="#f4f2ec"/><circle cx="310" cy="400" r="210" fill="#0285ff"/><rect x="610" y="170" width="430" height="460" rx="32" fill="#0d0d0d"/></svg>' }));
   await page.goto("/");
   await openWorkshopView(page, "brief");
   await openWorkshopView(page, "outputs");
@@ -779,6 +781,15 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
   await expectScreen(page, "desktop-storyboard-bound-image");
   await page.locator(".storyboard-strip button").nth(1).click();
   await expect(preview.locator("img")).toHaveAttribute("src", "/api/workshop/artifacts/image-panel-2");
+  const history = page.getByRole("region", { name: "Version history" });
+  await history.getByRole("button", { name: /Version 2 Approved/ }).click();
+  const historySheet = page.getByRole("dialog", { name: "Storyboard · Version 2" });
+  await expect(historySheet.getByText("Approved version", { exact: true })).toBeVisible();
+  await expect(historySheet.locator(".panel-fields h3")).toHaveText("Original presentation");
+  await expect(historySheet.locator(".panel-fields p")).toHaveText("This is the reviewed narration from the approved Storyboard.");
+  await expect(historySheet.locator(".panel-visual img")).toHaveAttribute("src", "/api/workshop/artifacts/storyboard-v2-panel-1-image");
+  await expect(historySheet.getByRole("button", { name: "Save changes" })).toHaveCount(0);
+  await expectScreen(page, "desktop-storyboard-history");
 });
 
 test("Image set review exposes each visual job, exact source, and selective replacement", async ({ page }) => {
