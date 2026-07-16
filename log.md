@@ -8696,3 +8696,33 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 10:51 CT — Current public main survives a clean-room judge run
+
+**Area:** Distribution truth / clean installation / optional judge path
+
+### Changed
+
+- Cloned the public GitHub repository into a new isolated `/tmp/workshoplm-clean-current` checkout and confirmed its shallow `HEAD` was the current pushed `main`, commit `3d7221b194bccf639bbd0023c5f57820d0ec628b`.
+- Rebuilt the deterministic acceptance Workshop, rendered a second local HyperFrames Video, regenerated its bound thumbnail, and launched the documented one-command judge route from that checkout. No source-repository artifact or local developer state was used to make the clean clone pass.
+- Updated the current tracker to supersede the older clean-clone commit reference while retaining the still-open public Video, `/feedback`, Devpost, release, and logged-out link gates.
+
+### Verified
+
+- `pnpm install --frozen-lockfile` completed from the clean clone with the committed lockfile.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including all 120 worker tests.
+- `pnpm demo:reset`, `pnpm demo:e2e`, `pnpm demo:render`, `pnpm demo:thumbnail`, and `pnpm submission:packet:verify` passed sequentially. The clean render produced a 2,109,433-byte H.264/AAC MP4 with SHA-256 `6e6206288b89724f1a32a044b22e07d85f1ebf4ecf2b114d617f25c69ffe6fc3`; the clean thumbnail hashed to `fceb6d2c279eacc4c5197bd2fb4261a8fc57052b06238c3cd75476f9437c04e3`.
+- `pnpm judge:start` replayed the complete recorded seam before serving the exact acceptance data root. Port 3000 was already occupied, so Next selected 3001. Direct requests to `/` and `/api/workshop` both returned HTTP 200; the API exposed `WorkshopLM Build Week`, one Source, approved Brief, approved Storyboard, rendered Video, Presentation, and Infographic.
+- The live server was stopped cleanly after the smoke test. No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no exact dollar debit is inferred.
+
+### Decisions
+
+- Clean-clone proof is tied to the exact current public commit, not inherited from an older passing checkout. This recheck covers the generated-copy, source-language, status-notice, recapture, and rough-cut milestones added after the prior proof.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
