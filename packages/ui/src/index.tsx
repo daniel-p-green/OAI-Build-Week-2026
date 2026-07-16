@@ -39,6 +39,10 @@ export function ObjectSwitcher({ className, ...props }: HTMLAttributes<HTMLDivEl
   return <div className={classes("oai-object-switcher", className)} data-oai-component="ObjectSwitcher" {...props} />;
 }
 
+export function ConversationSurface({ className, ...props }: HTMLAttributes<HTMLElement>) {
+  return <section className={classes("oai-conversation-surface", className)} data-oai-component="ConversationSurface" {...props} />;
+}
+
 export type ButtonVariant = "primary" | "secondary" | "destructive" | "secondary-destructive";
 export type ButtonSize = "large" | "small";
 

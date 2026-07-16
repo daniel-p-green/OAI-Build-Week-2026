@@ -101,7 +101,7 @@ Component-specific mobile/card typography is also verified: Card header `17/23`,
 | Header mobile | `2124:13243` | full-screen mobile header | mobile review |
 | Sidebar desktop header | `2123:26990` | full-screen side list header | Sources column |
 | Map card | `2117:33652` | 16px padding, 12px gap, 72px media/18px radius, title `17/23`, subhead `14/20` | source anchors and evidence objects |
-| Composer scoped | set `2117:32175` | 768px centered, 28px radius, 10px internal padding, 15% border, Card shadow | not used; ChatGPT owns conversation |
+| Composer scoped | set `2117:32175` | 768px centered, 28px radius, 10px internal padding, 15% border, Card shadow | WorkshopLM Conversation composer; TextArea, Button, and voice capture remain official nested primitives |
 
 The library labels Inspector as “Coming soon.” WorkshopLM therefore composes its contextual evidence panel from verified Full screen columns, Card, Input, Button, and ListRow primitives; it does not claim a shipped official Inspector component.
 
@@ -126,6 +126,7 @@ The official library does not ship a finished Inspector. WorkshopLM uses only th
 | `WorkbenchRail` | Full screen side column `2133:27199` + Sidebar desktop header `2123:26990` + ListGroup `2004:21591` + ListRow `2002:21224` | Left Sources and right Production share one flat official column recipe. Rail content uses ListRows, Checkbox, Button, IconButton, and caption/body type; no new card, radius, shadow, or control family. |
 | `ProductionRail` | WorkbenchRail + ListGroup/ListRow + Button `2:465` + official status text/colors | Capture → Shape → Deliver, the single next action, and accumulating Outputs use existing row/action primitives. Status remains text, never a custom pill. |
 | `ObjectSwitcher` | Header mobile `2124:13243` + small secondary Button `2:465` | Mobile replaces the desktop rails with one horizontally scrollable object row. Selected state uses the official secondary background and Button geometry. |
+| `ConversationSurface` | Composer scoped `2117:32175` + Card `2004:22170` + TextArea `6:20458` + Button `2:465` + Token `2:373` | Durable grounded turns use plain transcript rows, official citation Tokens, and one centered composer. Realtime capture expands in the same surface rather than creating a second chat or toolbar. |
 
 Map nodes, provenance edges, generated previews, image tiles, and storyboard imagery remain domain content. Their surrounding controls and containers use the official primitives above.
 

@@ -32,6 +32,7 @@ export const OAI_UI_COMPOSITES = {
   workbenchRail: ["2133:27199", "2123:26990", "2004:21591", "2002:21224"],
   productionRail: ["2133:27199", "2123:26990", "2004:21591", "2002:21224", "2:465"],
   objectSwitcher: ["2124:13243", "2:465"],
+  conversationSurface: ["2117:32175", "2004:22170", "6:20458", "2:465", "2:373"],
 } as const;
 
 export const OAI_UI_TOKENS = {

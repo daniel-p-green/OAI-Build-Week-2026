@@ -6330,3 +6330,62 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Dogfood one real external deck, obtain the cold professional `Send`/`Revise` decision, then address the first concrete revision before expanding output breadth.
 - Founder brainstorm, provider media, final public Video, public links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+## 2026-07-15 20:26 CT — NotebookLM landing-page reference archived and translated for WorkshopLM
+
+**Area:** Public product story / research
+
+### Changed
+
+- Preserved eleven user-supplied NotebookLM landing-page captures under `research/screenshots/notebooklm/landing-page-2026-07-15/` with stable, descriptive filenames.
+- Added `research/notebooklm-landing-page-reference-2026-07-15.md`, separating NotebookLM's useful long-page information architecture from its Google visual identity and education framing.
+- Defined an evidence-led WorkshopLM landing-page sequence: finished-work hero, professional gap, source-to-output proof diagram, production controls, version-aware outputs, example Workshops, qualified trust copy, FAQ, and demo CTA.
+
+### Verified
+
+- Confirmed all eleven supplied files exist in the named research directory.
+- Reconciled the recommendation against the current WorkshopLM objective and existing NotebookLM flow audit: persistent source scope, source trace, approvals, output versions, and professional production remain the differentiators.
+
+### Decisions
+
+- Use NotebookLM's narrative sequence and progressive disclosure, not its marks, blue illustration system, academic vocabulary, or generic output cards.
+- Keep the Build Week public page evidence-led: do not publish testimonial, privacy, or output claims before the corresponding artifact or policy evidence exists.
+- Treat the public video as the primary CTA and strongest proof until a cold external professional `Send`/`Revise` review exists.
+
+### Open items
+
+- Select the first verified hero artifact and build the public landing page only when the user authorizes implementation.
+- Founder recording, provider-backed media, final public video, external professional review, public links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 20:35 CT — Grounded Conversation becomes durable Workshop state
+
+**Area:** Capture / Grounding / Interface / Domain contract
+
+### Changed
+
+- Added WorkshopLM's own center Conversation object with a durable SQLite-backed turn history, one text composer, source-scoped grounded replies, exact citation Tokens, and the existing Realtime capture inside the same surface.
+- Added the canonical `ConversationTurn` and `ConversationEvidence` domain schemas. Assistant turns pin Source, chunk, claim, locator, snippet, and snippet hash; completed operations are explicitly typed as `source_search` or `voice_capture`.
+- Kept a crucial trust boundary: a text question persists as Conversation but does not become a factual Source. A saved spoken thought explicitly becomes a private Source, durable transcript segment, user turn, and grounded assistant response.
+- Added `ConversationSurface` to the shared official-Figma-derived UI layer and inventory. Desktop keeps Sources and Production visible; mobile adds `Chat` to the existing object switcher.
+
+### Verified
+
+- `pnpm check` passed all 13 packages with 14 domain tests, 20 web tests, and 86 worker tests. The new worker contract proves a grounded question does not change the Source count and does persist the exact retrieval edge.
+- The 28-case production-browser suite passed after visual inspection and baseline reconciliation at 1200×800, 1024×768, and 390×844. It proves stable workbench context, citation opening to the exact locator, the composer, embedded voice capture, keyboard reachability, reduced motion, contrast, and 200% logical zoom.
+- `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. The 17-asset submission remains truthfully `partial`; `pnpm demo:film:verify` remains a draft with four evidence-blocked shots and no final video.
+
+### Decisions
+
+- Queries and Sources are different objects. WorkshopLM may use a question for retrieval, but it may not silently convert the question into evidence or stale downstream work.
+- This closes the durable local Conversation and embedded capture UI, not the live-provider contract. Responses streaming, OpenAI continuation IDs, spoken assistant output, interruption, and shared Realtime tool calls remain open.
+- No paid provider call ran in this increment.
+
+### Open items
+
+- Implement one shared typed Workshop tool registry and bind it to Responses and Realtime with the same approval, source-scope, stale-state, and privacy rules.
+- Upgrade Conversation to Responses streaming and Realtime speech-to-speech behavior, then live-verify one safe read tool, one visible write tool, interruption, and durable provider provenance after explicit request authorization.
+- Complete the contextual evidence/affected-work disclosure and collapsible rails.
+- Dogfood an external professional deck and obtain the cold `Send`/`Revise` decision before expanding output breadth.
+- Codex Session ID: unavailable on this surface; not inferred.

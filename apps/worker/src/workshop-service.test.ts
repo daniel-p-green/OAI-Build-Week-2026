@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { describe, expect, it } from "vitest";
-import { analyzeWebsiteStyle, applyMapOperation, applyStyleLibrary, applyWorkshopAction, approveSketch, approveVisualDna, assertStoryboardGrounding, beginWebsiteStyleAnalysis, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, dismissWorkshopOrientation, extractWorkshopCandidates, fetchWebsiteBrandAsset, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, ingestUrl, listStyleLibrary, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, markImagePanelFailed, normalizePdfLayoutText, readWorkshopState, recordGeneratedImagePanel, resolveWorkshopArtifact, runWebsiteStyleAnalysis, searchWorkshopSources, selectImagePanelForRegeneration, selectWorkshop, setActiveSourceScope, syncMapCanvas, undoMapOperation, updateStoryboardPanel, updateWorkshopOnboarding } from "./workshop-service.js";
+import { analyzeWebsiteStyle, applyMapOperation, applyStyleLibrary, applyWorkshopAction, approveSketch, approveVisualDna, assertStoryboardGrounding, beginWebsiteStyleAnalysis, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, dismissWorkshopOrientation, extractWorkshopCandidates, fetchWebsiteBrandAsset, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, ingestUrl, listStyleLibrary, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, markImagePanelFailed, normalizePdfLayoutText, readWorkshopState, recordGeneratedImagePanel, resolveWorkshopArtifact, runWebsiteStyleAnalysis, searchWorkshopSources, selectImagePanelForRegeneration, selectWorkshop, sendConversationMessage, setActiveSourceScope, syncMapCanvas, undoMapOperation, updateStoryboardPanel, updateWorkshopOnboarding } from "./workshop-service.js";
 describe("Workshop service", () => { it("persists brief/style/storyboard gates and blocks video until the storyboard is approved", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-service-")); expect(() => applyWorkshopAction("renderVideo", root)).toThrow(/storyboard/); const brief = applyWorkshopAction("approveBrief", root); expect(brief.frame).toMatchObject({ markdownPath: "generated/FRAME-v1.md", executablePath: "generated/FRAME-v1.json" }); expect(await readFile(join(root, brief.frame!.markdownPath), "utf8")).toContain("# FRAME.md"); expect(JSON.parse(await readFile(join(root, brief.frame!.executablePath), "utf8"))).toMatchObject({ frameVersion: 1, schemaVersion: 1, evidence: expect.any(Array) }); applyWorkshopAction("lockManualStyle", root); expect(applyWorkshopAction("approveStoryboard", root).storyboardApproved).toBe(true); expect(applyWorkshopAction("renderVideo", root).videoState).toBe("queued"); expect(readWorkshopState(root).briefApproved).toBe(true); await rm(root, { recursive: true, force: true }); });
 it("opens a genuinely fresh data root in durable onboarding and preserves outcome, name, and orientation state", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-onboarding-"));
@@ -119,6 +119,19 @@ it("turns realistic meeting notes into a six-idea grounded Map and a concise exe
   }
 });
 it("ships a BM25-searchable sanitized Workshop without an acceptance-only data-root override", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-seed-evidence-")); const state = readWorkshopState(root); expect(state.sourceChunks).toHaveLength(3); expect(state.claims).toHaveLength(5); expect(searchWorkshopSources("editable production system", root)[0]).toMatchObject({ sourceId: "source-design", locator: "Design · Map" }); const database = new DatabaseSync(join(root, "data", "workshoplm.sqlite")); expect((database.prepare("SELECT count(*) AS count FROM evidence_fts WHERE workshop_id=?").get(state.id) as { count: number }).count).toBe(3); database.close(); await rm(root, { recursive: true, force: true }); });
+it("persists a grounded Conversation without turning a question into a Source", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-conversation-"));
+  const before = readWorkshopState(root);
+  const state = sendConversationMessage("What supports the editable production system?", root);
+  expect(state.sources).toBe(before.sources);
+  expect(state.conversationTurns).toHaveLength(2);
+  expect(state.conversationTurns[0]).toMatchObject({ role: "user", input: "text", text: "What supports the editable production system?", evidence: [] });
+  expect(state.conversationTurns[1]).toMatchObject({ role: "assistant", input: "system", operation: { name: "source_search", status: "completed" } });
+  expect(state.conversationTurns[1]?.evidence[0]).toMatchObject({ sourceId: "source-design", chunkId: "chunk-seed-design", locator: "Design · Map" });
+  expect(state.conversationTurns[1]?.text).toContain("Evidence becomes an editable production system");
+  expect(() => sendConversationMessage("   ", root)).toThrow(/message first/);
+  await rm(root, { recursive: true, force: true });
+});
 it("preserves the requested source permission", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-permission-")); const state = await ingestSource({ title: "Private notes", origin: "Fixture", text: "Keep this source private.", permission: "private" }, root); expect(state.sourceItems.at(-1)?.permission).toBe("private"); await rm(root, { recursive: true, force: true }); });
 it("indexes readable website content instead of scripts and navigation", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-readable-web-"));

@@ -68,6 +68,26 @@ export const EvidenceLocator = z.object({
   nativeLocator: NativeLocator.optional(),
 }).strict();
 export type EvidenceLocator = z.infer<typeof EvidenceLocator>;
+export const ConversationEvidence = z.object({
+  sourceId: SourceId,
+  chunkId: ChunkId.optional(),
+  claimId: ClaimId.optional(),
+  locator: z.string().min(1),
+  snippet: z.string().min(1),
+  snippetHash: z.string().min(1),
+}).strict();
+export const ConversationTurn = z.object({
+  id: z.string().min(1),
+  workshopId: WorkshopId,
+  role: z.enum(["user", "assistant"]),
+  input: z.enum(["text", "voice", "system"]),
+  text: z.string().min(1).max(16_000),
+  createdAt: z.string().datetime(),
+  evidence: z.array(ConversationEvidence),
+  sourceId: SourceId.optional(),
+  operation: z.object({ name: z.enum(["source_search", "voice_capture"]), status: z.literal("completed") }).strict().optional(),
+}).strict();
+export type ConversationTurn = z.infer<typeof ConversationTurn>;
 
 export const Source = z.object({
   id: SourceId,

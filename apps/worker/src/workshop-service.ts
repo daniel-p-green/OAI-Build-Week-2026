@@ -7,7 +7,7 @@ import { dirname, basename, extname, isAbsolute, join, resolve } from "node:path
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { deflateSync } from "node:zlib";
-import { appendGraphOperation, GraphOperation, parseGraphState, SemanticGraph, serializeGraphState, undoLatestGraphOperation, type SemanticGraph as SemanticGraphType } from "@workshoplm/domain";
+import { appendGraphOperation, ConversationTurn, GraphOperation, parseGraphState, SemanticGraph, serializeGraphState, undoLatestGraphOperation, type ConversationTurn as DomainConversationTurn, type SemanticGraph as SemanticGraphType } from "@workshoplm/domain";
 import { writeRenderedArtifact } from "@workshoplm/production";
 import { storeArtifact } from "./artifacts/local-artifact-store.js";
 import { openLocalDatabase } from "./db/client.js";
@@ -21,6 +21,7 @@ export type WorkshopCandidate = { id: string; category: "goal" | "audience" | "c
 export type WorkshopMapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
 export type RealtimeCaptureEvidence = { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[] };
 export type WorkshopTranscriptSegment = { id: string; origin: "manual_import" | "realtime_fallback"; transport: "fixture" | "webrtc"; text: string; capturedAt: string; provider?: Omit<RealtimeCaptureEvidence, "transport"> };
+export type WorkshopConversationTurn = DomainConversationTurn;
 export type WorkshopMapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
 export type CanvasNodePatch = { id: string; title: string; x: number; y: number; width: number; height: number };
 export type WorkshopFrame = { version: number; markdown: string; markdownPath: string; executablePath: string; stale: boolean; approvedAt: string };
@@ -89,7 +90,7 @@ export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativ
 export type WorkshopBuildTraceRecord = { htmlPath: string; dataPath: string; htmlSha256: string; dataSha256: string; milestoneCount: number; commitCount: number; taskIds: string[] };
 export type WorkshopVideo = { id: string; version: number; storyboardVersion: number; styleVersion: number; visualDnaVersion?: number; imageBatchId?: string; relativePath: string; provenancePath: string; artifactPath: string; sha256: string; byteCount: number; claimIds: string[]; buildTrace: WorkshopBuildTraceRecord; stale: boolean; createdAt: string };
 export type RenderedVideoInput = Omit<WorkshopVideo, "id" | "version" | "stale" | "createdAt">;
-export type WorkshopState = { id: string; title: string; onboarding: WorkshopOnboarding; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
+export type WorkshopState = { id: string; title: string; onboarding: WorkshopOnboarding; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; conversationTurns: WorkshopConversationTurn[]; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
 export type WorkshopSummary = { id: string; title: string; sources: number; outputs: number; updatedAt: string; active: boolean };
 export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string; permission?: WorkshopSource["permission"] };
 const execFile = promisify(execFileCallback);
@@ -114,7 +115,7 @@ const defaultState = (id = defaultWorkshopId, title = defaultWorkshopTitle, seed
   { id: "source-raw", type: "TXT", title: "Raw voice brainstorm", origin: "ChatGPT task", claimCount: 5, excerpt: "The judge should be able to see the messy original thought become a cited map, a real brief, and a finished piece of work.", locator: "ChatGPT task · 12:41 · chunk 04", permission: "sanitized" },
   { id: "source-brief", type: "PDF", title: "Build Week brief", origin: "Local", claimCount: 3, excerpt: "One visible chain links capture, approved work, and finished delivery.", locator: "Build notes · §2", permission: "sanitized" },
   { id: "source-design", type: "WEB", title: "WorkshopLM direction", origin: "Local", claimCount: 2, excerpt: "Evidence first becomes an editable production system, not a static report.", locator: "Design · Map", permission: "sanitized" },
-] : [], activeSourceIds: seeded ? ["source-raw", "source-brief", "source-design"] : [], transcriptSegments: [], sourceChunks: seeded ? seedChunks : [], claims: seeded ? seedClaims : [], candidates: [], mapEdges: seeded ? [
+] : [], activeSourceIds: seeded ? ["source-raw", "source-brief", "source-design"] : [], transcriptSegments: [], conversationTurns: [], sourceChunks: seeded ? seedChunks : [], claims: seeded ? seedClaims : [], candidates: [], mapEdges: seeded ? [
   { id: "edge-promise-proof", from: "promise", to: "proof", kind: "supports" },
   { id: "edge-proof-visual", from: "proof", to: "visual", kind: "depends_on" },
   { id: "edge-proof-risk", from: "proof", to: "risk", kind: "depends_on" },
@@ -294,12 +295,12 @@ export function readWorkshopState(root?: string, requestedWorkshopId?: string): 
     const state = JSON.parse(row.state_json) as Partial<WorkshopState>;
     const fallback = defaultState(workshopId, state.title ?? (workshopId === defaultWorkshopId ? defaultWorkshopTitle : "Untitled Workshop"), workshopId === defaultWorkshopId && Boolean(state.sourceItems?.length));
     if (state.sourceItems && state.mapNodes && state.sourceChunks && state.claims) {
-      const normalized = withSeedEvidence({ ...fallback, ...state, id: workshopId, onboarding: state.onboarding ?? fallback.onboarding, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), style: state.style ? normalizeStyleMetadata({ ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" }) : undefined, storyboard: normalizeStoryboard(state.storyboard, fallback.storyboard), aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
+      const normalized = withSeedEvidence({ ...fallback, ...state, id: workshopId, onboarding: state.onboarding ?? fallback.onboarding, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], conversationTurns: state.conversationTurns ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), style: state.style ? normalizeStyleMetadata({ ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" }) : undefined, storyboard: normalizeStoryboard(state.storyboard, fallback.storyboard), aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
       if (normalized.sourceChunks !== state.sourceChunks) return write(normalized, root);
       ensureEvidenceIndex(db, normalized);
       return normalized;
     }
-    if (state.sourceItems && state.mapNodes) return write(withSeedEvidence({ ...fallback, ...state, id: workshopId, activeSourceIds: state.sourceItems.map((source) => source.id), transcriptSegments: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), storyboard: fallback.storyboard, aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [] } as WorkshopState), root);
+    if (state.sourceItems && state.mapNodes) return write(withSeedEvidence({ ...fallback, ...state, id: workshopId, activeSourceIds: state.sourceItems.map((source) => source.id), transcriptSegments: [], conversationTurns: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), storyboard: fallback.storyboard, aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [] } as WorkshopState), root);
     return write({ ...fallback, ...state, id: workshopId } as WorkshopState, root);
   }
   throw new Error(`Workshop not found: ${workshopId}.`);
@@ -539,6 +540,35 @@ export function searchWorkshopSources(query: string, root?: string): WorkshopChu
   const chunks = new Map(state.sourceChunks.map((chunk) => [`${chunk.sourceId}\u0000${chunk.id}`, chunk]));
   return rows.flatMap((row) => { const chunk = chunks.get(`${row.source_id}\u0000${row.chunk_id}`); return chunk ? [chunk] : []; });
 }
+type GroundedConversationReply = { text: string; evidence: Array<{ claimId?: string; sourceId: string; chunkId: string; locator: string; snippet: string; snippetHash: string }>; operation: { name: "source_search"; status: "completed" } };
+function groundedConversationReply(state: WorkshopState, query: string, root?: string): GroundedConversationReply {
+  const active = new Set(state.activeSourceIds);
+  const ranked = searchWorkshopSources(query, root).filter((chunk) => active.has(chunk.sourceId));
+  const chunks = (ranked.length ? ranked : state.sourceChunks.filter((chunk) => active.has(chunk.sourceId))).slice(0, 3);
+  const evidence = chunks.map((chunk) => {
+    const claim = state.claims.find((candidate) => candidate.sourceId === chunk.sourceId && candidate.chunkId === chunk.id);
+    return { claimId: claim?.id, sourceId: chunk.sourceId, chunkId: chunk.id, locator: chunk.locator, snippet: chunk.text, snippetHash: createHash("sha256").update(chunk.text).digest("hex") };
+  });
+  if (!chunks.length) return { text: "Add or select a Source first. I’ll answer from that material and keep every factual point linked to its evidence.", evidence: [], operation: { name: "source_search", status: "completed" } };
+  const points = chunks.flatMap((chunk) => state.claims.filter((claim) => claim.sourceId === chunk.sourceId && claim.chunkId === chunk.id).slice(0, 1)).map((claim) => prose(claim.text)).filter(Boolean);
+  const fallbackPoints = chunks.map((chunk) => prose(chunk.text.split(/[.!?]+/)[0] ?? chunk.text)).filter(Boolean);
+  const supported = (points.length ? points : fallbackPoints).slice(0, 3).map((point) => /[.!?]$/.test(point) ? point : `${point}.`).join(" ");
+  return { text: `Your selected Sources support this: ${supported}`, evidence, operation: { name: "source_search", status: "completed" } };
+}
+export function sendConversationMessage(text: string, root?: string): WorkshopState {
+  const normalized = normalizeSourceText(text);
+  if (!normalized) throw new Error("Write a message first.");
+  if (normalized.length > 4_000) throw new Error("Conversation messages are limited to 4,000 characters.");
+  const current = readWorkshopState(root);
+  const createdAt = new Date().toISOString();
+  const reply = groundedConversationReply(current, normalized, root);
+  const digest = createHash("sha256").update(`${createdAt}\n${normalized}`).digest("hex").slice(0, 12);
+  const turns: WorkshopConversationTurn[] = [
+    ConversationTurn.parse({ id: `turn-user-${digest}`, workshopId: current.id, role: "user", text: normalized, input: "text", createdAt, evidence: [] }),
+    ConversationTurn.parse({ id: `turn-assistant-${digest}`, workshopId: current.id, role: "assistant", text: reply.text, input: "system", createdAt, evidence: reply.evidence, operation: reply.operation }),
+  ];
+  return write({ ...current, conversationTurns: [...current.conversationTurns, ...turns], updatedAt: createdAt }, root);
+}
 export async function ingestSource(input: SourceIngestion, root?: string): Promise<WorkshopState> {
   const text = normalizeSourceText(input.text);
   if (!text) throw new Error("Source text is required.");
@@ -596,8 +626,15 @@ export async function captureFallbackTranscript(text: string, root?: string, evi
   const normalized = normalizeSourceText(text); if (!normalized) throw new Error("Capture text is required."); const capturedAt = new Date().toISOString();
   const ingested = await ingestSource({ title: `Capture-only transcript ${capturedAt}`, origin: "gpt-realtime-2.1 capture-only fallback", type: "TXT", text: normalized, permission: "private" }, root);
   if (evidence && (!evidence.itemIds.length || !evidence.eventIds.length || evidence.itemIds.some((value) => !value.trim()) || evidence.eventIds.some((value) => !value.trim()))) throw new Error("Realtime capture evidence requires provider item and event IDs.");
-  const segment: WorkshopTranscriptSegment = { id: `fallback-${createHash("sha256").update(`${capturedAt}\n${normalized}`).digest("hex").slice(0, 12)}`, origin: "realtime_fallback", transport: evidence?.transport ?? "fixture", text: normalized, capturedAt, provider: evidence ? { model: evidence.model, transcriptionModel: evidence.transcriptionModel, itemIds: [...new Set(evidence.itemIds)], eventIds: [...new Set(evidence.eventIds)] } : undefined };
-  return write({ ...ingested, transcriptSegments: [...ingested.transcriptSegments, segment], firstTranscriptAt: ingested.firstTranscriptAt ?? capturedAt, updatedAt: capturedAt }, root);
+  const digest = createHash("sha256").update(`${capturedAt}\n${normalized}`).digest("hex").slice(0, 12);
+  const segment: WorkshopTranscriptSegment = { id: `fallback-${digest}`, origin: "realtime_fallback", transport: evidence?.transport ?? "fixture", text: normalized, capturedAt, provider: evidence ? { model: evidence.model, transcriptionModel: evidence.transcriptionModel, itemIds: [...new Set(evidence.itemIds)], eventIds: [...new Set(evidence.eventIds)] } : undefined };
+  const source = ingested.sourceItems.at(-1);
+  const reply = groundedConversationReply(ingested, normalized, root);
+  const turns: WorkshopConversationTurn[] = [
+    ConversationTurn.parse({ id: `turn-user-${digest}`, workshopId: ingested.id, role: "user", text: normalized, input: "voice", createdAt: capturedAt, evidence: [], sourceId: source?.id, operation: { name: "voice_capture", status: "completed" } }),
+    ConversationTurn.parse({ id: `turn-assistant-${digest}`, workshopId: ingested.id, role: "assistant", text: reply.text, input: "system", createdAt: capturedAt, evidence: reply.evidence, operation: reply.operation }),
+  ];
+  return write({ ...ingested, transcriptSegments: [...ingested.transcriptSegments, segment], conversationTurns: [...ingested.conversationTurns, ...turns], firstTranscriptAt: ingested.firstTranscriptAt ?? capturedAt, updatedAt: capturedAt }, root);
 }
 function isPrivateAddress(address: string) { return address === "::1" || address.startsWith("127.") || address.startsWith("10.") || address.startsWith("192.168.") || /^172\.(1[6-9]|2\d|3[0-1])\./.test(address) || address.startsWith("fc") || address.startsWith("fd") || address.startsWith("fe80:"); }
 async function fetchPublicResponse(rawUrl: string, accept: string, fetchImpl: typeof fetch = fetch) {

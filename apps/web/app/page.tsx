@@ -8,6 +8,7 @@ import {
   CarouselRow,
   Checkbox,
   CloseIcon,
+  ConversationSurface,
   EntityCardAction,
   FileIcon,
   FullScreenShell,
@@ -32,12 +33,13 @@ import { ExcalidrawMap } from "./excalidraw-map";
 import { claimsForArtifact } from "./artifact-evidence";
 import { sourceInputKind, sourceTitleFromText } from "./source-input";
 
-type ObjectView = "map" | "brief" | "outputs" | "storyboard" | "output";
+type ObjectView = "conversation" | "map" | "brief" | "outputs" | "storyboard" | "output";
 type Sheet = "workshops" | "sources" | "evidence" | "add-source" | "style" | "original" | "help" | null;
 type WorkshopSummary = { id: string; title: string; sources: number; outputs: number; updatedAt: string; active: boolean };
 type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string; permission: "private" | "sanitized" | "shareable" };
 type EvidenceTarget = { sourceId?: string; claimId?: string; locator?: string };
 type EvidenceSelection = { excerpt: string; locator: string };
+type ConversationTurn = { id: string; role: "user" | "assistant"; text: string; input: "text" | "voice" | "system"; createdAt: string; evidence: { claimId?: string; sourceId: string; chunkId?: string; locator: string }[]; sourceId?: string; operation?: { name: "source_search" | "voice_capture"; status: "completed" } };
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
 type MapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
 type FontAvailability = "system" | "user_confirmed" | "unverified";
@@ -56,6 +58,7 @@ type PersistedWorkshop = {
   storyboardApproved: boolean;
   videoState: "blocked" | "queued" | "rendering" | "rendered";
   transcriptSegments?: { id: string; origin: "chatgpt" | "realtime_fallback"; transport: "fixture" | "webrtc"; text: string; capturedAt: string }[];
+  conversationTurns?: ConversationTurn[];
   firstTranscriptAt?: string;
   firstRenderedOutputAt?: string;
   sourceItems: SourceItem[];
@@ -73,7 +76,7 @@ type PersistedWorkshop = {
   videos: { id: string; version: number; storyboardVersion: number; styleVersion: number; relativePath: string; provenancePath: string; artifactPath: string; claimIds: string[]; buildTrace?: { htmlPath: string; dataPath: string; htmlSha256: string; dataSha256: string; milestoneCount: number; commitCount: number; taskIds: string[] }; stale: boolean; createdAt: string }[];
 };
 
-const VIEW_TITLES: Record<ObjectView, string> = { map: "Map", brief: "Brief", outputs: "Outputs", storyboard: "Storyboard", output: "Output" };
+const VIEW_TITLES: Record<ObjectView, string> = { conversation: "Conversation", map: "Map", brief: "Brief", outputs: "Outputs", storyboard: "Storyboard", output: "Output" };
 const outputTitle = (type: "deck" | "infographic") => type === "deck" ? "Presentation" : "Infographic";
 const outputType = (type: "deck" | "infographic") => type === "deck" ? "Presentation" : "Infographic";
 
@@ -278,7 +281,7 @@ export default function WorkshopPage() {
     ? outputSourceCount(selectedOutput, state)
     : sourceCount;
   const currentTitle = view === "output" ? (selectedOutput ? outputTitle(selectedOutput.type) : selectedOutputId === "images" ? "Image set" : "Demo video") : VIEW_TITLES[view];
-  const backTarget: ObjectView | null = view === "map" ? null : view === "brief" ? "map" : view === "outputs" ? "brief" : "outputs";
+  const backTarget: ObjectView | null = view === "conversation" || view === "map" ? null : view === "brief" ? "map" : view === "outputs" ? "brief" : "outputs";
   const workflowAction = !state?.mapNodes.length
     ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => openSheet("add-source")}>Add source</Button>
     : !state.briefApproved || state.frame?.stale
@@ -312,18 +315,19 @@ export default function WorkshopPage() {
       {notice && <Card className={`notice notice--${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}><span>{notice.message}</span><IconButton label="Dismiss" onClick={() => setNotice(null)}><CloseIcon /></IconButton></Card>}
 
       <Workbench className="workbench">
-        {loadState === "ready" && <SourcesRail sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => openSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
-        {loadState === "ready" && <ObjectSwitcher className="mobile-object-switcher" aria-label="Workshop objects"><Button variant="secondary" size="small" aria-pressed={view === "map"} onClick={() => openView("map")}>Map</Button><Button variant="secondary" size="small" aria-label="View brief" aria-pressed={view === "brief"} disabled={!state?.briefApproved} onClick={() => openView("brief")}>Brief</Button><Button variant="secondary" size="small" aria-label="View outputs" aria-pressed={view === "outputs" || view === "output"} disabled={!(state?.outputs.length || state?.imageBatch)} onClick={() => openView("outputs")}>Outputs</Button><Button variant="secondary" size="small" aria-label="View storyboard" aria-pressed={view === "storyboard"} disabled={!state?.storyboard.panels.length} onClick={() => openView("storyboard")}>Story</Button></ObjectSwitcher>}
+        {loadState === "ready" && <SourcesRail sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} conversationActive={view === "conversation"} onConversation={() => openView("conversation")} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => openSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
+        {loadState === "ready" && <ObjectSwitcher className="mobile-object-switcher" aria-label="Workshop objects"><Button variant="secondary" size="small" aria-pressed={view === "conversation"} onClick={() => openView("conversation")}>Chat</Button><Button variant="secondary" size="small" aria-pressed={view === "map"} onClick={() => openView("map")}>Map</Button><Button variant="secondary" size="small" aria-label="View brief" aria-pressed={view === "brief"} disabled={!state?.briefApproved} onClick={() => openView("brief")}>Brief</Button><Button variant="secondary" size="small" aria-label="View outputs" aria-pressed={view === "outputs" || view === "output"} disabled={!(state?.outputs.length || state?.imageBatch)} onClick={() => openView("outputs")}>Outputs</Button><Button variant="secondary" size="small" aria-label="View storyboard" aria-pressed={view === "storyboard"} disabled={!state?.storyboard.panels.length} onClick={() => openView("storyboard")}>Story</Button></ObjectSwitcher>}
         <section className="object-canvas" aria-label={currentTitle}>
           {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
           {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
+          {loadState === "ready" && view === "conversation" && <ConversationView state={state} busy={busy} onSend={async (text) => Boolean(await post({ action: "sendConversationMessage", text }))} onVoiceSave={async (text, capture) => Boolean(await post({ action: "captureFallbackTranscript", text, capture }))} onShowSource={showSource} />}
           {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "map" }); }} onReviewStyle={() => openSheet("style")} onRetryStyle={(url) => { void post({ action: "beginWebsiteStyleAnalysis", url }); }} onUseDefaultStyle={() => { void post({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: state?.onboarding.outcome } }); }} />}
           {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
           {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
           {loadState === "ready" && view === "storyboard" && <StoryboardView storyboard={state?.storyboard} imageBatch={state?.imageBatch} approved={Boolean(state?.storyboardApproved)} panel={selectedPanel} busy={busy} onSelect={setSelectedPanelId} onPost={post} onShowSource={showSource} />}
           {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} busy={busy} onShowSource={showSource} onShowOriginal={() => openSheet("original")} onRequestReplacement={async (panelId) => { const next = await post({ action: "regenerateImagePanel", panelId }); if (next) setNotice({ message: "Replacement requested. Review the new image in Storyboard before approving Video.", tone: "status" }); }} />}
         </section>
-        {loadState === "ready" && <ProductionRail state={state} view={view} action={workflowAction} onOpenView={openView} onOpenOutput={openOutput} onOpenStyle={() => openSheet("style")} onAddSource={() => openSheet("add-source")} />}
+        {loadState === "ready" && <ProductionRail state={state} view={view} action={workflowAction} onOpenView={openView} onOpenOutput={openOutput} onOpenStyle={() => openSheet("style")} />}
       </Workbench>
 
       {sheet === "workshops" && <WorkshopsSheet workshops={workshops} busy={busy} onClose={closeSheet} onSelect={(workshopId) => { void post({ action: "selectWorkshop", workshopId }); }} onCreate={(title) => post({ action: "createWorkshop", title }).then(Boolean)} onHelp={() => setSheet("help")} />}
@@ -608,10 +612,45 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   </SideSheet>;
 }
 
-function SourcesRail({ sources, activeIds, selected, onSelect, onToggle, onAdd, onShowMap }: { sources: SourceItem[]; activeIds: string[]; selected: SourceItem | null; onSelect: (source: SourceItem) => void; onToggle: (id: string) => void; onAdd: () => void; onShowMap: (source: SourceItem) => void }) {
+function ConversationView({ state, busy, onSend, onVoiceSave, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[] }) => Promise<boolean>; onShowSource: (target?: EvidenceTarget) => void }) {
+  const [draft, setDraft] = useState("");
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  const endRef = useRef<HTMLDivElement | null>(null);
+  const turns = state?.conversationTurns ?? [];
+  useEffect(() => { endRef.current?.scrollIntoView({ block: "end" }); }, [turns.length]);
+
+  async function send() {
+    const text = draft.trim();
+    if (!text || busy) return;
+    if (await onSend(text)) setDraft("");
+  }
+
+  return <ConversationSurface className="conversation-view" aria-label="WorkshopLM Conversation">
+    <header className="conversation-heading"><div><h1>Work with your sources</h1><p>{state?.activeSourceIds.length ?? 0} selected · answers stay linked to evidence</p></div></header>
+    <div className="conversation-thread" aria-live="polite">
+      {!turns.length && <div className="conversation-empty"><h2>What should we make clear?</h2><p>Ask a question across the selected Sources. Voice capture adds your spoken thought as a private Source before WorkshopLM responds.</p><div className="conversation-prompts"><Button variant="secondary" size="small" onClick={() => setDraft("What is the strongest recommendation in these sources?")}>Find the recommendation</Button><Button variant="secondary" size="small" onClick={() => setDraft("What evidence should lead the presentation?")}>Find the lead evidence</Button></div></div>}
+      {turns.map((turn) => <article className={`conversation-turn conversation-turn--${turn.role}`} key={turn.id}>
+        <small>{turn.role === "assistant" ? "WorkshopLM" : "You"}{turn.input === "voice" ? " · Voice" : ""}</small>
+        <p>{turn.text}</p>
+        {turn.evidence.length > 0 && <div className="conversation-citations" aria-label="Sources used">{turn.evidence.map((evidence, index) => { const source = state?.sourceItems.find((item) => item.id === evidence.sourceId); return <Token key={`${turn.id}-${evidence.chunkId ?? index}`} onClick={() => onShowSource(evidence)}>{source?.title ?? `Source ${index + 1}`}</Token>; })}</div>}
+      </article>)}
+      <div ref={endRef} />
+    </div>
+    <div className="conversation-compose">
+      {voiceOpen && <RealtimeCapture disabled={busy} onSave={async (text, capture) => { const saved = await onVoiceSave(text, capture); if (saved) setVoiceOpen(false); return saved; }} />}
+      <form className="conversation-composer" onSubmit={(event) => { event.preventDefault(); void send(); }}>
+        <TextArea aria-label="Message WorkshopLM" placeholder="Ask about the selected Sources…" value={draft} maxLength={4000} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); void send(); } }} />
+        <div className="conversation-actions"><Button type="button" variant="secondary" aria-expanded={voiceOpen} onClick={() => setVoiceOpen((current) => !current)}>{voiceOpen ? "Close voice" : "Voice"}</Button><Button type="submit" disabled={busy || !draft.trim()}>{busy ? "Working…" : "Send"}</Button></div>
+      </form>
+    </div>
+  </ConversationSurface>;
+}
+
+function SourcesRail({ sources, activeIds, selected, conversationActive, onConversation, onSelect, onToggle, onAdd, onShowMap }: { sources: SourceItem[]; activeIds: string[]; selected: SourceItem | null; conversationActive: boolean; onConversation: () => void; onSelect: (source: SourceItem) => void; onToggle: (id: string) => void; onAdd: () => void; onShowMap: (source: SourceItem) => void }) {
   const active = selected ?? sources[0];
   return <WorkbenchRail side="left" className="sources-rail" aria-label="Sources">
     <header className="rail-heading"><div><strong>Sources</strong><small>{activeIds.length} of {sources.length} selected</small></div><IconButton label="Add material" onClick={onAdd}><PlusIcon /></IconButton></header>
+    <ListRow className={`conversation-entry ${conversationActive ? "selected" : ""}`}><ListRowAction aria-current={conversationActive ? "page" : undefined} onClick={onConversation}><span><strong>Conversation</strong><small>Ask across selected Sources</small></span></ListRowAction></ListRow>
     {sources.length ? <ListGroup className="rail-source-list">{sources.map((source) => <ListRow className={active?.id === source.id ? "source-row selected" : "source-row"} key={source.id}><Checkbox aria-label={`Use ${source.title}`} checked={activeIds.includes(source.id)} onChange={() => onToggle(source.id)} /><ListRowAction onClick={() => onSelect(source)}><FileIcon label={source.type} /><span><strong>{source.title}</strong><small>{source.claimCount} claims</small></span></ListRowAction></ListRow>)}</ListGroup> : <p className="rail-empty">Add a meeting, document, or conversation.</p>}
     {active && <section className="rail-source-preview" aria-label={`Selected source: ${active.title}`}><strong>{active.title}</strong><p>“{active.excerpt}”</p><small>{active.locator}</small><Button variant="secondary" size="small" onClick={() => onShowMap(active)}>Show on map</Button></section>}
   </WorkbenchRail>;
@@ -622,7 +661,7 @@ function ProductionItem({ title, detail, status, tone = "waiting", onClick, aria
   return <ListRow className="production-item">{onClick ? <ListRowAction aria-label={ariaLabel} onClick={onClick}>{content}</ListRowAction> : <div className="production-item-static">{content}</div>}</ListRow>;
 }
 
-function ProductionRail({ state, view, action, onOpenView, onOpenOutput, onOpenStyle, onAddSource }: { state: PersistedWorkshop | null; view: ObjectView; action: ReactNode; onOpenView: (view: ObjectView) => void; onOpenOutput: (id: string) => void; onOpenStyle: () => void; onAddSource: () => void }) {
+function ProductionRail({ state, view, action, onOpenView, onOpenOutput, onOpenStyle }: { state: PersistedWorkshop | null; view: ObjectView; action: ReactNode; onOpenView: (view: ObjectView) => void; onOpenOutput: (id: string) => void; onOpenStyle: () => void }) {
   const latest = (type: "deck" | "infographic") => [...(state?.outputs ?? [])].reverse().find((output) => output.type === type);
   const deck = latest("deck");
   const infographic = latest("infographic");
@@ -637,7 +676,7 @@ function ProductionRail({ state, view, action, onOpenView, onOpenOutput, onOpenS
   return <WorkbenchRail side="right" className="production-rail" aria-label="Production">
     <header className="rail-heading"><div><strong>Production</strong><small>From thinking to finished work</small></div></header>
     <section className="stage-progress" aria-label="Workshop progress">
-      <ListRowAction aria-current={view === "map" ? "step" : undefined} onClick={onAddSource}><span><strong>Capture</strong><small>{state?.activeSourceIds.length ?? 0} active sources</small></span><Status tone={(state?.activeSourceIds.length ?? 0) > 0 ? "current" : "waiting"}>{(state?.activeSourceIds.length ?? 0) > 0 ? "Ready" : "Start"}</Status></ListRowAction>
+      <ListRowAction aria-current={view === "conversation" ? "step" : undefined} onClick={() => onOpenView("conversation")}><span><strong>Capture</strong><small>{state?.activeSourceIds.length ?? 0} active sources</small></span><Status tone={(state?.activeSourceIds.length ?? 0) > 0 ? "current" : "waiting"}>{(state?.activeSourceIds.length ?? 0) > 0 ? "Ready" : "Start"}</Status></ListRowAction>
       <ListRowAction aria-current={view === "map" || view === "brief" ? "step" : undefined} onClick={() => onOpenView(briefReady ? "brief" : "map")}><span><strong>Shape</strong><small>Map and Brief</small></span><Status tone={briefReady ? "current" : "waiting"}>{briefReady ? "Approved" : "Needs review"}</Status></ListRowAction>
       <ListRowAction aria-label={hasOutputs ? "View outputs" : "Open Deliver"} aria-current={view === "outputs" || view === "storyboard" || view === "output" ? "step" : undefined} onClick={() => onOpenView(hasOutputs ? "outputs" : "brief")}><span><strong>Deliver</strong><small>Style and Outputs</small></span><Status tone={hasOutputs && !outputSetStatus(state).actionRequired ? "current" : "waiting"}>{deliverStatus}</Status></ListRowAction>
     </section>

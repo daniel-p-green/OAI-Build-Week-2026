@@ -92,7 +92,7 @@ export function RealtimeCapture({ disabled = false, onSave }: { disabled?: boole
 
   const transcriptError = transcript.error || error;
   return <Card className="realtime-capture" aria-label="Record voice">
-    <div className="realtime-capture-copy"><h3>Record voice</h3><p>Capture a quick thought. It becomes a private Source, not a new chat.</p></div>
+    <div className="realtime-capture-copy"><h3>Record voice</h3><p>Your spoken thought becomes a private Source and stays in this Conversation.</p></div>
     <div className="realtime-capture-status" aria-live="polite">
       {phase === "connecting" && <p>Connecting to voice…</p>}
       {phase === "recording" && <p><span className="recording-dot" aria-hidden="true" /> Listening</p>}

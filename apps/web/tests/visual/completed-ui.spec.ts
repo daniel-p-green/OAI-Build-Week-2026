@@ -49,7 +49,7 @@ async function selectProductPromise(page: Page, viewport: typeof viewports[numbe
   await page.mouse.click(map.x + 407, map.y + 136);
 }
 
-async function pressTabUntil(page: Page, label: string, limit = 30) {
+async function pressTabUntil(page: Page, label: string, limit = 40) {
   for (let index = 0; index < limit; index += 1) {
     await page.keyboard.press("Tab");
     const active = await page.evaluate(() => ({
@@ -133,6 +133,42 @@ test("voice capture is bounded inside Add source and fails closed without live o
   await expect(page.locator(".capture-error")).toContainText("Live OpenAI capture is disabled");
   await expect(page.getByRole("dialog", { name: "Add source" })).toBeVisible();
   await expect(page.getByRole("textbox", { name: "Source" })).toBeVisible();
+});
+
+test("grounded Conversation preserves source scope, citations, and responsive workbench context", async ({ page }) => {
+  const ready = await (await page.request.get("/api/workshop")).json();
+  const claim = ready.claims.find((item: { sourceId: string }) => item.sourceId === "source-design") ?? ready.claims[0];
+  const source = ready.sourceItems.find((item: { id: string }) => item.id === claim.sourceId);
+  const conversation = { ...ready, conversationTurns: [
+    { id: "turn-user-review", role: "user", text: "What should lead the presentation?", input: "text", createdAt: "2026-07-15T20:20:00.000Z", evidence: [] },
+    { id: "turn-assistant-review", role: "assistant", text: `Your selected Sources support this: ${claim.text}.`, input: "system", createdAt: "2026-07-15T20:20:00.000Z", evidence: [{ claimId: claim.id, sourceId: claim.sourceId, chunkId: claim.chunkId, locator: claim.locator }], operation: { name: "source_search", status: "completed" } },
+  ] };
+  await page.route("**/api/workshop", async (route) => route.request().method() === "GET" ? route.fulfill({ json: conversation }) : route.fulfill({ json: conversation }));
+
+  for (const viewport of viewports) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto("/");
+    if (viewport.width > 900) await page.getByRole("complementary", { name: "Sources" }).getByRole("button", { name: "Conversation" }).click();
+    else await page.getByRole("button", { name: "Chat" }).click();
+    const surface = page.getByRole("region", { name: "WorkshopLM Conversation" });
+    await expect(surface).toBeVisible();
+    await expect(surface.getByText("What should lead the presentation?")).toBeVisible();
+    await expect(surface.getByRole("button", { name: source.title })).toBeVisible();
+    await expect(surface.getByRole("textbox", { name: "Message WorkshopLM" })).toBeVisible();
+    if (viewport.width > 900) {
+      await expect(page.getByRole("complementary", { name: "Sources" })).toBeVisible();
+      await expect(page.getByRole("complementary", { name: "Production" })).toBeVisible();
+    }
+    await expect(surface).toHaveScreenshot(`${viewport.name}-conversation.png`, { animations: "disabled", caret: "hide", maxDiffPixelRatio: viewport.name === "mobile" ? 0.004 : 0.001 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
+    await surface.getByRole("button", { name: source.title }).click();
+    await expect(page.getByRole("dialog", { name: "Source" })).toContainText(claim.locator);
+    await closeDialog(page, "Source");
+    await surface.getByRole("button", { name: "Voice" }).click();
+    await expect(surface.getByRole("button", { name: "Record voice" })).toBeVisible();
+    await expect(surface.getByText("Your spoken thought becomes a private Source and stays in this Conversation.")).toBeVisible();
+    await surface.getByRole("button", { name: "Close voice" }).click();
+  }
 });
 
 test("dismissed guidance remains quietly available from the Workshop sheet", async ({ page }) => {

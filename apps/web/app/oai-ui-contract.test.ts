@@ -14,7 +14,7 @@ const design = readFileSync(resolve(root, "DESIGN.md"), "utf8");
 describe("official Apps in ChatGPT UI implementation", () => {
   it("pins every reusable shell family to the inspected Figma inventory", () => {
     for (const id of Object.values(OAI_UI_COMPONENTS)) expect(inventory).toContain(`\`${id}\``);
-    for (const component of ["FullScreenShell", "NavigationHeader", "Workbench", "WorkbenchRail", "ObjectSwitcher", "Button", "ButtonLink", "IconButton", "Token", "Checkbox", "Input", "TextArea", "Card", "ListGroup", "ListRow", "ListRowAction", "EntityCard", "EntityCardAction", "Carousel", "CarouselRow", "SideSheet", "StateMessage"]) {
+    for (const component of ["FullScreenShell", "NavigationHeader", "Workbench", "WorkbenchRail", "ObjectSwitcher", "ConversationSurface", "Button", "ButtonLink", "IconButton", "Token", "Checkbox", "Input", "TextArea", "Card", "ListGroup", "ListRow", "ListRowAction", "EntityCard", "EntityCardAction", "Carousel", "CarouselRow", "SideSheet", "StateMessage"]) {
       expect(ui).toContain(`function ${component}`);
     }
     for (const ids of Object.values(OAI_UI_COMPOSITES)) for (const id of ids) expect(inventory).toContain(`\`${id}\``);
@@ -68,6 +68,7 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(page).toContain('<WorkbenchRail side="left" className="sources-rail" aria-label="Sources"');
     expect(page).toContain('<WorkbenchRail side="right" className="production-rail" aria-label="Production"');
     expect(page).toContain('<ObjectSwitcher className="mobile-object-switcher" aria-label="Workshop objects"');
+    expect(page).toContain('<ConversationSurface className="conversation-view" aria-label="WorkshopLM Conversation"');
     expect(page).toContain('className="next-action" aria-label="Next action"');
     expect(page).toContain('className="stage-progress" aria-label="Workshop progress"');
     expect(appCss).toContain("grid-template-columns: 220px minmax(0, 1fr) 252px");
