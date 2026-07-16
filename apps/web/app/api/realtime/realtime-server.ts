@@ -7,17 +7,19 @@ export const REALTIME_CLIENT_SECRET_URL = "https://api.openai.com/v1/realtime/cl
 
 export type RealtimeMode = "capture" | "conversation";
 export type RealtimeClientSecret = { value: string; expiresAt: number; model: typeof REALTIME_MODEL; transcriptionModel: typeof TRANSCRIPTION_MODEL; mode: RealtimeMode };
-export type RealtimeServerConfig = { apiKey?: string; liveEnabled: boolean; safetySeed?: string; mode?: RealtimeMode };
+export type RealtimeWorkshopContext = { workshopId: string; mapVersion: string; storyboardVersion: string; activeSourceIds: string[]; briefApproved: boolean; storyboardApproved: boolean };
+export type RealtimeServerConfig = { apiKey?: string; liveEnabled: boolean; safetySeed?: string; mode?: RealtimeMode; workshopContext?: RealtimeWorkshopContext };
 
-export function realtimeSessionConfig(mode: RealtimeMode = "capture") {
+export function realtimeSessionConfig(mode: RealtimeMode = "capture", workshopContext?: RealtimeWorkshopContext) {
   const conversation = mode === "conversation";
+  const context = workshopContext ? ` Current exact tool context: ${JSON.stringify(workshopContext)}. Use these IDs and versions verbatim for tool arguments; never invent or expose them to the user.` : "";
   return {
     session: {
       type: "realtime",
       model: REALTIME_MODEL,
       output_modalities: conversation ? ["audio"] : ["text"],
       instructions: conversation
-        ? "You are WorkshopLM for professional work. Collaborate naturally and concisely. Before answering any factual question about the Workshop, always call search or fetch and ground the answer in the returned selected-Source evidence. Do not narrate that you are about to search. Explain any proposed write and wait for the visible professional confirmation; never claim a write succeeded from a rejected tool result."
+        ? `You are WorkshopLM for professional work. Collaborate naturally and concisely. Before answering any factual question about the Workshop, always call search or fetch and ground the answer in the returned selected-Source evidence. Do not narrate that you are about to search. When the user asks to change the Workshop, call the appropriate write tool exactly once with the current context; the local product will pause it for visible confirmation. Do not repeat the call while confirmation is pending, and never claim a write succeeded from a rejected tool result.${context}`
         : "Capture the user's spoken brainstorm accurately. Do not respond. The transcript will become a private Workshop source.",
       tools: openAiWorkshopTools("realtime"),
       tool_choice: conversation ? "auto" : "none",
@@ -41,7 +43,7 @@ export async function createRealtimeClientSecret(config: RealtimeServerConfig, f
   const response = await fetchImpl(REALTIME_CLIENT_SECRET_URL, {
     method: "POST",
     headers: { Authorization: `Bearer ${config.apiKey}`, "Content-Type": "application/json", "OpenAI-Safety-Identifier": safetyIdentifier },
-    body: JSON.stringify(realtimeSessionConfig(mode)),
+    body: JSON.stringify(realtimeSessionConfig(mode, config.workshopContext)),
   });
   if (!response.ok) throw new Error(`Realtime client secret request failed (${response.status}).`);
   const raw = await response.json() as { value?: unknown; expires_at?: unknown };

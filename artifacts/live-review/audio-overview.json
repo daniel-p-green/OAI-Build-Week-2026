@@ -1,0 +1,68 @@
+{
+  "verifiedAt": "2026-07-16T07:51:06.122Z",
+  "id": "audio-overview-v1",
+  "title": "WorkshopLM Build Week briefing",
+  "script": "Briefing: WorkshopLM Build Week.\n\nThe central finding is this: WorkshopLM turns messy meetings into a deck professionals can defend, with grounded source documents and brand rules preserving their standards\n\nThe evidence adds an important point: Producing a client-ready deliverable is slow and fragmented, because understanding, design, and production live in disconnected tools\n\nThe practical decision is how to act on this: Every factual claim retains an exact source locator, so evidence stays inspectable from the editable Map through the final presentation and Storyboard",
+  "sections": [
+    {
+      "id": "audio-section-1",
+      "title": "Executive summary",
+      "text": "The central finding is this: WorkshopLM turns messy meetings into a deck professionals can defend, with grounded source documents and brand rules preserving their standards",
+      "evidence": [
+        {
+          "claimId": "claim-2026259e182a-0-1",
+          "sourceId": "source-2026259e182a",
+          "chunkId": "chunk-2026259e182a-1",
+          "locator": "Sanitized fixture · chunk 01"
+        }
+      ],
+      "edited": false
+    },
+    {
+      "id": "audio-section-2",
+      "title": "What the evidence shows",
+      "text": "The evidence adds an important point: Producing a client-ready deliverable is slow and fragmented, because understanding, design, and production live in disconnected tools",
+      "evidence": [
+        {
+          "claimId": "claim-2026259e182a-1-1",
+          "sourceId": "source-2026259e182a",
+          "chunkId": "chunk-2026259e182a-2",
+          "locator": "Sanitized fixture · chunk 02"
+        }
+      ],
+      "edited": false
+    },
+    {
+      "id": "audio-section-3",
+      "title": "Decision review",
+      "text": "The practical decision is how to act on this: Every factual claim retains an exact source locator, so evidence stays inspectable from the editable Map through the final presentation and Storyboard",
+      "evidence": [
+        {
+          "claimId": "claim-2026259e182a-2-1",
+          "sourceId": "source-2026259e182a",
+          "chunkId": "chunk-2026259e182a-3",
+          "locator": "Sanitized fixture · chunk 03"
+        }
+      ],
+      "edited": false
+    }
+  ],
+  "claimIds": [
+    "claim-2026259e182a-0-1",
+    "claim-2026259e182a-1-1",
+    "claim-2026259e182a-2-1"
+  ],
+  "disclosure": "AI-generated voice",
+  "audio": {
+    "relativePath": "generated/audio-overviews/audio-overview-v1.wav",
+    "sha256": "4929d08428849a07771f6264836389c1fb126ce75e80b99fa8a40d099f843a96",
+    "byteCount": 1713644,
+    "durationSeconds": 35.7,
+    "model": "gpt-4o-mini-tts",
+    "voice": "cedar",
+    "instructions": "Speak with calm authority at a brisk presentation pace. Preserve source names and technical terms exactly.",
+    "requestId": "req_65133c0f98074ce6a7dfff9220fc2e50",
+    "generatedAt": "2026-07-16T07:51:05.764Z"
+  },
+  "downloadedSha256": "4929d08428849a07771f6264836389c1fb126ce75e80b99fa8a40d099f843a96"
+}

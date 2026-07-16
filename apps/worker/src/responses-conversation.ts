@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { openAiWorkshopTools } from "@workshoplm/domain";
 import { handleWorkshopProviderToolEvent } from "./provider-tool-events.js";
 import { beginProviderConversation, completeProviderConversation, readWorkshopState, type WorkshopState } from "./workshop-service.js";
+import { workshopToolContext } from "./workshop-tools.js";
 
 export const RESPONSES_CONVERSATION_URL = "https://api.openai.com/v1/responses";
 export type ResponsesConversationConfig = { apiKey?: string; liveEnabled: boolean; model: string; maxRequests: number; safetySeed?: string };
@@ -54,7 +55,7 @@ export async function runResponsesConversation(
     const body: Record<string, unknown> = {
       model: config.model,
       input: nextInput,
-      instructions: "You are WorkshopLM for professional work. Answer only from the selected Workshop Sources. Use search and fetch before factual claims, keep answers concise, and never claim a write succeeded when its tool result requires confirmation.",
+      instructions: `You are WorkshopLM for professional work. Answer only from the selected Workshop Sources. Use search and fetch before factual claims and keep answers concise. When the user asks to change the Workshop, call the appropriate write tool exactly once with the current context; the local product will pause it for visible confirmation. Do not repeat the call while confirmation is pending, and never claim a write succeeded from a rejected tool result. Current exact tool context: ${JSON.stringify(workshopToolContext(readWorkshopState(root)))}. Use these IDs and versions verbatim for tool arguments; never invent or expose them to the user.`,
       tools: openAiWorkshopTools("responses"),
       tool_choice: requestNumber === 1 ? "required" : "auto",
       stream: true,

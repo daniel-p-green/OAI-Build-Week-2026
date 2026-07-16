@@ -13,6 +13,7 @@ export type WorkshopProviderToolEventResult = {
   handled: boolean;
   execution?: ExecuteWorkshopToolResult;
   providerOutput?: Record<string, unknown>;
+  requiresConfirmation?: boolean;
   state: WorkshopState;
 };
 
@@ -47,6 +48,7 @@ export async function handleWorkshopProviderToolEvent(request: WorkshopProviderT
       handled: true,
       execution,
       providerOutput: { type: "conversation.item.create", item: { type: "function_call_output", call_id: event.call_id, output: resultOutput(execution) } },
+      requiresConfirmation: execution.result.isError && execution.result.summary.includes("requires explicit user intent"),
       state: execution.state,
     };
   }

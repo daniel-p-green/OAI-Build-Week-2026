@@ -25,11 +25,15 @@ describe("Realtime client-secret boundary", () => {
 
   it("mints a speech-to-speech session with grounded tools and interruption", async () => {
     const fetchImpl = vi.fn<typeof fetch>().mockResolvedValue(new Response(JSON.stringify({ value: "ek_voice", expires_at: 1_800_000_000 }), { status: 200 }));
-    const secret = await createRealtimeClientSecret({ apiKey: "server-secret", liveEnabled: true, mode: "conversation" }, fetchImpl);
+    const workshopContext = { workshopId: "workshop-1", mapVersion: "map-r7", storyboardVersion: "storyboard-v2", activeSourceIds: ["source-1"], briefApproved: false, storyboardApproved: false };
+    const secret = await createRealtimeClientSecret({ apiKey: "server-secret", liveEnabled: true, mode: "conversation", workshopContext }, fetchImpl);
     const sent = JSON.parse(String(fetchImpl.mock.calls[0]![1]?.body)) as { session: ReturnType<typeof realtimeSessionConfig>["session"] };
     expect(secret.mode).toBe("conversation");
     expect(sent.session).toMatchObject({ output_modalities: ["audio"], tool_choice: "auto", audio: { input: { turn_detection: { create_response: true, interrupt_response: true } }, output: { voice: "cedar" } } });
     expect(sent.session.instructions).toMatch(/always call search or fetch/);
+    expect(sent.session.instructions).toMatch(/write tool exactly once/);
+    expect(sent.session.instructions).toContain(JSON.stringify(workshopContext));
+    expect(sent.session.instructions).toMatch(/Use these IDs and versions verbatim/);
     expect(sent.session.tools).toEqual(openAiWorkshopTools("realtime"));
     expect(sent.session.audio.input.transcription).toEqual({ model: "gpt-realtime-whisper", language: "en" });
   });

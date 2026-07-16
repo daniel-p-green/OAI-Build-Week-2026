@@ -29,6 +29,10 @@ function graphRevision(state: WorkshopState): number {
   catch { return 0; }
 }
 function versionsFor(state: WorkshopState) { return { mapVersion: `map-r${graphRevision(state)}`, storyboardVersion: `storyboard-v${state.storyboard.version}` }; }
+export type WorkshopToolContext = { workshopId: string; mapVersion: string; storyboardVersion: string; activeSourceIds: string[]; briefApproved: boolean; storyboardApproved: boolean };
+export function workshopToolContext(state: WorkshopState): WorkshopToolContext {
+  return { workshopId: state.id, ...versionsFor(state), activeSourceIds: state.activeSourceIds, briefApproved: state.briefApproved, storyboardApproved: state.storyboardApproved };
+}
 function stateSummary(state: WorkshopState): Record<string, unknown> {
   return { workshopId: state.id, activeSourceIds: state.activeSourceIds, ...versionsFor(state), briefApproved: state.briefApproved, storyboardApproved: state.storyboardApproved, outputCount: state.outputs.length, videoState: state.videoState };
 }

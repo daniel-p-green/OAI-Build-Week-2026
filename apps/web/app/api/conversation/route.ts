@@ -10,7 +10,7 @@ function liveConfig() {
     apiKey: process.env.OPENAI_API_KEY,
     liveEnabled: process.env.WORKSHOPLM_LIVE_OPENAI === "1" && process.env.WORKSHOPLM_LIVE_CONVERSATION === "1",
     model: process.env.WORKSHOPLM_CONVERSATION_MODEL?.trim() || "gpt-5.6-terra",
-    maxRequests: Number(process.env.WORKSHOPLM_MAX_CONVERSATION_REQUESTS ?? "3"),
+    maxRequests: Number(process.env.WORKSHOPLM_MAX_CONVERSATION_REQUESTS ?? "4"),
     safetySeed: process.env.WORKSHOPLM_SAFETY_SEED,
   };
 }

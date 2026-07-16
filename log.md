@@ -7277,3 +7277,42 @@ The new 01:33 CT live-provider and product-quality milestone was inserted after 
 ## 2026-07-16 02:18 CT — Realtime milestone placement correction
 
 The 02:15 CT grounded Realtime voice and simplified visual-contract milestone was inserted after an earlier matching `Codex Session ID` marker instead of the physical end of this append-only file. Its evidence and decisions are unchanged. This later note restores the chronological boundary without rewriting history. The 02:15 milestone supersedes the older open-item statement immediately above: grounded Realtime speech, read tools, interruption, and durable provider provenance are live-proven; the founder's in-app-browser microphone recording and one provider-originated confirmed write remain open.
+
+---
+
+## 2026-07-16 02:58 CT — Live Conversation writes, Responses grounding, and Cedar Audio Overview verified
+
+**Area:** Live OpenAI seam / Conversation / Audio / Acceptance
+
+### Changed
+
+- Realtime sessions now receive the exact current Workshop, Map, Storyboard, Source-scope, and approval context. Voice instructions require one write request, then pause while the local product handles visible confirmation.
+- Rejected provider writes no longer trigger an automatic continuation that can repeat the mutation request. Server VAD owns audio commits; stopping the local capture no longer sends a second manual commit.
+- The grounded Responses Conversation default is four bounded provider requests instead of three. A live retrieval run proved that search, fetch, and their continuations can consume the first three requests before the final answer exists.
+- Audio Overview now presents the human-facing `Cedar voice · AI-generated voice` label while retaining the exact model, request, duration, and hash metadata in provenance.
+- Added isolated live proof harnesses for provider-confirmed Realtime writes, grounded Responses text, and standalone Audio Overview generation/download. Each uses a cloned data root and leaves the live operator fixture unchanged.
+
+### Verified
+
+- Realtime WebRTC heard `I want to approve this map. Please make the current map the brief now.`, requested `workshop_approve_brief` exactly once with Workshop `workshop-build-week` and Map `map-r7`, failed closed with `explicitUserIntent: false`, then succeeded with the same provider call ID after visible confirmation and persisted `briefApproved: false → true`. The provider continued aloud: `Done—the current map is now approved as the Brief.` Evidence: `artifacts/live-review/realtime-confirmed-write.json` and `.png`.
+- A real `gpt-5.6-terra` Responses SSE run answered `what must the final WorkshopLM demo prove?` after one grounded search and one exact fetch. It persisted two successful provider tool calls, three claim-to-source evidence edges, final assistant text, and continuation ID `resp_0e7be4243393d77b006a588ca82dc481979809876c88b26147`. Evidence: `artifacts/live-review/responses-grounded-conversation.json` and `.png`.
+- A real `gpt-4o-mini-tts` Cedar request created a 35.7-second, 24 kHz mono PCM WAV. Persisted and downloaded bytes both hash to `4929d08428849a07771f6264836389c1fb126ce75e80b99fa8a40d099f843a96`; request ID is `req_65133c0f98074ce6a7dfff9220fc2e50`. Local Whisper transcription recovered the intended executive finding, fragmented-workflow evidence, and exact-source-locator decision point. Evidence: `artifacts/live-review/audio-overview.json`, `.wav`, and `.png`.
+- Direct visual inspection accepted all three product screenshots: quiet source rail, one dominant Conversation or Audio object, no raw IDs/model clutter, visible evidence, and one clear next action.
+- `pnpm check` passed all 13 packages, including 111 worker and 30 web tests. `pnpm demo:e2e` passed the complete recorded-fixture seam. The production build plus all 28 visual tests passed at desktop, compact, mobile, reduced-motion, contrast, and logical-zoom states.
+- `pnpm submission:build` and `pnpm submission:verify` passed integrity checks for the separate deterministic acceptance set. It remains honestly `partial` because the final submission fixture has not yet been rebuilt from the founder Source and provider media. `pnpm demo:film:verify` passed the 162-second draft truth gate and correctly kept four shots blocked rather than promoting the draft to a final video.
+- `git diff --check` passed. `PLAN-2026-07-13.md` remains an unrelated user/teammate modification and is intentionally excluded from this milestone.
+
+### Decisions
+
+- Controlled synthetic microphone audio is sufficient to verify the product's full provider behavior; the founder's physical-microphone turn remains required only as authentic demo footage and Source replacement.
+- A confirmation boundary must suppress provider continuation until the professional acts. Returning an error and immediately asking the model to continue invites duplicate write requests even when the model instructions are correct.
+- Four is the smallest bounded Responses ceiling that completed the live grounded answer. It remains the hard product default rather than opening an unbounded agent loop.
+- Model names stay in provenance; the primary player uses human language. Cedar remains the locked voice.
+
+### Open items
+
+- Grant microphone access in the Codex in-app browser, record the founder brainstorm, and replace the authorized sample Source in the final meta-demo.
+- Rebuild the final traced submission Output set from that Source, capture the remaining provider-media shots, and cut the public under-three-minute video.
+- Obtain one intended-audience `Send` or blocking `Revise` response on the external deck. `/feedback` remains intentionally deferred.
+- The evidence ledger now totals 87 provider HTTP operations. Exact dollar debit is not exposed by the response artifacts; the recorded mix remains safely below the authorized $50 ceiling, but no unsupported exact spend is claimed.
+- Codex Session ID: unavailable on this surface; not inferred.

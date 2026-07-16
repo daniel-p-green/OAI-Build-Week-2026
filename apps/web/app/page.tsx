@@ -253,13 +253,13 @@ export default function WorkshopPage() {
     }
   }
 
-  async function handleRealtimeToolEvent(event: unknown): Promise<Record<string, unknown> | undefined> {
+  async function handleRealtimeToolEvent(event: unknown): Promise<{ output: Record<string, unknown>; createResponse: boolean } | undefined> {
     try {
       const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "handleProviderToolEvent", providerEvent: { channel: "realtime", event, model: "gpt-realtime-2.1", explicitUserIntent: false } }) });
-      const handled = await response.json() as { state?: PersistedWorkshop; providerOutput?: Record<string, unknown>; error?: string };
-      if (!response.ok || !handled.state) throw new Error(handled.error ?? "That voice action did not work");
+      const handled = await response.json() as { state?: PersistedWorkshop; providerOutput?: Record<string, unknown>; requiresConfirmation?: boolean; error?: string };
+      if (!response.ok || !handled.state || !handled.providerOutput) throw new Error(handled.error ?? "That voice action did not work");
       setState(handled.state);
-      return handled.providerOutput;
+      return { output: handled.providerOutput, createResponse: !handled.requiresConfirmation };
     } catch (error) {
       setNotice({ message: error instanceof Error ? error.message : "That voice action did not work", tone: "error" });
       return undefined;
@@ -719,7 +719,7 @@ function AudioOverviewView({ overview, busy, onPost, onOpenOutput, onShowSource 
     const current = next?.audioOverviews.at(-1); if (current) onOpenOutput(current.id);
   };
   return <article className="focused-output audio-overview-view"><div className="focused-output-heading"><div className="focused-output-context"><h1>Audio Overview</h1><p>Audio · Version {overview.version} · {words} words · {overview.claimIds.length} sourced points</p><Status tone={overview.stale || overview.status === "failed" ? "waiting" : "current"}>{overview.stale ? "Needs update" : overview.status === "failed" ? "Couldn't create" : overview.status === "audio_ready" ? "Audio ready" : "Ready for review"}</Status></div><div className="button-row">{dirty && <Button size="small" disabled={busy || overview.sections.some((section) => !sections[section.id]?.trim())} onClick={() => { void save(); }}>Save script</Button>}{!overview.stale && overview.status !== "audio_ready" && <Button variant="secondary" size="small" disabled={busy || dirty} onClick={() => { void onPost({ action: "generateAudioOverviewAudio" }); }}>{overview.status === "failed" ? "Try audio again" : "Create audio"}</Button>}{overview.audio && <ButtonLink variant="secondary" size="small" href={`/api/workshop/artifacts/${overview.id}`}>Download audio</ButtonLink>}</div></div>
-    {overview.audio ? <Card className="audio-player"><audio controls src={`/api/workshop/artifacts/${overview.id}`} /><div><strong>{Math.round(overview.audio.durationSeconds)} seconds</strong><small>{overview.audio.model} · {overview.audio.voice} · {overview.disclosure}</small></div></Card> : <StateMessage state={overview.status === "failed" ? "error" : "empty"} title={overview.status === "failed" ? "Audio needs another try" : "Review the script first"}>{overview.error ?? "Edit any section, check its source, then create the AI-voiced briefing."}</StateMessage>}
+    {overview.audio ? <Card className="audio-player"><audio controls src={`/api/workshop/artifacts/${overview.id}`} /><div><strong>{Math.round(overview.audio.durationSeconds)} seconds</strong><small>Cedar voice · {overview.disclosure}</small></div></Card> : <StateMessage state={overview.status === "failed" ? "error" : "empty"} title={overview.status === "failed" ? "Audio needs another try" : "Review the script first"}>{overview.error ?? "Edit any section, check its source, then create the AI-voiced briefing."}</StateMessage>}
     <section className="audio-script" aria-label="Audio Overview script">{overview.sections.map((section) => { const evidence = section.evidence[0]; return <Card className="audio-script-section" key={section.id}><div className="audio-script-heading"><div><small>{section.title}</small>{section.edited && <Status tone="waiting">Edited</Status>}</div><Button variant="secondary" size="small" onClick={() => onShowSource({ sourceId: evidence?.sourceId, claimId: evidence?.claimId, locator: evidence?.locator })}>Show source</Button></div><TextArea label={`${section.title} script`} value={sections[section.id] ?? ""} maxLength={1800} onChange={(event) => setSections((current) => ({ ...current, [section.id]: event.target.value }))} /></Card>; })}</section>
     <p className="audio-disclosure">Voice disclosure: {overview.disclosure}. Script edits remain visible and source-linked before speech generation.</p>
   </article>;
@@ -779,7 +779,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   </SideSheet>;
 }
 
-function ConversationView({ state, busy, streamingReply, realtimeContinuation, onRealtimeContinuationSent, onSend, onVoiceSave, onVoiceToolEvent, onConfirmTool, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; streamingReply: string; realtimeContinuation?: Record<string, unknown>; onRealtimeContinuationSent: () => void; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] }; interruptions?: { responseIds: string[]; eventIds: string[] } }) => Promise<boolean>; onVoiceToolEvent: (event: unknown) => Promise<Record<string, unknown> | undefined>; onConfirmTool: (call: ConversationToolCall) => Promise<boolean>; onShowSource: (target?: EvidenceTarget) => void }) {
+function ConversationView({ state, busy, streamingReply, realtimeContinuation, onRealtimeContinuationSent, onSend, onVoiceSave, onVoiceToolEvent, onConfirmTool, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; streamingReply: string; realtimeContinuation?: Record<string, unknown>; onRealtimeContinuationSent: () => void; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] }; interruptions?: { responseIds: string[]; eventIds: string[] } }) => Promise<boolean>; onVoiceToolEvent: (event: unknown) => Promise<{ output: Record<string, unknown>; createResponse: boolean } | undefined>; onConfirmTool: (call: ConversationToolCall) => Promise<boolean>; onShowSource: (target?: EvidenceTarget) => void }) {
   const [draft, setDraft] = useState("");
   const [voiceOpen, setVoiceOpen] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);

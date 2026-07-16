@@ -44,6 +44,8 @@ describe("Responses Conversation stream", () => {
     const final = await runResponsesConversation({ text: "What must the presentation preserve?", messageId: "message-tool" }, config, () => {}, root, fetchImpl);
     expect(requests).toHaveLength(2);
     expect(requests[0]).toMatchObject({ tool_choice: "required", safety_identifier: expect.stringMatching(/^[a-f0-9]{64}$/) });
+    expect(requests[0]?.instructions).toEqual(expect.stringContaining(`\"workshopId\":\"${state.id}\"`));
+    expect(requests[0]?.instructions).toEqual(expect.stringContaining("\"mapVersion\":\"map-r"));
     expect(requests[1]).toMatchObject({ tool_choice: "auto" });
     expect(requests[1]).toMatchObject({ previous_response_id: "resp-tool", input: [expect.objectContaining({ type: "function_call_output", call_id: "call-tool" })] });
     expect(final.conversationTurns.at(-1)).toMatchObject({ role: "assistant" });

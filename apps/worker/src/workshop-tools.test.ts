@@ -2,7 +2,7 @@ import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { executeWorkshopTool } from "./workshop-tools.js";
+import { executeWorkshopTool, workshopToolContext } from "./workshop-tools.js";
 import { applyWorkshopAction, ingestSource, lockManualStyle, readWorkshopState } from "./workshop-service.js";
 
 const roots: string[] = [];
@@ -19,6 +19,10 @@ function mapVersion(root: string) {
 afterEach(async () => { await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true }))); });
 
 describe("shared Workshop tool executor", () => {
+  it("exposes the exact current IDs and approval versions required by provider tools", async () => {
+    const root = await groundedRoot(); const state = readWorkshopState(root);
+    expect(workshopToolContext(state)).toEqual({ workshopId: state.id, mapVersion: mapVersion(root), storyboardVersion: `storyboard-v${state.storyboard.version}`, activeSourceIds: state.activeSourceIds, briefApproved: false, storyboardApproved: false });
+  });
   it("persists a grounded Responses read with exact provider and evidence provenance", async () => {
     const root = await groundedRoot(); const state = readWorkshopState(root);
     const execution = await executeWorkshopTool({ name: "search", arguments: { query: "source defensible deck", workshopId: state.id }, channel: "responses", provider: { model: "gpt-5.6-terra", responseId: "resp-search-1", callId: "call-search-1" } }, root);

@@ -8,8 +8,9 @@ type CapturePhase = "idle" | "connecting" | "recording" | "review" | "saving" | 
 type RealtimeMode = "capture" | "conversation";
 type TokenResponse = { value?: string; expiresAt?: number; model?: "gpt-realtime-2.1"; transcriptionModel?: "gpt-realtime-whisper"; mode?: RealtimeMode; error?: string };
 type SaveEvidence = { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] }; interruptions?: { responseIds: string[]; eventIds: string[] } };
+type RealtimeProviderOutput = { output: Record<string, unknown>; createResponse: boolean };
 
-export function RealtimeCapture({ disabled = false, mode = "capture", continuationOutput, onContinuationSent, onSave, onProviderToolEvent }: { disabled?: boolean; mode?: RealtimeMode; continuationOutput?: Record<string, unknown>; onContinuationSent?: () => void; onSave: (text: string, evidence: SaveEvidence) => Promise<boolean>; onProviderToolEvent?: (event: unknown) => Promise<Record<string, unknown> | undefined> }) {
+export function RealtimeCapture({ disabled = false, mode = "capture", continuationOutput, onContinuationSent, onSave, onProviderToolEvent }: { disabled?: boolean; mode?: RealtimeMode; continuationOutput?: Record<string, unknown>; onContinuationSent?: () => void; onSave: (text: string, evidence: SaveEvidence) => Promise<boolean>; onProviderToolEvent?: (event: unknown) => Promise<RealtimeProviderOutput | undefined> }) {
   const [phase, setPhase] = useState<CapturePhase>("idle");
   const [transcript, setTranscript] = useState<RealtimeTranscriptState>(() => emptyRealtimeTranscript());
   const [error, setError] = useState("");
@@ -74,8 +75,8 @@ export function RealtimeCapture({ disabled = false, mode = "capture", continuati
           if (event.type === "response.function_call_arguments.done" && onProviderToolEvent) {
             void onProviderToolEvent(event).then((providerOutput) => {
               if (!providerOutput || channel.readyState !== "open") return;
-              channel.send(JSON.stringify(providerOutput));
-              channel.send(JSON.stringify({ type: "response.create" }));
+              channel.send(JSON.stringify(providerOutput.output));
+              if (providerOutput.createResponse) channel.send(JSON.stringify({ type: "response.create" }));
             }).catch(() => setError("WorkshopLM could not complete that voice action."));
           }
         }
@@ -98,7 +99,8 @@ export function RealtimeCapture({ disabled = false, mode = "capture", continuati
 
   function stop() {
     streamRef.current?.getTracks().forEach((track) => track.stop());
-    if (channelRef.current?.readyState === "open") channelRef.current.send(JSON.stringify({ type: "input_audio_buffer.commit" }));
+    // Server VAD commits completed speech turns. Sending a second manual commit
+    // here can create a duplicate model response and repeat a write request.
     setPhase("review");
   }
 

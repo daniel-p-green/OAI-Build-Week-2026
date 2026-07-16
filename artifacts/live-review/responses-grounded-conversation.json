@@ -1,0 +1,60 @@
+{
+  "verifiedAt": "2026-07-16T07:47:53.403Z",
+  "transport": "responses-sse",
+  "model": "gpt-5.6-terra",
+  "prompt": "Using the selected sources, what must the final WorkshopLM demo prove?",
+  "assistant": "The final demo must prove that WorkshopLM can take a raw brainstorm and create its own:\n\n- Presentation \n- Image set \n- Storyboard \n- Demo video \n\nIt should also demonstrate an auditable workflow: factual claims retain exact source locators from the editable Map through the final presentation and Storyboard.",
+  "continuation": {
+    "responseId": "resp_0e7be4243393d77b006a588ca82dc481979809876c88b26147",
+    "model": "gpt-5.6-terra",
+    "recordedAt": "2026-07-16T07:47:53.283Z"
+  },
+  "successfulToolCalls": [
+    {
+      "name": "search",
+      "provider": {
+        "model": "gpt-5.6-terra",
+        "responseId": "resp_0e7be4243393d77b006a588ca5b95081979dec46b94d4ca4a6",
+        "callId": "call_Jyy4Klh1votziP75ZYbFPU32",
+        "eventId": "fc_0e7be4243393d77b006a588ca66d288197a37cce8da74df4fc"
+      },
+      "summary": "Found 3 grounded evidence chunks."
+    },
+    {
+      "name": "fetch",
+      "provider": {
+        "model": "gpt-5.6-terra",
+        "responseId": "resp_0e7be4243393d77b006a588ca6d7388197996836c0b0e1789b",
+        "callId": "call_ge2IpdJROotfvwOXxJ5h1SSE",
+        "eventId": "fc_0e7be4243393d77b006a588ca7a4608197a1424c8d07fc8628"
+      },
+      "summary": "Fetched grounded evidence chunk chunk-2026259e182a-5."
+    }
+  ],
+  "evidence": [
+    {
+      "sourceId": "source-2026259e182a",
+      "chunkId": "chunk-2026259e182a-5",
+      "claimId": "claim-2026259e182a-4-1",
+      "locator": "Sanitized fixture · chunk 05",
+      "snippet": "The OpenAI Build Week submission uses WorkshopLM to create its own presentation, image set, Storyboard, and demo Video from this raw brainstorm.",
+      "snippetHash": "4cfa04dbf896948a82f93aebee02c99bda0b7723b383362cc6094c6ed80b022a"
+    },
+    {
+      "sourceId": "source-2026259e182a",
+      "chunkId": "chunk-2026259e182a-3",
+      "claimId": "claim-2026259e182a-2-1",
+      "locator": "Sanitized fixture · chunk 03",
+      "snippet": "Every factual claim retains an exact source locator, so evidence stays inspectable from the editable Map through the final presentation and Storyboard.",
+      "snippetHash": "0056c4f2f9b1c31a34f4680bf51d07f4d06ebb7c56bb85eb748989debe873402"
+    },
+    {
+      "sourceId": "source-2026259e182a",
+      "chunkId": "chunk-2026259e182a-1",
+      "claimId": "claim-2026259e182a-0-1",
+      "locator": "Sanitized fixture · chunk 01",
+      "snippet": "WorkshopLM turns messy meetings into a deck professionals can defend, with grounded source documents and brand rules preserving their standards.",
+      "snippetHash": "f7e7e7a6f8ff498b09e815d0962a91fff943382751c2944b4c762c3d495ff1a6"
+    }
+  ]
+}

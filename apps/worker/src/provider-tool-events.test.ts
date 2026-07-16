@@ -42,8 +42,22 @@ describe("provider tool event adapters", () => {
       event: { type: "response.function_call_arguments.done", event_id: "event-3", response_id: "resp-3", item_id: "fc-3", call_id: "call-3", name: "search", arguments: JSON.stringify({ workshopId: state.id, query: "professional presentation" }) },
     }, root);
     expect(handled.execution?.result.isError).toBe(false);
+    expect(handled.requiresConfirmation).toBe(false);
     expect(handled.providerOutput).toMatchObject({ type: "conversation.item.create", item: { type: "function_call_output", call_id: "call-3" } });
     expect(handled.state.toolCalls[0]).toMatchObject({ channel: "realtime", provider: { model: "gpt-realtime-2.1", responseId: "resp-3", callId: "call-3", eventId: "event-3" } });
+  });
+
+  it("marks a rejected Realtime write so the browser waits for visible confirmation", async () => {
+    const root = await groundedRoot(); const state = readWorkshopState(root);
+    const revision = Number((JSON.parse(state.graphState ?? "{}") as { graph?: { revision?: number } }).graph?.revision ?? 0);
+    const handled = await handleWorkshopProviderToolEvent({
+      channel: "realtime", model: "gpt-realtime-2.1",
+      event: { type: "response.function_call_arguments.done", event_id: "event-write", response_id: "resp-write", call_id: "call-write", name: "workshop_approve_brief", arguments: JSON.stringify({ workshopId: state.id, mapVersion: `map-r${revision}` }) },
+    }, root);
+    expect(handled.execution?.result).toMatchObject({ isError: true, summary: expect.stringMatching(/explicit user intent/) });
+    expect(handled.requiresConfirmation).toBe(true);
+    expect(handled.providerOutput).toMatchObject({ type: "conversation.item.create", item: { call_id: "call-write" } });
+    expect(readWorkshopState(root).briefApproved).toBe(false);
   });
 
   it("persists invalid provider arguments as a visible failed tool result", async () => {
