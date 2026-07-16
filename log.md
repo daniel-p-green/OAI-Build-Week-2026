@@ -8380,3 +8380,34 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - Founder capture and final meta-reveal remain the only blocked film shots. Human taste review, intended-audience deck review, final ready package, final public MP4, `/feedback`, release, Devpost, and link checks remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 09:21 CT — Clean final-film preview is current and claim-safe
+
+**Area:** Demo film / meta reveal / stale-artifact prevention
+
+### Changed
+
+- Inspected the clean final overlay and meta-reveal preview after the rough-cut repairs. The Video preview still used a loading frame, and the reveal labeled a visibly bounded excerpt as the full `unedited transcript` while also calling the final share-authorized Source private.
+- Replaced the preview's loading frame with an inspected provider-Video still. Renamed the reveal text to `Founder brainstorm · Verbatim excerpt` and now state that the full hash-bound Source remains in the Workshop.
+- Found that `demo:film:preview-final` could report an old meta-reveal file when the current sanitized submission package was absent. Preview generation now removes every previous output before rendering and only reports a meta reveal created in the current run.
+- Built and verified the current sanitized 18-asset submission package before regenerating the preview. The strict packet gate then found twenty retired untracked UI screenshots in the canonical gallery directory; they were preserved under `/tmp/workshoplm-retired-ui-2026-07-16/` rather than deleted, leaving only the current sixteen-screen tracked gallery judge-visible.
+
+### Verified
+
+- `pnpm submission:build` produced a hash-verified 18-asset `partial` fixture package with its five explicit provider limitations; `pnpm submission:verify` returned valid, current, and untampered.
+- `pnpm demo:film:preview-final` regenerated the clean ten-shot overlay, representative frame, and current meta reveal. Full-resolution JPEG inspection accepted the quiet overlay, real Video proof, `Sample excerpt` preview label, bounded ellipsis, and accurate evidence footer.
+- The first `pnpm submission:packet:verify` failed loudly on retired `01-map.png`, proving the gallery guard. After preserving all twenty retired files outside the repository, the same gate passed with sixteen current screens, eight ready shots, two blocked shots, and four unresolved founder/final-package slots.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages. No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Decisions
+
+- A meta-demo may show a verbatim excerpt, but must not label a truncated excerpt as the complete transcript. The full Source remains available through the product trace.
+- Preview commands are evidence builders and therefore must never reuse stale files silently.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder capture, final ready package, final public MP4, human film taste review, intended-audience deck review, `/feedback`, release, Devpost, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

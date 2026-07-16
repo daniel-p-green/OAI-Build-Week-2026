@@ -122,9 +122,9 @@ async function metaRevealSvg(finalManifestPath, options = {}) {
   <text x="56" y="62" font-family="Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="1.5" fill="#6b6b6b">THE ORIGINAL → THE SUBMISSION</text>
   <text x="56" y="110" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#0d0d0d">One raw thought. One traced body of work.</text>
   <rect x="56" y="148" width="500" height="474" rx="22" fill="#ffffff" stroke="#dededb"/>
-  <text x="84" y="184" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1.2" fill="#6b6b6b">${options.preview ? "LAYOUT PREVIEW · SAMPLE TRANSCRIPT" : "FOUNDER BRAINSTORM · UNEDITED TRANSCRIPT"}</text>
+  <text x="84" y="184" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1.2" fill="#6b6b6b">${options.preview ? "LAYOUT PREVIEW · SAMPLE EXCERPT" : "FOUNDER BRAINSTORM · VERBATIM EXCERPT"}</text>
   ${transcriptLines.map((line, index) => `<text x="84" y="${226 + index * 36}" font-family="Arial, sans-serif" font-size="22" font-weight="500" fill="#0d0d0d">${escapeXml(line)}</text>`).join("\n  ")}
-  <text x="84" y="594" font-family="Arial, sans-serif" font-size="13" fill="#6b6b6b">${options.preview ? "Sample only · final mode requires hash-bound founder evidence" : "Private Source · hash-bound to the final Workshop"}</text>
+  <text x="84" y="594" font-family="Arial, sans-serif" font-size="13" fill="#6b6b6b">${options.preview ? "Sample only · final mode requires hash-bound founder evidence" : "Verbatim excerpt · full hash-bound Source remains in the Workshop"}</text>
   <rect x="596" y="148" width="292" height="213" fill="#0d0d0d"/>
   <rect x="908" y="148" width="292" height="213" fill="#0d0d0d"/>
   <rect x="596" y="381" width="604" height="241" fill="#0d0d0d"/>
@@ -144,8 +144,9 @@ async function main() {
     const previewPath = resolve(repository, "outputs/demo-film-plan/final-overlay-preview.png");
     const framePreviewPath = resolve(repository, "outputs/demo-film-plan/final-overlay-frame.png");
     const metaPreviewPath = resolve(repository, "outputs/demo-film-plan/meta-reveal-layout-preview.png");
-    const previewBases = ["03-grounded-map.png", "04-grounded-chat.png", "02-add-thinking.png", "05-source-evidence.png", "06-approved-brief.png", "07-company-style.png", "08-current-outputs.png", "12-storyboard.png", "13-narrated-video.png", "14-original-reveal.png"];
+    const previewBases = ["03-grounded-map.png", "04-grounded-chat.png", "02-add-thinking.png", "05-source-evidence.png", "06-approved-brief.png", "07-company-style.png", "08-current-outputs.png", "12-storyboard.png", "../../artifacts/live-review/video-v2-12s.png", "14-original-reveal.png"];
     await rm(previewRoot, { recursive: true, force: true });
+    await Promise.all([previewPath, framePreviewPath, metaPreviewPath].map((path) => rm(path, { force: true })));
     await mkdir(previewRoot, { recursive: true });
     const frames = [];
     for (const [index, shot] of plan.shots.entries()) {
