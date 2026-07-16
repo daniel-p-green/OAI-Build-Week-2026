@@ -72,6 +72,20 @@ describe("production renderers", () => {
     expect(workshop).toContain(".intent-internal-workshop .split.is-sparse{background:color-mix");
     expect(new Set([client, board, workshop]).size).toBe(3);
   });
+  it("carries Intent Profiles through the infographic system", () => {
+    const client = renderInfographic(brief);
+    const board = renderInfographic({ ...brief, style: { ...brief.style, intent: "board_deck" } });
+    const workshop = renderInfographic({ ...brief, style: { ...brief.style, intent: "internal_workshop" } });
+    expect(client).toContain('class="infographic intent-client-facing-pitch" data-intent="client_facing_pitch"');
+    expect(client).toContain("Source-defensible brief");
+    expect(board).toContain('class="infographic intent-board-deck" data-intent="board_deck"');
+    expect(board).toContain("Leadership evidence brief");
+    expect(board).toContain(".infographic.intent-board-deck{border-top:14px solid var(--accent)");
+    expect(workshop).toContain('class="infographic intent-internal-workshop" data-intent="internal_workshop"');
+    expect(workshop).toContain("Workshop action brief");
+    expect(workshop).toContain(".infographic.intent-internal-workshop{background:color-mix");
+    expect(new Set([client, board, workshop]).size).toBe(3);
+  });
   it("writes an inspectable preview and an editable PowerPoint deck", async () => {
     const root = await mkdtemp(join(tmpdir(), "workshoplm-production-"));
     const artifact = await writeRenderedArtifact(root, "out-1", "deck", brief);

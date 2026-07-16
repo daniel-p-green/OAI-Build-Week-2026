@@ -1,5 +1,5 @@
 {
-  "recordedAt": "2026-07-16T00:32:00.553Z",
+  "recordedAt": "2026-07-16T00:38:08.739Z",
   "input": "outputs/dogfood-ai-collective-chapter-brief/deck-input.json",
   "comparison": "The same grounded brief and Company Style rendered through all three Workshop Intent Profiles.",
   "frames": [
@@ -13,22 +13,37 @@
     "team-workshop-middle.png",
     "team-workshop-recommendation.png"
   ],
+  "infographicFrames": [
+    "client-pitch-infographic.png",
+    "board-presentation-infographic.png",
+    "team-workshop-infographic.png"
+  ],
   "contactSheetSha256": "a39f5cb74b81037221018a63d7ad24fe981e935959b732498876decd23edcc64",
+  "infographicContactSheetSha256": "d43e01c7fe17d738ceb828bb00574573473a80c2571426611ec9fafdb028cacf",
   "outputs": {
     "client_facing_pitch": {
-      "html": "5596e1b80b8fadf01f2b49822897309f8e8497840f757150482a8b677cab2fee",
-      "pptx": "7e4efa977dd755a38965b9eb7a13069e4768b9efe263399f35413836240157e3",
-      "pdf": "26c721ce37072d37b366fc438a41ad94bd90e35b4bb930386a9cb07f2dd6d3d4"
+      "html": "dd65f2237fab5dd6a593859adc7218ccb62a290372a3fbab3c5af01545d974b2",
+      "pptx": "dc9f7dde654e976368039b96ca96d6d5a718c70cb8839a3a9324f9f4fccd078b",
+      "pdf": "7e4c5e9add7062b12f6ed9b3b0e3017591c6343acfd71ae784c75f6f8fd6977d",
+      "infographicHtml": "0d4745d8d9f91ef9a45162f229c1241809927fcf7b8dd6e8d618062b9429de1c",
+      "infographicPptx": "0003bfa6fc168615b72f693d01b036c59088e90665d9d94754a705671b93aaf0",
+      "infographicPdf": "ac122e58c3b7438dc1549ae328926847f78000bfe1d73421b6aa1201606eaa11"
     },
     "board_deck": {
-      "html": "e4c860fb46652a6b9dda547448c0158129636c83696b41187a8bf9a45823c7de",
-      "pptx": "c2bf92f5e8ff3aa643366779e97751762065182dd1d8d44daa11e3a1b09526b8",
-      "pdf": "e10413d58663743dd99312c5ecb9739de08ecef54300aec7d0c4267b57ff986a"
+      "html": "6650b4e55c9f6177b46b1242bd9ca6aa661d3af7a9b76e29ccdff96f8509f607",
+      "pptx": "288548d324bed273679e7ab851405f07966a8c055d4d0c0ac4210bb47f03cc5f",
+      "pdf": "34da45f451309099e9b9f1378325ef874199e27c95c236d4e82c3c5117391573",
+      "infographicHtml": "0f4dfccac7c638da479c26c651f4da152c52830061be5ed691317396e558a274",
+      "infographicPptx": "7577f78c0f78ef86aaba6b7274f7f34cd72c525397df6f2e02fddcdde311f8d3",
+      "infographicPdf": "fd1952dfd89a56778d0c3f5b593a6c8f305570acce02b21066e59ebcc898164c"
     },
     "internal_workshop": {
-      "html": "077f5f38ffe75707e15427c8abed86efe696f0767fed479581603b6e4f4ebb38",
-      "pptx": "b38c24b5c3e60efed895d70ee16df58305825503d619308d39dc07f06c709eaa",
-      "pdf": "f9fd71c7fa8e9258bbdb8d9cda989395db1a7f7b86962625512fe6fe9d00cbc8"
+      "html": "d93777cf4b0dfe920440e884199486f76f8ef1e9d86498594345c2f4970d9a6c",
+      "pptx": "b9379d906d19537575cd8744db16af5c0df54c8bf7e0cb02a8569367d8e157f4",
+      "pdf": "6f4c03a6f86fb565195e4f29770532ebfe04baf1d863bed957fb61d416b47c4c",
+      "infographicHtml": "eaa3e2b1d391e0db2f351164e30f7282eeeacf42b6d1cf3caab3227663cf8c69",
+      "infographicPptx": "a8ad3af66e8a71892ff7dc59d1559a79dcce9e245d53e0bb9f1d69a5786cdf85",
+      "infographicPdf": "ccdda942423577aed0976db382d26077d136f7838cc30226caa465284c9324d7"
     }
   }
 }

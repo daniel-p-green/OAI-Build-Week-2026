@@ -6182,3 +6182,33 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Obtain the intended audience's cold `Send`/`Revise` decision and run the provider-backed Map, image, Realtime, and narration path after explicit authorization.
 - Founder brainstorm, final public Video, final submission Output set, public links, and `/feedback` Session ID remain open under `GOAL.md`.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 19:39 CT — Intent Profiles now reach the editable infographic
+
+**Area:** Deliver / Infographic quality / Style system
+
+### Changed
+
+- Extended the executable Intent Profile contract from the hero deck into the one-page infographic. The previous infographic carried Company Style colors and fonts but ignored the Workshop's selected Client pitch, Board presentation, or Team workshop intent.
+- Client pitch retains the source-defensible editorial grid. Board presentation uses restrained top framing, a tighter title hierarchy, and leadership-evidence language. Team workshop uses a warmer card system, stronger action framing, and a more scannable working surface. All three retain the same selected logo, exact four grounded claims, visible source labels, and editable PowerPoint handoff.
+- Extended `pnpm dogfood:intents:build` to generate three infographic HTML previews, editable PowerPoints, PDFs, individual review frames, `infographic-contact-sheet.png`, and hashes beside the existing deck comparison.
+
+### Verified
+
+- Inspected the full-resolution three-up infographic comparison. Client remains editorial, Board reads as a restrained evidence brief, and Team reads as a card-based action artifact; no observed overlap, clipping, invisible logo, or citation loss remained.
+- Added an HTML contract proving distinct profile classes, language, and treatment. `pnpm check` passed all 13 packages with 11 production tests, 19 web tests, and 85 worker tests.
+- The manifest records distinct HTML, PowerPoint, and PDF hashes for each infographic profile. The same input Brief and Style drive all three, so the comparison isolates Intent Profile behavior rather than content drift.
+- `pnpm demo:e2e` passed all six gates. `pnpm submission:build` and `pnpm submission:verify` validated the truthful 17-asset `partial` set; `pnpm demo:film:verify` retained six ready shots and four explicitly evidence-blocked shots; `git diff --check` passed.
+
+### Decisions
+
+- Intent is a Workshop-level production rule, so it must affect every editable professional output—not only the presentation cover. Company identity and grounding remain invariant while hierarchy and meeting posture change.
+- This closes deterministic profile fidelity for the presentation and infographic. It does not claim provider image quality, professional send approval, or final submission readiness.
+
+### Open items
+
+- Obtain the cold professional `Send`/`Revise` decision and run the provider-backed Map, image, Realtime, and narration path after explicit authorization.
+- Founder brainstorm, final public Video, final submission Output set, public links, and `/feedback` Session ID remain open under `GOAL.md`.
+- Codex Session ID: unavailable on this surface; not inferred.
