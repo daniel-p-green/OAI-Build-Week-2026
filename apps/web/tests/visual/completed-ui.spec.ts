@@ -643,13 +643,14 @@ test("Outputs preserve recognizable version history and source coverage", async 
   await page.getByRole("button", { name: "View outputs" }).click();
 
   await expect(page.getByRole("button", { name: "Open Presentation, version 2" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Open Presentation, version 1" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Open Presentation, version 1" })).toHaveCount(0);
   await expect(page.getByText("Presentation · Version 2")).toBeVisible();
-  await expect(page.getByText("Presentation · Version 1")).toBeVisible();
-  await expect(page.getByText("Up to date", { exact: true }).first()).toBeVisible();
-  await expect(page.getByText("Needs update", { exact: true }).first()).toBeVisible();
   await expect(page.locator(".output-card").first()).toContainText(/\d+ sources?/);
-  await expect(page.locator('.output-card iframe[title$="preview"]')).toHaveCount(3);
+  await expect(page.locator('.output-card iframe[title$="preview"]')).toHaveCount(2);
+  await page.getByRole("button", { name: "Open Presentation, version 2" }).click();
+  const history = page.getByRole("region", { name: "Version history" });
+  await expect(history.getByRole("button", { name: "Open Presentation, version 2" })).toContainText("Current view");
+  await expect(history.getByRole("button", { name: "Open Presentation, version 1" })).toContainText("Needs update");
 });
 
 test("Storyboard previews the exact image versions bound for video", async ({ page }) => {
@@ -781,8 +782,11 @@ test("Video history preserves prior versions without adding another navigation s
   await page.getByRole("button", { name: "View brief" }).click();
   await page.getByRole("button", { name: "View outputs" }).click();
   await expect(page.getByRole("button", { name: "Open Demo video, version 2" })).toContainText("Up to date");
-  await expect(page.getByRole("button", { name: "Open Demo video, version 1" })).toContainText("Needs update");
-  await page.getByRole("button", { name: "Open Demo video, version 1" }).click();
+  await expect(page.getByRole("button", { name: "Open Demo video, version 1" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Open Demo video, version 2" }).click();
+  const history = page.getByRole("region", { name: "Version history" });
+  await expect(history.getByRole("button", { name: "Open Demo video, version 1" })).toContainText("Needs update");
+  await history.getByRole("button", { name: "Open Demo video, version 1" }).click();
   await expect(page.getByText("Video · Version 1")).toBeVisible();
   await expect(page.getByText("Needs update", { exact: true })).toBeVisible();
   await expect(page.locator(".focused-output-preview video")).toHaveAttribute("src", "/api/workshop/artifacts/video-v1");

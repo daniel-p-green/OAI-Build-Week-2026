@@ -1139,7 +1139,12 @@ function displaySourceTitle(title: string) {
 function citationLabel(state: WorkshopState, sourceId: string, locator: string) {
   const source = state.sourceItems.find((candidate) => candidate.id === sourceId);
   const position = locator.split(" · ").at(-1);
-  return [displaySourceTitle(source?.title ?? "Source"), position].filter(Boolean).join(" · ");
+  const sourceTitle = source?.origin.includes("capture-only fallback")
+    ? "Voice brainstorm"
+    : source?.origin === "Founder-provided recording"
+      ? "Founder brainstorm"
+      : displaySourceTitle(source?.title ?? "Source");
+  return [sourceTitle, position].filter(Boolean).join(" · ");
 }
 async function embeddedLocalLogo(style: WorkshopStyle, root: string) {
   for (const asset of style.brandAssets) {

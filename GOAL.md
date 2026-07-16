@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-16 03:55 CT
+Last updated: 2026-07-16 04:16 CT
 
 ## Status
 
@@ -11,6 +11,7 @@ Last updated: 2026-07-16 03:55 CT
 - The evidence ledger now records 97 OpenAI provider HTTP operations across the benchmark, Map, image, Cedar narration, Responses, Realtime, and editorial-film proof runs. This includes ephemeral Realtime credentials and WebRTC calls rather than treating only completed generations as requests. Exact dollar debit is not returned by these provider responses; observed request shape remains safely below the authorized $50 ceiling, and UI, Map-layout, and Video Version 2 repairs used no provider spend.
 - Visual inspection accepted all six GPT Image 2 panels without regeneration. The renderer now uses a clean editorial image/copy split, quiet AI-voice disclosure, and 0.92 Cedar volume instead of treating images as dark wallpaper. Evidence is under `artifacts/live-review/` and `.workshoplm/live-operator/`.
 - The live UI now has one contextual workbench instead of a dashboard: Sources + Chat on the Map, a five-item Create summary, auto-collapsed context around Outputs and focused artifacts, and no persistent stage stack. `Voice brainstorm` replaces timestamp-heavy capture copy. Desktop and 390×844 Map, Outputs, and Storyboard screenshots are under `artifacts/ui-review/`.
+- The live provider-backed Outputs gallery now shows only the current version of each deliverable; older versions move into a focused `Version history` instead of duplicating full-size gallery cards. Visible source trails say `Voice brainstorm` or the professional Source title while exact provider locators remain preserved in hidden trace metadata. The real desktop and 390×844 gallery plus compact Presentation history were inspected in the Codex in-app browser and captured under `artifacts/ui-review/outputs-latest-only-*` and `presentation-version-history-compact-2026-07-16.png`.
 - Provider-backed Realtime is now live-proven over WebRTC with `gpt-realtime-2.1` and `gpt-realtime-whisper`: a spoken question invoked one grounded search plus two exact fetches, produced a source-bound spoken answer, and persisted transcript, assistant text, provider item/event IDs, and tool provenance. A second live session recorded a real provider cancellation/interruption edge before the user redirected the answer. Evidence and clean product screenshots are `artifacts/live-review/realtime-grounded-conversation.*` and `realtime-interruption.*`.
 - A third isolated Realtime run completed the full write-control loop. The provider requested `Approve Brief` once with the exact current Workshop and Map version; WorkshopLM rejected mutation without explicit intent, showed the visible confirmation, replayed the same provider call ID after confirmation, persisted `briefApproved: false → true`, and returned the success to the active voice session for a spoken continuation. Evidence is `artifacts/live-review/realtime-confirmed-write.*`.
 - The center-column text Conversation is now provider-proven through Responses SSE with `gpt-5.6-terra`: one user question invoked grounded `search` and exact `fetch`, persisted three claim-to-source edges plus the continuation response ID, and rendered the final source-bound answer. The live run also proved that three provider requests can be consumed by retrieval before the final answer, so the bounded default is now four. Evidence is `artifacts/live-review/responses-grounded-conversation.*`.
@@ -67,6 +68,7 @@ WorkshopLM should preserve the clarity that makes NotebookLM useful while comple
 - [ ] Make all generated work editable enough for the professional's final 10 percent. Preserve source trace, version history, and calm `Needs update` behavior through regeneration rather than overwriting prior work.
 - [ ] Judge every visible Output against “would a serious professional send this?” Repair weak hierarchy, generic imagery, awkward narration, inconsistent art direction, and templated layouts before adding output breadth.
 - [ ] Continue simplifying language. Use familiar nouns and verbs—Sources, Map, Brief, Style, Presentation, Storyboard, Video, `Show source`, `Approve brief`, `Create outputs`—and remove implementation terms, file names, model names, IDs, and duplicated actions from the primary UI.
+  - 2026-07-16 live-Output pass: removed the fallback model name and timestamp from visible Presentation/Infographic citations, fixed singular Source counts, and moved prior Presentation, Infographic, Audio Overview, and Video versions behind the focused object. Exact locators and every immutable version remain available without crowding the main gallery. Keep this continuous item open through final founder-Source and film review.
 
 The implementation may add composites only when the official Apps in ChatGPT library lacks the required pattern; those composites must be assembled solely from its verified primitives and inherit its spacing, typography, color, elevation, focus, and responsive behavior.
 
@@ -736,6 +738,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [Experience acceptance criteria](research/ui-experience-acceptance-criteria-2026-07-14.md)
 - [Plugin research and adoption map](research/plugins/README.md)
 - [Current UI screenshot gallery](outputs/workshoplm-current-ui/README.md)
+- [Latest-only Output gallery and focused history screenshots](artifacts/ui-review/outputs-latest-only-desktop-2026-07-16.png)
 - [Repeatable fixture walkthrough draft](outputs/demo-recording-draft/manifest.json)
 - [Evidence-gated 2:20 demo edit plan](outputs/demo-film-plan/README.md)
 - [Sanitized live-provider film evidence](artifacts/live/provider-run.json)

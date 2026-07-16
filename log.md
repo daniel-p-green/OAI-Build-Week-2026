@@ -7528,3 +7528,35 @@ The 03:51 CT deterministic final-film milestone was inserted after an earlier ma
 
 - Founder capture, final Source-derived provider run, ready final package, and final MP4 remain the next critical path. External review and public submission actions remain human-gated.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 04:16 CT — Live Outputs reduced to current work with focused history
+
+**Area:** Product UI / Source language / Version history
+
+### Changed
+
+- The Outputs gallery now shows only the newest Presentation, Infographic, Audio Overview, and Video. Older immutable versions remain reachable through a focused `Version history` instead of repeating full-size cards in the primary gallery.
+- Focused Presentation, Infographic, Audio Overview, and Video views expose history only when more than one version exists, with current and `Needs update` states preserved.
+- Visible generated-output citations now translate the capture-only provider origin into `Voice brainstorm`; founder-file origins become `Founder brainstorm`. Exact provider text and chunk locators remain in artifact metadata and source-trace behavior.
+- Source trails reuse the professional Source title plus the chunk locator, and singular Source counts now read correctly.
+
+### Verified
+
+- The Codex in-app browser exposed the real defect on `.workshoplm/live-operator`: two full-size Presentation cards, two Video cards, and a timestamp-heavy fallback citation that deterministic fixture review had not made obvious.
+- A disposable copy of that real provider-backed root proved the repair at desktop and 390×844. Captures are `artifacts/ui-review/outputs-latest-only-desktop-2026-07-16.png`, `outputs-latest-only-compact-2026-07-16.png`, and `presentation-version-history-compact-2026-07-16.png`.
+- `pnpm --filter @workshoplm/worker test` passed 114 tests, `pnpm --filter @workshoplm/web typecheck` passed, and `pnpm check` passed all 13 packages with 114 worker and 30 web tests.
+- The strict production-browser suite passed all 28 tests after intentional baseline refresh, then passed again without updates. Desktop, compact, mobile, accessibility, official primitive, source-trace, version-history, and final-reveal checks stayed green.
+- `pnpm demo:e2e` passed the complete recorded seam. The submission Output-set builder and verifier remained valid, not stale, and untampered. `pnpm demo:film:verify` correctly remained draft and failed final readiness on only the real founder files, final-operator package, and final MP4.
+
+### Decisions
+
+- A gallery is for current deliverables; version comparison belongs to the object being reviewed. This preserves every implemented versioning capability while materially reducing first-glance complexity.
+- Friendly labels replace provider mechanics only in visible copy. Grounding integrity still depends on the unchanged exact locator and hidden trace metadata.
+- No provider request was needed. The evidence ledger remains 97 HTTP operations; exact dollar debit is still unavailable and no exact spend is invented.
+
+### Open items
+
+- Founder capture, the final thirteen-request Source-derived operator run, verified final package, final MP4, external send/revise review, eligible Session ID, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
