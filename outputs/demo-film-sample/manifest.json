@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance Output set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-16T19:41:47.008Z",
+  "builtAt": "2026-07-16T20:03:51.450Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "voice": {
@@ -86,11 +86,11 @@
     },
     "submissionManifest": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
-      "sha256": "5c2a9cd874aee29e4dcc77b4231ba82376a4cb2ab6511443faa191501db80a79"
+      "sha256": "a618349510fb15cf9597fdd2ae1861c77884351c5d487ea875d9181cb478f8f8"
     },
     "buildTrace": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/BUILD-TRACE.json",
-      "sha256": "3db2c7adc4837a645c00cdbc4d8a0c67386445746a975ea30b5f9e0cf87af77a"
+      "sha256": "a6949260a430cdb2b901799636e3679f9e72a375ffb7e6af8787c72b2c9b01ec"
     }
   },
   "shots": [

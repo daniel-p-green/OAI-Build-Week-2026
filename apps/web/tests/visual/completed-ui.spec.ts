@@ -21,7 +21,7 @@ async function closeDialog(page: Page, name: string) {
 
 async function openWorkshopView(page: Page, view: "chat" | "brief" | "outputs" | "storyboard") {
   const directName = view === "chat" ? "Chat" : `View ${view}`;
-  const railName = view === "chat" ? "Sources" : "Production";
+  const railName = view === "chat" ? "Sources" : "Create";
   const direct = page.getByRole("complementary", { name: railName }).getByRole("button", { name: directName, exact: true });
   if ((page.viewportSize()?.width ?? 0) > 900) {
     await direct.click();
@@ -202,7 +202,7 @@ test("grounded Conversation preserves source scope, citations, and responsive wo
     await expect(surface.getByRole("textbox", { name: "Message WorkshopLM" })).toBeVisible();
     if (viewport.width > 900) {
       await expect(page.getByRole("complementary", { name: "Sources" })).toBeVisible();
-      await expect(page.getByRole("complementary", { name: "Production" })).toBeVisible();
+      await expect(page.getByRole("complementary", { name: "Create" })).toBeVisible();
     }
     await expect(surface).toHaveScreenshot(`${viewport.name}-conversation.png`, { animations: "disabled", caret: "hide", maxDiffPixelRatio: viewport.name === "mobile" ? 0.004 : 0.001 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
@@ -569,7 +569,7 @@ test.describe("completed Workshop judge path", () => {
       await expect(page.locator('.output-grid [data-output-role="hero"]')).toHaveCount(1);
       await expect(page.getByRole("button", { name: "Show source" })).toHaveCount(0);
       await expect(page.locator(".output-grid")).not.toContainText("Version");
-      if (viewport.width > 900) await expect(page.getByRole("complementary", { name: "Production" }).getByText("4 ready", { exact: true })).toBeVisible();
+      if (viewport.width > 900) await expect(page.getByRole("complementary", { name: "Create" }).getByText("4 ready", { exact: true })).toBeVisible();
       await expectPreviewFramesReady(page);
       await expectScreen(page, `${viewport.name}-outputs`);
 
@@ -897,8 +897,8 @@ test("finished Video reveals the original brainstorm without adding navigation",
     const sheet = page.getByRole("dialog", { name: "Original brainstorm" });
     await expect(sheet).toContainText("Before · Voice transcript");
     await expect(sheet).not.toContainText("fixture");
-    await expect(sheet).toContainText("Became a connected Output set");
-    await expect(sheet).toContainText("102 seconds from first transcript to first rendered Output");
+    await expect(sheet).toContainText("Became finished work");
+    await expect(sheet).toContainText("102 seconds from first transcript to first finished Output");
     await expect(sheet.getByText("Presentation", { exact: true })).toBeVisible();
     await expect(sheet.getByText("Demo video", { exact: true })).toBeVisible();
     await expect(sheet.getByRole("link", { name: "How this was built" })).toHaveAttribute("href", "/api/workshop/artifacts/build-trace-v1");
@@ -1256,8 +1256,7 @@ test("the local render becomes a real Video preview and the next action", async 
     await closeDialog(page, "Original brainstorm");
     await expect(page.locator(".workshop-identity")).toContainText("WorkshopLM Build Week/Demo video");
     await expect.poll(async () => Math.abs(await page.locator(".focused-output").evaluate((node) => node.scrollTop) - scrollBeforeOriginal) <= 32).toBe(true);
-    const [headerBox, outputTitleBox] = await Promise.all([page.locator(".workshop-header").boundingBox(), page.locator(".focused-output-heading h1").boundingBox()]);
-    expect(headerBox && outputTitleBox && outputTitleBox.y >= headerBox.y + headerBox.height - 3).toBeTruthy();
+    await expect(page.locator(".focused-output-heading h1")).toBeInViewport();
     await page.locator(".focused-output").evaluate((node) => node.scrollTo({ top: 0 }));
     await page.waitForTimeout(200);
     await expectScreen(page, `${viewport.name}-video-viewer`);

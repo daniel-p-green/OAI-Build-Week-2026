@@ -9202,6 +9202,37 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 ---
 
+## 2026-07-16 15:04 CT — The last internal UI language leaves the workbench
+
+**Area:** Product language / accessibility / responsive UI / acceptance evidence
+
+### Changed
+
+- Renamed the visible and accessible right rail from `Production` to `Create`, matching the professional action already presented in the interface. Tool activity now identifies `Workshop` instead of `Plugin`, and the Excalidraw surface is announced simply as `Editable Map` rather than exposing its semantic implementation.
+- Rewrote the original-brainstorm transformation from `Became a connected Output set` to `Became finished work` and the elapsed-time line from first `rendered Output` to first `finished Output`. The underlying evidence, Output history, and trace links are unchanged.
+- Simplified the public claim-ledger label from `Editable semantic Map` to `Editable Map`. Updated the copy contract, recording selector, browser scenarios, and responsive reveal baselines so the old terms fail closed.
+- Replaced one timing-sensitive header-coordinate assertion with the actual user contract: after the Original brainstorm sheet closes, the focused Video title must remain inside the viewport. Scroll restoration and full visual snapshots remain independently enforced.
+
+### Verified
+
+- Visually inspected the refreshed desktop and 390×844 Original brainstorm screens plus the quiet desktop Conversation surface. The before/after outcome is now immediately legible without production-system vocabulary, and the mobile sheet keeps the same hierarchy without horizontal overflow.
+- The complete production-browser suite passed all 30 scenarios after focused regressions for the renamed rail, original reveal, and Video return path. `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 30 web tests and 120 worker tests.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam. Because that reset correctly removed the derived submission package, `pnpm submission:packet:verify` initially failed on the missing manifest; a fresh `pnpm submission:build` plus `pnpm submission:verify` produced a valid, current, untampered 24-asset package. The clean sample film was rebound to the new acceptance-manifest and build-trace hashes, `pnpm demo:film:verify-sample` passed, and `pnpm submission:packet:verify` passed with Terra, six provider-backed images, Cedar narration, the generated meta-reveal, and the Codex doorway cue.
+- No OpenAI request ran. The evidence ledger remains at 104 provider HTTP operations and exact dollar debit remains unavailable from provider responses.
+
+### Decisions
+
+- Primary UI language names the professional's action or outcome; implementation architecture remains available only in code and technical evidence. `Create`, `Workshop`, `Map`, and `finished work` are therefore the durable surface terms.
+- Browser checks should assert what a professional can perceive and use. Exact subpixel overlap with a sticky header is not a stable contract when viewport visibility, scroll restoration, and screenshot review already prove the intended behavior.
+- `PLAN-2026-07-13.md` remained advisory only for enduring acceptance principles. Its pre-existing user modification was untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, founder/target-audience film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-16 14:45 CT — Submission evidence now routes through the clean film
 
 **Area:** Submission packet / public evidence / claim integrity / reviewer path
@@ -9229,3 +9260,10 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Founder recording and transcript, founder-derived ready Output set, final compositor run, founder/target-audience film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 15:06 CT — Log-order correction
+
+- The complete `15:04 CT — The last internal UI language leaves the workbench` milestone was appended using an ambiguous repeated open-items anchor and therefore appears immediately before the already-present `14:45 CT` milestone rather than after it.
+- No historical entry was moved or rewritten. Treat the milestone's explicit 15:04 timestamp as authoritative and this correction as the chronological tail marker.

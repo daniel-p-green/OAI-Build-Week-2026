@@ -855,7 +855,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   return <SideSheet title="Original brainstorm" className="original-reveal" onClose={onClose}>
     <p className="sheet-intro">The finished submission started with this.</p>
     <Card className="original-transcript"><small>Before · {sourceKind}</small><blockquote>“{original}”</blockquote>{sourceLocator && <p className="source-locator">{sourceLocator}</p>}</Card>
-    <div className="original-result"><small>After</small><h3>Became a connected Output set</h3>{elapsedSeconds !== null && <p>{elapsedSeconds} seconds from first transcript to first rendered Output</p>}{currentVideo?.buildTrace && <ButtonLink href={`/api/workshop/artifacts/build-trace-v${currentVideo.version}`} target="_blank" rel="noreferrer">How this was built</ButtonLink>}</div>
+    <div className="original-result"><small>After</small><h3>Became finished work</h3>{elapsedSeconds !== null && <p>{elapsedSeconds} seconds from first transcript to first finished Output</p>}{currentVideo?.buildTrace && <ButtonLink href={`/api/workshop/artifacts/build-trace-v${currentVideo.version}`} target="_blank" rel="noreferrer">How this was built</ButtonLink>}</div>
     <ListGroup>{deliverables.map((item) => <ListRow className="original-output-row" key={item.title}><FileIcon /><span><strong>{item.title}</strong><small>{item.detail}</small></span></ListRow>)}</ListGroup>
   </SideSheet>;
 }
@@ -934,7 +934,7 @@ const TOOL_FAILURE_MESSAGES: Record<string, string> = {
   workshop_render_video: "Approve the current Storyboard before creating the Video.",
 };
 function ToolActivity({ call, confirmed, busy, onConfirm }: { call: ConversationToolCall; confirmed: boolean; busy: boolean; onConfirm: (call: ConversationToolCall) => Promise<boolean> }) {
-  const channel = call.channel === "realtime" ? "Voice" : call.channel === "responses" ? "Chat" : "Plugin";
+  const channel = call.channel === "realtime" ? "Voice" : call.channel === "responses" ? "Chat" : "Workshop";
   const label = TOOL_ACTIVITY_LABELS[call.name] ?? "Workshop action";
   const needsConfirmation = !confirmed && !call.explicitUserIntent && call.result.isError && call.result.summary.includes("requires explicit user intent") && Boolean(TOOL_CONFIRM_LABELS[call.name]);
   const visibleLabel = needsConfirmation ? `Confirmation required · ${channel}` : call.result.isError ? `Couldn't complete: ${label.toLocaleLowerCase()} · ${channel}` : `${label} · ${channel}`;
@@ -980,7 +980,7 @@ function ProductionRail({ open, state, view, action, onCollapse, onOpenView, onO
   const outputCount = [deck && !deck.stale, infographic && !infographic.stale, state?.sketch && !state.sketch.stale, currentAudio, state?.imageBatch && !state.imageBatch.stale, state?.storyboardApproved && !state.storyboard.stale, currentVideo && !currentVideo.stale].filter(Boolean).length;
   const outputsCurrent = hasOutputs && !outputSetStatus(state).actionRequired;
 
-  return <WorkbenchRail side="right" className="production-rail" aria-label="Production" data-collapsed={!open || undefined}>
+  return <WorkbenchRail side="right" className="production-rail" aria-label="Create" data-collapsed={!open || undefined}>
     <header className={`rail-heading ${open ? "" : "rail-heading--collapsed"}`}>{open && <div><strong>Create</strong><small>{currentVideo && !currentVideo.stale ? "Ready to share" : "From brief to finished work"}</small></div>}<div className="rail-actions"><IconButton label={open ? "Collapse Create" : "Expand Create"} aria-expanded={open} onClick={onCollapse}><span className={open ? "rail-chevron rail-chevron--right" : ""}><ArrowLeftIcon /></span></IconButton></div></header>
     {!open ? null : <>
     <section className="next-action" aria-label="Next action"><small>Next</small>{action}</section>

@@ -219,7 +219,7 @@ export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, on
   }
 
   return <div className="semantic-map" data-domain-ui="excalidraw-map">
-    <div className="excalidraw-map" aria-label="Editable semantic Map" onContextMenu={(event) => event.preventDefault()}>
+    <div className="excalidraw-map" aria-label="Editable Map" onContextMenu={(event) => event.preventDefault()}>
       <Excalidraw
         key={sceneKey}
         initialData={initialData}

@@ -174,7 +174,7 @@ async function main(): Promise<void> {
       await page.getByRole("button", { name: "View video" }).click();
       await expect(page.locator(".focused-output-preview video")).toBeVisible();
       await page.getByRole("button", { name: "Show original" }).click();
-      await expect(page.getByRole("dialog", { name: "Original brainstorm" })).toContainText("Became a connected Output set");
+      await expect(page.getByRole("dialog", { name: "Original brainstorm" })).toContainText("Became finished work");
     }, 3000);
 
     const finalState = readWorkshopState(dataRoot);

@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-16 14:45 CT
+Last updated: 2026-07-16 15:04 CT
 
 ## Status
 
@@ -97,7 +97,7 @@ WorkshopLM should preserve the clarity that makes NotebookLM useful while comple
 
 - [x] Make voice and text feel like two inputs to the same Conversation, not separate modes. Either path produces a durable Source, grounded Map updates, and one clear next action without asking the professional to understand models, retrieval, or orchestration. The 2026-07-16 live WebRTC proof persisted the spoken Source/turn and exact provider/tool provenance through the same center-column Conversation used by text.
 - [x] Keep the NotebookLM information model professionals already understand—one Workshop, a clear Source set, a central thinking surface, and generated work—while removing its style inconsistency and terminal-output limitations.
-- [x] Keep one dominant current object. Sources remain available without owning the canvas; Production remains visible without becoming a dashboard; secondary detail moves into contextual sheets and focused object views.
+- [x] Keep one dominant current object. Sources remain available without owning the canvas; Create remains visible without becoming a dashboard; secondary detail moves into contextual sheets and focused object views.
   - 2026-07-16 compact-navigation pass: removed the last persistent five-item object strip and replaced it with one `Views` sheet assembled from the locked SideSheet, ListGroup, ListRow, and ListRowAction primitives. Chat, Map, Brief, Outputs, and Storyboard remain one interaction away; incomplete objects say `Available later`; focus returns to the trigger; and the current object gains the reclaimed vertical space.
 - [x] Preserve the five-second test at desktop and compact widths: the professional can name what they are viewing, which Sources support it, and what to do next.
 - [x] Treat the Excalidraw Map as the editable thinking layer, not an exposed drawing tool. WorkshopLM owns clustering, evidence colors, source links, fitting, persistence, and undo; the professional directly moves, resizes, edits, and traces ideas without learning Excalidraw mechanics.
@@ -121,6 +121,7 @@ WorkshopLM should preserve the clarity that makes NotebookLM useful while comple
   - 2026-07-16 privacy-and-plain-language pass: the workbench `Add source` sheet now sends pasted notes as `private`, identical to the first-run path, and a browser-level request assertion prevents regression to `sanitized`. Replaced `source-defensible`, `grounded thinking`, and provider-evidence errors with plain descriptions of sourced claims, organized ideas, selected Sources, and a transcript retry. The AI-voice disclosure now tells the professional exactly what can be reviewed before audio is created. Keep this continuous item open through the founder-Source film pass.
   - 2026-07-16 public-package privacy pass: submission export now refuses every active private Source before it reads or copies shareable evidence. Founder imports stay private unless the operator deliberately supplies `--share-founder-source`; the raw staged recording and transcript are Git-ignored. This preserves the meta-demo reveal without making public sharing an implicit consequence of local capture.
   - 2026-07-16 source-truth pass: replaced user-visible `Verified` with the narrower `Sourced` wherever WorkshopLM means “this claim retains a Source edge.” The Brief now names `Sources behind this brief`; Chat names Sources directly; exact locators remain one interaction away. Closing a contextual sheet also restores both focus and scroll, preventing the focused artifact from jumping under the header. All 29 production-browser cases passed after explicit desktop, compact, onboarding, Brief/Style, Map, and Video review. Keep this continuous item open through the founder-Source film pass.
+  - 2026-07-16 final internal-language pass: the workbench now calls its right rail `Create`, its tool-activity channel `Workshop`, and its canvas simply `Editable Map`. The original-brainstorm reveal says `Became finished work` and measures time to the first `finished Output` instead of exposing production-system language. Refreshed desktop, compact, and mobile reveal baselines passed visual inspection, and all 30 production-browser scenarios passed. Keep this continuous item open through the founder-Source film pass.
 
 The implementation may add composites only when the official Apps in ChatGPT library lacks the required pattern; those composites must be assembled solely from its verified primitives and inherit its spacing, typography, color, elevation, focus, and responsive behavior.
 
