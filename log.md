@@ -2720,6 +2720,22 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-16 17:29 CT — GOAL reconciliation log-order correction
+
+- The complete `17:28 CT — GOAL.md concurrent-edit reconciliation` entry was appended at line 2723 because its patch matched an earlier repeated Session-ID anchor. It remains valid evidence, but this tail entry is the chronological marker.
+- The current `GOAL.md` remains 209 lines with exactly five top-level sections and five active items. No product code, provider call, or unrelated plan/fixture state changed in this milestone.
+
+---
+
+## 2026-07-16 17:28 CT — GOAL.md concurrent-edit reconciliation
+
+- A concurrent workspace edit arrived during the first integrity pass and expanded the replacement to ten top-level sections and six active items. Preserved its useful product-freeze, audience, platform, and non-goal language while folding everything back into the five-section contract.
+- The reconciled `GOAL.md` is 209 lines, contains exactly five top-level sections and five unchecked critical-path items, preserves the governing product statement verbatim, and contains none of the deprecated active terms.
+- Every relative evidence link resolves and `git diff --check` passes. The earlier 17:25 entry's 213-line count describes the first replacement before reconciliation; 209 lines is the authoritative current count.
+- The unrelated pre-existing `PLAN-2026-07-13.md` modification and the unstaged founder-rehearsal fixture were not edited or included in this documentation milestone.
+
+---
+
 ## 2026-07-16 17:17 CT — Stable-motion milestone passes the complete repository and packet gates
 
 - `pnpm check` passed lint, typecheck, and tests across all thirteen packages: 120 worker tests, 30 web tests, and 19 production-renderer tests are green.
@@ -9508,3 +9524,45 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The complete `17:17 CT — Stable-motion milestone passes the complete repository and packet gates` entry was appended at line 2723 because its patch matched an earlier repeated Session-ID anchor. It remains valid evidence, but this tail entry is the chronological marker.
 - `pnpm check` passed all thirteen packages, including 120 worker, 30 web, and 19 production-renderer tests. `pnpm submission:verify` reports the 25-asset package valid/current/untampered, `pnpm submission:packet:verify` passed the new sample film and judge fixture, the active-code motion search is clean, and `git diff --check` passes.
 - No OpenAI request ran; the provider-operation ledger remains 107. The pre-existing user edit to `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+---
+
+## 2026-07-16 17:25 CT — GOAL.md returns to a product compass
+
+**Area:** Product direction / autonomous execution / vocabulary / completion path
+
+### Changed
+
+- Replaced the 889-line mixed vision, execution, and evidence document with a 213-line current-state compass containing exactly five sections: North star, Locked product contract, Definition of complete, Current critical path, and Evidence pointers.
+- Made the governing product statement explicit: WorkshopLM turns conversations and source material into presentations, graphics, Audio Overviews, visual Maps, Storyboards, and Videos that share knowledge, visual identity, and Source connections. No single format is the product destination.
+- Preserved the complete implemented product family and durable boundaries: multimodal capture, grounded Conversation and Sources, semantic Excalidraw Map, two consequential approvals, website-derived or manual Style, versioned `FRAME.md` and `DESIGN.md`, professional created work, local HyperFrames Video, source tracing, immutable history, controlled revision, `Needs update`, privacy-safe public packaging, official Apps in ChatGPT design primitives, and the local ChatGPT/Codex browser surface.
+- Reduced the active execution queue to five outcome-level items: record the founder brainstorm, run the authentic Workshop, review and refine the resulting knowledge work, complete and review the public video, then verify and submit.
+- Added the strict five-question alignment test. Work that does not improve capture, thinking, created-work quality, source trust or controlled revision, or the final demonstration does not enter the active goal.
+- Locked active vocabulary around professional knowledge work and its first-class formats. Historical evidence remains unchanged where older wording is part of the record.
+
+### Verified
+
+- `wc -l GOAL.md` reports 213 lines, inside the requested 150–250-line operating range.
+- Heading inspection reports exactly the five required top-level sections.
+- The active critical path contains exactly five unchecked items and no lower-level implementation queue.
+- A case-insensitive search found none of the deprecated active terms in `GOAL.md`.
+- Every relative Markdown evidence pointer resolves to an existing repository path.
+- `git diff --check` passes. This documentation-only change made no OpenAI provider request and did not rerun product checks whose latest passing evidence remains in the preceding log entries.
+
+### Decisions
+
+- `GOAL.md` is now the compass: product thesis, locked contract, outcome-level completion, immediate path, and pointers only. `log.md` remains the append-only journey and evidence history.
+- A visible blocker on the founder transformation or final demonstration outranks another deterministic refinement, speculative feature, document, or test.
+- `PLAN-2026-07-13.md` remains advisory only where it agrees with the new compass, current implementation truth, and the latest user direction. Its pre-existing user modification was not edited.
+
+### Open items
+
+- The five-item current critical path in `GOAL.md` is the entire active queue. The next required external input remains the authentic founder recording and transcript.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 17:30 CT — GOAL reconciliation chronology tail
+
+- The complete `17:28 CT — GOAL.md concurrent-edit reconciliation` entry and its `17:29 CT` log-order note were appended against earlier repeated anchors. They remain valid append-only evidence; this entry is the authoritative chronological tail marker.
+- Current truth is unchanged: `GOAL.md` is 209 lines with exactly five top-level sections and five active critical-path items. No product code or provider operation changed.
