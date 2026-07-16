@@ -102,16 +102,16 @@
   "outputs": {
     "inputManifest": "outputs/dogfood-ai-collective-chapter-brief/deck-input.json",
     "rebuildCommand": "pnpm dogfood:deck:build",
-    "htmlSha256": "479080e06a19fdb782cc46c4b683a48e1afff9d82a05228c8a7bca32531bbc5d",
-    "pptxSha256": "2e799084acfd462a5cd6d78519f90b48aac57564bba8f93f1021e3b259d9a67c",
-    "pdfSha256": "a7217fc969dca4d7f1a34e30705f54c923635ad7cc279bc4a8e91187f7db7631",
-    "contactSheetSha256": "a81366d314e18f436ba29987d1a081f27e676d1793dfb89bda5aa23364a7e333",
+    "htmlSha256": "d97c27e64ed8ae6c34858ceaa191b51cd0557987b9fb28de5e58924fcca45506",
+    "pptxSha256": "895bb2e7976a4a92ea39cf8be82e19e00b4183df18deb35664716b0624a5252c",
+    "pdfSha256": "71b55fb1bc588a24225c383ae357f1b5431ec460dd6120f13d287798630669cb",
+    "contactSheetSha256": "759318ed1c89d0effb22d57ac61f533a2f1f22530c2a4e3ac217c5a992d3de28",
     "slides": 9,
     "pageSize": "16:9",
     "pptxArchive": "passed",
     "libreOfficeRoundTrip": "passed",
     "visualInspection": "passed-no-observed-overflow-clipping-raw-implementation-labels-or-unlabeled-derived-claims",
-    "latestRevision": "2026-07-15 21:48 CT: rebuilt the thin five-slide teaser as a nine-slide decision artifact; added editable plan and decision layouts, visible derived-content labels, operating commitments, and a decision-ready sequence while preserving quiet citations and exact source notes"
+    "latestRevision": "2026-07-15 23:06 CT: replaced the renderer's repeated first-slide cover copy with an intentional executive framing line; refreshed the editable PowerPoint, PDF round trip, review frames, contact sheet, and all three Intent Profile comparisons"
   },
   "boundary": "This is the first privacy-safe candidate intended for a real professional audience. It is ready for cold review but has not received an external send-or-revise judgment and is not externally approved."
 }

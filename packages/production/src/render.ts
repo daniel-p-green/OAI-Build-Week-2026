@@ -23,6 +23,7 @@ export type IntentProfile = "client_facing_pitch" | "board_deck" | "internal_wor
 export type RenderBlock = { id: string; heading: string; body: string; items?: readonly string[]; citations: readonly string[]; citationLabel?: string; layout?: SlideLayout };
 export type RenderBrief = {
   workshopTitle: string;
+  summary?: string;
   version: string;
   style: {
     accent: string;
@@ -63,7 +64,11 @@ const deckLabel = (brief: RenderBrief) => `${brief.style.name ?? "Workshop"} · 
 const infographicLabel = (brief: RenderBrief) => brief.style.intent === "board_deck" ? "Leadership evidence brief" : brief.style.intent === "internal_workshop" ? "Workshop action brief" : "Source-defensible brief";
 const intentProfile = (brief: RenderBrief): IntentProfile => brief.style.intent ?? "client_facing_pitch";
 const intentClass = (brief: RenderBrief) => `intent-${intentProfile(brief).replaceAll("_", "-")}`;
-const deckSummary = (brief: RenderBrief) => brief.blocks[0]?.body || brief.blocks[0]?.heading || "A grounded brief with every factual claim connected to its source.";
+const deckSummary = (brief: RenderBrief) => brief.summary?.trim() || (intentProfile(brief) === "board_deck"
+  ? "Decision context and evidence from the approved Workshop."
+  : intentProfile(brief) === "internal_workshop"
+    ? "A grounded working plan for discussion and action."
+    : "A source-defensible brief with a clear next move.");
 const slideLayout = (block: RenderBlock, index: number, count: number): SlideLayout => block.layout ?? (index === 0 ? "statement" : index === count - 1 ? "recommendation" : index % 2 ? "split" : "proof");
 const slideLabel = (layout: SlideLayout, intent: IntentProfile = "client_facing_pitch") => {
   if (intent === "board_deck") return layout === "proof" ? "Decision evidence" : layout === "plan" ? "Execution plan" : layout === "decision" || layout === "recommendation" ? "Leadership decision" : layout === "split" ? "Decision context" : "Executive summary";

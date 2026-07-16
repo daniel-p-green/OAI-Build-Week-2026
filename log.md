@@ -6811,3 +6811,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Explicit provider authorization and audible inspection are still required for Audio Overview speech, alongside the other provider evidence families.
 - The external deck cold `Send`/`Revise` judgment, founder recording, final public Video and links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 23:09 CT — Presentation covers stop repeating slide one
+
+**Area:** Professional send-it quality / Presentation renderer / Intent Profiles
+
+### Changed
+
+- Audited the actual nine-slide external-use contact sheet and found a concrete machine-assembly defect: the cover silently reused the first content slide's supporting sentence, then repeated it verbatim on slide two.
+- Added an explicit executive-summary field to the presentation contract. Reviewable external briefs may supply an intentional framing line; normal Workshop generation now produces a factual Intent-aware summary grounded in the active Source count.
+- Added distinct safe fallbacks for Client pitch, Board presentation, and Team workshop so older callers never regain the repeated-copy behavior.
+- Rebuilt the AI Collective external-use HTML, editable PowerPoint, nine-page PDF, cover frame, and contact sheet with the non-repeating line `A decision-ready plan for launching a credible, repeatable local chapter.`
+- Refreshed the three Intent Profile deck and infographic review sets and their hash manifest against the current renderer. Updated the external-deck evidence record to the exact current hashes.
+
+### Verified
+
+- The rebuilt cover and slide two were inspected at full resolution. The cover has its own executive framing line; the source-backed chapter-lead sentence now appears exactly once in both HTML and extracted PDF text.
+- `unzip -t` reported no errors in the editable PowerPoint archive. LibreOffice completed the round trip, and `pdfinfo` reported nine 16:9 pages at 960×540 points.
+- The refreshed three-profile contact sheet was visually inspected. Client, Board, and Team covers retain their distinct systems; metric and plan slides remain intact with no observed clipping or overflow.
+- Added renderer regressions for explicit summaries, profile-aware fallbacks, and non-duplication. `pnpm check` passed all 13 packages, including 13 production, 106 worker, 25 web, 16 domain, and seven plugin tests.
+- `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. The 18-asset package remains valid, current, untampered, and honestly `partial` with five provider-evidence gaps.
+- `pnpm demo:film:verify` passed its draft truth gate at 162 seconds; six shots are ready and four remain evidence-blocked. No paid provider request ran.
+
+### Decisions
+
+- Cover copy is editorial framing, not an implementation convenience. A renderer may use a calm profile-aware fallback, but it may not promote the first slide's evidence sentence into duplicated cover copy.
+- Generated framing may state the selected Source count because that is durable Workshop state. It must not invent a business outcome or claim that is absent from the approved Brief.
+- This removes a visible send-it defect but does not substitute internal visual review for the intended audience's cold judgment.
+
+### Open items
+
+- Put the refreshed nine-slide deck in front of its intended professional audience and record `Send` or the first blocking revision.
+- Provider-backed text, speech, image, and narration proof; founder recording; final public Video and links; and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

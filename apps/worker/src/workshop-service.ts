@@ -1067,7 +1067,13 @@ export async function generateOutput(type: "deck" | "infographic", root?: string
   }) : current.mapNodes.filter((node) => node.kind === "grounded").slice(0, 4).map((node, index, all) => ({ id: node.id, heading: outputHeading(prose(node.title)), body: outputBody(prose(node.body)), citations: [node.locator], layout: index === 0 ? "statement" as const : index === all.length - 1 ? "recommendation" as const : index % 2 ? "split" as const : "proof" as const }));
   const outputId = `${type}-v${current.outputs.filter((output) => output.type === type).length + 1}`;
   const logo = await embeddedLocalLogo(current.style, dataRoot);
-  const rendered = await writeRenderedArtifact(dataRoot, current.id === defaultWorkshopId ? outputId : `${current.id}/${outputId}`, type, { workshopTitle: current.title, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper, fonts: current.style.licensedFonts, intent: current.style.intentProfile, name: current.style.name, logoData: logo?.data, logoAspectRatio: logo ? logo.width / logo.height : undefined }, blocks });
+  const sourceCount = current.activeSourceIds.length;
+  const summary = current.style.intentProfile === "board_deck"
+    ? `Decision context and evidence grounded in ${sourceCount} selected ${sourceCount === 1 ? "source" : "sources"}.`
+    : current.style.intentProfile === "internal_workshop"
+      ? `A working plan grounded in ${sourceCount} selected ${sourceCount === 1 ? "source" : "sources"}.`
+      : `A decision-ready brief grounded in ${sourceCount} selected ${sourceCount === 1 ? "source" : "sources"}.`;
+  const rendered = await writeRenderedArtifact(dataRoot, current.id === defaultWorkshopId ? outputId : `${current.id}/${outputId}`, type, { workshopTitle: current.title, summary, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper, fonts: current.style.licensedFonts, intent: current.style.intentProfile, name: current.style.name, logoData: logo?.data, logoAspectRatio: logo ? logo.width / logo.height : undefined }, blocks });
   const stored = await storeArtifact(dataRoot, `${current.id}-${outputId}`, Buffer.from(await readFile(join(dataRoot, rendered.relativePath))), "text/html");
   const editableStored = rendered.editableRelativePath ? await storeArtifact(dataRoot, `${current.id}-${outputId}-editable`, Buffer.from(await readFile(join(dataRoot, rendered.editableRelativePath))), "application/vnd.openxmlformats-officedocument.presentationml.presentation") : undefined;
   const createdAt = new Date().toISOString();

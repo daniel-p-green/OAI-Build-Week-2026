@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { fitLogoBox, renderDeck, renderInfographic, writeRenderedArtifact } from "./render.js";
 
-const brief = { workshopTitle: "WorkshopLM", version: "brief-v1", style: { accent: "#1668E3", ink: "#171816", paper: "#F4F2EC", fonts: ["Arial", "Arial"], intent: "client_facing_pitch" as const, name: "WorkshopLM", logoData: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAEAQH/6X8XWQAAAABJRU5ErkJggg==" }, blocks: [
+const brief = { workshopTitle: "WorkshopLM", summary: "A decision-ready presentation grounded in selected sources.", version: "brief-v1", style: { accent: "#1668E3", ink: "#171816", paper: "#F4F2EC", fonts: ["Arial", "Arial"], intent: "client_facing_pitch" as const, name: "WorkshopLM", logoData: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAEAQH/6X8XWQAAAABJRU5ErkJggg==" }, blocks: [
   { id: "claim-1", heading: "A traced claim", body: "Evidence remains inspectable.", citations: ["meeting · 12:41"] },
   { id: "claim-2", heading: "A second proof point", body: "The layout adapts to the role of the content.", citations: ["brief · section 2"] },
   { id: "claim-3", heading: "The recommendation", body: "Move from understanding to finished work.", citations: ["strategy · recommendation"] },
@@ -17,6 +17,8 @@ describe("production renderers", () => {
   });
   it("renders varied source-traceable layouts into deck and infographic HTML", () => {
     const deck = renderDeck(brief);
+    expect(deck).toContain("A decision-ready presentation grounded in selected sources.");
+    expect(deck.match(/Evidence remains inspectable\./g)).toHaveLength(1);
     expect(deck).toContain("meeting · 12:41");
     expect(deck).toContain('class="slide cover"');
     expect(deck).toContain('class="slide statement"');
@@ -28,6 +30,16 @@ describe("production renderers", () => {
     expect(infographic).toContain("Source-defensible brief");
     expect(infographic).toContain('class="infographic-grid"');
     expect(infographic.match(/<article class="block">/g)).toHaveLength(3);
+  });
+  it("uses an intentional profile-aware cover summary instead of repeating slide one", () => {
+    const withoutSummary = { ...brief, summary: undefined };
+    const client = renderDeck(withoutSummary);
+    const board = renderDeck({ ...withoutSummary, style: { ...brief.style, intent: "board_deck" as const } });
+    const workshop = renderDeck({ ...withoutSummary, style: { ...brief.style, intent: "internal_workshop" as const } });
+    expect(client).toContain("A source-defensible brief with a clear next move.");
+    expect(board).toContain("Decision context and evidence from the approved Workshop.");
+    expect(workshop).toContain("A grounded working plan for discussion and action.");
+    expect(client.match(/Evidence remains inspectable\./g)).toHaveLength(1);
   });
   it("treats a claim with no supporting sentence as an intentional sparse slide", () => {
     const deck = renderDeck({ ...brief, blocks: [{ id: "claim-only", heading: "One defensible statement", body: "", citations: ["meeting · 12:41"], layout: "statement" }] });
