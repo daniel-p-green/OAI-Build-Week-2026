@@ -695,7 +695,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   </SideSheet>;
 }
 
-function ConversationView({ state, busy, streamingReply, onSend, onVoiceSave, onVoiceToolEvent, onConfirmTool, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; streamingReply: string; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[] }) => Promise<boolean>; onVoiceToolEvent: (event: unknown) => Promise<Record<string, unknown> | undefined>; onConfirmTool: (call: ConversationToolCall) => Promise<boolean>; onShowSource: (target?: EvidenceTarget) => void }) {
+function ConversationView({ state, busy, streamingReply, onSend, onVoiceSave, onVoiceToolEvent, onConfirmTool, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; streamingReply: string; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] } }) => Promise<boolean>; onVoiceToolEvent: (event: unknown) => Promise<Record<string, unknown> | undefined>; onConfirmTool: (call: ConversationToolCall) => Promise<boolean>; onShowSource: (target?: EvidenceTarget) => void }) {
   const [draft, setDraft] = useState("");
   const [voiceOpen, setVoiceOpen] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
@@ -728,7 +728,7 @@ function ConversationView({ state, busy, streamingReply, onSend, onVoiceSave, on
       <div ref={endRef} />
     </div>
     <div className="conversation-compose">
-      {voiceOpen && <RealtimeCapture disabled={busy} onProviderToolEvent={onVoiceToolEvent} onSave={async (text, capture) => { const saved = await onVoiceSave(text, capture); if (saved) setVoiceOpen(false); return saved; }} />}
+      {voiceOpen && <RealtimeCapture mode="conversation" disabled={busy} onProviderToolEvent={onVoiceToolEvent} onSave={async (text, capture) => { const saved = await onVoiceSave(text, capture); if (saved) setVoiceOpen(false); return saved; }} />}
       <form className="conversation-composer" onSubmit={(event) => { event.preventDefault(); void send(); }}>
         <TextArea aria-label="Message WorkshopLM" placeholder="Ask about the selected Sources…" value={draft} maxLength={4000} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); void send(); } }} />
         <div className="conversation-actions"><Button type="button" variant="secondary" aria-expanded={voiceOpen} onClick={() => setVoiceOpen((current) => !current)}>{voiceOpen ? "Close voice" : "Voice"}</Button><Button type="submit" disabled={busy || !draft.trim()}>{busy ? "Working…" : "Send"}</Button></div>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { emptyRealtimeTranscript, realtimeTranscriptEvidence, realtimeTranscriptText, reduceRealtimeTranscript } from "./realtime-transcript";
+import { emptyRealtimeTranscript, realtimeAssistantTranscript, realtimeTranscriptEvidence, realtimeTranscriptText, reduceRealtimeTranscript } from "./realtime-transcript";
 
 describe("Realtime transcript events", () => {
   it("assembles deltas, replaces them with the final transcript, and keeps turn order", () => {
@@ -15,5 +15,11 @@ describe("Realtime transcript events", () => {
     const emptyCommit = reduceRealtimeTranscript(emptyRealtimeTranscript(), { type: "error", error: { code: "input_audio_buffer_commit_empty", message: "empty" } });
     expect(emptyCommit.error).toBeUndefined();
     expect(reduceRealtimeTranscript(emptyCommit, { type: "conversation.item.input_audio_transcription.failed", error: { message: "No speech detected" } }).error).toBe("No speech detected");
+  });
+
+  it("assembles the spoken assistant transcript with provider evidence", () => {
+    let state = reduceRealtimeTranscript(emptyRealtimeTranscript(), { type: "response.output_audio_transcript.delta", response_id: "response-1", delta: "Grounded " });
+    state = reduceRealtimeTranscript(state, { type: "response.output_audio_transcript.done", response_id: "response-1", event_id: "assistant-event-1", transcript: "Grounded answer." });
+    expect(realtimeAssistantTranscript(state)).toEqual({ text: "Grounded answer.", responseId: "response-1", eventIds: ["assistant-event-1"] });
   });
 });

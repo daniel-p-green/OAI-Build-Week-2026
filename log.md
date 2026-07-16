@@ -6578,3 +6578,36 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Promote Realtime to confirmation-aware speech-to-speech, then live-verify spoken response, interruption, one read, one write, transcript, and provider provenance after authorization.
 - Obtain the external deck `Send`/`Revise` review; provider media, founder recording, final public Video, public links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 21:37 CT — Realtime conversation mode is ready for live voice proof
+
+**Area:** Realtime / Voice / Conversation / Durable provenance
+
+### Changed
+
+- Split the Realtime control into truthful capture and conversation modes. Add Source keeps transcription-only capture; the center Conversation now requests audio output, `marin`, automatic Workshop tools, server-VAD response creation, and interruption.
+- Attached the remote WebRTC media track for speech playback and reduced provider audio-transcript delta/done events into visible assistant text with response and event provenance.
+- Persisted a completed voice session as a private Source plus durable user and assistant turns. When a provider-spoken answer exists, WorkshopLM saves that answer and its tool-derived evidence rather than creating a second deterministic reply.
+- Kept the standard API key exclusively on the server and returned only the short-lived client secret plus explicit session mode to the browser.
+
+### Verified
+
+- Official current Realtime documentation confirms audio output includes a transcript, `output.voice` supports and recommends `marin`, and server VAD supports automatic response creation plus interruption.
+- All 22 web tests passed, including separate capture/conversation session contracts and assistant transcript provenance. All 99 worker tests passed, including provider-spoken answer persistence without a duplicate assistant turn.
+- The real local UI shows `Talk with WorkshopLM`, explains selected-Source grounding, and exposes one `Start talking` action. With live access disabled, the token route returned 503 before provider contact. No paid request ran.
+- `pnpm check`, `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. The submission remains truthfully `partial` with the same four provider-evidence limitations.
+
+### Decisions
+
+- Voice collaboration and source capture share transport but not behavior. Professionals can talk with WorkshopLM in Conversation without turning every Add Source action into an answering agent.
+- The provider-spoken transcript is the durable assistant record. Local fallback text is used only when no provider assistant answer exists.
+- This proves configuration, event handling, UI, and persistence—not live microphone, audio, grounding, or interruption behavior.
+
+### Open items
+
+- Return a successful confirmed write result to the active Realtime data channel so the spoken agent can acknowledge and continue after the professional's visible action.
+- Live-verify one grounded read, one visible confirmed write, spoken response, interruption, input/assistant transcripts, and durable provider provenance after explicit spend authorization.
+- Obtain the external deck `Send`/`Revise` review; provider media, founder recording, final public Video, public links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

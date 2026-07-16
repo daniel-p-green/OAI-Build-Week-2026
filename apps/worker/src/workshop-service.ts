@@ -19,7 +19,7 @@ export type WorkshopChunk = { id: string; sourceId: string; text: string; locato
 export type WorkshopClaim = { id: string; sourceId: string; chunkId: string; text: string; evidenceState: "verified"; locator: string };
 export type WorkshopCandidate = { id: string; category: "goal" | "audience" | "claim" | "constraint" | "question"; text: string; sourceId: string; chunkId: string; locator: string };
 export type WorkshopMapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
-export type RealtimeCaptureEvidence = { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[] };
+export type RealtimeCaptureEvidence = { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] } };
 export type WorkshopTranscriptSegment = { id: string; origin: "manual_import" | "realtime_fallback"; transport: "fixture" | "webrtc"; text: string; capturedAt: string; provider?: Omit<RealtimeCaptureEvidence, "transport"> };
 export type WorkshopConversationTurn = DomainConversationTurn;
 export type WorkshopToolInvocation = DomainWorkshopToolCall;
@@ -680,15 +680,20 @@ export async function ingestSource(input: SourceIngestion, root?: string): Promi
 }
 export async function captureFallbackTranscript(text: string, root?: string, evidence?: RealtimeCaptureEvidence): Promise<WorkshopState> {
   const normalized = normalizeSourceText(text); if (!normalized) throw new Error("Capture text is required."); const capturedAt = new Date().toISOString();
-  const ingested = await ingestSource({ title: `Capture-only transcript ${capturedAt}`, origin: "gpt-realtime-2.1 capture-only fallback", type: "TXT", text: normalized, permission: "private" }, root);
+  const voiceMode = evidence?.assistant ? "conversation" : "capture-only fallback";
+  const ingested = await ingestSource({ title: `Voice ${voiceMode} transcript ${capturedAt}`, origin: `gpt-realtime-2.1 ${voiceMode}`, type: "TXT", text: normalized, permission: "private" }, root);
   if (evidence && (!evidence.itemIds.length || !evidence.eventIds.length || evidence.itemIds.some((value) => !value.trim()) || evidence.eventIds.some((value) => !value.trim()))) throw new Error("Realtime capture evidence requires provider item and event IDs.");
   const digest = createHash("sha256").update(`${capturedAt}\n${normalized}`).digest("hex").slice(0, 12);
   const segment: WorkshopTranscriptSegment = { id: `fallback-${digest}`, origin: "realtime_fallback", transport: evidence?.transport ?? "fixture", text: normalized, capturedAt, provider: evidence ? { model: evidence.model, transcriptionModel: evidence.transcriptionModel, itemIds: [...new Set(evidence.itemIds)], eventIds: [...new Set(evidence.eventIds)] } : undefined };
   const source = ingested.sourceItems.at(-1);
   const reply = groundedConversationReply(ingested, normalized, root);
+  const assistantText = evidence?.assistant?.text ? normalizeSourceText(evidence.assistant.text) : reply.text;
+  if (evidence?.assistant && (!assistantText || !evidence.assistant.responseId.trim() || !evidence.assistant.eventIds.length)) throw new Error("Realtime assistant evidence is incomplete.");
+  const realtimeToolIds = evidence?.assistant ? ingested.toolCalls.filter((call) => call.channel === "realtime" && call.provider?.responseId === evidence.assistant?.responseId && !call.result.isError).map((call) => call.id) : [];
+  const assistantEvidence = evidence?.assistant ? providerConversationEvidence(ingested, realtimeToolIds) : reply.evidence;
   const turns: WorkshopConversationTurn[] = [
     ConversationTurn.parse({ id: `turn-user-${digest}`, workshopId: ingested.id, role: "user", text: normalized, input: "voice", createdAt: capturedAt, evidence: [], sourceId: source?.id, operation: { name: "voice_capture", status: "completed" } }),
-    ConversationTurn.parse({ id: `turn-assistant-${digest}`, workshopId: ingested.id, role: "assistant", text: reply.text, input: "system", createdAt: capturedAt, evidence: reply.evidence, operation: reply.operation }),
+    ConversationTurn.parse({ id: evidence?.assistant ? `turn-assistant-realtime-${createHash("sha256").update(evidence.assistant.responseId).digest("hex").slice(0, 16)}` : `turn-assistant-${digest}`, workshopId: ingested.id, role: "assistant", text: assistantText, input: "system", createdAt: capturedAt, evidence: assistantEvidence, operation: assistantEvidence.length ? { name: "search", status: "completed" } : reply.operation }),
   ];
   return write({ ...ingested, transcriptSegments: [...ingested.transcriptSegments, segment], conversationTurns: [...ingested.conversationTurns, ...turns], firstTranscriptAt: ingested.firstTranscriptAt ?? capturedAt, updatedAt: capturedAt }, root);
 }

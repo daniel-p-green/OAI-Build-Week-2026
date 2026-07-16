@@ -2,21 +2,25 @@
 
 import { Button, Card } from "@workshoplm/ui";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { emptyRealtimeTranscript, realtimeTranscriptEvidence, realtimeTranscriptText, reduceRealtimeTranscript, type RealtimeTranscriptState } from "./realtime-transcript";
+import { emptyRealtimeTranscript, realtimeAssistantTranscript, realtimeTranscriptEvidence, realtimeTranscriptText, reduceRealtimeTranscript, type RealtimeTranscriptState } from "./realtime-transcript";
 
 type CapturePhase = "idle" | "connecting" | "recording" | "review" | "saving" | "error";
-type TokenResponse = { value?: string; expiresAt?: number; model?: "gpt-realtime-2.1"; transcriptionModel?: "gpt-realtime-whisper"; error?: string };
+type RealtimeMode = "capture" | "conversation";
+type TokenResponse = { value?: string; expiresAt?: number; model?: "gpt-realtime-2.1"; transcriptionModel?: "gpt-realtime-whisper"; mode?: RealtimeMode; error?: string };
+type SaveEvidence = { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] } };
 
-export function RealtimeCapture({ disabled = false, onSave, onProviderToolEvent }: { disabled?: boolean; onSave: (text: string, evidence: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[] }) => Promise<boolean>; onProviderToolEvent?: (event: unknown) => Promise<Record<string, unknown> | undefined> }) {
+export function RealtimeCapture({ disabled = false, mode = "capture", onSave, onProviderToolEvent }: { disabled?: boolean; mode?: RealtimeMode; onSave: (text: string, evidence: SaveEvidence) => Promise<boolean>; onProviderToolEvent?: (event: unknown) => Promise<Record<string, unknown> | undefined> }) {
   const [phase, setPhase] = useState<CapturePhase>("idle");
   const [transcript, setTranscript] = useState<RealtimeTranscriptState>(() => emptyRealtimeTranscript());
   const [error, setError] = useState("");
   const peerRef = useRef<RTCPeerConnection | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const channelRef = useRef<RTCDataChannel | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const modelRef = useRef<{ model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper" } | null>(null);
   const text = useMemo(() => realtimeTranscriptText(transcript), [transcript]);
   const providerEvents = useMemo(() => realtimeTranscriptEvidence(transcript), [transcript]);
+  const assistant = useMemo(() => realtimeAssistantTranscript(transcript), [transcript]);
 
   function release() {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -36,14 +40,15 @@ export function RealtimeCapture({ disabled = false, onSave, onProviderToolEvent 
     setTranscript(emptyRealtimeTranscript());
     try {
       if (!navigator.mediaDevices?.getUserMedia) throw new Error("Microphone capture is not available in this browser.");
-      const tokenResponse = await fetch("/api/realtime/token", { method: "POST" });
+      const tokenResponse = await fetch("/api/realtime/token", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ mode }) });
       const token = await tokenResponse.json() as TokenResponse;
-      if (!tokenResponse.ok || !token.value || token.model !== "gpt-realtime-2.1" || token.transcriptionModel !== "gpt-realtime-whisper") throw new Error(token.error ?? "Voice capture could not start.");
+      if (!tokenResponse.ok || !token.value || token.model !== "gpt-realtime-2.1" || token.transcriptionModel !== "gpt-realtime-whisper" || token.mode !== mode) throw new Error(token.error ?? "Voice capture could not start.");
       modelRef.current = { model: token.model, transcriptionModel: token.transcriptionModel };
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       const peer = new RTCPeerConnection();
       peerRef.current = peer;
+      peer.addEventListener("track", (event) => { if (audioRef.current) audioRef.current.srcObject = event.streams[0] ?? new MediaStream([event.track]); });
       for (const track of stream.getAudioTracks()) peer.addTrack(track, stream);
       const channel = peer.createDataChannel("oai-events");
       channelRef.current = channel;
@@ -94,7 +99,7 @@ export function RealtimeCapture({ disabled = false, onSave, onProviderToolEvent 
     setPhase("saving");
     const provider = modelRef.current;
     if (!provider || !providerEvents.itemIds.length || providerEvents.itemIds.length !== providerEvents.eventIds.length) { setError("Provider transcript evidence is incomplete. Record the thought again."); setPhase("review"); return; }
-    const saved = await onSave(text.trim(), { transport: "webrtc", ...provider, ...providerEvents });
+    const saved = await onSave(text.trim(), { transport: "webrtc", ...provider, ...providerEvents, assistant: mode === "conversation" && assistant.text && assistant.responseId ? { text: assistant.text, responseId: assistant.responseId, eventIds: assistant.eventIds } : undefined });
     if (saved) { release(); return; }
     setError("The transcript was captured but could not be added. Try again.");
     setPhase("review");
@@ -102,19 +107,21 @@ export function RealtimeCapture({ disabled = false, onSave, onProviderToolEvent 
 
   const transcriptError = transcript.error || error;
   return <Card className="realtime-capture" aria-label="Record voice">
-    <div className="realtime-capture-copy"><h3>Record voice</h3><p>Your spoken thought becomes a private Source and stays in this Conversation.</p></div>
+    <audio ref={audioRef} autoPlay aria-hidden="true" />
+    <div className="realtime-capture-copy"><h3>{mode === "conversation" ? "Talk with WorkshopLM" : "Record voice"}</h3><p>{mode === "conversation" ? "Speak naturally. Answers stay grounded in the selected Sources, and your transcript becomes a private Source." : "Your spoken thought becomes a private Source and stays in this Conversation."}</p></div>
     <div className="realtime-capture-status" aria-live="polite">
       {phase === "connecting" && <p>Connecting to voice…</p>}
       {phase === "recording" && <p><span className="recording-dot" aria-hidden="true" /> Listening</p>}
       {phase === "review" && !text && <p>Finishing transcript…</p>}
       {text && <blockquote>{text}</blockquote>}
+      {assistant.text && <blockquote><strong>WorkshopLM</strong><br />{assistant.text}</blockquote>}
       {transcriptError && <p className="capture-error" role="alert">{transcriptError}</p>}
     </div>
     <div className="button-row">
-      {(phase === "idle" || phase === "error") && <Button disabled={disabled} onClick={() => { void start(); }}>Record voice</Button>}
+      {(phase === "idle" || phase === "error") && <Button disabled={disabled} onClick={() => { void start(); }}>{mode === "conversation" ? "Start talking" : "Record voice"}</Button>}
       {phase === "connecting" && <Button disabled>Connecting…</Button>}
-      {phase === "recording" && <Button onClick={stop}>Stop</Button>}
-      {phase === "review" && <Button disabled={!text.trim() || !providerEvents.itemIds.length} onClick={() => { void save(); }}>Add transcript</Button>}
+      {phase === "recording" && <Button onClick={stop}>{mode === "conversation" ? "End conversation" : "Stop"}</Button>}
+      {phase === "review" && <Button disabled={!text.trim() || !providerEvents.itemIds.length} onClick={() => { void save(); }}>{mode === "conversation" ? "Save conversation" : "Add transcript"}</Button>}
       {phase === "saving" && <Button disabled>Adding…</Button>}
       {phase !== "idle" && phase !== "saving" && <Button variant="secondary" onClick={cancel}>Cancel</Button>}
     </div>
