@@ -106,7 +106,6 @@ function outputSetStatus(state: PersistedWorkshop | null) {
   const deck = latest("deck");
   const infographic = latest("infographic");
   const generationStarted = Boolean(state.outputs.length || state.audioOverviews.length || state.assetPlan || state.imageBatch);
-  const currentVideo = [...(state.videos ?? [])].sort((left, right) => right.version - left.version)[0];
   const audioOverview = [...(state.audioOverviews ?? [])].reverse().find((item) => !item.stale);
   const failedImages = Boolean(state.imageBatch?.panels.some((panel) => panel.state === "failed"));
   const failedOutputs = Boolean(state.outputRecovery && Object.keys(state.outputRecovery).length);
@@ -122,7 +121,6 @@ function outputSetStatus(state: PersistedWorkshop | null) {
     || state.imageBatch?.stale
     || state.audioOverviews.at(-1)?.stale
     || (state.storyboard.stale && !replacementOnlyStoryboardStale)
-    || currentVideo?.stale
   );
   return { incomplete, stale, actionRequired: incomplete || stale };
 }
@@ -957,7 +955,7 @@ function StoryboardView({ storyboard, imageBatch, approved, panel, busy, onSelec
     <h1 className="visually-hidden">Storyboard</h1>
     <p className="storyboard-meta"><Status tone={approved ? "current" : "waiting"}>{approved ? "Approved" : "Ready for review"}</Status><span>{storyboard?.panels.length ?? 0} panels · {duration} seconds</span></p>
     <CarouselRow className="storyboard-strip">{(storyboard?.panels ?? []).map((item, index) => <button type="button" key={item.id} className={`film-frame ${item.id === panel?.id ? "selected" : ""}`} data-domain-ui="film-frame" style={{ "--panel": index } as CSSProperties} onClick={() => onSelect(item.id)}><span>{String(index + 1).padStart(2, "0")}</span><strong>{item.title}</strong><small>{item.durationSeconds}s</small></button>)}</CarouselRow>
-    {panel && <Card className="panel-editor"><div className={`panel-visual ${image ? "has-image" : ""}`} data-domain-ui="panel-visual" style={{ "--panel": Math.max(0, storyboard?.panels.findIndex((item) => item.id === panel.id) ?? 0) } as CSSProperties}>{image && <img alt="" src={`/api/workshop/artifacts/${image.id}`} />}<div className="panel-visual-copy"><small>{image ? "Image" : "Style preview"}</small><span>{panel.title}</span><p>{panel.narration}</p></div></div><div className="panel-fields"><Input label="Panel title" value={title} onChange={(event) => setTitle(event.target.value)} /><TextArea label="Narration" value={narration} onChange={(event) => setNarration(event.target.value)} /><div className="button-row">{dirty && <Button variant="secondary" disabled={busy || !title.trim() || !narration.trim()} onClick={() => { void onPost({ action: "updateStoryboardPanel", panel: { id: panel.id, title: title.trim(), narration: narration.trim(), durationSeconds: panel.durationSeconds } }); }}>Save</Button>}<Button variant="secondary" size="small" onClick={() => { const evidence = panel.evidence[0]; onShowSource({ sourceId: evidence?.sourceId, claimId: evidence?.claimId, locator: evidence?.locator }); }}>Show source</Button></div></div></Card>}
+    {panel && <Card className="panel-editor"><div className={`panel-visual ${image ? "has-image" : ""}`} data-domain-ui="panel-visual" style={{ "--panel": Math.max(0, storyboard?.panels.findIndex((item) => item.id === panel.id) ?? 0) } as CSSProperties}>{image && <img alt="" src={`/api/workshop/artifacts/${image.id}`} />}<div className="panel-visual-copy"><small>{image ? "Image" : "Style preview"}</small><span>{panel.title}</span><p>{panel.narration}</p></div></div><div className="panel-fields"><Input label="Panel title" value={title} onChange={(event) => setTitle(event.target.value)} /><TextArea label="Narration" value={narration} onChange={(event) => setNarration(event.target.value)} />{dirty && <p className="panel-change-note">Saving will require Storyboard approval and a new Video.</p>}<div className="button-row">{dirty && <Button variant="secondary" disabled={busy || !title.trim() || !narration.trim()} onClick={() => { void onPost({ action: "updateStoryboardPanel", panel: { id: panel.id, title: title.trim(), narration: narration.trim(), durationSeconds: panel.durationSeconds } }); }}>Save changes</Button>}<Button variant="secondary" size="small" onClick={() => { const evidence = panel.evidence[0]; onShowSource({ sourceId: evidence?.sourceId, claimId: evidence?.claimId, locator: evidence?.locator }); }}>Show source</Button></div></div></Card>}
   </article>;
 }
 

@@ -520,7 +520,7 @@ test.describe("completed Workshop judge path", () => {
 
       await page.getByRole("button", { name: "Open Storyboard" }).click();
       await expectPrimaryActions(page, 1);
-      await expect(page.getByRole("button", { name: "Save" })).toHaveCount(0);
+      await expect(page.getByRole("button", { name: "Save changes" })).toHaveCount(0);
       await expectScreen(page, `${viewport.name}-storyboard`);
       await page.locator(".storyboard-strip button").nth(2).click();
       await page.getByRole("button", { name: "Show source" }).click();
@@ -531,9 +531,9 @@ test.describe("completed Workshop judge path", () => {
       const titleField = page.getByRole("textbox", { name: "Panel title" });
       const originalTitle = await titleField.inputValue();
       await titleField.fill(`${originalTitle} revised`);
-      await expect(page.getByRole("button", { name: "Save" })).toBeVisible();
+      await expect(page.getByRole("button", { name: "Save changes" })).toBeVisible();
       await titleField.fill(originalTitle);
-      await expect(page.getByRole("button", { name: "Save" })).toHaveCount(0);
+      await expect(page.getByRole("button", { name: "Save changes" })).toHaveCount(0);
       if (viewport.name === "mobile") {
         const updateOutputs = page.getByRole("button", { name: "Update outputs" });
         if (await updateOutputs.isVisible()) {
@@ -1062,8 +1062,9 @@ test("reduced motion, contrast, and 200 percent logical zoom remain usable", asy
 test("the local render becomes a real Video preview and the next action", async ({ page }) => {
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   const repository = resolve(process.cwd(), "../..");
-  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
-  execFileSync("pnpm", ["exec", "tsx", "apps/web/tests/visual/seed-video.ts", root], { cwd: repository, stdio: "pipe" });
+  const fixtureEnvironment = { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" };
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: fixtureEnvironment, stdio: "pipe" });
+  execFileSync("pnpm", ["exec", "tsx", "apps/web/tests/visual/seed-video.ts", root], { cwd: repository, env: fixtureEnvironment, stdio: "pipe" });
 
   for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
@@ -1117,6 +1118,15 @@ test("the local render becomes a real Video preview and the next action", async 
     await closeDialog(page, "Original brainstorm");
     await expectScreen(page, `${viewport.name}-video-viewer`);
   }
+
+  await page.getByRole("button", { name: "Edit storyboard" }).click();
+  const narration = page.getByRole("textbox", { name: "Narration" });
+  await narration.fill(`${await narration.inputValue()} Tighten the close.`);
+  await expect(page.getByText("Saving will require Storyboard approval and a new Video.", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Save changes" }).click();
+  await expect(page.getByRole("button", { name: "Approve storyboard" })).toBeVisible();
+  await page.getByRole("button", { name: "View outputs" }).click();
+  await expect(page.getByRole("button", { name: /Open Demo video/ })).toContainText("Needs update");
 });
 
 test("a new professional reaches the real Map through the durable first-use path", async ({ page }) => {

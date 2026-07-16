@@ -314,6 +314,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .panel-visual p { max-width: 640px; margin: 0; font-size: 16px; line-height: 26px; }
 .panel-fields { display: grid; align-content: start; gap: 18px; padding: 24px; }
 .panel-fields .status { justify-self: start; }
+.panel-change-note { margin: -6px 0 0; color: #5d5d5d; font-size: 12px; line-height: 17px; }
 
 .focused-output { height: 100%; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; padding: 24px; background: #f3f3f3; }
 .focused-output-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 0 0 20px; }

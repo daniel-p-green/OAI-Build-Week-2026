@@ -7878,3 +7878,37 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 - Founder-Source dogfood and intended-audience review still determine whether the complete revision loop clears the professional send-it bar.
 - Founder capture, the founder-derived final operator run, verified final package, final MP4, external professional review, eligible Session ID, and public submission links remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 06:48 CT — Storyboard edits now lead to the correct next action
+
+**Area:** Professional revision flow / approval consequences / Video staleness
+
+### Changed
+
+- Added concise consequence copy to the dirty Storyboard panel: `Saving will require Storyboard approval and a new Video.` Renamed the conditional action to `Save changes` so it describes a real edit rather than a generic state transition.
+- Repaired the workflow action priority exposed by the new browser proof. A stale existing Video no longer marks the Presentation, Infographic, Image set, or Audio Overview as needing regeneration; after a Storyboard edit, `Approve storyboard` is the dominant next action and the existing Video remains honestly `Needs update`.
+- Extended the real Video regression beyond navigation: it edits narration, saves the new Storyboard version, proves approval is revoked, returns to Outputs, and proves the current Video is stale.
+- Made that regression independently runnable by explicitly seeding the same completed fixture environment used by the production browser server. A focused test no longer relies on an earlier test having opened the seeded Workshop first.
+
+### Verified
+
+- The first full run failed at the expected post-save assertion and exposed the incorrect `Update outputs` priority. The product logic was corrected; the assertion was not weakened.
+- The focused Storyboard revision regression passed independently in 26.9 seconds.
+- The complete production-browser suite passed all 29 tests at desktop, compact, and 390×844 mobile widths.
+- `pnpm check` passed all thirteen packages with 116 worker, 30 web, and 17 production tests.
+- `pnpm demo:e2e` passed the recorded seam through grounded Map, approvals, outputs, Storyboard, and rendered Video.
+- `pnpm submission:packet:verify` passed with Terra, six GPT Image 2 panels, five product Cedar clips, the 2:20 Cedar editorial film, eight ready/two blocked shots, sixteen current UI screens, and four honest founder/final-package gaps.
+- `git diff --check` passed outside the preserved user-owned `PLAN-2026-07-13.md` modification.
+
+### Decisions
+
+- Video is downstream of Storyboard, not part of the general Output regeneration set. Editing Storyboard requires approval and a new Video; it must not imply that already-current decks, images, or audio need to be rebuilt.
+- Consequences belong at the moment of edit, in plain language. The product should never surprise a professional by revoking approval or staling finished work after an unlabeled save.
+- No provider request ran in this milestone. The evidence ledger remains 97 HTTP operations; exact dollar debit is unavailable and no exact spend is invented.
+
+### Open items
+
+- Founder capture, the founder-derived final operator run, verified final package, final MP4, external professional review, eligible Session ID, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
