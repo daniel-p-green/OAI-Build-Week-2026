@@ -19,7 +19,7 @@
       "openingSequence": {
         "type": "finished-work-to-map",
         "proofSeconds": 4.5,
-        "transition": "design-accent-wipe"
+        "transition": "design-accent-dip"
       },
       "captureEndHoldbackSeconds": 0.7,
       "narration": "From your meetings and documents to polished slides and supporting work, with every claim traced to its source. WorkshopLM turns raw professional thinking into finished work without separating conversation from production.",

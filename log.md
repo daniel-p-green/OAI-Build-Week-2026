@@ -2720,6 +2720,17 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-16 17:17 CT — Stable-motion milestone passes the complete repository and packet gates
+
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages: 120 worker tests, 30 web tests, and 19 production-renderer tests are green.
+- `pnpm submission:verify` reports the rebuilt 25-asset acceptance package valid, current, untampered, and issue-free.
+- `pnpm submission:packet:verify` passed with the new 140.010667-second HyperFrames sample film, OpenAI Cedar narration, eight ready shots, two honestly blocked shots, generated meta-reveal, stable judge fixture, six provider images, five archived product narration clips, and zero judge replay calls.
+- A current source search finds no `zoompan`, fractional image-settle transform, or retired moving-wipe identifier in active scripts, application code, packages, or the film plan. `git diff --check` passes.
+- `PLAN-2026-07-13.md` remains a pre-existing user modification and was neither changed nor staged by this milestone.
+- No OpenAI request ran; the provider-operation ledger remains 107.
+
+---
+
 ## 2026-07-16 16:09 CT — The demo film moves to a stable local HyperFrames compositor
 
 **Area:** Demo film / local video / DESIGN + FRAME provenance / product language
@@ -9452,3 +9463,48 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Visually inspected the new nine-slide contact sheet. It preserves the accepted layouts, exact AI Collective mark and palette, readable sources, decisions, plan, and recommendation while the cover now says `AI COLLECTIVE · CLIENT SLIDES`. The review ZIP passed archive integrity with six declared files; review ID is `aic-655e7b36d6138279` and ZIP SHA-256 is `5c0397c5773c97100ee59d0007271d5403377d385e31844f7e573a7284fe148e`.
 - `pnpm --filter @workshoplm/production test` passed all 19 renderer tests and `git diff --check` passed. No OpenAI request ran; the provider-operation ledger remains 107.
 - Founder and intended-audience judgment gates remain open. Rebuilding the review instrument does not count as receiving `Send` or a blocking `Revise` decision.
+
+---
+
+## 2026-07-16 17:14 CT — HyperFrames removes the last two sources of visible shake
+
+**Area:** Product Video / Demo film / HyperFrames / DESIGN + FRAME provenance
+
+### Changed
+
+- Reproduced the reported jitter against both Video paths and found two spatial transforms that survived the earlier compositor migration: the product composition slowly animated every generated image from `scale: 1.035` and ±18 px, while `prepare-live-film-evidence.ts` still generated its gallery clip through FFmpeg `zoompan`. Removed both.
+- Rebuilt the product motion grammar around fixed image geometry, restrained copy/metadata entrances, and a stationary full-frame Accent color dip between scenes. The transition color comes from the current `DESIGN.md`; its exact `DESIGN.md`, token JSON, approved `FRAME.md`, and executable frame remain staged and hash-bound beside the local HyperFrames composition.
+- Applied the same stationary Accent dip to the 2:20 judge-film compositor. Its manifest and verifier now require `spatialTransforms: false`, `jitterProneZoompan: false`, `design-accent-dip`, and per-shot `spatialTransform: false` instead of trusting a compositor label alone.
+- Made the sample film's product-Video evidence honest after discovering that `.workshoplm/live-operator` no longer retains the five-panel Storyboard or immutable Video state described by its older exported provider evidence. The sample now uses the current stable acceptance Video at native speed and records `fixtureVideo: true`; final/founder mode still requires its own current approved Storyboard and provider media.
+- The first new product render failed correctly because HyperFrames lint caught a full-frame scene beginning visible before its entrance. Fixed the CSS/timeline contract and reran rather than weakening the gate. A later contrast check found the Accent eyebrow at 2.84:1 over the radial background; moved the exact Accent into a four-pixel rule and used DESIGN paper for the label, producing 13/13 passing checks.
+
+### Verified
+
+- `WORKSHOPLM_SEEDED_FIXTURE=1 pnpm --filter @workshoplm/worker exec vitest run src/executor.test.ts` passed 11/11 focused worker tests. The composition regression requires `stable-editorial-dip`, transition clips, the DESIGN/FRAME bindings, and absence of spatial image transforms.
+- `pnpm demo:e2e` passed the complete recorded seam and produced a 25.002667-second 1920×1080 H.264/AAC Video with SHA-256 `dc7c1edc84ade8515091265ef17467932379bfd86b27a65dc5a97d16ec275202`.
+- Local HyperFrames 0.7.60 `lint` and transition-aware `check` passed with zero runtime, layout, transition, or contrast issues; all 13 checked text samples passed. Two non-blocking density warnings remain because the five product scenes and four transition clips intentionally share compact root tracks.
+- `pnpm submission:build` rebuilt a valid, current, untampered 25-asset acceptance package. `pnpm demo:film:sample` then rendered all 4,200 frames locally through HyperFrames in 54.1 seconds. The 140.010667-second H.264/AAC movie has SHA-256 `c5f579f5c9ba19529b08b653efc786440ecbcb95ebae34107a175efd09b1e362`.
+- `pnpm demo:film:verify-sample` passed and independently rehashed the movie, ten review frames, complete sample transcript, opening proof, acceptance manifest, build trace, DESIGN, and FRAME. It confirms local HyperFrames 0.7.60, no spatial transforms, the stable Accent dip, current fixture Video at native speed, OpenAI Cedar editorial narration, and two honestly blocked final-evidence shots.
+- Visually inspected six consecutive-frame strips under `artifacts/live-review/hyperframes-stable-motion-2026-07-16/`: product hero, product hold, product transition, demo product hold, demo transition, and demo meta-reveal hold. Fixed holds preserve geometry; transitions are one clean Accent color dip with no moving crop edge or camera motion.
+- No OpenAI provider request ran and the evidence ledger remains at 107 operations.
+
+### Decisions
+
+- HyperFrames remains the only motion compositor for both WorkshopLM Video and the judge film. FFmpeg may normalize, trim, encode, and inspect media, but it may not author spatial motion.
+- DESIGN controls palette, typography, layout, image treatment, and motion. FRAME controls intended outcome and production proof. Both remain explicit, versioned, copied, hashed, and fail-closed for every Video render.
+- For interface and generated-artifact footage, stable geometry outranks ambient camera motion. Polish comes from hierarchy, timing, opacity, and the DESIGN Accent transition—not synthetic zoom.
+- Missing provider state is a provenance boundary, not permission to reconstruct a provider-backed claim from fixture assets.
+- `PLAN-2026-07-13.md` remained advisory only for enduring principles. Its pre-existing user modification was untouched and will be excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final HyperFrames run, founder/target-audience film taste review, intended-audience Slides review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 17:18 CT — Stable-motion validation entry chronology correction
+
+- The complete `17:17 CT — Stable-motion milestone passes the complete repository and packet gates` entry was appended at line 2723 because its patch matched an earlier repeated Session-ID anchor. It remains valid evidence, but this tail entry is the chronological marker.
+- `pnpm check` passed all thirteen packages, including 120 worker, 30 web, and 19 production-renderer tests. `pnpm submission:verify` reports the 25-asset package valid/current/untampered, `pnpm submission:packet:verify` passed the new sample film and judge fixture, the active-code motion search is clean, and `git diff --check` passes.
+- No OpenAI request ran; the provider-operation ledger remains 107. The pre-existing user edit to `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.

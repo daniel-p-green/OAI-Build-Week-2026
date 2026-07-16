@@ -147,9 +147,9 @@ function hyperframesCompositionHtml(plan, identity) {
   const openingSequence = plan.shots[0]?.openingSequence;
   const openingTransition = openingSequence ? `<div id="transition-opening" class="clip transition" data-start="${(openingSequence.proofSeconds - 0.32).toFixed(2)}" data-duration="0.64" data-track-index="2"></div>` : "";
   const transitions = `${openingTransition}${plan.shots.slice(1).map((shot, index) => `<div id="transition-${index + 1}" class="clip transition" data-start="${(shot.startSeconds - 0.32).toFixed(2)}" data-duration="0.64" data-track-index="2"></div>`).join("")}`;
-  const openingMotion = openingSequence ? `tl.set("#transition-opening",{xPercent:-101},${(openingSequence.proofSeconds - 0.32).toFixed(2)});tl.to("#transition-opening",{xPercent:101,duration:0.64,ease:"power3.inOut"},${(openingSequence.proofSeconds - 0.32).toFixed(2)});` : "";
-  const motion = `${openingMotion}${plan.shots.slice(1).map((shot, index) => { const start = shot.startSeconds - 0.32; return `tl.set("#transition-${index + 1}",{xPercent:-101},${start.toFixed(2)});tl.to("#transition-${index + 1}",{xPercent:101,duration:0.64,ease:"power3.inOut"},${start.toFixed(2)});`; }).join("")}`;
-  return `<!doctype html><html><head><meta charset="utf-8"><script src="gsap.min.js"></script><style>*{box-sizing:border-box}html,body,main{margin:0;width:${width}px;height:${height}px;overflow:hidden;background:${identity.paper};font-family:${identity.body},sans-serif}.clip{visibility:hidden}video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:${identity.paper}}.transition{position:absolute;inset:-2px;background:${identity.accent};will-change:transform}</style></head><body><main data-composition-id="workshoplm-editorial-film" data-start="0" data-duration="${plan.targetDurationSeconds}" data-width="${width}" data-height="${height}" data-fps="30" data-design-sha256="${identity.designSha256}" data-frame-sha256="${identity.frameSha256}" data-frame-version="${identity.frameVersion}" data-frame-outcome="${escapeXml(identity.outcome ?? "")}" data-motion-system="stable-editorial-wipe">${media}${transitions}</main><script>window.__timelines=window.__timelines||{};const tl=gsap.timeline({paused:true});${motion}window.__timelines["workshoplm-editorial-film"]=tl;</script></body></html>`;
+  const openingMotion = openingSequence ? `tl.fromTo("#transition-opening",{opacity:0},{opacity:1,duration:0.32,ease:"power2.in"},${(openingSequence.proofSeconds - 0.32).toFixed(2)});tl.to("#transition-opening",{opacity:0,duration:0.32,ease:"power2.out"},${openingSequence.proofSeconds.toFixed(2)});` : "";
+  const motion = `${openingMotion}${plan.shots.slice(1).map((shot, index) => { const start = shot.startSeconds - 0.32; return `tl.fromTo("#transition-${index + 1}",{opacity:0},{opacity:1,duration:0.32,ease:"power2.in"},${start.toFixed(2)});tl.to("#transition-${index + 1}",{opacity:0,duration:0.32,ease:"power2.out"},${shot.startSeconds.toFixed(2)});`; }).join("")}`;
+  return `<!doctype html><html><head><meta charset="utf-8"><script src="gsap.min.js"></script><style>*{box-sizing:border-box}html,body,main{margin:0;width:${width}px;height:${height}px;overflow:hidden;background:${identity.paper};font-family:${identity.body},sans-serif}.clip{visibility:hidden}video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:${identity.paper}}.transition{position:absolute;inset:-2px;background:${identity.accent};will-change:opacity}</style></head><body><main data-composition-id="workshoplm-editorial-film" data-start="0" data-duration="${plan.targetDurationSeconds}" data-width="${width}" data-height="${height}" data-fps="30" data-design-sha256="${identity.designSha256}" data-frame-sha256="${identity.frameSha256}" data-frame-version="${identity.frameVersion}" data-frame-outcome="${escapeXml(identity.outcome ?? "")}" data-motion-system="stable-editorial-dip">${media}${transitions}</main><script>window.__timelines=window.__timelines||{};const tl=gsap.timeline({paused:true});${motion}window.__timelines["workshoplm-editorial-film"]=tl;</script></body></html>`;
 }
 
 async function metaRevealSvg(finalManifestPath, options = {}) {
@@ -294,7 +294,10 @@ async function main() {
 
     const selectedBeats = shot.captureBeats.map((id) => beatsById.get(id)).filter(Boolean);
     const effectiveState = finalBuild ? "ready" : shot.state;
-    const externalVideo = effectiveState === "ready" && !shot.preferCapture
+    const sampleProductVideo = sampleEditorialBuild && shot.id === "render-and-trace"
+      ? resolve(repository, ".workshoplm/acceptance/generated/videos/workshoplm-demo-v1.mp4")
+      : undefined;
+    const externalVideo = sampleProductVideo && existsSync(sampleProductVideo) ? sampleProductVideo : effectiveState === "ready" && !shot.preferCapture
       ? shot.requiredEvidence.map((item) => resolve(repository, item.path)).find((path) => /\.(?:mov|mp4)$/i.test(path) && existsSync(path))
       : undefined;
     if (shot.openingSequence?.type === "finished-work-to-map") {
@@ -319,11 +322,11 @@ async function main() {
       shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 }, sourceBeats: [], generatedMetaReveal: true });
     } else if (externalVideo) {
       const sourceDuration = Number(probe(externalVideo).format?.duration || 0);
-      const playbackRate = sourceDuration > duration ? sourceDuration / duration : 1;
+      const playbackRate = sampleProductVideo === externalVideo ? 1 : sourceDuration > duration ? sourceDuration / duration : 1;
       const presentationDuration = Math.min(duration, sourceDuration / playbackRate);
       const holdDuration = Math.max(0, duration - presentationDuration);
       run("ffmpeg", ["-y", "-i", externalVideo, "-vf", `setpts=PTS/${playbackRate.toFixed(5)},scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=${filmIdentity.paper},trim=duration=${presentationDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${duration},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
-      shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: [], externalVideo: shot.requiredEvidence.find((item) => resolve(repository, item.path) === externalVideo)?.path, sourceDurationSeconds: sourceDuration });
+      shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: [], externalVideo: relative(repository, externalVideo), sourceDurationSeconds: sourceDuration, sourcePlaybackRate: playbackRate, ...(sampleProductVideo === externalVideo ? { fixtureVideo: true } : {}) });
     } else if (selectedBeats.length) {
       const sourceStart = Math.max(0, selectedBeats[0].startMs / 1000 - 0.2);
       const sourceEnd = Math.min(capture.video.durationSeconds, selectedBeats.at(-1).endMs / 1000 - (shot.captureEndHoldbackSeconds ?? 0.3));
@@ -336,7 +339,7 @@ async function main() {
       shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: [], stillFallback: "outputs/workshoplm-current-ui/03-grounded-map.png" });
     }
 
-    shotRecords.at(-1).motion = { type: "hyperframes-stable-media", transition: shot.openingSequence ? "opening-proof-wipe" : index ? "design-accent-wipe" : "opening-hold", jitterProneZoompan: false };
+    shotRecords.at(-1).motion = { type: "hyperframes-stable-media", transition: shot.openingSequence ? "opening-proof-dip" : index ? "design-accent-dip" : "opening-hold", spatialTransform: false, jitterProneZoompan: false };
     if (cleanEditorialStyle && shot.id === "codex-doorway") shotRecords.at(-1).editorialCue = "codex-to-workshoplm";
 
     const audioDuration = Number(probe(audioPath).format?.duration || 0);
@@ -396,7 +399,7 @@ async function main() {
     builtAt: new Date().toISOString(),
     plan: "submission/demo-film-plan.json",
     sourceCapture: plan.captureManifest,
-    compositor: { engine: "hyperframes", mode: "local", version: "0.7.60", composition: "workshoplm-editorial-film", jitterProneZoompan: false, transition: "design-accent-wipe", design: { sha256: filmIdentity.designSha256, source: relative(repository, filmIdentity.designMarkdownPath) }, frame: { version: filmIdentity.frameVersion, sha256: filmIdentity.frameSha256, source: relative(repository, filmIdentity.frameMarkdownPath) } },
+    compositor: { engine: "hyperframes", mode: "local", version: "0.7.60", composition: "workshoplm-editorial-film", jitterProneZoompan: false, spatialTransforms: false, transition: "design-accent-dip", design: { sha256: filmIdentity.designSha256, source: relative(repository, filmIdentity.designMarkdownPath) }, frame: { version: filmIdentity.frameVersion, sha256: filmIdentity.frameSha256, source: relative(repository, filmIdentity.frameMarkdownPath) } },
     voice: providerNarration ? { provider: "OpenAI", model: providerNarration.model, name: providerNarration.voice, disclosure: providerNarration.disclosure, requestCount: providerNarration.requestCount, finalProviderNarration: true } : { provider: "local macOS say", name: voice, ratePolicy: fixedSpeechRate ? `fixed ${fixedSpeechRate}` : "adaptive 120–180 words per minute", finalProviderNarration: false },
     video: { relativePath: finalBuild ? "workshoplm-demo.mp4" : sampleEditorialBuild ? "workshoplm-demo-sample.mp4" : "workshoplm-demo-rough-cut.mp4", sha256: sha256(videoBytes), durationSeconds: Number(inspected.format?.duration || 0), streams: inspected.streams || [] },
     contactSheet: { relativePath: "contact-sheet.jpg", sha256: sha256(sheetBytes) },

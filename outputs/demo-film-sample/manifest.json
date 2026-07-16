@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance Output set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-16T21:47:47.776Z",
+  "builtAt": "2026-07-16T22:13:16.302Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "compositor": {
@@ -11,9 +11,10 @@
     "version": "0.7.60",
     "composition": "workshoplm-editorial-film",
     "jitterProneZoompan": false,
-    "transition": "design-accent-wipe",
+    "spatialTransforms": false,
+    "transition": "design-accent-dip",
     "design": {
-      "sha256": "ce1d8f0923ec1c683f37f245ca84225da2405fb6f91aa79ce92466e9b8a8406c",
+      "sha256": "5183cea35605bc1690d0e0228f8da6f3c6efb3724f8af9681e8af48e67ae2326",
       "source": ".workshoplm/acceptance/generated/DESIGN-v1.md"
     },
     "frame": {
@@ -32,7 +33,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "8de24f5a84dc0210b700887840922056990c4b877cab7632180d4bb1a64a727c",
+    "sha256": "c5f579f5c9ba19529b08b653efc786440ecbcb95ebae34107a175efd09b1e362",
     "durationSeconds": 140.010667,
     "streams": [
       {
@@ -50,7 +51,7 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "8f3a48fb7411b444a2c0a4825728a9a9f69e61c1756f5c00f0b6455761b5d4fc"
+    "sha256": "a769fcc92871a66d3ce95dd31129f90259073ea5e4b3a0bbfb903087da629faa"
   },
   "openingProofFrame": {
     "relativePath": "review/opening-proof.jpg",
@@ -60,11 +61,11 @@
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "221f45d62b4574e44daa35066ff0a93fec91344c23b2b6bc7ee19ece5802a14f"
+      "sha256": "b94829145c882d519e09aac95c61f3f88656cca280d9ed1f28589ae2d3d615ad"
     },
     {
       "relativePath": "review/02.jpg",
-      "sha256": "36f7320b6298f8429c19ca16ee2ae8ad5b0cb2a5d269166d2f717c3de0ba60e3"
+      "sha256": "ddfc5662ed6e7029f034d037df866ee39ce44b406e11729595049bf7290d9b93"
     },
     {
       "relativePath": "review/03.jpg",
@@ -72,31 +73,31 @@
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "06a581aaa78d638796e4acacdc0817b9edfcaa6bbf97c9e77032620ef3855b4d"
+      "sha256": "119f1164c5707a7bd2c3b7818729b3c3d96cd2f9908b9e5d244d54982f3b443f"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "e1dd8c229b32ab84501c298b956b46e12908ec718c7131426e95bdd15e7e2bdc"
+      "sha256": "4070baba893ac84d64e1fa6fae975850d10ad3246145f67d54c5ff1131f97ef9"
     },
     {
       "relativePath": "review/06.jpg",
-      "sha256": "83d6074f8d384ac9decc890e8e26610453adf63c83c31aa1d22ae202e2247939"
+      "sha256": "b9e76893b373b7ccdd44ba67434d969fb43c1bfbb1b93a5534fe59eec16e3cbc"
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "03e52d1189498d5e046368ced2fc5035b9bb0e0255c44bb68ad8911eb4420c11"
+      "sha256": "4d646cbccd9d7e477d4f83fb3f199a1374a69f13da5d9ad2e704f2bf202f703a"
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "aee34c7d7015dacf66ca6182dc078ff0eb27451d80617ae46316c85ba49e2617"
+      "sha256": "0a05e301fbe01f2e7c16414396ad68160f25f47c83c5f26187f87176929b7891"
     },
     {
       "relativePath": "review/09.jpg",
-      "sha256": "63487da466a4856ac4c967eeff6eb89d0d3982f6de31ab50366e2fa1b64c5465"
+      "sha256": "7eeaa7f23073d342fbf5c595c67f5d315b9e6bf8946d840f1ce93f0c616d69dd"
     },
     {
       "relativePath": "review/10.jpg",
-      "sha256": "1b4beda48e2e3c98ff6457ec057ddde60db15cdfe0af0d6d13223e4c4efa557a"
+      "sha256": "9896a477c825ba8d4b9cadd00cf47999d055aa29ae027bb50caf19cbf3b05dd9"
     }
   ],
   "metaRevealEvidence": {
@@ -113,11 +114,11 @@
     },
     "submissionManifest": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
-      "sha256": "2c898e01dc743d9136efc74a29f97319253827d83edfd9178bb903e04e8bb06a"
+      "sha256": "52d1e45cbc301071b0f8009a246bc03149338e71d4ae33d24c0aba1e1f664e51"
     },
     "buildTrace": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/BUILD-TRACE.json",
-      "sha256": "68e62aa1c3cc44de30551b979b5a827ba052dcdf3e0acde4d614024259aaa755"
+      "sha256": "066597c661ed83eacb3f05481ea56c417912c2efffa8b2c8f8fa446ee0dd149e"
     }
   },
   "shots": [
@@ -141,11 +142,12 @@
         "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/thumbnail-opening.png",
         "sha256": "df901e73ff166860d3be1fdaee0537b324b8b5733ccbd36ee6df69410bb64ef8",
         "durationSeconds": 4.5,
-        "transition": "design-accent-wipe"
+        "transition": "design-accent-dip"
       },
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "opening-proof-wipe",
+        "transition": "opening-proof-dip",
+        "spatialTransform": false,
         "jitterProneZoompan": false
       }
     },
@@ -162,9 +164,11 @@
       "sourceBeats": [],
       "externalVideo": "outputs/demo-film-inputs/codex-doorway.mov",
       "sourceDurationSeconds": 12,
+      "sourcePlaybackRate": 1,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-wipe",
+        "transition": "design-accent-dip",
+        "spatialTransform": false,
         "jitterProneZoompan": false
       },
       "editorialCue": "codex-to-workshoplm"
@@ -186,7 +190,8 @@
       "sourceEndSeconds": 4.359,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-wipe",
+        "transition": "design-accent-dip",
+        "spatialTransform": false,
         "jitterProneZoompan": false
       }
     },
@@ -208,7 +213,8 @@
       "sourceEndSeconds": 7.554,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-wipe",
+        "transition": "design-accent-dip",
+        "spatialTransform": false,
         "jitterProneZoompan": false
       }
     },
@@ -229,7 +235,8 @@
       "sourceEndSeconds": 9.821,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-wipe",
+        "transition": "design-accent-dip",
+        "spatialTransform": false,
         "jitterProneZoompan": false
       }
     },
@@ -250,7 +257,8 @@
       "sourceEndSeconds": 11.722,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-wipe",
+        "transition": "design-accent-dip",
+        "spatialTransform": false,
         "jitterProneZoompan": false
       }
     },
@@ -272,7 +280,8 @@
       "sourceEndSeconds": 18.311,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-wipe",
+        "transition": "design-accent-dip",
+        "spatialTransform": false,
         "jitterProneZoompan": false
       }
     },
@@ -294,7 +303,8 @@
       "sourceEndSeconds": 21.669,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-wipe",
+        "transition": "design-accent-dip",
+        "spatialTransform": false,
         "jitterProneZoompan": false
       }
     },
@@ -309,11 +319,14 @@
         "sha256": "31564a35f685b9882848fcde315db9e7639e69cf161c723259a858c4d4085552"
       },
       "sourceBeats": [],
-      "externalVideo": "outputs/demo-film-inputs/provider-narrated-video.mp4",
+      "externalVideo": ".workshoplm/acceptance/generated/videos/workshoplm-demo-v1.mp4",
       "sourceDurationSeconds": 25.002667,
+      "sourcePlaybackRate": 1,
+      "fixtureVideo": true,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-wipe",
+        "transition": "design-accent-dip",
+        "spatialTransform": false,
         "jitterProneZoompan": false
       }
     },
@@ -331,7 +344,8 @@
       "generatedMetaReveal": true,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-wipe",
+        "transition": "design-accent-dip",
+        "spatialTransform": false,
         "jitterProneZoompan": false
       }
     }

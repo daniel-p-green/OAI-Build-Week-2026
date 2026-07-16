@@ -80,7 +80,7 @@ async function main(): Promise<void> {
   const gallerySource = resolve(repository, "artifacts/ui-review/outputs-latest-only-desktop-2026-07-16.png");
   assert((await stat(gallerySource)).size > 0, "The inspected live Outputs screenshot is missing.");
   const galleryPath = resolve(filmInputRoot, "provider-image-gallery.mov");
-  execFileSync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", "-loop", "1", "-i", gallerySource, "-t", "6", "-vf", "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5,zoompan=z='min(zoom+0.00012,1.025)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s=1920x1080:fps=30,format=yuv420p", "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "20", "-movflags", "+faststart", galleryPath]);
+  execFileSync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", "-loop", "1", "-i", gallerySource, "-t", "6", "-vf", "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5,fps=30,format=yuv420p", "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "20", "-g", "30", "-keyint_min", "30", "-sc_threshold", "0", "-movflags", "+faststart", galleryPath]);
   const gallery = await fileEvidence(galleryPath, "outputs/demo-film-inputs/provider-image-gallery.mov");
 
   const realtimeEvidence = {
@@ -108,7 +108,7 @@ async function main(): Promise<void> {
     imageBatch: { id: state.imageBatch?.id, model: "gpt-image-2", panelCount: images.length, panels: images },
     narration: { model: "gpt-4o-mini-tts", voice: "cedar", disclosure: narration.disclosure, panelCount: narrationPanels.length, panels: narrationPanels },
     video: { id: video.id, version: video.version, ...videoEvidence, copiedFilmInput: narratedVideo, durationSeconds: Number(probe.format?.duration ?? 0), streams: probe.streams },
-    filmInputs: { imageGallery: gallery, narratedVideo },
+    filmInputs: { imageGallery: { ...gallery, motion: "static" }, narratedVideo },
     limitations: ["The run uses the explicitly authorized sample Source and must be replaced by the founder recording before the final meta-demo is claimed."],
   };
   await writeFile(resolve(liveEvidenceRoot, "provider-run.json"), `${JSON.stringify(providerRun, null, 2)}\n`, "utf8");
