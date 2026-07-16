@@ -9199,3 +9199,33 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Founder recording and transcript, founder-derived ready Output set, final compositor run, founder/target-audience film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 14:45 CT — Submission evidence now routes through the clean film
+
+**Area:** Submission packet / public evidence / claim integrity / reviewer path
+
+### Changed
+
+- Promoted the verified clean authorized-sample movie to the canonical pre-founder review artifact in the public README, GOAL evidence links, demo handoff, claim ledger, and submission-packet verifier. The badge-heavy film remains available as the diagnostic evidence-state cut rather than the default thing a reviewer watches.
+- Extended `pnpm submission:packet:verify` to require the clean cut's explicit sample/non-public disclosure, Cedar narration, ten shots, two final-evidence blocks, generated meta-reveal, Codex doorway cue, H.264/AAC streams, exact movie hash, ten review-frame hashes, acceptance-manifest hash, and build-trace hash. The packet reports the diagnostic rough cut separately instead of conflating the two purposes.
+- Corrected the claim ledger's stale verification floor from 115 to 120 worker tests and from 29 to 30 production-browser scenarios. The web-test count remains 30.
+- Rewrote the demo handoff around `pnpm demo:film:sample` plus `pnpm demo:film:verify-sample`; `pnpm demo:film:rough` is now documented only for inspecting fixture and pending-evidence banners.
+
+### Verified
+
+- `pnpm submission:packet:verify` passed and now reports `sample-editorial-cut`, 140.021333 seconds, Cedar, eight ready shots, two blocked shots, a generated meta-reveal, and `codex-to-workshoplm`, while retaining the 140.021333-second diagnostic rough cut as a separate record.
+- `pnpm demo:film:verify-sample` passed the complete clean-film hash and truth boundary. `pnpm check` passed all thirteen packages, including 120 worker tests and 30 web tests. `git diff --check` passed.
+- No OpenAI request ran. The evidence ledger remains at 104 provider HTTP operations and exact dollar debit remains unavailable from provider responses.
+
+### Decisions
+
+- A reviewer should encounter the most polished truthful artifact first. Diagnostic state labels remain valuable for builders, but they should not define the judge-facing experience once a clean, equally honest cut exists.
+- The word `sample` remains visible in the movie, README, manifest, verifier, and claim ledger. Canonical pre-founder review status does not promote the cut to founder footage or the final public demo.
+- `PLAN-2026-07-13.md` remained advisory only for enduring acceptance principles. Its pre-existing user modification was untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, founder/target-audience film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -34,6 +34,8 @@ The repository currently provides a local-first deterministic seam with:
 
 This is active Build Week work, not a claim that every locked capability is complete. The authorized sample run has now proven a grounded `gpt-5.6-terra` Map, six accepted GPT Image 2 panels, a live grounded Realtime conversation, OpenAI Cedar narration, and a local HyperFrames Video. The no-credential recorded fixture remains a separate deterministic path: it replays six hash-bound sanitized GPT Image 2 files while clearly labeling its fallback narration. Native ChatGPT durable voice synchronization is not supported, and the founder-derived final package and public demo remain open. See [GOAL.md](GOAL.md) for the exact completion definition, [log.md](log.md) for dated evidence, and the [public claim ledger](submission/CLAIM-LEDGER.md) for the allowed wording and proof boundary.
 
+The [current clean 2:20 editorial review cut](outputs/demo-film-sample/workshoplm-demo-sample.mp4) uses the authorized sample transcript, verified Cedar narration, and acceptance Output set. It is visibly and structurally labeled as a sample and is not the founder-derived public demo; its manifest and all ten review frames are verified by `pnpm demo:film:verify-sample`.
+
 ## Run the recorded fixture
 
 Requirements: Node.js 22+ and pnpm 10+ (HyperFrames also needs its locally configured runtime).

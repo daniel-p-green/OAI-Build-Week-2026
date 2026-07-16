@@ -18,6 +18,8 @@ const paths = {
   narration: "outputs/demo-film-narration/manifest.json",
   roughReadme: "outputs/demo-film-rough-cut/README.md",
   roughCut: "outputs/demo-film-rough-cut/manifest.json",
+  sampleReadme: "outputs/demo-film-sample/README.md",
+  sampleCut: "outputs/demo-film-sample/manifest.json",
   filmPlan: "submission/demo-film-plan.json",
   thumbnail: "outputs/demo-film-plan/thumbnail-preview.png",
   thumbnailManifest: "outputs/demo-film-plan/thumbnail-preview.json",
@@ -26,16 +28,18 @@ const paths = {
   package: "package.json",
 };
 
-const [devpost, script, ledger, audit, checklist, roughReadme, provider, narration, roughCut, filmPlan, thumbnailManifest, uiGallery, judgeImages, packageJson] = await Promise.all([
+const [devpost, script, ledger, audit, checklist, roughReadme, sampleReadme, provider, narration, roughCut, sampleCut, filmPlan, thumbnailManifest, uiGallery, judgeImages, packageJson] = await Promise.all([
   readText(paths.devpost),
   readText(paths.script),
   readText(paths.ledger),
   readText(paths.audit),
   readText(paths.checklist),
   readText(paths.roughReadme),
+  readText(paths.sampleReadme),
   readJson(paths.provider),
   readJson(paths.narration),
   readJson(paths.roughCut),
+  readJson(paths.sampleCut),
   readJson(paths.filmPlan),
   readJson(paths.thumbnailManifest),
   readJson(paths.uiGallery),
@@ -65,6 +69,7 @@ assert(devpost.includes("**GPT-5.6 runs the product.**"), "Devpost copy does not
 assert(devpost.includes("six GPT Image 2 visuals") && devpost.includes("five Cedar Storyboard clips"), "Devpost copy does not include verified provider media.");
 assert(script.includes("Target: 2:20") && script.includes("**No.** Dated recording and transcript are missing"), "Demo script is not reconciled to the current 2:20 founder-gated edit.");
 assert(roughReadme.includes("Replace shot 10 only after the final non-partial submission Output set exists.") && roughReadme.includes("`/feedback` remains a separate Devpost submission requirement, not a film-content gate."), "Rough-cut handoff incorrectly treats /feedback as film evidence.");
+assert(sampleReadme.includes("It is intentionally not founder footage or the public submission video.") && sampleReadme.includes("pnpm demo:film:verify-sample"), "Sample-film handoff does not preserve its truth boundary or verifier.");
 assert(packageJson.scripts?.["judge:start"] === "pnpm demo:e2e && pnpm demo:serve", "The one-command judge fixture path is missing or no longer serves the acceptance root.");
 assert(devpost.includes("pnpm install --frozen-lockfile") && devpost.includes("pnpm judge:start") && !devpost.includes("pnpm demo:e2e && pnpm dev"), "Devpost judge instructions do not use the verified one-command fixture path.");
 assert(ledger.includes("Last reconciled: 2026-07-16 CT") && audit.includes("Audit date: 2026-07-16 CT"), "Submission truth files are not dated to the current reconciliation.");
@@ -80,6 +85,25 @@ assert(roughCut.voice?.provider === "OpenAI" && roughCut.voice.name === "cedar" 
 assert(roughCut.limitations?.some((item) => item.includes("six hash-bound GPT Image 2 replay files")) && !(roughCut.limitations ?? []).some((item) => item.includes("planned image panels")), "Rough cut does not disclose the provider-backed judge-image replay accurately.");
 assert(roughCut.shots?.length === 10 && roughCut.shots.every((shot) => shot.motion?.type === "editorial-push-in" && shot.motion?.maxScale === 1.06 && shot.motion?.ratePerFrame === 0.0001), "The editorial film no longer applies the verified restrained push-in and drift to every shot.");
 assert(Math.round(roughCut.video?.durationSeconds) === 140 && roughCut.video.streams.some((stream) => stream.codec_name === "h264") && roughCut.video.streams.some((stream) => stream.codec_name === "aac"), "Rough cut is not the verified 2:20 H.264/AAC edit.");
+assert(sampleCut.status === "sample-editorial-cut" && /authorized sample/i.test(sampleCut.disclosure) && /not founder footage or the public submission video/i.test(sampleCut.disclosure), "The clean review film does not preserve its authorized-sample boundary.");
+assert(sampleCut.voice?.provider === "OpenAI" && sampleCut.voice.name === "cedar" && sampleCut.voice.finalProviderNarration === true, "The clean review film has regressed from verified Cedar narration.");
+assert(sampleCut.shots?.length === 10 && sampleCut.shots.filter((shot) => shot.state === "blocked").length === 2, "The clean review film no longer retains ten shots and two final-evidence blocks.");
+assert(sampleCut.shots.find((shot) => shot.id === "codex-doorway")?.editorialCue === "codex-to-workshoplm", "The clean review film no longer makes the Codex doorway explicit.");
+assert(sampleCut.shots.find((shot) => shot.id === "meta-reveal")?.generatedMetaReveal === true, "The clean review film no longer contains its generated trace reveal.");
+assert(sampleCut.metaRevealEvidence?.mode === "authorized-sample", "The clean review film no longer identifies its sample transcript boundary.");
+const sampleRoot = resolve(repository, "outputs/demo-film-sample");
+const sampleVideoBytes = await readFile(resolve(sampleRoot, sampleCut.video.relativePath));
+assert(createHash("sha256").update(sampleVideoBytes).digest("hex") === sampleCut.video.sha256, "The clean review film no longer matches its manifest hash.");
+assert(Math.round(sampleCut.video?.durationSeconds) === 140 && sampleCut.video.streams.some((stream) => stream.codec_name === "h264") && sampleCut.video.streams.some((stream) => stream.codec_name === "aac"), "The clean review film is not the verified 2:20 H.264/AAC edit.");
+assert(sampleCut.reviewFrames?.length === 10, "The clean review film no longer has one inspection frame per shot.");
+for (const frame of sampleCut.reviewFrames) {
+  const bytes = await readFile(resolve(sampleRoot, frame.relativePath));
+  assert(createHash("sha256").update(bytes).digest("hex") === frame.sha256, `Clean review frame hash mismatch: ${frame.relativePath}`);
+}
+for (const evidence of [sampleCut.metaRevealEvidence.submissionManifest, sampleCut.metaRevealEvidence.buildTrace]) {
+  const bytes = await readFile(resolve(repository, evidence.relativePath));
+  assert(createHash("sha256").update(bytes).digest("hex") === evidence.sha256, `Clean review trace hash mismatch: ${evidence.relativePath}`);
+}
 assert(filmPlan.shots.at(-1)?.endSeconds === 140 && filmPlan.shots.filter((shot) => shot.state === "ready").length === 8 && filmPlan.shots.filter((shot) => shot.state === "blocked").length === 2, "Film plan is not at the eight-ready/two-blocked truth state.");
 
 const thumbnailBytes = await readFile(resolve(repository, paths.thumbnail));
@@ -111,7 +135,8 @@ assert(unresolvedSlots === 4, `Expected four founder/final-package slots, found 
 process.stdout.write(`${JSON.stringify({
   status: "passed",
   providerEvidence: { model: provider.groundedMap.model, images: provider.imageBatch.panelCount, productNarration: provider.narration.panelCount },
-  editorialFilm: { seconds: roughCut.video.durationSeconds, voice: roughCut.voice.name, readyShots: 8, blockedShots: 2 },
+  editorialFilm: { status: sampleCut.status, seconds: sampleCut.video.durationSeconds, voice: sampleCut.voice.name, readyShots: 8, blockedShots: 2, generatedMetaReveal: true, codexDoorway: sampleCut.shots.find((shot) => shot.id === "codex-doorway").editorialCue },
+  diagnosticRoughCut: { status: roughCut.status, seconds: roughCut.video.durationSeconds },
   thumbnail: { composition: thumbnailManifest.composition, dimensions: thumbnailManifest.dimensions, sha256: thumbnailManifest.thumbnailSha256 },
   uiGallery: { screenshots: uiGallery.screenshots.length, providerBackedOutputs: "08-current-outputs.png" },
   judgeFixture: { providerBackedImages: judgeImages.panels.length, paidReplayCalls: 0 },

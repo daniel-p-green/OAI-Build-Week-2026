@@ -70,13 +70,22 @@ The current draft is 58.0 seconds of screen-only fixture footage, not the final 
 
 ## Editorial rough cut
 
-Assemble the current ten-shot plan before recording the final provider footage:
+Build the clean pre-founder review film:
+
+```bash
+pnpm demo:film:sample
+pnpm demo:film:verify-sample
+```
+
+This writes the clean 2:20 Cedar-narrated review movie, manifest, ten shot frames, and contact sheet to `outputs/demo-film-sample/`. It uses the authorized sample transcript and acceptance Output set, labels that boundary inside the meta-reveal, retains the two final-evidence blocks in the manifest, and cannot satisfy the final verifier. Never publish it as the final demo.
+
+Use the badge-heavy diagnostic rough cut only when evidence-state labels need inspection:
 
 ```bash
 pnpm demo:film:rough
 ```
 
-This writes the 2:20 review cut, manifest, ten shot frames, and contact sheet to `outputs/demo-film-rough-cut/`. It reuses the existing ten-clip OpenAI Cedar manifest by default and marks the two blocked shots explicitly. Never publish it as the final demo.
+This writes the same 2:20 paper edit to `outputs/demo-film-rough-cut/` with explicit fixture and pending-evidence banners.
 
 ## Evidence-gated edit plan
 
