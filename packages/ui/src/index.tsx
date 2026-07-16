@@ -152,7 +152,7 @@ export function SideSheet({ title, onClose, onKeyDown, className, children, ...p
   const sheetRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
-    sheetRef.current?.querySelector<HTMLElement>("button:not(:disabled), a[href], input:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])")?.focus();
+    sheetRef.current?.querySelector<HTMLElement>("button:not(:disabled), a[href], input:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex='-1'])")?.focus({ preventScroll: true });
   }, []);
 
   function handleKeyDown(event: KeyboardEvent<HTMLElement>) {

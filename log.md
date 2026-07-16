@@ -8628,3 +8628,37 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - Founder capture, founder-derived ready package, final public MP4, human film taste review, intended-audience deck review, `/feedback`, release, Devpost publication, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 10:34 CT — Source grounding says exactly what it proves
+
+**Area:** UI language / trust / contextual sheets / responsive verification
+
+### Changed
+
+- Audited the current workbench strings and sixteen-screen gallery against the locked plain-language vocabulary. The remaining material problem was not another tab or card: source-backed statements were labeled `Verified`, which could imply that WorkshopLM had established truth rather than preserved a trace to user material.
+- Replaced that label with `Sourced` in the editable Map outline and claim inspector. The approved Brief now reports sourced claims and uses `Sources behind this brief`; Chat says answers stay linked to Sources and offers `Find the lead source`; the Board presentation onboarding choice says it is grounded in the professional's Sources.
+- Updated the locked design token description and visible-copy contract so `Verified claim` and `verified claims` cannot return to the primary UI. Exact locators, excerpts, derived/creative distinctions, and internal evidence contracts remain unchanged.
+- Production-browser review exposed a separate interaction defect while closing Original brainstorm: restoring focus could move a focused Output 23–31 pixels under the header. Contextual sheets now record and restore the exact prior scroll position, and all sheet focus operations use `preventScroll`.
+- Extended the Video browser contract to prove that Original brainstorm preserves scroll and focus across desktop, compact, and mobile. Increased that media-heavy test's own timeout to reflect three real video seek cycles rather than weakening its assertions.
+
+### Verified
+
+- Inspected the updated 1200×800 Brief with the website Style sheet, the desktop onboarding choice, and the Video before accepting only the intentional screenshot baselines. The new labels fit without clipping, reflow, or extra chrome.
+- `pnpm --filter @workshoplm/web test` passed 30 tests; web and UI typechecks passed. The targeted three-width Video interaction passed after the scroll restoration repair.
+- The complete production-browser suite passed all 29 cases in one run, covering reset and completed fixtures, empty first use, website Style, Map, Sources, Brief, Outputs, image replacement, Storyboard, Video, source trace, focus containment, reduced motion, contrast, logical zoom, and desktop/compact/mobile behavior.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 120 worker tests. `pnpm demo:e2e` passed the complete recorded Source-to-render seam.
+- Rebuilt the canonical sixteen-screen UI gallery from the accepted baselines; its shareable ZIP now hashes to `a0424b875ac8211d73a32ea824e44384a107b1232faa047be49db025ca6657ec`. `pnpm submission:packet:verify` passed with the refreshed gallery, current Terra/Image 2/Cedar evidence, eight ready and two honestly blocked film shots, and the unchanged four founder/final-package slots.
+- No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Decisions
+
+- `Sourced` is the honest professional label for a factual statement with a durable Source edge. `Verified` is reserved for evidence ledgers and checks that actually establish a specific technical fact.
+- A sheet is contextual, so opening and closing it must preserve both the originating control and the user's exact place in the underlying object.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- The final founder Source, founder-derived ready package, public film, human taste review, intended-audience deck review, `/feedback`, release, Devpost publication, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

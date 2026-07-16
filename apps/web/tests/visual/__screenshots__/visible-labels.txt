@@ -16,7 +16,6 @@ Collapse Create
 Collapse Sources
 Create video
 Edit
-Evidence
 Expand Sources
 Goal · capture
 Image set
@@ -28,6 +27,7 @@ PDFBuild Week brief3 claims
 Presentation
 Presentation3 sourcesUp to date
 Show source
+Sources behind this brief
 Storyboard
 Storyboard5 editable panelsApproved
 StyleWorkshopLM editorialReady

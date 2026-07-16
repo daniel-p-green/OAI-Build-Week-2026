@@ -175,6 +175,7 @@ export default function WorkshopPage() {
   const [rightRailOpen, setRightRailOpen] = useState(true);
   const [pendingSourceScope, setPendingSourceScope] = useState<PendingSourceScope | null>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
+  const returnScrollRef = useRef<{ element: HTMLElement; top: number } | null>(null);
 
   useEffect(() => { void Promise.all([reload(), reloadWorkshops(), reloadStyleLibrary()]); }, []);
   useEffect(() => {
@@ -372,13 +373,20 @@ export default function WorkshopPage() {
 
   function openSheet(next: Exclude<Sheet, null>, source?: SourceItem) {
     returnFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const scrollContainer = returnFocusRef.current?.closest<HTMLElement>(".focused-output") ?? null;
+    returnScrollRef.current = scrollContainer ? { element: scrollContainer, top: scrollContainer.scrollTop } : null;
     if (source) setSelectedSource(source);
     setSheet(next);
   }
 
   function closeSheet() {
     setSheet(null);
-    window.setTimeout(() => returnFocusRef.current?.focus(), 0);
+    window.setTimeout(() => {
+      const scroll = returnScrollRef.current;
+      if (scroll?.element.isConnected) scroll.element.scrollTop = scroll.top;
+      returnFocusRef.current?.focus({ preventScroll: true });
+      returnScrollRef.current = null;
+    }, 0);
   }
 
   function showSource(target: EvidenceTarget = {}) {
@@ -504,7 +512,7 @@ export default function WorkshopPage() {
 
 const OUTCOME_OPTIONS: Array<{ id: WorkshopOutcome; title: string; detail: string; defaultName: string }> = [
   { id: "client_facing_pitch", title: "Client pitch", detail: "A persuasive recommendation with every claim sourced.", defaultName: "Client pitch" },
-  { id: "board_deck", title: "Board presentation", detail: "A concise leadership narrative with evidence.", defaultName: "Board presentation" },
+  { id: "board_deck", title: "Board presentation", detail: "A concise leadership narrative grounded in your Sources.", defaultName: "Board presentation" },
   { id: "internal_workshop", title: "Team workshop", detail: "A practical working session with clear actions.", defaultName: "Team workshop" },
 ];
 
@@ -595,7 +603,7 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
 function ClaimInspector({ node, source, busy, onClose, onSave, onShowSource }: { node: MapNode; source?: SourceItem; busy: boolean; onClose: () => void; onSave: (title: string) => void; onShowSource: () => void }) {
   const [title, setTitle] = useState(node.title);
   useEffect(() => setTitle(node.title), [node.id, node.title]);
-  return <Card className="claim-inspector"><header><div><small>{node.kind === "grounded" ? "Verified claim" : node.kind === "derived" ? "Derived point" : "Idea"}</small><strong>{node.title}</strong></div><IconButton label="Close claim" onClick={onClose}><CloseIcon /></IconButton></header><Input label="Claim" value={title} onChange={(event) => setTitle(event.target.value)} /><blockquote>{source?.excerpt ?? node.body}</blockquote><p className="source-locator">{source?.locator ?? node.locator}</p><div className="button-row"><Button variant="secondary" disabled={busy || title.trim() === node.title || !title.trim()} onClick={() => onSave(title.trim())}>Save</Button><Button variant="secondary" size="small" onClick={onShowSource}>Show source</Button></div></Card>;
+  return <Card className="claim-inspector"><header><div><small>{node.kind === "grounded" ? "Sourced claim" : node.kind === "derived" ? "Derived point" : "Idea"}</small><strong>{node.title}</strong></div><IconButton label="Close claim" onClick={onClose}><CloseIcon /></IconButton></header><Input label="Claim" value={title} onChange={(event) => setTitle(event.target.value)} /><blockquote>{source?.excerpt ?? node.body}</blockquote><p className="source-locator">{source?.locator ?? node.locator}</p><div className="button-row"><Button variant="secondary" disabled={busy || title.trim() === node.title || !title.trim()} onClick={() => onSave(title.trim())}>Save</Button><Button variant="secondary" size="small" onClick={onShowSource}>Show source</Button></div></Card>;
 }
 
 function frameSection(markdown: string | undefined, heading: string) {
@@ -617,9 +625,9 @@ function BriefView({ state, onChooseStyle, onShowSource }: { state: PersistedWor
 
   return <article className="brief-view">
     <Card className="brief-document">
-      <div className="brief-meta"><Status>Approved</Status><span>{state?.activeSourceIds.length ?? 0} sources · {state?.mapNodes.filter((node) => node.kind === "grounded").length ?? 0} verified claims</span></div>
+      <div className="brief-meta"><Status>Approved</Status><span>{state?.activeSourceIds.length ?? 0} sources · {state?.mapNodes.filter((node) => node.kind === "grounded").length ?? 0} sourced claims</span></div>
       <h1>{outcome}</h1>
-      {evidence.length > 0 && <section className="brief-section"><h2>Evidence</h2><ul>{evidence.map((item) => <li className="brief-evidence-item" key={`${item.text}-${item.locator ?? "untraced"}`}><span>{item.text}</span>{item.locator && <Token onClick={() => onShowSource({ sourceId: item.claim?.sourceId, claimId: item.claim?.id, locator: item.locator })}>{item.locator}</Token>}</li>)}</ul></section>}
+      {evidence.length > 0 && <section className="brief-section"><h2>Sources behind this brief</h2><ul>{evidence.map((item) => <li className="brief-evidence-item" key={`${item.text}-${item.locator ?? "untraced"}`}><span>{item.text}</span>{item.locator && <Token onClick={() => onShowSource({ sourceId: item.claim?.sourceId, claimId: item.claim?.id, locator: item.locator })}>{item.locator}</Token>}</li>)}</ul></section>}
       {proof && <section className="brief-section"><h2>Success looks like</h2><p>{proof}</p></section>}
       <section className="style-summary" aria-label="Style"><div className="style-summary-copy"><small>Style</small><strong>{locked ? state?.style?.name : "Not selected"}</strong></div><div className="palette-preview compact" data-domain-ui="palette-preview"><i style={{ background: state?.style?.accent ?? "#0285FF" }} /><i style={{ background: state?.style?.ink ?? "#0D0D0D" }} /><i style={{ background: state?.style?.paper ?? "#FFFFFF" }} /></div>{locked && <Button variant="secondary" size="small" onClick={onChooseStyle}>Edit</Button>}</section>
     </Card>
@@ -831,9 +839,9 @@ function ConversationView({ state, busy, streamingReply, realtimeContinuation, o
   }
 
   return <ConversationSurface className="conversation-view" aria-label="WorkshopLM Conversation">
-    <header className="conversation-heading"><div><h1>Work with your sources</h1><p>{state?.activeSourceIds.length ?? 0} selected · answers stay linked to evidence</p></div></header>
+    <header className="conversation-heading"><div><h1>Work with your sources</h1><p>{state?.activeSourceIds.length ?? 0} selected · answers stay linked to Sources</p></div></header>
     <div className="conversation-thread" aria-live="polite">
-      {!timeline.length && <div className="conversation-empty"><h2>What should we make clear?</h2><p>Ask a question across the selected Sources. Voice capture adds your spoken thought as a private Source before WorkshopLM responds.</p><div className="conversation-prompts"><Button variant="secondary" size="small" onClick={() => setDraft("What is the strongest recommendation in these sources?")}>Find the recommendation</Button><Button variant="secondary" size="small" onClick={() => setDraft("What evidence should lead the presentation?")}>Find the lead evidence</Button></div></div>}
+      {!timeline.length && <div className="conversation-empty"><h2>What should we make clear?</h2><p>Ask a question across the selected Sources. Voice capture adds your spoken thought as a private Source before WorkshopLM responds.</p><div className="conversation-prompts"><Button variant="secondary" size="small" onClick={() => setDraft("What is the strongest recommendation in these sources?")}>Find the recommendation</Button><Button variant="secondary" size="small" onClick={() => setDraft("Which source should lead the presentation?")}>Find the lead source</Button></div></div>}
       {timeline.map((entry) => entry.kind === "turn" ? <article className={`conversation-turn conversation-turn--${entry.value.role}`} key={entry.value.id}>
         <small>{entry.value.role === "assistant" ? "WorkshopLM" : "You"}{entry.value.input === "voice" ? " · Voice" : ""}</small>
         <p>{entry.value.text}</p>
@@ -854,7 +862,7 @@ function ConversationView({ state, busy, streamingReply, realtimeContinuation, o
 
 const TOOL_ACTIVITY_LABELS: Record<string, string> = {
   search: "Searched selected sources",
-  fetch: "Opened source evidence",
+  fetch: "Opened source",
   workshop_get_trace: "Checked source trace",
   workshop_set_source_scope: "Updated selected sources",
   workshop_approve_brief: "Approved Brief",

@@ -63,7 +63,7 @@ Avoid:
 | `hairline-15` | `rgba(13,13,13,.15)` | Cards and stronger boundaries |
 | `action` | `#0D0D0D` | Primary actions and highest-emphasis controls |
 | `accent-blue` | `#0285FF` | Focus, selected evidence paths, and creative labels |
-| `accent-green` | `#008635` | Verified source-backed claims and current state |
+| `accent-green` | `#008635` | Sourced claims and current state |
 | `accent-orange` | `#E25507` | Derived content and waiting state |
 | `accent-red` | `#E02E2A` | Failed, blocked, destructive, or stale conflict |
 

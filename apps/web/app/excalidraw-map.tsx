@@ -227,7 +227,7 @@ export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, on
       />
     </div>
     <div className="map-mobile-outline" aria-label="Map ideas">
-      {nodes.map((node) => <button type="button" key={node.id} className={`map-outline-node ${selectedNodeId === node.id ? "selected" : ""}`} onClick={() => onSelectNode(selectedNodeId === node.id ? "" : node.id)}><span>{node.kind === "grounded" ? "Verified" : node.kind === "derived" ? "Derived" : "Idea"}</span><strong>{node.title}</strong><small>{node.locator}</small></button>)}
+      {nodes.map((node) => <button type="button" key={node.id} className={`map-outline-node ${selectedNodeId === node.id ? "selected" : ""}`} onClick={() => onSelectNode(selectedNodeId === node.id ? "" : node.id)}><span>{node.kind === "grounded" ? "Sourced" : node.kind === "derived" ? "Derived" : "Idea"}</span><strong>{node.title}</strong><small>{node.locator}</small></button>)}
     </div>
   </div>;
 }

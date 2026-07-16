@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "status": "current-workbench-gallery",
-  "builtAt": "2026-07-16T13:25:22.444Z",
+  "builtAt": "2026-07-16T15:36:57.706Z",
   "screenshots": [
     {
       "name": "01-start.png",
       "label": "Choose the professional outcome",
       "source": "apps/web/tests/visual/__screenshots__/desktop-onboarding-welcome.png",
-      "sha256": "1b6348f13c4407976b4ca1d5695348049cf713dc3d9c7341a3cbff07aab1634e",
+      "sha256": "359d3511e5a4f4794efd2167bb7c2aa10279eef7916544e6c142ef84d4286f05",
       "width": 1200,
       "height": 800
     },
@@ -47,7 +47,7 @@
       "name": "06-approved-brief.png",
       "label": "Review the approved executable Brief",
       "source": "apps/web/tests/visual/__screenshots__/desktop-brief.png",
-      "sha256": "acb3c3ef13fb49c75f9880d85bbcdd9df901ac29abd24ee82b54c08a70da705f",
+      "sha256": "3f9ee6332d8d006f4e3da4f3c6b6a7bc43b4a1f5db219f24dce40abddf06c9ac",
       "width": 1200,
       "height": 800
     },
@@ -55,7 +55,7 @@
       "name": "07-company-style.png",
       "label": "Apply one reviewable visual system",
       "source": "apps/web/tests/visual/__screenshots__/desktop-style.png",
-      "sha256": "04dc8d9a0d5c56dc49b17652e4cb6089bf3e8d79eb2a9b47fc258db5feeecfac",
+      "sha256": "f5e82be90c86bb7f2b19f1718d34dbd59868967f0ee847178e7d0b26f8158689",
       "width": 1200,
       "height": 800
     },
@@ -134,7 +134,7 @@
   ],
   "contactSheet": {
     "name": "contact-sheet.png",
-    "sha256": "ec0e4e2f5bdbf09bfd1e133f0e04504f4bb59ff888bfff7a1875116b294ada0e",
+    "sha256": "f94215b4a9352bc35edece3620f9ab0aee30ec0124057b6553737907c6ab2a1c",
     "width": 1920,
     "height": 1280
   }

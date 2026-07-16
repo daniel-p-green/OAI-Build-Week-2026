@@ -1106,6 +1106,7 @@ test("reduced motion, contrast, and 200 percent logical zoom remain usable", asy
 });
 
 test("the local render becomes a real Video preview and the next action", async ({ page }) => {
+  test.setTimeout(90_000);
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   const repository = resolve(process.cwd(), "../..");
   const fixtureEnvironment = { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" };
@@ -1155,6 +1156,7 @@ test("the local render becomes a real Video preview and the next action", async 
       video.currentTime = 0.1;
       await seeked;
     });
+    const scrollBeforeOriginal = await page.locator(".focused-output").evaluate((node) => node.scrollTop);
     await page.getByRole("button", { name: "Show original" }).click();
     const buildTrace = page.getByRole("link", { name: "How this was built" });
     await expect(buildTrace).toHaveAttribute("href", "/api/workshop/artifacts/build-trace-v1");
@@ -1163,6 +1165,8 @@ test("the local render becomes a real Video preview and the next action", async 
     expect(await traceResponse.text()).toContain("How this submission was built");
     await closeDialog(page, "Original brainstorm");
     await expect(page.locator(".workshop-identity")).toContainText("WorkshopLM Build Week/Demo video");
+    await expect.poll(() => page.locator(".focused-output").evaluate((node) => node.scrollTop)).toBe(scrollBeforeOriginal);
+    await page.locator(".focused-output").evaluate((node) => node.scrollTo({ top: 0 }));
     await page.waitForTimeout(200);
     await expectScreen(page, `${viewport.name}-video-viewer`);
   }
