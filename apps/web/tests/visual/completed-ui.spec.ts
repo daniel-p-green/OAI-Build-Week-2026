@@ -76,6 +76,11 @@ async function pressTabUntil(page: Page, label: string, limit = 40) {
 
 test.describe.configure({ mode: "serial" });
 
+test.beforeEach(async ({ request }) => {
+  const response = await request.post("/api/workshop", { data: { action: "resetTestFixture" } });
+  expect(response.ok(), await response.text()).toBe(true);
+});
+
 test("reset fixture is calm and responsive", async ({ page }) => {
   for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
@@ -507,7 +512,7 @@ test("editing a saved Company Style is presented and submitted as a new version"
 });
 
 test.describe("completed Workshop judge path", () => {
-  test.beforeAll(() => {
+  test.beforeEach(() => {
     const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
     execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   });
@@ -631,6 +636,8 @@ test.describe("completed Workshop judge path", () => {
 });
 
 test("empty, loading, partial, error, and needs-update states stay calm and actionable", async ({ page }) => {
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   const readyState = await (await page.request.get("/api/workshop")).json();
 
   for (const viewport of viewports) {
@@ -714,6 +721,8 @@ test("empty, loading, partial, error, and needs-update states stay calm and acti
 });
 
 test("Outputs preserve recognizable version history and source coverage", async ({ page }) => {
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   const readyState = await (await page.request.get("/api/workshop")).json();
   const firstDeck = readyState.outputs.find((output: { type: string }) => output.type === "deck");
   const historyState = {
@@ -864,7 +873,7 @@ test("finished Video reveals the original brainstorm without adding navigation",
   const revealState = {
     ...readyState,
     videoState: "rendered",
-    videos: [{ id: "video-v1", version: 1, storyboardVersion: readyState.storyboard.version, styleVersion: readyState.style.version, relativePath: "generated/videos/workshoplm-demo-v1.mp4", provenancePath: "generated/videos/workshoplm-demo-v1.provenance.json", artifactPath: "artifacts/video-v1", claimIds: readyState.storyboard.panels.flatMap((panel: { claimIds: string[] }) => panel.claimIds), stale: false, createdAt: "2026-07-15T06:31:42.000Z" }],
+    videos: [{ id: "video-v1", version: 1, storyboardVersion: readyState.storyboard.version, styleVersion: readyState.style.version, relativePath: "generated/videos/workshoplm-demo-v1.mp4", provenancePath: "generated/videos/workshoplm-demo-v1.provenance.json", artifactPath: "artifacts/video-v1", claimIds: readyState.storyboard.panels.flatMap((panel: { claimIds: string[] }) => panel.claimIds), buildTrace: { htmlPath: "generated/videos/workshoplm-demo-v1.build-trace.html", dataPath: "generated/videos/workshoplm-demo-v1.build-trace.json", htmlSha256: "a".repeat(64), dataSha256: "b".repeat(64), milestoneCount: 12, commitCount: 286, taskIds: [] }, stale: false, createdAt: "2026-07-15T06:31:42.000Z" }],
     transcriptSegments: [{ id: "fixture-brainstorm", origin: "realtime_fallback", transport: "fixture", text: "Okay, this is rough, but I want the judge to see a messy idea turn into the actual finished submission without losing where anything came from.", capturedAt: "2026-07-15T06:30:00.000Z" }],
     firstTranscriptAt: "2026-07-15T06:30:00.000Z",
     firstRenderedOutputAt: "2026-07-15T06:31:42.000Z",
@@ -882,6 +891,7 @@ test("finished Video reveals the original brainstorm without adding navigation",
     await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Edit storyboard" })).toHaveClass(/oai-button--primary/);
     await expect(page.getByRole("button", { name: /^Show source for / })).toHaveCount(4);
+    await page.locator(".focused-output").evaluate((element) => { element.scrollTop = 0; });
     const reveal = page.getByRole("button", { name: "Show original" });
     await reveal.click();
     const sheet = page.getByRole("dialog", { name: "Original brainstorm" });
@@ -891,6 +901,7 @@ test("finished Video reveals the original brainstorm without adding navigation",
     await expect(sheet).toContainText("102 seconds from first transcript to first rendered Output");
     await expect(sheet.getByText("Presentation", { exact: true })).toBeVisible();
     await expect(sheet.getByText("Demo video", { exact: true })).toBeVisible();
+    await expect(sheet.getByRole("link", { name: "How this was built" })).toHaveAttribute("href", "/api/workshop/artifacts/build-trace-v1");
     await expectScreen(page, `${viewport.name}-original-reveal`);
     await closeDialog(page, "Original brainstorm");
     await expect(reveal).toBeFocused();
@@ -1097,6 +1108,8 @@ test("every official control variant and interaction state matches the Figma con
 });
 
 test("visible copy stays plain and stable", async ({ page }) => {
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   await page.goto("/");
   await expect(page.getByRole("complementary", { name: "Sources" })).toBeVisible();
   const labels = new Set<string>();
@@ -1239,7 +1252,7 @@ test("the local render becomes a real Video preview and the next action", async 
     await expect(buildTrace).toHaveAttribute("href", "/api/workshop/artifacts/build-trace-v1");
     const traceResponse = await page.request.get("/api/workshop/artifacts/build-trace-v1");
     expect(traceResponse.ok()).toBeTruthy();
-    expect(await traceResponse.text()).toContain("How this submission was built");
+    expect(await traceResponse.text()).toContain("Raw thinking became a finished submission.");
     await closeDialog(page, "Original brainstorm");
     await expect(page.locator(".workshop-identity")).toContainText("WorkshopLM Build Week/Demo video");
     await expect.poll(async () => Math.abs(await page.locator(".focused-output").evaluate((node) => node.scrollTop) - scrollBeforeOriginal) <= 32).toBe(true);

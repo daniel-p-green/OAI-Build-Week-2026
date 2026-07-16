@@ -138,6 +138,24 @@ const defaultState = (id = defaultWorkshopId, title = defaultWorkshopTitle, seed
 const repositoryDataRoot = () => resolve(process.env.WORKSHOPLM_DATA_ROOT ?? join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", ".workshoplm"));
 export const workshopDataRoot = repositoryDataRoot;
 function dbFor(root = repositoryDataRoot()) { const db = openLocalDatabase(join(root, "data", "workshoplm.sqlite")); migrate(db); return db; }
+export function resetSeededFixture(root?: string): WorkshopState {
+  if (process.env.WORKSHOPLM_SEEDED_FIXTURE !== "1") throw new Error("Fixture reset is unavailable outside seeded test runs.");
+  const db = dbFor(root);
+  const state = defaultState(defaultWorkshopId, defaultWorkshopTitle, true);
+  db.exec("BEGIN IMMEDIATE;");
+  try {
+    db.exec("DELETE FROM evidence_fts; DELETE FROM artifact; DELETE FROM job; DELETE FROM workshop_state; DELETE FROM style_library; DELETE FROM app_setting; DELETE FROM workshop;");
+    db.prepare("INSERT INTO workshop VALUES (?, ?, ?)").run(state.id, state.title, state.updatedAt);
+    db.prepare("INSERT INTO workshop_state VALUES (?, ?, ?)").run(state.id, JSON.stringify(state), state.updatedAt);
+    db.prepare("INSERT INTO app_setting (key, value) VALUES (?, ?)").run(activeWorkshopSetting, state.id);
+    db.exec("COMMIT;");
+  } catch (error) {
+    db.exec("ROLLBACK;");
+    throw error;
+  }
+  syncEvidenceIndex(db, state);
+  return state;
+}
 function normalizeStoryboard(storyboard: WorkshopStoryboard | undefined, fallback: WorkshopStoryboard, approved = false): WorkshopStoryboard {
   const value = storyboard ?? fallback;
   return { ...value, approved: value.approved ?? approved, panels: value.panels.map((panel) => { const evidence = panel.evidence ?? []; return { ...panel, evidence, claimIds: panel.claimIds ?? evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []) }; }) };
@@ -347,6 +365,15 @@ export function resolveWorkshopArtifact(id: string, root?: string, workshopId?: 
     const path = resolve(dataRoot, video.buildTrace.htmlPath);
     if (!path.startsWith(`${resolve(dataRoot)}/`)) return undefined;
     return { path, contentType: "text/html; charset=utf-8" };
+  }
+  if (id === "build-trace-data" || id.startsWith("build-trace-data-v")) {
+    const video = id === "build-trace-data"
+      ? [...state.videos].reverse().find((candidate) => !candidate.stale)
+      : state.videos.find((candidate) => `build-trace-data-v${candidate.version}` === id);
+    if (!video?.buildTrace) return undefined;
+    const path = resolve(dataRoot, video.buildTrace.dataPath);
+    if (!path.startsWith(`${resolve(dataRoot)}/`)) return undefined;
+    return { path, contentType: "application/json; charset=utf-8", fileName: `workshoplm-build-trace-v${video.version}.json` };
   }
   const historicalImage = id.match(/^(image-panel-\d+)-v(\d+)$/);
   if (historicalImage) {

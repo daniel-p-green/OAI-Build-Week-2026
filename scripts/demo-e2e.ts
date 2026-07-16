@@ -8,7 +8,7 @@ import { renderDeck, renderInfographic } from "../packages/production/src/render
 import { openLocalDatabase } from "../apps/worker/src/db/client.ts";
 import { migrate } from "../apps/worker/src/db/migrate.ts";
 import { executeOne } from "../apps/worker/src/executor.ts";
-import { applyWorkshopAction, approveVisualDna, createImageBatch, createSketch, createVisualDna, dismissWorkshopOrientation, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, updateWorkshopOnboarding } from "../apps/worker/src/workshop-service.ts";
+import { applyWorkshopAction, approveVisualDna, createImageBatch, createSketch, createVisualDna, dismissWorkshopOrientation, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, resolveWorkshopArtifact, updateWorkshopOnboarding } from "../apps/worker/src/workshop-service.ts";
 import { seedJudgeProviderImages } from "./seed-judge-images.ts";
 
 async function main() {
@@ -81,6 +81,12 @@ if (finalState.audioOverviews.length !== 1 || finalState.audioOverviews[0]?.stal
 if (finalState.videos.length !== 1 || finalState.videos[0]?.stale || !(await stat(resolve(root, finalState.videos[0].relativePath))).isFile()) throw new Error("recorded fixture did not preserve one current immutable Video version");
 const buildTrace = finalState.videos[0]?.buildTrace;
 if (!buildTrace || !(await stat(resolve(root, buildTrace.htmlPath))).isFile() || !(await stat(resolve(root, buildTrace.dataPath))).isFile()) throw new Error("recorded fixture did not preserve the Video build trace");
+if (resolveWorkshopArtifact("build-trace-data-v1", root)?.contentType !== "application/json; charset=utf-8") throw new Error("recorded fixture did not expose its exact trace data");
+const buildTraceData = JSON.parse(await readFile(resolve(root, buildTrace.dataPath), "utf8")) as { outputs: Array<{ label: string; status: string; sha256?: string }> };
+const expectedTraceOutputs = ["Presentation", "Infographic", "Sketch", "Image set", "Audio Overview", "Storyboard", "Video"];
+if (buildTraceData.outputs.map((output) => output.label).join("|") !== expectedTraceOutputs.join("|") || buildTraceData.outputs.some((output) => !output.status || !output.sha256)) throw new Error("recorded fixture build trace did not preserve the complete connected Output set");
+const buildTraceHtml = await readFile(resolve(root, buildTrace.htmlPath), "utf8");
+if (!buildTraceHtml.includes("Raw thinking became a finished submission") || !buildTraceHtml.includes("7 connected Outputs") || buildTraceHtml.includes("image-batch-v1")) throw new Error("recorded fixture build trace did not present the complete professional narrative");
 const finalGates = deriveGates({ transcriptSegments: 2, boardApprovedCurrent: true, briefCurrent: finalState.briefApproved, styleLockedCurrent: Boolean(finalState.style && !finalState.style.stale), storyboardApprovedCurrent: finalState.storyboardApproved, videoRenderedCurrent: finalState.videoState === "rendered" });
 if (!finalGates.video_rendered) throw new Error("video-rendered gate was not recorded");
 

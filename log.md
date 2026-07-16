@@ -9057,3 +9057,37 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The complete `13:41 CT — Image replacements preserve the last good visual and exact history` milestone was appended using an ambiguous repeated anchor and therefore appears earlier in this append-only file than the 12:55, 13:10, and 13:20 entries that were already present.
 - No historical entry was moved or rewritten. Treat the entry's explicit 13:41 timestamp as authoritative and this correction as the chronological tail marker.
+
+---
+
+## 2026-07-16 14:21 CT — The build record becomes judge-ready product proof
+
+**Area:** Meta-demo / provenance / visual quality / browser determinism
+
+### Changed
+
+- Rebuilt the generated `How this was built` artifact around the full connected Output set instead of a technical inventory that stopped at Presentation and Infographic. The record now follows Capture → Shape → Deliver, shows the active Style, both deliberate sign-offs, every current Output's format/version/status/hash/source-linked claims, provider evidence, honest limitations, and a stable link to the exact versioned JSON trace.
+- Added first-class trace coverage for Presentation, Infographic, Sketch, a complete generated Image set, the latest current Audio Overview or script, the current Storyboard, and the rendered Video. Partial work is not promoted: the Image set appears only when every panel has validated bytes and a hash.
+- Reordered real build milestones by timestamp and filtered correction-only log entries so append-only log repairs remain honest without corrupting the judge-facing chronology. Commit and Codex task evidence remain available under progressive disclosure.
+- Promoted `How this was built` to the primary action inside the existing Original brainstorm reveal, immediately after the elapsed before/after result and before the supporting Output list. No tab, route family, or persistent navigation was added.
+- Added a fixture-only reset contract guarded by `WORKSHOPLM_SEEDED_FIXTURE=1`. Every production-browser test now starts from an isolated SQLite state, while tests that need a completed Workshop seed it explicitly. This removed the serial-suite state leakage that had made the reveal and visible-copy contracts depend on test order.
+
+### Verified
+
+- Visually inspected the generated build record at 1200×900 and 390×844. The accepted Style-derived desktop proof hashes to `6791f5d446d484b68df53afa8a810c2a0f35d675bc8314f49dd979c50fcea553`; mobile hashes to `fb2950311701c2dcc4ba73722f08d5ab1148c73f86a0e7aa89eace65ec77c795`.
+- Visually inspected the Original brainstorm reveal at desktop, compact, and mobile widths. The reveal keeps the raw transcript and 102-second transformation visible while moving the provenance action above the fold. Snapshot hashes are `e98305fab3a0785e7ee4f7224c62b1e0fb378a811c0e4db2f272a88c1e6da7cc`, `2de827b8b77ccadcd9b49f83b1ecb3908f542245d3894cb083d31a34113ddc48`, and `7a3617a19b2ce2b93fce41433aad8c45977b724091c9dd1143f57b37bcb86cf3`.
+- The complete production-browser suite passed all 30 cases in 1.4 minutes after three consecutive debugging passes established deterministic isolation. The final pass includes desktop, compact, mobile, local Video render, Original brainstorm reveal, official component contract, plain-copy snapshot, responsive states, and exact source trace.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 30 web unit tests and 120 worker tests. `pnpm demo:e2e` passed the complete recorded Source-to-Video seam and verified all seven trace Output families plus the versioned JSON route. `pnpm submission:packet:verify` remains green with Terra, six provider-backed images, five Cedar product-narration clips, a 140.021-second film, sixteen UI screenshots, eight ready shots, two honest blocked shots, and four unresolved founder slots.
+- No OpenAI request ran. The evidence ledger remains at 104 provider HTTP operations and exact dollar debit remains unreported by the provider responses.
+
+### Decisions
+
+- The strongest meta-demo proof is a product artifact, not a developer appendix. The primary story therefore leads with transformation, approvals, Outputs, and traceability; raw commit/task evidence remains available but collapsed.
+- A generated Output is listed only when its current bytes and hash satisfy that Output family's integrity contract. This keeps the visible count meaningful instead of inflating it with planned or stale work.
+- Visual tests must own their starting state. Test-order coupling is not an acceptable substitute for a fixture, especially when screenshots are used as judge-film evidence.
+- `PLAN-2026-07-13.md` remained advisory only for enduring acceptance principles. Its pre-existing user modification was untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

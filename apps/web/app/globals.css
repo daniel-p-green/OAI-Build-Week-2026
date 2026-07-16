@@ -392,6 +392,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .original-result { display: grid; gap: 4px; margin-bottom: 12px; }
 .original-result h3 { margin: 0; font-size: 18px; line-height: 26px; letter-spacing: -.45px; }
 .original-result p { margin: 0; color: #5d5d5d; font-size: 12px; line-height: 16px; }
+.original-result .oai-button { justify-self: start; margin-top: 8px; }
 .original-output-row { gap: 12px; }
 .original-output-row > span { min-width: 0; display: grid; gap: 2px; }
 .original-output-row strong { font-size: 14px; line-height: 20px; }

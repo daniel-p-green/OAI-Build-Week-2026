@@ -855,9 +855,8 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   return <SideSheet title="Original brainstorm" className="original-reveal" onClose={onClose}>
     <p className="sheet-intro">The finished submission started with this.</p>
     <Card className="original-transcript"><small>Before · {sourceKind}</small><blockquote>“{original}”</blockquote>{sourceLocator && <p className="source-locator">{sourceLocator}</p>}</Card>
-    <div className="original-result"><small>After</small><h3>Became a connected Output set</h3>{elapsedSeconds !== null && <p>{elapsedSeconds} seconds from first transcript to first rendered Output</p>}</div>
+    <div className="original-result"><small>After</small><h3>Became a connected Output set</h3>{elapsedSeconds !== null && <p>{elapsedSeconds} seconds from first transcript to first rendered Output</p>}{currentVideo?.buildTrace && <ButtonLink href={`/api/workshop/artifacts/build-trace-v${currentVideo.version}`} target="_blank" rel="noreferrer">How this was built</ButtonLink>}</div>
     <ListGroup>{deliverables.map((item) => <ListRow className="original-output-row" key={item.title}><FileIcon /><span><strong>{item.title}</strong><small>{item.detail}</small></span></ListRow>)}</ListGroup>
-    {currentVideo?.buildTrace && <ButtonLink variant="secondary" href={`/api/workshop/artifacts/build-trace-v${currentVideo.version}`} target="_blank" rel="noreferrer">How this was built</ButtonLink>}
   </SideSheet>;
 }
 

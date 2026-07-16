@@ -1,11 +1,12 @@
 010203040506Image set6 imagesPlanned3 sources
-01Presentation02Infographic03Image set04Storyboard05Demo videoStoryboard5 panelsApproved3 sources
+01Presentation02Infographic03Image set04Storyboard05Demo videoStoryboard5 panelsReady for review3 sources
 01Presentation5s
 02Infographic5s
 03Image set5s
 04Storyboard5s
 05Demo video5s
 Add material
+Approve storyboard
 Back to Brief
 Back to Map
 Back to Outputs
@@ -14,7 +15,6 @@ Build notes · §2
 ChatAsk your sources
 Collapse Create
 Collapse Sources
-Create video
 Edit
 Expand Sources
 Goal · capture
@@ -22,21 +22,21 @@ Image set
 Infographic
 Infographic3 sourcesUp to date
 Outputs
-Outputs5 readyUp to date
+Outputs4 readyUp to date
 PDFBuild Week brief3 claims
 Presentation
 Presentation3 sourcesUp to date
+Review storyboard
 Show source
 Sketch
 Sketch4 ideasUp to date3 sources
 Sources behind this brief
 Storyboard
-Storyboard5 editable panelsApproved
-StyleWorkshopLM editorialReady
+Storyboard5 editable panelsNeeds review
+StyleClean professionalReady
 Success looks like
 TXTVoice brainstorm5 claims
 The product promise
-Undo
 Version 1Earlier version · 3 panels
 Version history
 WEBWorkshopLM direction2 claims
