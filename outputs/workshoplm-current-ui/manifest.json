@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "current-workbench-gallery",
-  "builtAt": "2026-07-16T11:37:37.634Z",
+  "builtAt": "2026-07-16T12:26:13.441Z",
   "screenshots": [
     {
       "name": "01-start.png",
@@ -63,7 +63,7 @@
       "name": "08-current-outputs.png",
       "label": "Review the current provider-backed deliverables",
       "source": "artifacts/ui-review/outputs-latest-only-desktop-2026-07-16.png",
-      "sha256": "6c603c52dfcdbb43e3618d745b76e831742b27007518ec39a6b671ef44f78b16",
+      "sha256": "3a879ea024d98bc60d6003e9fe67877eddd2b76a790953b4513a98f743cdd8e1",
       "width": 1200,
       "height": 800
     },
@@ -134,7 +134,7 @@
   ],
   "contactSheet": {
     "name": "contact-sheet.png",
-    "sha256": "e463816bd89f801c1f8da837c349f7ab60aff2c26e7f1adb2e2ca81fc0df0244",
+    "sha256": "62a7b7fe76d9c247f46141153244d78b2c5c4242bc3c0cc2610a027539367afc",
     "width": 1920,
     "height": 1280
   }

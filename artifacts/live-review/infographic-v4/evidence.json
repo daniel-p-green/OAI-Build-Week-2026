@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "status": "internally-accepted",
+  "reviewedAt": "2026-07-16T12:17:00.000Z",
+  "output": {
+    "id": "infographic-v4",
+    "pages": 1,
+    "pageSizePoints": "960.009 x 540",
+    "htmlSha256": "1675278ddf5f19a86f935015ee7f397d4ee440a57c0875792b440d300bc59d9d",
+    "editablePowerPointSha256": "3be57ed413ceba66ceabd8444a46ca459d649646bf1451e817c7cb503fa06b68",
+    "pdfSha256": "d00f6d31acb837c97e5c713ab612c4527eb907306913b84afc88f7ecdc72e5f0",
+    "reviewFrameSha256": "86dffd1e18c8e61376524b9423281a85f5b7ea82db1d03f9c8237f9de76d4d07"
+  },
+  "checks": {
+    "powerPointArchiveValid": true,
+    "libreOfficeRoundTrip": true,
+    "sourceLabelsExtracted": true,
+    "completeOpeningIdea": true,
+    "contentAwareSequence": true,
+    "previewLayoutIsolated": true,
+    "desktopHorizontalOverflow": 0,
+    "compactHorizontalOverflow": 0,
+    "observedClipping": false,
+    "providerRequestsAdded": 0
+  },
+  "limitations": [
+    "Visual acceptance is internal and does not satisfy the open external Send or Revise gate.",
+    "The current Infographic is grounded in the authorized sample Source and must be rebuilt from the founder recording for the final meta-demo."
+  ]
+}

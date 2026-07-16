@@ -39,7 +39,7 @@ describe("production renderers", () => {
     const infographic = renderInfographic(brief);
     expect(infographic).toContain("Source-defensible brief");
     expect(infographic).toContain('class="infographic-grid"');
-    expect(infographic.match(/<article class="block">/g)).toHaveLength(3);
+    expect(infographic.match(/<article class="block"/g)).toHaveLength(3);
   });
   it("places a reviewed generated visual on the cover with inspectable image provenance", async () => {
     const visual = { data: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAEAQH/6X8XWQAAAABJRU5ErkJggg==", aspectRatio: 1, panelId: "image-panel-1", panelVersion: 2, sha256: "a".repeat(64) };
@@ -120,6 +120,17 @@ describe("production renderers", () => {
     expect(deck).toContain('<div class="sequence-step"><span>Deliver</span></div>');
     const root = await mkdtemp(join(tmpdir(), "workshoplm-sequence-"));
     const artifact = await writeRenderedArtifact(root, "sequence", "deck", sequenceBrief);
+    expect((await readFile(join(root, artifact.editableRelativePath!))).byteLength).toBeGreaterThan(10_000);
+    await rm(root, { recursive: true, force: true });
+  });
+  it("turns a professional process into a visual sequence inside the editable infographic", async () => {
+    const sequenceBrief = { ...brief, blocks: [{ id: "path", heading: "One continuous path from Capture to Deliver", body: "", items: ["Capture", "Shape", "Deliver"], citations: ["approved brief"], layout: "sequence" as const }] };
+    const infographic = renderInfographic(sequenceBrief);
+    expect(infographic).toContain('class="block" data-layout="sequence"');
+    expect(infographic).toContain('class="infographic-sequence"');
+    expect(infographic).toContain("<span>Capture</span><span>Shape</span><span>Deliver</span>");
+    const root = await mkdtemp(join(tmpdir(), "workshoplm-infographic-sequence-"));
+    const artifact = await writeRenderedArtifact(root, "sequence", "infographic", sequenceBrief);
     expect((await readFile(join(root, artifact.editableRelativePath!))).byteLength).toBeGreaterThan(10_000);
     await rm(root, { recursive: true, force: true });
   });

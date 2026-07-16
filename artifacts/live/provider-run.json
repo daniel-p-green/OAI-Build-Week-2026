@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "verifiedAt": "2026-07-16T11:29:37.440Z",
+  "verifiedAt": "2026-07-16T12:26:14.115Z",
   "workshopId": "workshop-build-week",
   "sourceMode": "authorized-sample",
   "founderSource": false,
@@ -185,8 +185,8 @@
   "filmInputs": {
     "imageGallery": {
       "relativePath": "outputs/demo-film-inputs/provider-image-gallery.mov",
-      "sha256": "5dffc80f34c0e7d66f16e2821564f4fddb1bc3ef8ba88376f9a30e416302858c",
-      "byteCount": 84503
+      "sha256": "1ba551e304734546ff7699c8025c093b9aca85fd4236f146b6958d3de5294f49",
+      "byteCount": 84696
     },
     "narratedVideo": {
       "relativePath": "outputs/demo-film-inputs/provider-narrated-video.mp4",

@@ -7949,3 +7949,39 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - Founder capture, the founder-derived final operator run, verified final package, final MP4, external professional review, eligible Session ID, and public submission links remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 07:21 CT — Provider Infographic becomes content-aware
+
+**Area:** Professional output quality / editable PowerPoint / responsive preview / film evidence
+
+### Changed
+
+- Audited the actual provider-backed Infographic Version 1 instead of relying on renderer tests. Its PowerPoint/PDF exposed a clipped opening idea, a timestamp-heavy voice label, and Capture → Shape → Deliver as an ordinary text card.
+- Regenerated the content through the repaired semantic planner so spoken transformation language becomes one complete idea plus support and visible provenance becomes `Voice brainstorm` while exact locator metadata remains intact.
+- Added a dedicated Infographic process composition in responsive HTML and editable PowerPoint. Explicit sequence items now render as ordered Capture, Shape, and Deliver steps with restrained Accent treatment rather than another generic numbered block.
+- The first strict browser run rejected the embedded fixture preview and exposed a CSS namespace collision: Presentation-level `statement` and `recommendation` classes were styling Infographic cards. Replaced those shared classes with Infographic-scoped `data-layout` semantics, regenerated the live artifact as Version 4, and kept Versions 1–3 in history as `Needs update`.
+- Refreshed the real provider-backed Outputs evidence, sixteen-screen UI gallery, six-second provider gallery film input, final-style overlay preview, and 2:20 Cedar rough cut. The first gallery capture was rejected because its file-size drop and grey contact-sheet media revealed that embedded assets had not finished loading; the accepted recapture waits for every image and iframe asset to report real dimensions. No provider request ran.
+
+### Verified
+
+- `@workshoplm/production` passed 19 tests and typecheck. The new regression verifies the sequence in both responsive HTML and editable PowerPoint.
+- Infographic Version 4 passed PowerPoint archive validation, a one-page LibreOffice PDF round trip at 960.009×540 points, and layout-preserving text extraction with the complete opening idea, all three process stages, and every visible source label.
+- Desktop 1200×800 and compact 760×900 live workbench runs opened the focused current Infographic with zero horizontal overflow and found Capture, Shape, and Deliver inside the embedded preview. Full-page screenshots are preserved under `artifacts/ui-review/`.
+- The final strict production-browser run passed all 29 states after the namespace repair; the old baseline was not updated to conceal the collision.
+- `pnpm check` passed all thirteen packages with 117 worker, 30 web, and 19 production tests. `pnpm demo:e2e`, `pnpm demo:film:verify`, and `pnpm submission:packet:verify` passed with the honest eight-ready/two-blocked film boundary.
+- The editable PowerPoint SHA-256 is `3be57ed413ceba66ceabd8444a46ca459d649646bf1451e817c7cb503fa06b68`; the PDF is `d00f6d31acb837c97e5c713ab612c4527eb907306913b84afc88f7ecdc72e5f0`; the accepted full-resolution frame is `86dffd1e18c8e61376524b9423281a85f5b7ea82db1d03f9c8237f9de76d4d07`.
+- `git diff --check` passed outside the preserved user-owned `PLAN-2026-07-13.md` modification.
+
+### Decisions
+
+- Infographics need content-aware composition, not just smaller Presentation typography. A source explicitly describing a process should become a process visual in every relevant Output.
+- Layout semantics must remain scoped to the rendering surface. Shared names are acceptable in the domain contract, but CSS selectors may not let one Output family silently restyle another.
+- Internal visual acceptance improves the artifact but does not satisfy the open intended-audience `Send`/`Revise` gate.
+- The provider evidence ledger remains 97 HTTP operations. Exact dollar debit is unavailable and no exact spend is invented.
+
+### Open items
+
+- Founder capture, the founder-derived final operator run, verified final package, final MP4, external professional review, eligible Session ID, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
