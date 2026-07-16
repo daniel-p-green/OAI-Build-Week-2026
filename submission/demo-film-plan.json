@@ -11,13 +11,13 @@
     {
       "id": "promise",
       "title": "The promise",
-      "caption": "From meetings and documents to a deck you can defend",
+      "caption": "From meetings and documents to polished slides and more",
       "startSeconds": 0,
       "endSeconds": 13,
       "state": "ready",
       "captureBeats": ["map"],
       "captureEndHoldbackSeconds": 0.7,
-      "narration": "From your meetings and documents to a deck you can defend, with every claim traced to its source. WorkshopLM turns raw professional thinking into finished work without separating conversation from production.",
+      "narration": "From your meetings and documents to polished slides and supporting work, with every claim traced to its source. WorkshopLM turns raw professional thinking into finished work without separating conversation from production.",
       "requiredMoments": [],
       "requiredEvidence": [
         {
@@ -113,20 +113,20 @@
       "state": "ready",
       "captureBeats": ["style"],
       "captureEndHoldbackSeconds": 1.1,
-      "narration": "Style is set once and stays reviewable. Palette, typography, layouts, image treatment, and negative rules remain consistent across the deck and every supporting asset.",
+      "narration": "Style is set once and stays reviewable. Palette, typography, layouts, image treatment, and negative rules remain consistent across the slides and every supporting Output.",
       "requiredMoments": [],
       "requiredEvidence": []
     },
     {
       "id": "outputs",
-      "title": "A deck you can defend",
-      "caption": "Create one defensible deck and its supporting assets",
+      "title": "Slides—and everything around them",
+      "caption": "Create polished slides and a coordinated Output set",
       "startSeconds": 82,
       "endSeconds": 96,
       "state": "ready",
       "captureBeats": ["create-outputs", "output-evidence"],
       "preferCapture": true,
-      "narration": "The hero output is a branded deck I can edit and defend. Every factual claim keeps exact evidence, while the infographic and coherent GPT Image 2 set support the same story and visual system.",
+      "narration": "The lead Output is polished slides I can edit and defend. The infographic, images, Audio Overview, Storyboard, and Video share the same evidence and visual direction.",
       "requiredMoments": ["provider-image-set"],
       "requiredEvidence": [
         {

@@ -216,7 +216,7 @@ export async function generateOpenAiImageBatch(
     `Texture: ${state.imageBatch.coherence.textureRules.join(" ")}`,
     `Image treatment: ${state.imageBatch.coherence.imageRules.join(" ")}`,
     `Additional negative rules: ${state.imageBatch.coherence.negativeRules.join(" ") || "none"}.`,
-    "Design this for direct placement in a client or leadership deck; favor diagrams, concept visuals, and section art over generic illustration.",
+    "Design this for direct placement in client or leadership slides; favor diagrams, concept visuals, and section art over generic illustration.",
     "Do not add readable text, letters, numbers, logos, watermarks, interface chrome, device mockups, people posing at work, or visualized quantities not present in the approved idea.",
     "Maintain one coherent editorial art direction, folded-plane motif, material language, and lighting model across the complete six-image set.",
   ].join("\n");

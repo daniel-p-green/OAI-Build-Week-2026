@@ -25,10 +25,8 @@ const voice = process.env.WORKSHOPLM_ROUGH_CUT_VOICE || "Samantha";
 const fixedSpeechRate = process.env.WORKSHOPLM_ROUGH_CUT_RATE ? Number(process.env.WORKSHOPLM_ROUGH_CUT_RATE) : undefined;
 const width = 1280;
 const height = 720;
-const editorialPushInMaxScale = 1.06;
-const editorialPushInRatePerFrame = 0.0001;
-const editorialPushIn = (duration) => `zoompan=z='min(1+on*${editorialPushInRatePerFrame},${editorialPushInMaxScale})':x='(iw-iw/zoom)*on/(${duration}*30)':y='ih/2-(ih/zoom/2)':d=1:s=${width}x${height}:fps=30`;
-const authorizedSampleTranscript = "I want a workspace where a professional can talk through a messy idea, ground it in their meetings and documents, shape it on a visual Map, approve the thinking, and ship a coherent deck, image set, audio overview, storyboard, and video without losing the source trail. The product should feel as simple as NotebookLM but built for work, with OpenAI quality and two clear moments of human control.";
+const authorizedSampleTranscript = "I want a workspace where a professional can talk through a messy idea, ground it in their meetings and documents, shape it on a visual Map, approve the thinking, and ship polished slides, images, an audio overview, a storyboard, and video without losing the source trail. The product should feel simple but built for serious work, with OpenAI quality and two clear moments of human control.";
+let filmIdentity = { accent: "#1668E3", ink: "#171816", paper: "#F4F2EC", heading: "system-ui", body: "system-ui", designMarkdownPath: undefined, designTokensPath: undefined, frameMarkdownPath: undefined, frameJsonPath: undefined, designSha256: undefined, frameSha256: undefined, frameVersion: undefined, outcome: undefined };
 let finalAssemblyStarted = false;
 
 function run(command, args) {
@@ -42,6 +40,22 @@ function probe(path) {
 
 function sha256(bytes) {
   return createHash("sha256").update(bytes).digest("hex");
+}
+
+async function loadFilmIdentity(submissionManifestPath) {
+  if (!submissionManifestPath || !existsSync(submissionManifestPath)) return filmIdentity;
+  const submission = JSON.parse(await readFile(submissionManifestPath, "utf8"));
+  const dataRoot = resolve(dirname(submissionManifestPath), "../..");
+  const designMarkdownPath = resolve(dataRoot, `generated/DESIGN-v${submission.inputs.styleVersion}.md`);
+  const designTokensPath = resolve(dataRoot, `generated/DESIGN-v${submission.inputs.styleVersion}.tokens.json`);
+  const frameMarkdownPath = resolve(dataRoot, `generated/FRAME-v${submission.inputs.briefVersion}.md`);
+  const frameJsonPath = resolve(dataRoot, `generated/FRAME-v${submission.inputs.briefVersion}.json`);
+  for (const path of [designMarkdownPath, designTokensPath, frameMarkdownPath, frameJsonPath]) if (!existsSync(path)) throw new Error(`The HyperFrames film requires the current ${path.endsWith(".md") ? "Markdown" : "JSON"} design/brief artifact: ${relative(repository, path)}`);
+  const [designMarkdown, designTokensBytes, frameMarkdown, frameJsonBytes] = await Promise.all([readFile(designMarkdownPath), readFile(designTokensPath), readFile(frameMarkdownPath), readFile(frameJsonPath)]);
+  const design = JSON.parse(designTokensBytes.toString("utf8"));
+  const frame = JSON.parse(frameJsonBytes.toString("utf8"));
+  if (design.styleVersion !== submission.inputs.styleVersion || frame.frameVersion !== submission.inputs.briefVersion) throw new Error("The HyperFrames film DESIGN.md or FRAME.md version does not match the submission package.");
+  return { accent: design.palette.accent, ink: design.palette.ink, paper: design.palette.paper, heading: design.typographyRoles.heading.family, body: design.typographyRoles.body.family, designMarkdownPath, designTokensPath, frameMarkdownPath, frameJsonPath, designSha256: sha256(designMarkdown), frameSha256: sha256(frameMarkdown), frameVersion: frame.frameVersion, outcome: frame.outcome };
 }
 
 function escapeXml(value) {
@@ -91,18 +105,20 @@ function guideVoiceRate(text, durationSeconds) {
 }
 
 function overlaySvg(shot, index) {
+  const { accent, ink, paper } = filmIdentity;
   if (cleanEditorialStyle) {
     if (shot.id === "meta-reveal") return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"/>`;
     const lines = captionLines(shot.caption ?? shot.narration, 74);
-    const doorwayCue = shot.id === "codex-doorway" ? `<rect x="28" y="24" width="306" height="62" rx="16" fill="#ffffff" fill-opacity="0.96" stroke="#dededb"/>
-  <text x="50" y="50" font-family="Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="1.1" fill="#6b6b6b">CODEX → WORKSHOPLM</text>
-  <text x="50" y="72" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0d0d0d">Conversation opens the visual workbench</text>` : "";
+    const doorwayCue = shot.id === "codex-doorway" ? `<rect x="28" y="24" width="306" height="62" rx="16" fill="${paper}" fill-opacity="0.97" stroke="${ink}" stroke-opacity="0.12"/>
+  <text x="50" y="50" font-family="system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="1.1" fill="${ink}" fill-opacity="0.62">CODEX → WORKSHOPLM</text>
+  <text x="50" y="72" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="${ink}">Conversation opens the visual workbench</text>` : "";
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   ${doorwayCue}
-  <rect x="22" y="606" width="1236" height="96" rx="18" fill="#ffffff" fill-opacity="0.94"/>
-  <text x="48" y="632" font-family="Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="1.2" fill="#6b6b6b">${String(index + 1).padStart(2, "0")} · ${escapeXml(shot.title.toUpperCase())}</text>
-  <text x="48" y="661" font-family="Arial, sans-serif" font-size="19" font-weight="600" fill="#0d0d0d">${escapeXml(lines[0] || "")}</text>
-  <text x="48" y="687" font-family="Arial, sans-serif" font-size="19" font-weight="600" fill="#0d0d0d">${escapeXml(lines[1] || "")}</text>
+  <rect x="22" y="606" width="1236" height="96" rx="18" fill="${paper}" fill-opacity="0.96" stroke="${ink}" stroke-opacity="0.10"/>
+  <rect x="22" y="606" width="7" height="96" rx="3.5" fill="${accent}"/>
+  <text x="48" y="632" font-family="system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="1.2" fill="${ink}" fill-opacity="0.62">${String(index + 1).padStart(2, "0")} · ${escapeXml(shot.title.toUpperCase())}</text>
+  <text x="48" y="661" font-family="system-ui, sans-serif" font-size="19" font-weight="650" fill="${ink}">${escapeXml(lines[0] || "")}</text>
+  <text x="48" y="687" font-family="system-ui, sans-serif" font-size="19" font-weight="650" fill="${ink}">${escapeXml(lines[1] || "")}</text>
 </svg>`;
   }
   const state = shot.state === "ready" ? (shot.captureBeats.length ? "CAPTURED FIXTURE" : "CAPTURED EVIDENCE") : "FINAL EVIDENCE PENDING";
@@ -119,6 +135,18 @@ function overlaySvg(shot, index) {
   <rect x="1018" y="644" width="220" height="30" rx="15" fill="${stateFill}"/>
   <text x="1128" y="664" text-anchor="middle" font-family="Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="0.9" fill="#ffffff">${state}</text>
 </svg>`;
+}
+
+function hyperframesCompositionHtml(plan, identity) {
+  const media = plan.shots.map((shot, index) => {
+    const start = shot.startSeconds;
+    const duration = shot.endSeconds - shot.startSeconds;
+    const name = `${String(index + 1).padStart(2, "0")}-${shot.id}.mp4`;
+    return `<video id="shot-${index + 1}" class="clip" src="media/${name}" muted playsinline data-start="${start}" data-duration="${duration}" data-track-index="0"></video><audio id="shot-${index + 1}-audio" src="media/${name}" data-start="${start}" data-duration="${duration}" data-track-index="1" data-volume="1"></audio>`;
+  }).join("");
+  const transitions = plan.shots.slice(1).map((shot, index) => `<div id="transition-${index + 1}" class="clip transition" data-start="${(shot.startSeconds - 0.32).toFixed(2)}" data-duration="0.64" data-track-index="2"></div>`).join("");
+  const motion = plan.shots.slice(1).map((shot, index) => { const start = shot.startSeconds - 0.32; return `tl.set("#transition-${index + 1}",{xPercent:-101},${start.toFixed(2)});tl.to("#transition-${index + 1}",{xPercent:101,duration:0.64,ease:"power3.inOut"},${start.toFixed(2)});`; }).join("");
+  return `<!doctype html><html><head><meta charset="utf-8"><script src="gsap.min.js"></script><style>*{box-sizing:border-box}html,body,main{margin:0;width:${width}px;height:${height}px;overflow:hidden;background:${identity.paper};font-family:${identity.body},-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.clip{visibility:hidden}video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:${identity.paper}}.transition{position:absolute;inset:-2px;background:${identity.accent};will-change:transform}</style></head><body><main data-composition-id="workshoplm-editorial-film" data-start="0" data-duration="${plan.targetDurationSeconds}" data-width="${width}" data-height="${height}" data-fps="30" data-design-sha256="${identity.designSha256}" data-frame-sha256="${identity.frameSha256}" data-frame-version="${identity.frameVersion}" data-frame-outcome="${escapeXml(identity.outcome ?? "")}" data-motion-system="stable-editorial-wipe">${media}${transitions}</main><script>window.__timelines=window.__timelines||{};const tl=gsap.timeline({paused:true});${motion}window.__timelines["workshoplm-editorial-film"]=tl;</script></body></html>`;
 }
 
 async function metaRevealSvg(finalManifestPath, options = {}) {
@@ -206,6 +234,8 @@ async function main() {
     finalSubmissionManifestPath = resolve(repository, ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json");
     if (!existsSync(finalSubmissionManifestPath)) throw new Error("The acceptance submission package is required for the sample editorial cut.");
   }
+  const identityManifestPath = finalSubmissionManifestPath ?? resolve(repository, ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json");
+  filmIdentity = await loadFilmIdentity(identityManifestPath);
   const providerNarration = narrationManifestPath ? JSON.parse(await readFile(narrationManifestPath, "utf8")) : undefined;
   if (providerNarration) {
     if (providerNarration.model !== "gpt-4o-mini-tts" || providerNarration.voice !== "cedar" || providerNarration.shots?.length !== plan.shots.length) throw new Error("The provider narration manifest does not match the film plan.");
@@ -260,28 +290,28 @@ async function main() {
       const metaImage = resolve(temporaryRoot, `${stem}-meta.png`);
       await writeFile(metaSource, await metaRevealSvg(finalSubmissionManifestPath, sampleEditorialBuild ? { sample: true, transcript: authorizedSampleTranscript } : {}), "utf8");
       run("rsvg-convert", ["-w", String(width), "-h", String(height), metaSource, "-o", metaImage]);
-      run("ffmpeg", ["-y", "-loop", "1", "-i", metaImage, "-t", String(duration), "-vf", `scale=${width}:${height},${editorialPushIn(duration)},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "20", basePath]);
+      run("ffmpeg", ["-y", "-loop", "1", "-i", metaImage, "-t", String(duration), "-vf", `scale=${width}:${height},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "20", basePath]);
       shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 }, sourceBeats: [], generatedMetaReveal: true });
     } else if (externalVideo) {
       const sourceDuration = Number(probe(externalVideo).format?.duration || 0);
       const playbackRate = sourceDuration > duration ? sourceDuration / duration : 1;
       const presentationDuration = Math.min(duration, sourceDuration / playbackRate);
       const holdDuration = Math.max(0, duration - presentationDuration);
-      run("ffmpeg", ["-y", "-i", externalVideo, "-vf", `setpts=PTS/${playbackRate.toFixed(5)},scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5,trim=duration=${presentationDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${duration},${editorialPushIn(duration)},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
+      run("ffmpeg", ["-y", "-i", externalVideo, "-vf", `setpts=PTS/${playbackRate.toFixed(5)},scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=${filmIdentity.paper},trim=duration=${presentationDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${duration},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
       shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: [], externalVideo: shot.requiredEvidence.find((item) => resolve(repository, item.path) === externalVideo)?.path, sourceDurationSeconds: sourceDuration });
     } else if (selectedBeats.length) {
       const sourceStart = Math.max(0, selectedBeats[0].startMs / 1000 - 0.2);
       const sourceEnd = Math.min(capture.video.durationSeconds, selectedBeats.at(-1).endMs / 1000 - (shot.captureEndHoldbackSeconds ?? 0.3));
       const sourceDuration = Math.max(0.5, sourceEnd - sourceStart);
       const holdDuration = Math.max(0, duration - sourceDuration);
-      run("ffmpeg", ["-y", "-ss", sourceStart.toFixed(3), "-i", sourceVideo, "-vf", `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5,trim=duration=${sourceDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${duration},${editorialPushIn(duration)},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
+      run("ffmpeg", ["-y", "-ss", sourceStart.toFixed(3), "-i", sourceVideo, "-vf", `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=${filmIdentity.paper},trim=duration=${sourceDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${duration},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
       shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: shot.captureBeats, sourceStartSeconds: Number(sourceStart.toFixed(3)), sourceEndSeconds: Number(sourceEnd.toFixed(3)) });
     } else {
-      run("ffmpeg", ["-y", "-loop", "1", "-i", resolve(repository, "outputs/workshoplm-current-ui/03-grounded-map.png"), "-t", String(duration), "-vf", `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5,${editorialPushIn(duration)},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
+      run("ffmpeg", ["-y", "-loop", "1", "-i", resolve(repository, "outputs/workshoplm-current-ui/03-grounded-map.png"), "-t", String(duration), "-vf", `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=${filmIdentity.paper},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
       shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: [], stillFallback: "outputs/workshoplm-current-ui/03-grounded-map.png" });
     }
 
-    shotRecords.at(-1).motion = { type: "editorial-push-in", maxScale: editorialPushInMaxScale, ratePerFrame: editorialPushInRatePerFrame };
+    shotRecords.at(-1).motion = { type: "hyperframes-stable-media", transition: index ? "design-accent-wipe" : "opening-hold", jitterProneZoompan: false };
     if (cleanEditorialStyle && shot.id === "codex-doorway") shotRecords.at(-1).editorialCue = "codex-to-workshoplm";
 
     const audioDuration = Number(probe(audioPath).format?.duration || 0);
@@ -289,15 +319,27 @@ async function main() {
     const tempo = providerShot ? Math.max(1, Math.min(2, audioDuration / targetSpeechDuration)) : Math.max(0.6, Math.min(2, audioDuration / targetSpeechDuration));
     const audioFilter = `${Math.abs(tempo - 1) > 0.01 ? `atempo=${tempo.toFixed(5)},` : ""}aresample=48000,volume=0.96,apad=whole_dur=${duration}`;
     run("ffmpeg", ["-y", "-i", basePath, "-loop", "1", "-i", overlayPath, "-i", audioPath, "-filter_complex", `[0:v][1:v]overlay=0:0:shortest=1,format=yuv420p[v];[2:a]${audioFilter}[a]`, "-map", "[v]", "-map", "[a]", "-t", String(duration), "-r", "30", "-c:v", "libx264", "-preset", "fast", "-crf", "22", "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", segmentPath]);
-    const reviewPath = resolve(reviewRoot, `${String(index + 1).padStart(2, "0")}.jpg`);
-    run("ffmpeg", ["-y", "-ss", String(duration / 2), "-i", segmentPath, "-frames:v", "1", "-q:v", "2", reviewPath]);
-    reviewFrames.push(reviewPath);
     segments.push(segmentPath);
   }
 
-  const concatPath = resolve(temporaryRoot, "segments.txt");
-  await writeFile(concatPath, `${segments.map((path) => `file '${path.replaceAll("'", "'\\''")}'`).join("\n")}\n`, "utf8");
-  run("ffmpeg", ["-y", "-f", "concat", "-safe", "0", "-i", concatPath, "-c", "copy", "-movflags", "+faststart", outputVideo]);
+  const compositionRoot = resolve(temporaryRoot, "hyperframes");
+  const mediaRoot = resolve(compositionRoot, "media");
+  await mkdir(mediaRoot, { recursive: true });
+  for (const [index, segment] of segments.entries()) await copyFile(segment, resolve(mediaRoot, `${String(index + 1).padStart(2, "0")}-${plan.shots[index].id}.mp4`));
+  await copyFile(resolve(repository, "apps/worker/node_modules/gsap/dist/gsap.min.js"), resolve(compositionRoot, "gsap.min.js"));
+  await copyFile(filmIdentity.designMarkdownPath, resolve(compositionRoot, "DESIGN.md"));
+  await copyFile(filmIdentity.designTokensPath, resolve(compositionRoot, "design.tokens.json"));
+  await copyFile(filmIdentity.frameMarkdownPath, resolve(compositionRoot, "FRAME.md"));
+  await copyFile(filmIdentity.frameJsonPath, resolve(compositionRoot, "frame.json"));
+  await writeFile(resolve(compositionRoot, "index.html"), hyperframesCompositionHtml(plan, filmIdentity), "utf8");
+  run("npx", ["hyperframes", "lint", compositionRoot, "--json"]);
+  run("npx", ["hyperframes", "check", compositionRoot, "--json", "--at-transitions"]);
+  run("npx", ["hyperframes", "render", compositionRoot, "--output", outputVideo, "--workers", "1", "--quality", finalBuild ? "high" : "standard"]);
+  for (const [index, shot] of plan.shots.entries()) {
+    const reviewPath = resolve(reviewRoot, `${String(index + 1).padStart(2, "0")}.jpg`);
+    run("ffmpeg", ["-y", "-ss", String((shot.startSeconds + shot.endSeconds) / 2), "-i", outputVideo, "-frames:v", "1", "-q:v", "2", reviewPath]);
+    reviewFrames.push(reviewPath);
+  }
   run("ffmpeg", ["-y", "-framerate", "1", "-start_number", "1", "-i", resolve(reviewRoot, "%02d.jpg"), "-vf", "scale=384:-2,tile=5x2", "-frames:v", "1", "-q:v", "2", contactSheet]);
 
   const videoBytes = await readFile(outputVideo);
@@ -324,6 +366,7 @@ async function main() {
     builtAt: new Date().toISOString(),
     plan: "submission/demo-film-plan.json",
     sourceCapture: plan.captureManifest,
+    compositor: { engine: "hyperframes", mode: "local", version: "0.7.60", composition: "workshoplm-editorial-film", jitterProneZoompan: false, transition: "design-accent-wipe", design: { sha256: filmIdentity.designSha256, source: relative(repository, filmIdentity.designMarkdownPath) }, frame: { version: filmIdentity.frameVersion, sha256: filmIdentity.frameSha256, source: relative(repository, filmIdentity.frameMarkdownPath) } },
     voice: providerNarration ? { provider: "OpenAI", model: providerNarration.model, name: providerNarration.voice, disclosure: providerNarration.disclosure, requestCount: providerNarration.requestCount, finalProviderNarration: true } : { provider: "local macOS say", name: voice, ratePolicy: fixedSpeechRate ? `fixed ${fixedSpeechRate}` : "adaptive 120–180 words per minute", finalProviderNarration: false },
     video: { relativePath: finalBuild ? "workshoplm-demo.mp4" : sampleEditorialBuild ? "workshoplm-demo-sample.mp4" : "workshoplm-demo-rough-cut.mp4", sha256: sha256(videoBytes), durationSeconds: Number(inspected.format?.duration || 0), streams: inspected.streams || [] },
     contactSheet: { relativePath: "contact-sheet.jpg", sha256: sha256(sheetBytes) },

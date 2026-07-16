@@ -90,8 +90,8 @@ type PersistedWorkshop = {
 type ImageBatchPanel = NonNullable<PersistedWorkshop["imageBatch"]>["panels"][number];
 
 const VIEW_TITLES: Record<ObjectView, string> = { conversation: "Conversation", map: "Map", brief: "Brief", outputs: "Outputs", storyboard: "Storyboard", output: "Output" };
-const outputTitle = (type: "deck" | "infographic") => type === "deck" ? "Presentation" : "Infographic";
-const outputType = (type: "deck" | "infographic") => type === "deck" ? "Presentation" : "Infographic";
+const outputTitle = (type: "deck" | "infographic") => type === "deck" ? "Slides" : "Infographic";
+const outputType = (type: "deck" | "infographic") => type === "deck" ? "Slides" : "Infographic";
 const isVoiceSource = (source: SourceItem) => source.origin.includes("capture-only fallback")
   || source.origin.toLowerCase() === "chatgpt task"
   || source.title === "Raw voice brainstorm";
@@ -160,7 +160,7 @@ function affectedWorkForSourceScope(state: PersistedWorkshop | null) {
   const affected = state.mapNodes.length ? ["Map"] : [];
   if (state.frame || state.briefApproved) affected.push("Brief");
   if (state.sketch) affected.push("Sketch");
-  if (state.outputs.some((output) => output.type === "deck")) affected.push("Presentation");
+  if (state.outputs.some((output) => output.type === "deck")) affected.push("Slides");
   if (state.outputs.some((output) => output.type === "infographic")) affected.push("Infographic");
   if (state.imageBatch) affected.push("Image set");
   if (state.audioOverviews.length) affected.push("Audio Overview");
@@ -575,7 +575,7 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
   }
 
   return <FullScreenShell className="onboarding-shell">
-    <NavigationHeader className="onboarding-header"><strong>WorkshopLM</strong><span>From your meetings and documents to a deck you can defend.</span></NavigationHeader>
+    <NavigationHeader className="onboarding-header"><strong>WorkshopLM</strong><span>From your meetings and documents to finished work you can defend.</span></NavigationHeader>
     {notice && <Card className={`notice notice--${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}>{notice.message}</Card>}
     <section className="onboarding-stage">
       {state.onboarding.step === "welcome" && <Card className="onboarding-card welcome-card">
@@ -616,7 +616,7 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
   const analysis = state?.onboarding.styleAnalysis;
   const analysisDomain = analysis ? new URL(analysis.url).hostname : "";
 
-  if (!nodes.length) return <div className="state-surface"><StateMessage state="empty" title="Start with a source">From your meetings and documents to a deck you can defend, with every claim traced to its source.</StateMessage></div>;
+  if (!nodes.length) return <div className="state-surface"><StateMessage state="empty" title="Start with a source">Create polished slides and supporting work, with every factual claim traced to its source.</StateMessage></div>;
 
   return <div className="map-canvas" data-domain-ui="map-canvas">
     <div className="map-caption" data-domain-ui="map-caption"><span>{nodes.length} ideas · Drag to organize · Double-click to edit</span>{canUndo && <Button variant="secondary" size="small" disabled={busy} onClick={onUndo}>Undo</Button>}</div>
@@ -843,7 +843,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
     : null;
   const currentVideo = [...(state?.videos ?? [])].reverse().find((video) => !video.stale);
   const deliverables = [
-    { title: "Presentation", detail: `${state?.outputs.filter((output) => output.type === "deck").length ?? 0} version${state?.outputs.filter((output) => output.type === "deck").length === 1 ? "" : "s"}` },
+    { title: "Slides", detail: `${state?.outputs.filter((output) => output.type === "deck").length ?? 0} version${state?.outputs.filter((output) => output.type === "deck").length === 1 ? "" : "s"}` },
     { title: "Sketch", detail: state?.sketch ? `Version ${state.sketch.version} · ${state.sketch.nodes.length} ideas` : "Not created yet" },
     { title: "Infographic", detail: `${state?.outputs.filter((output) => output.type === "infographic").length ?? 0} version${state?.outputs.filter((output) => output.type === "infographic").length === 1 ? "" : "s"}` },
     { title: "Audio Overview", detail: state?.audioOverviews.at(-1)?.audio ? `Version ${state.audioOverviews.at(-1)!.version} ready` : state?.audioOverviews.length ? "Script ready" : "Not created yet" },
@@ -987,7 +987,7 @@ function ProductionRail({ open, state, view, action, onCollapse, onOpenView, onO
     <ListGroup className="production-list">
       <ProductionItem title="Brief" detail={briefReady ? `${state?.activeSourceIds.length ?? 0} ${(state?.activeSourceIds.length ?? 0) === 1 ? "source" : "sources"}` : "Approve the Map"} status={state?.frame?.stale ? "Needs update" : briefReady ? "Approved" : "Needs review"} tone={briefReady && !state?.frame?.stale ? "current" : "waiting"} onClick={() => onOpenView(briefReady ? "brief" : "map")} ariaLabel={briefReady ? "View brief" : "Review Brief"} />
       <ProductionItem title="Style" detail={styleReady ? state?.style?.name ?? "Company Style" : "Brand and format"} status={state?.style?.stale ? "Needs update" : styleReady ? "Ready" : "Not selected"} tone={styleReady ? "current" : "waiting"} onClick={onOpenStyle} />
-      <ProductionItem title="Outputs" detail={outputCount ? `${outputCount} ready` : "Presentation, visuals, audio"} status={outputsCurrent ? "Up to date" : hasOutputs ? "Needs update" : "Not created"} tone={outputsCurrent ? "current" : "waiting"} onClick={() => onOpenView("outputs")} ariaLabel="View outputs" />
+      <ProductionItem title="Outputs" detail={outputCount ? `${outputCount} ready` : "Slides, visuals, audio"} status={outputsCurrent ? "Up to date" : hasOutputs ? "Needs update" : "Not created"} tone={outputsCurrent ? "current" : "waiting"} onClick={() => onOpenView("outputs")} ariaLabel="View outputs" />
       <ProductionItem title="Storyboard" detail={state?.storyboard.panels.length ? `${state.storyboard.panels.length} editable panels` : "Review before Video"} status={state?.storyboard.stale ? "Needs update" : state?.storyboardApproved ? "Approved" : state?.storyboard.panels.length ? "Needs review" : "Planned"} tone={state?.storyboardApproved && !state.storyboard.stale ? "current" : "waiting"} onClick={state?.storyboard.panels.length ? () => onOpenView("storyboard") : undefined} ariaLabel="View storyboard" />
       <ProductionItem title="Video" detail={currentVideo ? `${state?.storyboard.panels.length ?? 0} scenes` : state?.videoState === "failed" || state?.videoState === "cancelled" ? state.videoRecovery?.message ?? "Your approved Storyboard is safe." : "From approved Storyboard"} status={currentVideo?.stale ? "Needs update" : currentVideo ? "Up to date" : state?.videoState === "queued" ? "Waiting" : state?.videoState === "rendering" ? "Creating" : state?.videoState === "failed" ? "Couldn't create" : state?.videoState === "cancelled" ? "Cancelled" : "Planned"} tone={currentVideo && !currentVideo.stale ? "current" : "waiting"} onClick={currentVideo ? () => onOpenOutput(currentVideo.id) : undefined} />
     </ListGroup>
@@ -1036,7 +1036,7 @@ function ObjectsSheet({ state, view, onClose, onSelect }: { state: PersistedWork
     { view: "conversation", title: "Chat", detail: "Ask across your Sources", ready: true },
     { view: "map", title: "Map", detail: "Organize your ideas", ready: Boolean(state?.mapNodes.length) },
     { view: "brief", title: "Brief", detail: "Review the approved direction", ready: Boolean(state?.briefApproved) },
-    { view: "outputs", title: "Outputs", detail: "Presentation, visuals, and audio", ready: Boolean(state?.outputs.length || state?.imageBatch) },
+    { view: "outputs", title: "Outputs", detail: "Slides, visuals, and audio", ready: Boolean(state?.outputs.length || state?.imageBatch) },
     { view: "storyboard", title: "Storyboard", detail: "Review the sequence before Video", ready: Boolean(state?.storyboard.panels.length) },
   ];
   const current = view === "output" ? "outputs" : view;
@@ -1053,7 +1053,7 @@ function HowItWorksSheet({ onClose }: { onClose: () => void }) {
     { title: "Deliver", detail: "Create the presentation and supporting Outputs, then approve the Storyboard before Video." },
   ];
   return <SideSheet title="How WorkshopLM works" onClose={onClose}>
-    <p className="sheet-intro">From your meetings and documents to a deck you can defend, with every claim traced to its source.</p>
+    <p className="sheet-intro">From your meetings and documents to polished slides, visuals, audio, and video—with every factual claim traced to its source.</p>
     <ListGroup>{steps.map((step) => <ListRow key={step.title}><div className="help-step"><strong>{step.title}</strong><small>{step.detail}</small></div></ListRow>)}</ListGroup>
     <Card className="help-trust"><strong>Stay in control</strong><p><b>Show source</b> traces factual work back to its material. Brief and Storyboard are the only two sign-offs.</p></Card>
   </SideSheet>;

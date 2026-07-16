@@ -21,7 +21,7 @@ async function main() {
       await capture(page, `${viewport.name}-map`);
 
       await page.getByRole("button", { name: "View outputs" }).click();
-      await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Slides" })).toBeVisible();
       await page.waitForTimeout(1800);
       await capture(page, `${viewport.name}-outputs`);
 

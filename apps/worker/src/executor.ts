@@ -47,6 +47,7 @@ export type WorkshopVideoProvenance = {
   visualDnaVersion?: number;
   imageBatchId?: string;
   design: { styleVersion: number; markdownPath: string; tokensPath: string };
+  frame: { version: number; markdownPath: string; executablePath: string };
   video: StoredArtifact & { relativePath: string };
   panels: Array<{
     panelId: string;
@@ -62,6 +63,7 @@ export type WorkshopVideoProvenance = {
 export function buildWorkshopVideoProvenance(state: WorkshopState, video: StoredArtifact): WorkshopVideoProvenance {
   if (!state.storyboardApproved || state.storyboard.stale || state.storyboard.panels.some((panel) => panel.stale || !panel.approved)) throw new Error("Video provenance requires an approved current storyboard.");
   if (!state.style || !state.designArtifact || state.designArtifact.stale || state.designArtifact.styleVersion !== state.style.version) throw new Error("Video provenance requires the current DESIGN.md.");
+  if (!state.frame || state.frame.stale || state.frame.version < 1) throw new Error("Video provenance requires the current approved FRAME.md.");
   assertStoryboardGrounding(state);
   let startSeconds = 0;
   const panels = state.storyboard.panels.map((panel) => {
@@ -86,11 +88,12 @@ export function buildWorkshopVideoProvenance(state: WorkshopState, video: Stored
     startSeconds += panel.durationSeconds;
     return value;
   });
-  return { schemaVersion: 1, workshopId: state.id, storyboardVersion: state.storyboard.version, styleVersion: state.style.version, visualDnaVersion: state.visualDna?.version, imageBatchId: state.imageBatch?.id, design: { styleVersion: state.designArtifact.styleVersion, markdownPath: state.designArtifact.markdownPath, tokensPath: state.designArtifact.tokensPath }, video, panels };
+  return { schemaVersion: 1, workshopId: state.id, storyboardVersion: state.storyboard.version, styleVersion: state.style.version, visualDnaVersion: state.visualDna?.version, imageBatchId: state.imageBatch?.id, design: { styleVersion: state.designArtifact.styleVersion, markdownPath: state.designArtifact.markdownPath, tokensPath: state.designArtifact.tokensPath }, frame: { version: state.frame.version, markdownPath: state.frame.markdownPath, executablePath: state.frame.executablePath }, video, panels };
 }
 export function buildWorkshopVideoHtml(state: WorkshopState): string {
   if (!state.storyboardApproved || state.storyboard.stale || state.storyboard.panels.some((panel) => panel.stale || !panel.approved)) throw new Error("Video render requires an approved current storyboard.");
   if (!state.style || !state.designArtifact || state.designArtifact.stale || state.designArtifact.styleVersion !== state.style.version) throw new Error("Video render requires the current DESIGN.md.");
+  if (!state.frame || state.frame.stale || state.frame.version < 1) throw new Error("Video render requires the current approved FRAME.md.");
   const style = state.style;
   const directives = designDirectivesForStyle(style);
   const headingFont = videoFontStack(style.typographyRoles.heading.family);
@@ -125,7 +128,7 @@ export function buildWorkshopVideoHtml(state: WorkshopState): string {
     return commands.join("");
   }).join("");
   const background = avoidGradients ? style.ink : `radial-gradient(circle at 80% 10%,${style.accent} 0%,transparent 32%),${style.ink}`;
-  return `<!doctype html><html><head><meta charset="utf-8"><script src="gsap.min.js"></script><style>*{box-sizing:border-box}html,body,main{margin:0;width:1920px;height:1080px;overflow:hidden;background:${style.ink};color:${style.paper};font-family:${bodyFont}}.panel{position:absolute;inset:0}.scene-content{position:absolute;inset:0;padding:104px 124px;display:flex;align-items:center;background:${background};opacity:0}.scene-image{position:absolute;top:0;right:0;width:56%;height:100%;object-fit:cover}.panel-1 .scene-image{right:auto;left:0}.copy{position:relative;z-index:1;width:40%;display:flex;flex-direction:column;justify-content:center}.panel-1 .copy{margin-left:auto}.eyebrow{font-size:20px;letter-spacing:.14em;color:${style.accent};font-weight:700}h1{font-family:${headingFont};font-size:76px;line-height:1.02;margin:32px 0 28px;letter-spacing:-.03em}p{margin:0;font-size:30px;line-height:1.4;color:${style.paper}d8}.profile-board_deck h1{font-size:68px}.profile-internal_workshop h1{font-size:72px}.panel-number{position:absolute;top:48px;right:56px;padding:9px 12px 8px;border-radius:999px;background:#0D0D0Ddd;color:#FFFFFF;font-size:17px;line-height:1;letter-spacing:.12em}.panel-1 .panel-number{right:auto;left:56px}.disclosure{position:absolute;left:124px;bottom:56px;font-size:16px;letter-spacing:.02em;color:${style.paper}a6}.panel-1 .disclosure{right:124px;left:auto}</style></head><body><main class="profile-${style.intentProfile}" data-composition-id="workshoplm-storyboard-v${state.storyboard.version}" data-design-version="${state.designArtifact.version}" data-storyboard-label="APPROVED STORYBOARD V${state.storyboard.version}" data-audio-model="${hasCurrentNarration(state) ? "AI-generated voice · OpenAI gpt-4o-mini-tts" : "deterministic local placeholder tone"}" data-layout-rules="${escapeHtml(directives.layout.join(" | "))}" data-motion-rules="${escapeHtml(directives.motion.join(" | "))}" data-motion-system="calm-editorial" data-start="0" data-duration="${duration}" data-width="1920" data-height="1080" data-fps="30">${scenes}</main><script>window.__timelines=window.__timelines||{};const tl=gsap.timeline({paused:true});${motion}window.__timelines["workshoplm-storyboard-v${state.storyboard.version}"]=tl;</script></body></html>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><script src="gsap.min.js"></script><style>*{box-sizing:border-box}html,body,main{margin:0;width:1920px;height:1080px;overflow:hidden;background:${style.ink};color:${style.paper};font-family:${bodyFont}}.panel{position:absolute;inset:0}.scene-content{position:absolute;inset:0;padding:104px 124px;display:flex;align-items:center;background:${background};opacity:0}.scene-image{position:absolute;top:0;right:0;width:56%;height:100%;object-fit:cover}.panel-1 .scene-image{right:auto;left:0}.copy{position:relative;z-index:1;width:40%;display:flex;flex-direction:column;justify-content:center}.panel-1 .copy{margin-left:auto}.eyebrow{font-size:20px;letter-spacing:.14em;color:${style.accent};font-weight:700}h1{font-family:${headingFont};font-size:76px;line-height:1.02;margin:32px 0 28px;letter-spacing:-.03em}p{margin:0;font-size:30px;line-height:1.4;color:${style.paper}d8}.profile-board_deck h1{font-size:68px}.profile-internal_workshop h1{font-size:72px}.panel-number{position:absolute;top:48px;right:56px;padding:9px 12px 8px;border-radius:999px;background:#0D0D0Ddd;color:#FFFFFF;font-size:17px;line-height:1;letter-spacing:.12em}.panel-1 .panel-number{right:auto;left:56px}.disclosure{position:absolute;left:124px;bottom:56px;font-size:16px;letter-spacing:.02em;color:${style.paper}a6}.panel-1 .disclosure{right:124px;left:auto}</style></head><body><main class="profile-${style.intentProfile}" data-composition-id="workshoplm-storyboard-v${state.storyboard.version}" data-design-version="${state.designArtifact.version}" data-frame-version="${state.frame.version}" data-frame-path="${escapeHtml(state.frame.markdownPath)}" data-storyboard-label="APPROVED STORYBOARD V${state.storyboard.version}" data-audio-model="${hasCurrentNarration(state) ? "AI-generated voice · OpenAI gpt-4o-mini-tts" : "deterministic local placeholder tone"}" data-layout-rules="${escapeHtml(directives.layout.join(" | "))}" data-motion-rules="${escapeHtml(directives.motion.join(" | "))}" data-motion-system="calm-editorial" data-start="0" data-duration="${duration}" data-width="1920" data-height="1080" data-fps="30">${scenes}</main><script>window.__timelines=window.__timelines||{};const tl=gsap.timeline({paused:true});${motion}window.__timelines["workshoplm-storyboard-v${state.storyboard.version}"]=tl;</script></body></html>`;
 }
 export async function executeOne(root: string, run: RunCommand = defaultRun) : Promise<ExecuteResult> {
   const db = openLocalDatabase(join(root, "data", "workshoplm.sqlite")); migrate(db);
@@ -138,6 +141,9 @@ export async function executeOne(root: string, run: RunCommand = defaultRun) : P
     if (!state.designArtifact) throw new Error("Video render requires the current DESIGN.md.");
     await copyFile(join(root, state.designArtifact.markdownPath), join(staging, "DESIGN.md"));
     await copyFile(join(root, state.designArtifact.tokensPath), join(staging, "design.tokens.json"));
+    if (!state.frame || state.frame.stale) throw new Error("Video render requires the current approved FRAME.md.");
+    await copyFile(join(root, state.frame.markdownPath), join(staging, "FRAME.md"));
+    await copyFile(join(root, state.frame.executablePath), join(staging, "frame.json"));
     for (const [index, panel] of state.storyboard.panels.entries()) {
       const image = currentImageForPanel(state, panel); if (!image?.relativePath) continue;
       const source = resolve(root, image.relativePath); if (!source.startsWith(`${resolve(root)}/`)) throw new Error("Storyboard image escaped the Workshop data root.");

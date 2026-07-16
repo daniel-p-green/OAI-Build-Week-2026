@@ -5,21 +5,22 @@
   "model": "gpt-4o-mini-tts",
   "voice": "cedar",
   "requestCount": 10,
-  "generatedAt": "2026-07-16T08:09:18.725Z",
+  "regeneratedRequestCount": 3,
+  "generatedAt": "2026-07-16T20:51:32.849Z",
   "planPath": "submission/demo-film-plan.json",
   "shots": [
     {
       "id": "promise",
       "title": "The promise",
       "relativePath": "outputs/demo-film-narration/promise.wav",
-      "sha256": "daa3849d77c11e767dae8965c48c9952bd4d7b071291997d67deac7a8912f4e6",
-      "byteCount": 590444,
-      "durationSeconds": 12.3,
+      "sha256": "579c6204e115a77584e1df86645e541fef93f4d8bff20afd5e983cd11dd39c48",
+      "byteCount": 643244,
+      "durationSeconds": 13.4,
       "slotSeconds": 13,
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
-      "requestId": "req_4baf607eaff0434582f45ec597ce3b1f",
-      "generatedAt": "2026-07-16T08:08:54.929Z"
+      "requestId": "req_0a261178f9a54f17bd409bd0abec963c",
+      "generatedAt": "2026-07-16T20:51:27.647Z"
     },
     {
       "id": "codex-doorway",
@@ -77,27 +78,27 @@
       "id": "style",
       "title": "One reviewable visual system",
       "relativePath": "outputs/demo-film-narration/style.wav",
-      "sha256": "b1c0e7bd172ddc834e0667cb2faa2084d9f56925bdc68e39d2cac1069d388139",
-      "byteCount": 511244,
-      "durationSeconds": 10.65,
+      "sha256": "17db463e24236214b21191a616e405467a7ada5e2ce59b95c2ed7c987a50a22b",
+      "byteCount": 568844,
+      "durationSeconds": 11.85,
       "slotSeconds": 12,
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
-      "requestId": "req_c956e59b23ad4b7692290f9530da43b5",
-      "generatedAt": "2026-07-16T08:09:08.525Z"
+      "requestId": "req_ab56e361ebaa417a99e46e657103a268",
+      "generatedAt": "2026-07-16T20:51:30.557Z"
     },
     {
       "id": "outputs",
-      "title": "A deck you can defend",
+      "title": "Slides—and everything around them",
       "relativePath": "outputs/demo-film-narration/outputs.wav",
-      "sha256": "5ec1b60cc990cda57a53f234366fb1faa8acee61817cd7fe6580cc06e0df3ef1",
-      "byteCount": 600044,
-      "durationSeconds": 12.5,
+      "sha256": "171a1ccc1ff79f328b7c516a04f236fd5c7f296ef7accce44c326d1793d7ee60",
+      "byteCount": 518444,
+      "durationSeconds": 10.8,
       "slotSeconds": 14,
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
-      "requestId": "req_cee65297a43e44c990ad429ad397fc4a",
-      "generatedAt": "2026-07-16T08:09:11.229Z"
+      "requestId": "req_e4b2d7e1042d463794613c3175a95014",
+      "generatedAt": "2026-07-16T20:51:32.849Z"
     },
     {
       "id": "storyboard-approval",

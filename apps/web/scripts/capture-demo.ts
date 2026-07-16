@@ -128,7 +128,7 @@ async function main(): Promise<void> {
     await page.getByRole("button", { name: "View outputs" }).click();
     await beat("create-outputs", "Create the traced Output set", async () => {
       await page.getByRole("button", { name: "Create outputs" }).click();
-      await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Slides" })).toBeVisible();
       await expect(page.getByRole("heading", { name: "Image set" })).toBeVisible();
       await seedJudgeProviderImages(dataRoot);
       await generateOutput("deck", dataRoot);
@@ -142,7 +142,7 @@ async function main(): Promise<void> {
       await expect(page.getByRole("heading", { name: "Sketch", exact: true })).toBeVisible();
       await page.waitForTimeout(900);
       await page.getByRole("button", { name: "Back to Outputs" }).click();
-      await page.getByRole("button", { name: /^Open Presentation/ }).click();
+      await page.getByRole("button", { name: /^Open Slides/ }).click();
       await page.getByRole("button", { name: /^Show source for / }).first().click();
       await expect(page.getByRole("dialog", { name: "Source" })).toBeVisible();
     }, 1800);
@@ -152,7 +152,7 @@ async function main(): Promise<void> {
     await beat("storyboard-edit", "Edit the Storyboard before rendering", async () => {
       await page.getByRole("button", { name: "Review storyboard", exact: true }).click();
       const title = page.getByRole("textbox", { name: "Panel title" });
-      await title.fill("Presentation proof");
+      await title.fill("Slides proof");
       await page.getByRole("button", { name: "Save" }).click();
       await expect(page.getByRole("button", { name: "Save" })).toHaveCount(0);
     }, 2000);

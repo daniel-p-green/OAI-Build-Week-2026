@@ -27,6 +27,10 @@ async function main() {
   assert(Array.isArray(manifest.limitations) && manifest.limitations.length >= 4, "The sample-film limitations are missing.");
   assert(manifest.voice?.provider === "OpenAI" && manifest.voice?.model === "gpt-4o-mini-tts" && manifest.voice?.name === "cedar" && manifest.voice?.finalProviderNarration === true, "The sample film is not bound to the verified Cedar narration set.");
   assert(manifest.shots?.length === 10, "The sample film must contain all ten planned shots.");
+  assert(manifest.compositor?.engine === "hyperframes" && manifest.compositor.mode === "local" && manifest.compositor.version === "0.7.60", "The sample film must be rendered by the pinned local HyperFrames compositor.");
+  assert(manifest.compositor.jitterProneZoompan === false && manifest.compositor.transition === "design-accent-wipe", "The sample film has not removed the jitter-prone zoompan motion.");
+  assert(await matches(resolve(repository, manifest.compositor.design.source), manifest.compositor.design.sha256), "The DESIGN.md used by the sample film no longer matches its manifest hash.");
+  assert(await matches(resolve(repository, manifest.compositor.frame.source), manifest.compositor.frame.sha256), "The FRAME.md used by the sample film no longer matches its manifest hash.");
   assert(manifest.shots.filter((shot) => shot.state === "blocked").length === 2, "The sample film must retain the two final-evidence blocks.");
   const doorway = manifest.shots.find((shot) => shot.id === "codex-doorway");
   assert(doorway?.editorialCue === "codex-to-workshoplm", "The clean film must make the real Codex-to-Workshop doorway visually explicit.");
@@ -51,7 +55,7 @@ async function main() {
   assert(await matches(resolve(repository, trace.buildTrace.relativePath), trace.buildTrace.sha256), "The sample build trace no longer matches the film evidence.");
   assert(dirname(resolve(repository, trace.buildTrace.relativePath)) === dirname(resolve(repository, trace.submissionManifest.relativePath)), "The sample manifest and build trace must come from the same Output set.");
 
-  process.stdout.write(`${JSON.stringify({ status: "verified-sample-editorial-cut", durationSeconds, videoSha256: manifest.video.sha256, reviewFrames: manifest.reviewFrames.length, blockedFinalEvidenceShots: 2, narration: `${manifest.voice.model}/${manifest.voice.name}`, metaReveal: trace }, null, 2)}\n`);
+  process.stdout.write(`${JSON.stringify({ status: "verified-sample-editorial-cut", durationSeconds, videoSha256: manifest.video.sha256, compositor: manifest.compositor, reviewFrames: manifest.reviewFrames.length, blockedFinalEvidenceShots: 2, narration: `${manifest.voice.model}/${manifest.voice.name}`, metaReveal: trace }, null, 2)}\n`);
 }
 
 main().catch((error) => {

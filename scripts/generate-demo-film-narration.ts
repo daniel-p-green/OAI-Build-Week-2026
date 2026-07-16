@@ -26,16 +26,26 @@ function probeDuration(path: string): number {
 }
 
 async function main(): Promise<void> {
-  assert(process.env.WORKSHOPLM_GENERATE_DEMO_FILM_NARRATION === "1", "Set WORKSHOPLM_GENERATE_DEMO_FILM_NARRATION=1 for this bounded ten-request operation.");
+  const shotArgument = process.argv.find((value) => value.startsWith("--shots="))?.slice("--shots=".length);
+  const requestedShotIds = shotArgument ? new Set(shotArgument.split(",").map((value) => value.trim()).filter(Boolean)) : undefined;
+  assert(process.env.WORKSHOPLM_GENERATE_DEMO_FILM_NARRATION === "1", `Set WORKSHOPLM_GENERATE_DEMO_FILM_NARRATION=1 for this bounded ${requestedShotIds ? `${requestedShotIds.size}-request revision` : "ten-request operation"}.`);
   const apiKey = process.env.OPENAI_API_KEY?.trim();
   assert(apiKey, "OPENAI_API_KEY is required.");
   const plan = JSON.parse(await readFile(planPath, "utf8")) as FilmPlan;
   assert(plan.shots.length === 10, `Expected ten film shots, received ${plan.shots.length}.`);
   assert(plan.shots.every((shot) => shot.narration.length > 0 && shot.narration.length <= 4096), "Every film narration must fit the Speech API input limit.");
+  if (requestedShotIds) {
+    const planIds = new Set(plan.shots.map((shot) => shot.id));
+    for (const id of requestedShotIds) assert(planIds.has(id), `Unknown film shot requested for narration: ${id}`);
+    assert(requestedShotIds.size > 0, "At least one film shot is required for selective narration regeneration.");
+  }
   await mkdir(outputRoot, { recursive: true });
 
-  const records: NarrationRecord[] = [];
-  for (const shot of plan.shots) {
+  const manifestPath = resolve(outputRoot, "manifest.json");
+  const prior = requestedShotIds ? JSON.parse(await readFile(manifestPath, "utf8")) as { shots?: NarrationRecord[] } : undefined;
+  if (requestedShotIds) assert(prior?.shots?.length === plan.shots.length, "Selective narration regeneration requires a complete existing ten-shot manifest.");
+  const recordsById = new Map((prior?.shots ?? []).map((record) => [record.id, record]));
+  for (const shot of plan.shots.filter((candidate) => !requestedShotIds || requestedShotIds.has(candidate.id))) {
     const response = await fetch("https://api.openai.com/v1/audio/speech", {
       method: "POST",
       headers: {
@@ -60,8 +70,10 @@ async function main(): Promise<void> {
     assert(durationSeconds > 0, `Narration ${shot.id} has no playable duration.`);
     const slotSeconds = shot.endSeconds - shot.startSeconds;
     assert(durationSeconds <= slotSeconds * 1.5, `Narration ${shot.id} is ${durationSeconds.toFixed(2)}s for a ${slotSeconds}s slot and would require excessive time compression.`);
-    records.push({ id: shot.id, title: shot.title, relativePath, sha256: createHash("sha256").update(bytes).digest("hex"), byteCount: bytes.byteLength, durationSeconds, slotSeconds, model, voice, requestId: response.headers.get("x-request-id") ?? undefined, generatedAt: new Date().toISOString() });
+    recordsById.set(shot.id, { id: shot.id, title: shot.title, relativePath, sha256: createHash("sha256").update(bytes).digest("hex"), byteCount: bytes.byteLength, durationSeconds, slotSeconds, model, voice, requestId: response.headers.get("x-request-id") ?? undefined, generatedAt: new Date().toISOString() });
   }
+  const records = plan.shots.map((shot) => recordsById.get(shot.id)).filter((record): record is NarrationRecord => Boolean(record));
+  assert(records.length === plan.shots.length, "Narration manifest must retain all ten film shots.");
 
   const manifest = {
     schemaVersion: 1,
@@ -70,11 +82,12 @@ async function main(): Promise<void> {
     model,
     voice,
     requestCount: records.length,
+    regeneratedRequestCount: requestedShotIds?.size ?? records.length,
     generatedAt: new Date().toISOString(),
     planPath: "submission/demo-film-plan.json",
     shots: records,
   };
-  await writeFile(resolve(outputRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
   process.stdout.write(`${JSON.stringify(manifest, null, 2)}\n`);
 }
 

@@ -10,7 +10,7 @@ WorkshopLM
 
 ## Tagline (under 200 characters)
 
-Turn raw thinking into finished work. WorkshopLM turns meetings and documents into a branded, source-defensible deck, with every factual claim traced to its source.
+Turn raw thinking into finished work: polished slides, visuals, audio, storyboards, and video, with every factual claim traced to its source.
 
 ## Category
 
@@ -26,21 +26,32 @@ TypeScript, Node.js, Next.js, React, pnpm, Turborepo, SQLite (WAL + FTS5), Excal
 
 ### The problem
 
-Every consultant, strategist, and enablement lead lives the same Tuesday. The meeting happened. The documents exist. The thinking is real. And now someone has to turn all of it into a deck for leadership, on brand, defensible line by line, by Thursday. AI tools help you understand your material. Almost none of them help you ship it. The ones that generate slides can't tell you where a claim came from, don't know your brand, and hand you a finished artifact you can't edit. So professionals do what they've always done: rebuild everything by hand and hope nobody asks "where did that number come from?"
+Every consultant, strategist, and enablement lead lives the same Tuesday. The meeting happened. The documents exist. The thinking is real. And now someone has to turn all of it into leadership slides, supporting visuals, and a clear narrative—on brand, defensible line by line, by Thursday. AI tools help you understand your material. Almost none of them help you ship the complete package. The ones that generate slides often lose source trace, ignore your visual system, or hand you a finished artifact you cannot edit. So professionals rebuild the last mile by hand and hope nobody asks, “Where did that number come from?”
 
 ### What WorkshopLM does
 
 WorkshopLM is a local-first production workspace that turns raw inputs into deliverables you can defend.
 
-You talk and add sources. WorkshopLM turns them into an editable Map: your claims, decisions, and evidence as a live semantic whiteboard, each card carrying its exact source locator. You shape the Map, then approve it as the Brief. You point it at a website or your brand assets, review what it found, and lock a Style with your exact colors, fonts, and rules. Then one action creates the work: a presentation with an editable PowerPoint export, a supporting infographic, a coherent image set, and an editable storyboard. You review the storyboard panel by panel, approve it, and WorkshopLM renders a narrated video locally.
+You talk and add Sources. WorkshopLM turns them into an editable Map: claims, decisions, and evidence on a live visual whiteboard, each grounded card retaining its exact source locator. You shape the Map, then approve it as the Brief. Point WorkshopLM at a website or add brand assets, review what it found, and lock a Style with exact colors, fonts, and rules.
 
-Two things make this different from every generate-a-deck tool:
+Then one action creates a coordinated set of deliverables from the same approved thinking and Style:
+
+- polished slides with an editable PowerPoint export;
+- a concise infographic;
+- a coherent GPT Image 2 visual set;
+- a grounded, editable Audio Overview with Cedar voice;
+- a source-linked Storyboard that remains editable panel by panel; and
+- a narrated Video rendered locally from the approved Storyboard.
+
+Slides are the lead professional deliverable, not the limit of the product. Every supporting Output shares the same evidence, visual direction, version history, and update state.
+
+Two things make this different from ordinary slide generators and disconnected creative tools:
 
 **You stay in charge at exactly two moments.** Approve the Brief. Approve the Storyboard. Nothing expensive or final happens without your sign-off, and everything downstream honestly shows `Needs update` when your thinking changes upstream.
 
 **Every claim keeps its receipt.** Click any factual statement in any output, in a slide, an infographic block, or a storyboard panel, and WorkshopLM opens the exact source excerpt it came from. Not a citations page. The sentence.
 
-It's built for the weekly rhythm, not the one-off demo: add Monday's new meeting to an existing Workshop and the Map expands, dependent work flags itself, your saved Style carries over, and one reapproval produces the next deck version, traced to the new source, with the old version preserved in history.
+It is built for the weekly rhythm, not the one-off demo: add Monday's new meeting to an existing Workshop and the Map expands, dependent work flags itself, your saved Style carries over, and one reapproval produces the next version of the slides and supporting Outputs. New work stays traced to the new Source while prior versions remain available in history.
 
 ### The product proof is its production record
 
@@ -50,7 +61,7 @@ This project started as two files: a goal document and an operating agreement fo
 
 WorkshopLM currently preserves a traced, 25-asset partial Output set from sanitized sources through Sources, Map, approved Brief, Style, editable PowerPoint files, a grounded playable Cedar Audio Overview, Storyboard, and local Video, with hashes and per-scene provenance. `Show original` lets a reviewer walk from a finished fixture Output to the transcript excerpt that started it.
 
-`[LIVE: The final Devpost copy, deck, thumbnail, Storyboard, narration, and public demo Video were produced and verified as one WorkshopLM Output set.]`
+`[LIVE: The final Devpost copy, slides, infographic, image set, Audio Overview, thumbnails, Storyboard, narration, and public demo Video were produced and verified as one WorkshopLM Output set.]`
 `[FALLBACK: The current recorded fixture proves the traced production model, but the final public submission was assembled from those verified outputs outside the product.]`
 
 `[LIVE: The measured path from first transcript to first finished output in the recorded live run was {X minutes}.]`
@@ -117,7 +128,7 @@ The append-only build log (`log.md`), goal file (`GOAL.md`), and claim ledger (`
 
 ## Video narration spine (aligns with the verified 2:20 rough cut)
 
-1. **Why (0:00–0:13):** raw thinking to a deck you can defend.
+1. **Why (0:00–0:13):** raw thinking to polished slides—and the supporting work needed to ship them.
 2. **How (0:13–1:22):** Codex doorway, founder Source, Terra Map, exact evidence, Brief approval, and Style.
 3. **What (1:22–2:05):** provider-backed Outputs, editable Storyboard, second approval, and narrated local Video.
 4. **Reveal (2:05–2:20):** `Show original`, final traced package, Codex build record, and explicit AI-voice/runtime disclosure.

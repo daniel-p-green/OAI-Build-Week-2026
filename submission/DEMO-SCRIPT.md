@@ -19,13 +19,13 @@ Every answer must point to an inspected artifact in `log.md`. A missing or ambig
 
 | Time | Screen action | Narration |
 | --- | --- | --- |
-| 0:00–0:13 | Open the finished presentation, then pull back to its WorkshopLM Map. | “From your meetings and documents to a deck you can defend, with every claim traced to its source.” |
+| 0:00–0:13 | Open the finished slides, then pull back to their WorkshopLM Map. | “From your meetings and documents to polished slides and supporting work, with every claim traced to its source.” |
 | 0:13–0:26 | Show the captured Codex-side WorkshopLM doorway and use it to open the Workshop. | “WorkshopLM is one unified plugin: Codex stays the conversation surface and opens the visual production workspace.” |
 | 0:26–0:44 | Open Sources and the dated founder brainstorm, then show the provider-backed Terra Map result. | “GPT-5.6 turns this source into a grounded graph while retaining chunk and source locators.” |
 | 0:44–0:58 | Open a source locator, then move or rename one Map node. | “The Map stays editable, and a meaningful change makes dependent work stale.” |
 | 0:58–1:10 | Choose `Approve brief`, then show the readable Brief. | “The first approval turns the current Map into an inspectable executable Brief.” |
-| 1:10–1:22 | Show the Style summary with palette, type, layout, and negative rules. | “Style is set once and stays reviewable, so this deck and every supporting asset follow the same visual rules.” |
-| 1:22–1:36 | Open the presentation first, show its exact evidence, then reveal the provider-backed GPT Image 2 set. | “The hero output is a branded deck I can edit and defend. Its factual claims retain exact evidence, and GPT Image 2 gives the supporting work one coherent visual direction.” |
+| 1:10–1:22 | Show the Style summary with palette, type, layout, and negative rules. | “Style is set once and stays reviewable, so the slides and every supporting Output follow the same visual rules.” |
+| 1:22–1:36 | Open the slides first, show their exact evidence, then reveal the provider-backed GPT Image 2 set and the other coordinated Outputs. | “The lead Output is polished slides I can edit and defend. The infographic, images, Audio Overview, Storyboard, and Video share the same evidence and visual direction.” |
 | 1:36–1:49 | Open Storyboard, edit one panel, save, then choose `Approve storyboard`. | “The Storyboard remains editable. This is the second and final blocking approval before video creation.” |
 | 1:49–2:04 | Show the approved Storyboard becoming the current narrated MP4. | “The local worker renders only the approved current Storyboard. The same trace follows finished work back through the Brief and Map to exact evidence.” |
 | 2:04–2:20 | Reveal the contemporaneous brainstorm beside the verified founder-derived Output set, then show concise Codex and GPT-5.6 evidence. | “This trace shows how the source became the submission on screen. You watched GPT-5.6 shape it; Codex accelerated the implementation and verification.” |
@@ -35,8 +35,8 @@ Every answer must point to an inspected artifact in `log.md`. A missing or ambig
 - Use the recorded fixture or the bounded local live operator path; do not show personal sources, API keys, or hidden local paths.
 - Disclose the current editorial and product narration as AI-generated Cedar voice. Keep deterministic fixture audio labeled separately wherever it appears.
 - The Codex doorway is required footage. A local web-app shot alone does not prove the unified-plugin architecture.
-- Show exactly two approvals: Map as Brief, then Storyboard. Style review and deck export are not additional approval gates.
-- Treat the presentation as the hero deliverable. Infographic, images, Storyboard, and Video are supporting proof, not equal-weight feature tours.
+- Show exactly two approvals: Map as Brief, then Storyboard. Style review and slide export are not additional approval gates.
+- Treat slides as the lead professional deliverable while clearly showing that the Infographic, Images, Audio Overview, Storyboard, and Video form one coordinated Output set.
 - Show the verified Terra result during the source-to-Map beat; do not leave it as a spoken end-card claim.
 - A new founder-brainstorm recording must be timestamped and described as a contemporaneous source. It is not the missing original pre-code brainstorm.
 - Keep the YouTube title, thumbnail, and Devpost project name free of Google or NotebookLM marks. The comparison may appear only in narration or explanatory prose.

@@ -59,7 +59,7 @@ describe("OpenAI media adapters", () => {
     expect(new Set(requests.map(({ body }) => (body.get("image") as Blob).size)).size).toBe(1);
     expect((requests[0]!.body.get("image") as Blob).size).toBeGreaterThan(1_000);
     expect(requests.every(({ body }) => String(body.get("prompt")).includes("Locked palette: #1155AA, #171816, #F4F2EC"))).toBe(true);
-    expect(requests.every(({ body }) => String(body.get("prompt")).includes("direct placement in a client or leadership deck"))).toBe(true);
+    expect(requests.every(({ body }) => String(body.get("prompt")).includes("direct placement in client or leadership slides"))).toBe(true);
     expect(requests.every(({ body }) => String(body.get("prompt")).includes("Do not add readable text, letters, numbers, logos"))).toBe(true);
     const state = readWorkshopState(root);
     expect(state.imageBatch?.panels.every((panel) => panel.state === "generated" && panel.evidence.length > 0 && panel.provenance?.model === "gpt-image-2" && panel.provenance.referenceId === state.imageBatch?.referenceId && panel.sha256?.length === 64)).toBe(true);

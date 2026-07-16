@@ -2718,6 +2718,41 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
+---
+
+## 2026-07-16 16:09 CT — The demo film moves to a stable local HyperFrames compositor
+
+**Area:** Demo film / local video / DESIGN + FRAME provenance / product language
+
+### Changed
+
+- Traced the reported shake to the sample film's FFmpeg `zoompan` treatment, whose integer crop steps could move otherwise static UI by a pixel between frames. Replaced that final assembly path with pinned local HyperFrames 0.7.60: ten exact-duration video clips, their Cedar audio, and restrained 0.64-second Accent wipes on a deterministic GSAP timeline. The film manifest now records `jitterProneZoompan: false` and the exact compositor/version.
+- Applied the HyperFrames skill's local-first gates to the real build: `lint`, transition-aware `check`, then `render`. The composition stages the active `DESIGN-v1.md` and tokens plus approved `FRAME-v1.md` and executable frame; its root binds their versions, hashes, Style colors, typography, and intended outcome. One non-blocking density warning remains because nine simple transition clips share one track; runtime, layout, and transition checks report zero errors.
+- Extended the product Video seam so every render requires the current approved FRAME, records DESIGN and FRAME provenance, and copies `DESIGN.md`, `design.tokens.json`, `FRAME.md`, and `frame.json` beside the HyperFrames composition. A Video cannot silently render against a stale thinking or visual contract.
+- Retired `deck` from new public and visible product language. `Slides` now names the lead professional deliverable while the empty state, Devpost draft, README, demo script, and film explicitly retain the broader Output set: Infographic, image set, Audio Overview, Storyboard, and Video. The old `deck` value remains only as a backward-compatible internal domain identifier or immutable historical evidence.
+- Selectively regenerated only the three Cedar editorial-film clips affected by the terminology change. Requests: `req_0a261178f9a54f17bd409bd0abec963c` (promise), `req_ab56e361ebaa417a99e46e657103a268` (Style), and `req_e4b2d7e1042d463794613c3175a95014` (Outputs). No Map, image, Realtime, or video-provider operation was repeated.
+
+### Verified
+
+- `pnpm demo:film:sample` completed through local HyperFrames after `lint` and transition-aware `check`; the runtime check initially hit the restricted sandbox's localhost bind guard and passed unchanged when rerun with the approved local bind. The result is a 140.010667-second, 6.9 MB H.264/AAC movie with SHA-256 `3144287fbbcdb2aac6214d95c1a2b4cfc41d2949bec2f14c06a8b8d724124b93`.
+- `pnpm demo:film:verify-sample` passed and independently rehashed the exact DESIGN and FRAME sources, all ten review frames, the sample transcript, acceptance manifest, build trace, movie, Cedar narration, and two intentionally blocked founder-evidence shots. It requires HyperFrames 0.7.60, local mode, the Accent wipe, and the absence of jitter-prone zoom.
+- Inspected the rebuilt contact sheet plus eight successive frames of the static meta-reveal and eight frames across the first scene transition. The hold preserves fixed geometry; the boundary is one clean blue Accent wipe with no crop stepping, blank frame, or unexpected overlap.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 120 worker tests and 30 web tests. The full production-browser suite passed 31/31 scenarios after reviewing and accepting only the intended Slides-language baselines; the empty-state fixture was also corrected to clear Audio Overview, Video, and Sketch so it proves a genuinely empty Workshop.
+- `pnpm submission:verify` reports the 25-asset acceptance package valid, current, and untampered. `pnpm submission:packet:verify` passed with Terra, six provider images, five product narration clips, the 2:20 clean film, one provider-backed Cedar Audio Overview, and zero judge replay calls. `git diff --check` passed.
+- The evidence ledger is now 107 OpenAI provider HTTP operations. Exact dollar debit is not returned in these responses; observed usage remains safely below the authorized $50 ceiling.
+
+### Decisions
+
+- HyperFrames is the single local compositor for both WorkshopLM's product Video and its judge-facing demo film. FFmpeg remains a media utility for deterministic segment preparation and inspection, not the motion system.
+- DESIGN defines the visual system; approved FRAME defines the intended outcome and production contract. Both must be explicit, copied, hashed, and fail-closed at render time so polished consistency is verifiable rather than a prompt-only claim.
+- Slides are the wedge, not the category boundary. Public copy must make the coordinated multi-format Output set visible wherever WorkshopLM is introduced.
+- `PLAN-2026-07-13.md` remained advisory only for enduring principles. Its pre-existing user modification was untouched and will be excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final HyperFrames compositor run, founder/target-audience film taste review, intended-audience Slides review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
 ## 2026-07-16 03:51 CT — Final film assembly is deterministic and fail-closed
 
 **Area:** Demo film / Meta reveal / Submission truth
@@ -9202,6 +9237,13 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 ---
 
+## 2026-07-16 16:10 CT — Log-order correction
+
+- The complete `16:09 CT — The demo film moves to a stable local HyperFrames compositor` milestone was appended using an ambiguous repeated open-items anchor and therefore appears after an earlier 2026-07-14 entry rather than at the chronological tail.
+- No historical entry was moved or rewritten. Treat the milestone's explicit 16:09 timestamp as authoritative and this correction as the chronological tail marker.
+
+---
+
 ## 2026-07-16 15:04 CT — The last internal UI language leaves the workbench
 
 **Area:** Product language / accessibility / responsive UI / acceptance evidence
@@ -9298,3 +9340,10 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Founder recording and transcript, founder-derived ready Output set, final compositor run, founder/target-audience film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 16:11 CT — Final log-order correction
+
+- The 16:09 HyperFrames milestone and its first 16:10 order note were both appended against earlier repeated anchors in this long append-only file. Their timestamps remain authoritative.
+- No historical entry was moved or rewritten. This final correction is the chronological tail marker for the stable local HyperFrames film milestone.

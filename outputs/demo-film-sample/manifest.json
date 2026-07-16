@@ -2,9 +2,26 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance Output set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-16T20:37:23.598Z",
+  "builtAt": "2026-07-16T21:02:32.431Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
+  "compositor": {
+    "engine": "hyperframes",
+    "mode": "local",
+    "version": "0.7.60",
+    "composition": "workshoplm-editorial-film",
+    "jitterProneZoompan": false,
+    "transition": "design-accent-wipe",
+    "design": {
+      "sha256": "f102b3d6fb936d91673272aed89f17266fba071b9c04ea9fad9920b30e917e6f",
+      "source": ".workshoplm/acceptance/generated/DESIGN-v1.md"
+    },
+    "frame": {
+      "version": 1,
+      "sha256": "e004093353699f3b15335e5e45ebf810db9bc80214860ddc431efaf2c8ad679e",
+      "source": ".workshoplm/acceptance/generated/FRAME-v1.md"
+    }
+  },
   "voice": {
     "provider": "OpenAI",
     "model": "gpt-4o-mini-tts",
@@ -15,8 +32,8 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "5ac26ed6505b1402d83b33499c78cca36fa2c58f8663116fa26be6a30427d1d8",
-    "durationSeconds": 140.021333,
+    "sha256": "3144287fbbcdb2aac6214d95c1a2b4cfc41d2949bec2f14c06a8b8d724124b93",
+    "durationSeconds": 140.010667,
     "streams": [
       {
         "codec_name": "h264",
@@ -33,64 +50,64 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "ee2363ef3c81b20de47675d3dc9c8f053a292eebabd81f0999691308b1acfd05"
+    "sha256": "ef99ad7c72fce73e388309429a37f41820f3fe94a93cba5fb823f5d729e3ea20"
   },
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "2c850cbbd2c3a32a20f8d85d05c88500a643f54130f0229cd89f87b2dc6b0cec"
+      "sha256": "2a56114cd2a8a4745b9d2405e1bb505428100758b31dcb501b0f2df2cfdecbba"
     },
     {
       "relativePath": "review/02.jpg",
-      "sha256": "260b77f5aa5be547b68d47b5b5e0d5025f5900bec61038d241105c3a8654a5cb"
+      "sha256": "1949b718bacf3cd989ec5c243be19e2cc054be03590f9e4234a28768777319cd"
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "f3d96f8ef0bb3e7881b3cf0df8ba31e3d049282ca658ca72305a3767319c3130"
+      "sha256": "067ae323c1ebf0fcafeff29bee34afe9c9f90fbc487197c92ec484d33903838e"
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "d143ac8eb210ba7b7ffa624b883c741389b65d448c8fa354d5624d29dd47810d"
+      "sha256": "c64bc5c727901aa716aff799cca4d1f790034665acc57dda6397ef5aaf02096c"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "fb1d74ea13eb8d106d060c49014222d570a2b3a8c9c4eacbea1785ecbf757b35"
+      "sha256": "75b75ba3dc161060cc29d9bf89fa7bd3ce4a48d87bf44e655f8eeaf52f8e39eb"
     },
     {
       "relativePath": "review/06.jpg",
-      "sha256": "2009516c74f7072c7f0cdac58ef37b2aa70893c40fe6a3723e4d4e0933062182"
+      "sha256": "a6d1db231a79422e80f2407d51e25a9b16602fc9171ec1469fa01395986b6ee2"
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "753b8daee9891a3c2eb3a60c3980a9cef4d2123cb99a0baceb8e185e2eab4c1f"
+      "sha256": "d853b5668a0763e3e14b99324909cf97d1cf3c48284b6250a8f39b59c5df7d2a"
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "a5b9bf7562c9ad7ed61473bdcc7f4e615a07fac0fe2e7482bea1e9ceb49cf1c9"
+      "sha256": "e503fec348fd5314f650cee86e782a99b21c9b1d59bb3c27735c76da08c75ca5"
     },
     {
       "relativePath": "review/09.jpg",
-      "sha256": "68324b4a6dfa1b1831d455401db967b4b5c97fe2520ea747bdb2cee1c3342f3f"
+      "sha256": "58450970c92b5ec454102ca2d9ce45b85b5166ef41d4f1d894380ccd48a0db5d"
     },
     {
       "relativePath": "review/10.jpg",
-      "sha256": "205180dc32b78ce242759ed3aad0c36da2dd914955fb587485a1384cde69189a"
+      "sha256": "f8a7d99a2495eb2f42ec6c8bb17dbd4eb23505f6488eb2a926ca2facf582b310"
     }
   ],
   "metaRevealEvidence": {
     "mode": "authorized-sample",
     "transcript": {
       "relativePath": null,
-      "sha256": "a82500834d6cccaf325971623048633facc707c570f72a128c07c79662616519",
-      "byteCount": 397
+      "sha256": "f843c10a7a714a847f0580bdbe8e37123465f512011012b2e446211e13514083",
+      "byteCount": 390
     },
     "submissionManifest": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
-      "sha256": "8919568d14b2bcab90750385af84137dde94316f701340a7d841efedfe844b05"
+      "sha256": "3cab24e1b893cbc42054e640b79fa8fecde58e087eb41dd7b4efe440148f56d4"
     },
     "buildTrace": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/BUILD-TRACE.json",
-      "sha256": "dda293ecc838ac09cc934ed1a414bbc28544adc0cc326f546c2351f46c2ab875"
+      "sha256": "47e6823cb3556f0934b9ffe1278b3d3b7ccd9465b1cad446e43f393ea47db1f3"
     }
   },
   "shots": [
@@ -101,8 +118,8 @@
       "narration": {
         "model": "gpt-4o-mini-tts",
         "voice": "cedar",
-        "requestId": "req_4baf607eaff0434582f45ec597ce3b1f",
-        "sha256": "daa3849d77c11e767dae8965c48c9952bd4d7b071291997d67deac7a8912f4e6"
+        "requestId": "req_0a261178f9a54f17bd409bd0abec963c",
+        "sha256": "579c6204e115a77584e1df86645e541fef93f4d8bff20afd5e983cd11dd39c48"
       },
       "sourceBeats": [
         "map"
@@ -110,9 +127,9 @@
       "sourceStartSeconds": 0.854,
       "sourceEndSeconds": 2.553,
       "motion": {
-        "type": "editorial-push-in",
-        "maxScale": 1.06,
-        "ratePerFrame": 0.0001
+        "type": "hyperframes-stable-media",
+        "transition": "opening-hold",
+        "jitterProneZoompan": false
       }
     },
     {
@@ -129,9 +146,9 @@
       "externalVideo": "outputs/demo-film-inputs/codex-doorway.mov",
       "sourceDurationSeconds": 12,
       "motion": {
-        "type": "editorial-push-in",
-        "maxScale": 1.06,
-        "ratePerFrame": 0.0001
+        "type": "hyperframes-stable-media",
+        "transition": "design-accent-wipe",
+        "jitterProneZoompan": false
       },
       "editorialCue": "codex-to-workshoplm"
     },
@@ -151,9 +168,9 @@
       "sourceStartSeconds": 3.053,
       "sourceEndSeconds": 4.557,
       "motion": {
-        "type": "editorial-push-in",
-        "maxScale": 1.06,
-        "ratePerFrame": 0.0001
+        "type": "hyperframes-stable-media",
+        "transition": "design-accent-wipe",
+        "jitterProneZoompan": false
       }
     },
     {
@@ -173,9 +190,9 @@
       "sourceStartSeconds": 5.257,
       "sourceEndSeconds": 7.755,
       "motion": {
-        "type": "editorial-push-in",
-        "maxScale": 1.06,
-        "ratePerFrame": 0.0001
+        "type": "hyperframes-stable-media",
+        "transition": "design-accent-wipe",
+        "jitterProneZoompan": false
       }
     },
     {
@@ -194,9 +211,9 @@
       "sourceStartSeconds": 8.68,
       "sourceEndSeconds": 10.024,
       "motion": {
-        "type": "editorial-push-in",
-        "maxScale": 1.06,
-        "ratePerFrame": 0.0001
+        "type": "hyperframes-stable-media",
+        "transition": "design-accent-wipe",
+        "jitterProneZoompan": false
       }
     },
     {
@@ -206,8 +223,8 @@
       "narration": {
         "model": "gpt-4o-mini-tts",
         "voice": "cedar",
-        "requestId": "req_c956e59b23ad4b7692290f9530da43b5",
-        "sha256": "b1c0e7bd172ddc834e0667cb2faa2084d9f56925bdc68e39d2cac1069d388139"
+        "requestId": "req_ab56e361ebaa417a99e46e657103a268",
+        "sha256": "17db463e24236214b21191a616e405467a7ada5e2ce59b95c2ed7c987a50a22b"
       },
       "sourceBeats": [
         "style"
@@ -215,9 +232,9 @@
       "sourceStartSeconds": 10.924,
       "sourceEndSeconds": 11.92,
       "motion": {
-        "type": "editorial-push-in",
-        "maxScale": 1.06,
-        "ratePerFrame": 0.0001
+        "type": "hyperframes-stable-media",
+        "transition": "design-accent-wipe",
+        "jitterProneZoompan": false
       }
     },
     {
@@ -227,8 +244,8 @@
       "narration": {
         "model": "gpt-4o-mini-tts",
         "voice": "cedar",
-        "requestId": "req_cee65297a43e44c990ad429ad397fc4a",
-        "sha256": "5ec1b60cc990cda57a53f234366fb1faa8acee61817cd7fe6580cc06e0df3ef1"
+        "requestId": "req_e4b2d7e1042d463794613c3175a95014",
+        "sha256": "171a1ccc1ff79f328b7c516a04f236fd5c7f296ef7accce44c326d1793d7ee60"
       },
       "sourceBeats": [
         "create-outputs",
@@ -237,9 +254,9 @@
       "sourceStartSeconds": 12.838,
       "sourceEndSeconds": 18.681,
       "motion": {
-        "type": "editorial-push-in",
-        "maxScale": 1.06,
-        "ratePerFrame": 0.0001
+        "type": "hyperframes-stable-media",
+        "transition": "design-accent-wipe",
+        "jitterProneZoompan": false
       }
     },
     {
@@ -259,9 +276,9 @@
       "sourceStartSeconds": 18.867,
       "sourceEndSeconds": 21.982,
       "motion": {
-        "type": "editorial-push-in",
-        "maxScale": 1.06,
-        "ratePerFrame": 0.0001
+        "type": "hyperframes-stable-media",
+        "transition": "design-accent-wipe",
+        "jitterProneZoompan": false
       }
     },
     {
@@ -278,9 +295,9 @@
       "externalVideo": "outputs/demo-film-inputs/provider-narrated-video.mp4",
       "sourceDurationSeconds": 25.002667,
       "motion": {
-        "type": "editorial-push-in",
-        "maxScale": 1.06,
-        "ratePerFrame": 0.0001
+        "type": "hyperframes-stable-media",
+        "transition": "design-accent-wipe",
+        "jitterProneZoompan": false
       }
     },
     {
@@ -296,9 +313,9 @@
       "sourceBeats": [],
       "generatedMetaReveal": true,
       "motion": {
-        "type": "editorial-push-in",
-        "maxScale": 1.06,
-        "ratePerFrame": 0.0001
+        "type": "hyperframes-stable-media",
+        "transition": "design-accent-wipe",
+        "jitterProneZoompan": false
       }
     }
   ],

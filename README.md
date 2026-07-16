@@ -2,7 +2,7 @@
 
 > Turn raw thinking into finished work.
 
-WorkshopLM turns meetings, documents, and half-formed thinking into a branded deck a professional can defend, with every factual claim traced to its source. It is built for consultants, strategists, and enablement leads who produce client-facing or leadership-facing work every week.
+WorkshopLM turns meetings, documents, and half-formed thinking into polished slides and a coordinated set of source-defensible deliverables. It is built for consultants, strategists, and enablement leads who produce client-facing or leadership-facing work every week.
 
 Notebook-style tools help people understand source material. WorkshopLM is designed to help them ship from it: speak or type in the focused Conversation, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create a presentation that remains editable in PowerPoint. A shareable hand-drawn Sketch with immutable versions, Infographic, Image set, Storyboard, and Video are supporting Outputs around that wedge.
 
@@ -25,7 +25,7 @@ The repository currently provides a local-first deterministic seam with:
 - normalized, locally searchable sanitized source fixtures and claim-level evidence in the recorded acceptance run;
 - local ingestion for pasted notes, public URLs, and absolute PDF paths, plus a live `gpt-realtime-2.1` WebRTC conversation that searched and fetched exact Workshop Sources, persisted transcript and tool provenance, handled interruption, and completed an explicitly confirmed Brief approval;
 - an editable, persisted Excalidraw Map with typed operations and versioned approvals;
-- materialized `FRAME.md`, `DESIGN.md`, style-token, asset-plan, deck, infographic, and editable storyboard artifacts;
+- materialized `FRAME.md`, `DESIGN.md`, style-token, asset-plan, slides, infographic, and editable Storyboard artifacts;
 - independent brief and storyboard approval gates, stale propagation, retry, and queued-render cancellation;
 - source-traceable presentation and infographic previews plus editable PowerPoint handoffs with claim locators and source notes;
 - a playable, grounded Cedar Audio Overview plus a versioned local HyperFrames Video render with per-scene provenance for the approved sanitized Storyboard fixture, and an inspected provider-backed Video using five OpenAI Cedar narration clips;
@@ -53,7 +53,7 @@ Two paid routing benchmark passes compared Sol, Terra, and Luna on compact groun
 
 ## Prepare the live demo run
 
-`pnpm demo:live` builds a fresh, isolated operator Workshop under `.workshoplm/live-operator/`. It ingests sanitized sources, captures a transcript through the documented fallback, approves the Brief, locks the official demo style, and creates the traced deck, infographic, image plan, and Storyboard. The Storyboard remains ready for the second deliberate approval after the real image set exists. The default command is a no-spend preflight: it validates both image coherence and every grounded narration input, prints the exact provider request count, and makes no OpenAI call.
+`pnpm demo:live` builds a fresh, isolated operator Workshop under `.workshoplm/live-operator/`. It ingests sanitized sources, captures a transcript through the documented fallback, approves the Brief, locks the official demo Style, and creates traced slides, an infographic, image plan, Audio Overview, and Storyboard. The Storyboard remains ready for the second deliberate approval after the real image set exists. The default command is a no-spend preflight: it validates both image coherence and every grounded narration input, prints the exact provider request count, and makes no OpenAI call.
 
 After explicit spend authorization, the same command uses `gpt-5.6-terra` at medium reasoning to build a claim-validated grounded Map, generates six GPT Image 2 panels concurrently, generates one `gpt-4o-mini-tts` Cedar WAV per approved Storyboard panel, and renders those clips through the local HyperFrames worker:
 
