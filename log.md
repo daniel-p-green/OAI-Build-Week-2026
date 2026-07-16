@@ -9347,3 +9347,35 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The 16:09 HyperFrames milestone and its first 16:10 order note were both appended against earlier repeated anchors in this long append-only file. Their timestamps remain authoritative.
 - No historical entry was moved or rewritten. This final correction is the chronological tail marker for the stable local HyperFrames film milestone.
+
+---
+
+## 2026-07-16 16:17 CT — The raw-thought reveal is complete and DESIGN-bound
+
+**Area:** Meta demo / HyperFrames / source fidelity / visual consistency
+
+### Changed
+
+- Full-frame review rejected the sample film's final reveal because the raw thought ended behind an ellipsis and the frame hard-coded Arial, gray, white, and black independently of the Workshop Style. That weakened both the meta-demo payoff and the consistency promise.
+- Rebuilt the reveal around the exact active DESIGN identity: warm paper `#F4F2EC`, ink `#171816`, Accent `#1668E3`, system heading/body roles, restrained outlines, and the same editorial hierarchy as the rest of the film. The live Output, source-linked claim, sign-off, and hashed-asset counts remain derived from the verified submission package at render time.
+- Expanded the transcript layout from a nine-line truncating excerpt to a fail-closed complete-sample layout. The full 390-byte authorized transcript now fits in nine visible lines without an ellipsis. Founder mode retains the honest `Verbatim excerpt` label for longer raw recordings while the full transcript remains available as a hash-bound Workshop Source.
+- Added transcript-display provenance to the film manifest: `complete` or `verbatim-excerpt`, exact line count, and a boolean truncation state. `pnpm demo:film:verify-sample` now rejects any sample movie whose reveal does not prove `complete` and `truncated: false`.
+
+### Verified
+
+- Generated and visually accepted `outputs/demo-film-plan/meta-reveal-layout-preview.png` at 1280×720 before rebuilding. The full thought, traced thumbnails, live counts, sample disclosure, and DESIGN hierarchy remain legible with no collision or overflow.
+- Rebuilt the actual 2:20 film through pinned local HyperFrames 0.7.60. HyperFrames lint retained only the known non-blocking nine-transition density warning; transition-aware runtime and layout checks reported zero errors. The 7.0 MB H.264/AAC movie is 140.010667 seconds with SHA-256 `dac2154da706f60354c4f9d07f013dcb4e1b3c4ecb81a0d97a82afb99e37d4e7`.
+- Inspected the real rendered `outputs/demo-film-sample/review/10.jpg`, not only the layout preview. It displays all nine transcript lines, `AUTHORIZED SAMPLE · COMPLETE TRANSCRIPT`, the exact derived `7 Outputs · 6 source-linked claims · 2 sign-offs · 25 hashed assets`, and the correct sample/founder boundary.
+- `pnpm demo:film:verify-sample` passed with `display.mode: complete`, nine lines, `truncated: false`, ten hash-verified review frames, DESIGN/FRAME hashes, Cedar narration, and the two honest founder/final-package blocks.
+- `pnpm submission:packet:verify` passed with the rebuilt editorial film. `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 120 worker tests and 30 web tests. No OpenAI request ran; the evidence ledger remains at 107 provider HTTP operations and safely below the authorized $50 ceiling.
+
+### Decisions
+
+- The meta reveal is part of the product-quality proof, so it must use the same executable DESIGN identity as every generated asset rather than merely resembling it.
+- A transcript shown as complete must be mechanically proven complete. Longer founder material may use a bounded verbatim excerpt only when the frame says so and the exact full Source remains one interaction away.
+- `PLAN-2026-07-13.md` remained advisory only for enduring principles. Its pre-existing user modification was untouched and will be excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final HyperFrames run, founder/target-audience film taste review, intended-audience Slides review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -94,7 +94,7 @@ function wrappedLines(text, maxCharacters, maxLines) {
     }
   }
   if (truncated) lines[lines.length - 1] = `${lines.at(-1).replace(/[.,;:!?]?$/, "")}…`;
-  return lines;
+  return { lines, truncated };
 }
 
 function guideVoiceRate(text, durationSeconds) {
@@ -151,7 +151,9 @@ function hyperframesCompositionHtml(plan, identity) {
 
 async function metaRevealSvg(finalManifestPath, options = {}) {
   const transcript = options.transcript || (await readFile(resolve(repository, "outputs/demo-film-inputs/founder-brainstorm.txt"), "utf8")).trim();
-  const transcriptLines = wrappedLines(transcript, 36, 9);
+  const transcriptLayout = wrappedLines(transcript, 48, options.sample || options.preview ? 12 : 10);
+  if ((options.sample || options.preview) && transcriptLayout.truncated) throw new Error("The authorized sample transcript must fit completely inside the meta reveal.");
+  const transcriptLines = transcriptLayout.lines;
   const packageRoot = dirname(finalManifestPath);
   const submission = JSON.parse(await readFile(finalManifestPath, "utf8"));
   const trace = JSON.parse(await readFile(resolve(packageRoot, "BUILD-TRACE.json"), "utf8"));
@@ -161,25 +163,29 @@ async function metaRevealSvg(finalManifestPath, options = {}) {
   const assetCount = submission.assets.length;
   const thumbnailNames = ["thumbnail-opening.png", "thumbnail-process.png", "thumbnail-result.png"];
   const thumbnails = await Promise.all(thumbnailNames.map(async (name) => `data:image/png;base64,${(await readFile(resolve(packageRoot, name))).toString("base64")}`));
+  const { accent, ink, paper, heading, body } = filmIdentity;
+  const headingFamily = `${escapeXml(heading)}, system-ui, sans-serif`;
+  const bodyFamily = `${escapeXml(body)}, system-ui, sans-serif`;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-  <rect width="1280" height="720" fill="#f7f7f5"/>
-  <text x="56" y="62" font-family="Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="1.5" fill="#6b6b6b">THE ORIGINAL → THE SUBMISSION</text>
-  <text x="56" y="110" font-family="Arial, sans-serif" font-size="34" font-weight="700" fill="#0d0d0d">One raw thought. One traced body of work.</text>
-  <rect x="56" y="148" width="500" height="474" rx="22" fill="#ffffff" stroke="#dededb"/>
-  <text x="84" y="184" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1.2" fill="#6b6b6b">${options.sample ? "AUTHORIZED SAMPLE · EDITORIAL CUT" : options.preview ? "LAYOUT PREVIEW · SAMPLE EXCERPT" : "FOUNDER BRAINSTORM · VERBATIM EXCERPT"}</text>
-  ${transcriptLines.map((line, index) => `<text x="84" y="${226 + index * 36}" font-family="Arial, sans-serif" font-size="22" font-weight="500" fill="#0d0d0d">${escapeXml(line)}</text>`).join("\n  ")}
-  <text x="84" y="594" font-family="Arial, sans-serif" font-size="13" fill="#6b6b6b">${options.sample || options.preview ? "Sample only · final mode requires hash-bound founder evidence" : "Verbatim excerpt · full hash-bound Source remains in the Workshop"}</text>
-  <rect x="596" y="148" width="292" height="213" fill="#0d0d0d"/>
-  <rect x="908" y="148" width="292" height="213" fill="#0d0d0d"/>
-  <rect x="596" y="381" width="604" height="241" fill="#0d0d0d"/>
+  <rect width="1280" height="720" fill="${paper}"/>
+  <rect x="56" y="45" width="40" height="4" rx="2" fill="${accent}"/>
+  <text x="108" y="62" font-family="${bodyFamily}" font-size="13" font-weight="700" letter-spacing="1.4" fill="${ink}" fill-opacity="0.58">THE ORIGINAL → THE SUBMISSION</text>
+  <text x="56" y="110" font-family="${headingFamily}" font-size="34" font-weight="700" fill="${ink}">One raw thought. One traced body of work.</text>
+  <rect x="56" y="148" width="500" height="474" rx="22" fill="${paper}" stroke="${ink}" stroke-opacity="0.13"/>
+  <text x="84" y="184" font-family="${bodyFamily}" font-size="12" font-weight="700" letter-spacing="1.2" fill="${accent}">${options.sample ? "AUTHORIZED SAMPLE · COMPLETE TRANSCRIPT" : options.preview ? "LAYOUT PREVIEW · COMPLETE SAMPLE" : "FOUNDER BRAINSTORM · VERBATIM EXCERPT"}</text>
+  ${transcriptLines.map((line, index) => `<text x="84" y="${220 + index * 32}" font-family="${bodyFamily}" font-size="18" font-weight="500" fill="${ink}">${escapeXml(line)}</text>`).join("\n  ")}
+  <text x="84" y="594" font-family="${bodyFamily}" font-size="13" fill="${ink}" fill-opacity="0.58">${options.sample || options.preview ? "Complete sample · final mode requires hash-bound founder evidence" : "Verbatim excerpt · full hash-bound Source remains in the Workshop"}</text>
+  <rect x="596" y="148" width="292" height="213" fill="${ink}"/>
+  <rect x="908" y="148" width="292" height="213" fill="${ink}"/>
+  <rect x="596" y="381" width="604" height="241" fill="${ink}"/>
   <image href="${thumbnails[0]}" x="596" y="148" width="292" height="213" preserveAspectRatio="xMidYMid meet"/>
   <image href="${thumbnails[1]}" x="908" y="148" width="292" height="213" preserveAspectRatio="xMidYMid meet"/>
   <image href="${thumbnails[2]}" x="596" y="381" width="604" height="241" preserveAspectRatio="xMidYMid meet"/>
-  <rect x="596" y="568" width="604" height="54" fill="#ffffff" fill-opacity="0.96"/>
-  <text x="620" y="590" font-family="Arial, sans-serif" font-size="10" font-weight="700" letter-spacing="1.1" fill="#6b6b6b">HOW THIS WAS BUILT</text>
-  <text x="620" y="610" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0d0d0d">${outputCount} Outputs · ${claimCount} source-linked claims · ${signOffCount} sign-offs · ${assetCount} hashed assets</text>
-  <rect x="596" y="148" width="604" height="474" rx="22" fill="none" stroke="#dededb" stroke-width="2"/>
-  <text x="1198" y="670" text-anchor="end" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0d0d0d">WORKSHOPLM · BUILT WITH OPENAI + CODEX</text>
+  <rect x="596" y="568" width="604" height="54" fill="${paper}" fill-opacity="0.97"/>
+  <text x="620" y="590" font-family="${bodyFamily}" font-size="10" font-weight="700" letter-spacing="1.1" fill="${accent}">HOW THIS WAS BUILT</text>
+  <text x="620" y="610" font-family="${bodyFamily}" font-size="14" font-weight="700" fill="${ink}">${outputCount} Outputs · ${claimCount} source-linked claims · ${signOffCount} sign-offs · ${assetCount} hashed assets</text>
+  <rect x="596" y="148" width="604" height="474" rx="22" fill="none" stroke="${ink}" stroke-opacity="0.13" stroke-width="2"/>
+  <text x="1198" y="670" text-anchor="end" font-family="${bodyFamily}" font-size="14" font-weight="700" fill="${ink}">WORKSHOPLM · BUILT WITH OPENAI + CODEX</text>
 </svg>`;
 }
 
@@ -210,6 +216,7 @@ async function main() {
     await copyFile(frames[0], framePreviewPath);
     const previewSubmissionManifest = resolve(repository, ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json");
     if (existsSync(previewSubmissionManifest)) {
+      filmIdentity = await loadFilmIdentity(previewSubmissionManifest);
       const metaSvgPath = resolve(previewRoot, "meta-reveal.svg");
       await writeFile(metaSvgPath, await metaRevealSvg(previewSubmissionManifest, {
         preview: true,
@@ -352,9 +359,10 @@ async function main() {
     const buildTraceBytes = await readFile(buildTracePath);
     const transcriptPath = finalBuild ? resolve(repository, "outputs/demo-film-inputs/founder-brainstorm.txt") : undefined;
     const transcriptBytes = transcriptPath ? await readFile(transcriptPath) : Buffer.from(authorizedSampleTranscript, "utf8");
+    const transcriptLayout = wrappedLines(transcriptBytes.toString("utf8"), 48, finalBuild ? 10 : 12);
     metaRevealEvidence = {
       mode: finalBuild ? "founder" : "authorized-sample",
-      transcript: { relativePath: transcriptPath ? relative(repository, transcriptPath) : null, sha256: sha256(transcriptBytes), byteCount: transcriptBytes.byteLength },
+      transcript: { relativePath: transcriptPath ? relative(repository, transcriptPath) : null, sha256: sha256(transcriptBytes), byteCount: transcriptBytes.byteLength, display: { mode: transcriptLayout.truncated ? "verbatim-excerpt" : "complete", lineCount: transcriptLayout.lines.length, truncated: transcriptLayout.truncated } },
       submissionManifest: { relativePath: relative(repository, finalSubmissionManifestPath), sha256: sha256(submissionManifestBytes) },
       buildTrace: { relativePath: relative(repository, buildTracePath), sha256: sha256(buildTraceBytes) },
     };

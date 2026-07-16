@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance Output set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-16T21:02:32.431Z",
+  "builtAt": "2026-07-16T21:16:31.221Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "compositor": {
@@ -32,7 +32,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "3144287fbbcdb2aac6214d95c1a2b4cfc41d2949bec2f14c06a8b8d724124b93",
+    "sha256": "dac2154da706f60354c4f9d07f013dcb4e1b3c4ecb81a0d97a82afb99e37d4e7",
     "durationSeconds": 140.010667,
     "streams": [
       {
@@ -50,7 +50,7 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "ef99ad7c72fce73e388309429a37f41820f3fe94a93cba5fb823f5d729e3ea20"
+    "sha256": "59c34e3665338871516a27fe41f81b724f56cacf6478fe21a58a2e13a08e5005"
   },
   "reviewFrames": [
     {
@@ -91,7 +91,7 @@
     },
     {
       "relativePath": "review/10.jpg",
-      "sha256": "f8a7d99a2495eb2f42ec6c8bb17dbd4eb23505f6488eb2a926ca2facf582b310"
+      "sha256": "a0ec68fbb589f84f8f9b750c70ce731ade7213aeafb8239604c4f1b2b1d478c8"
     }
   ],
   "metaRevealEvidence": {
@@ -99,7 +99,12 @@
     "transcript": {
       "relativePath": null,
       "sha256": "f843c10a7a714a847f0580bdbe8e37123465f512011012b2e446211e13514083",
-      "byteCount": 390
+      "byteCount": 390,
+      "display": {
+        "mode": "complete",
+        "lineCount": 9,
+        "truncated": false
+      }
     },
     "submissionManifest": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",

@@ -51,6 +51,7 @@ async function main() {
 
   const trace = manifest.metaRevealEvidence;
   assert(trace?.mode === "authorized-sample" && trace.transcript?.relativePath === null && trace.transcript?.byteCount > 100, "The sample transcript boundary is missing.");
+  assert(trace.transcript.display?.mode === "complete" && trace.transcript.display.truncated === false && trace.transcript.display.lineCount > 0, "The sample meta reveal must show the complete authorized transcript without truncation.");
   assert(await matches(resolve(repository, trace.submissionManifest.relativePath), trace.submissionManifest.sha256), "The sample submission manifest no longer matches the film evidence.");
   assert(await matches(resolve(repository, trace.buildTrace.relativePath), trace.buildTrace.sha256), "The sample build trace no longer matches the film evidence.");
   assert(dirname(resolve(repository, trace.buildTrace.relativePath)) === dirname(resolve(repository, trace.submissionManifest.relativePath)), "The sample manifest and build trace must come from the same Output set.");
