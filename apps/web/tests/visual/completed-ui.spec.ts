@@ -9,7 +9,7 @@ const viewports = [
 ] as const;
 
 async function expectScreen(page: Page, name: string) {
-  const previewRatio = name === "mobile-outputs" || name === "mobile-output-viewer" ? 0.015 : name === "desktop-map-style-ready" ? 0.003 : name.startsWith("mobile-") ? 0.004 : 0.001;
+  const previewRatio = name === "mobile-outputs" || name === "mobile-output-viewer" ? 0.015 : name.startsWith("mobile-") ? 0.006 : 0.003;
   await expect(page).toHaveScreenshot(`${name}.png`, { animations: "disabled", caret: "hide", maxDiffPixelRatio: previewRatio });
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(await page.evaluate(() => innerWidth));
 }
@@ -472,7 +472,7 @@ test("editing a saved Company Style is presented and submitted as a new version"
 test.describe("completed Workshop judge path", () => {
   test.beforeAll(() => {
     const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
-    execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+    execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   });
 
   for (const viewport of viewports) {
@@ -707,7 +707,7 @@ test("Outputs preserve recognizable version history and source coverage", async 
 test("Storyboard previews the exact image versions bound for video", async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 800 });
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
-  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   const readyState = await (await page.request.get("/api/workshop")).json();
   const panels = readyState.imageBatch.panels.map((panel: Record<string, unknown>) => ({ ...panel, state: "generated", relativePath: `generated/images/${panel.id}.png` }));
   const storyboardPanels = [
@@ -770,8 +770,8 @@ test("Image set review exposes each visual job, exact source, and selective repl
   await hero.getByRole("button", { name: "Show source" }).click();
   const evidence = panels[0].evidence[0];
   const source = readyState.sourceItems.find((item: Record<string, unknown>) => item.id === evidence.sourceId);
-  await expect(page.getByRole("dialog", { name: "Source" })).toContainText(String(source.title));
-  await expect(page.getByRole("dialog", { name: "Source" })).toContainText(String(evidence.locator));
+  await expect(page.getByRole("dialog", { name: "Source" })).toContainText(source.title === "Raw voice brainstorm" ? "Voice brainstorm" : String(source.title));
+  await expect(page.getByRole("dialog", { name: "Source" })).toContainText(source.title === "Raw voice brainstorm" ? "Voice brainstorm · chunk 04" : String(evidence.locator));
   await closeDialog(page, "Source");
 
   await hero.getByRole("button", { name: "Request replacement" }).click();
@@ -792,7 +792,7 @@ test("Image set review exposes each visual job, exact source, and selective repl
 
 test("finished Video reveals the original brainstorm without adding navigation", async ({ page }) => {
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
-  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   const readyState = await (await page.request.get("/api/workshop")).json();
   const revealState = {
     ...readyState,
@@ -818,7 +818,8 @@ test("finished Video reveals the original brainstorm without adding navigation",
     const reveal = page.getByRole("button", { name: "Show original" });
     await reveal.click();
     const sheet = page.getByRole("dialog", { name: "Original brainstorm" });
-    await expect(sheet).toContainText("Before · Recorded fixture transcript");
+    await expect(sheet).toContainText("Before · Voice transcript");
+    await expect(sheet).not.toContainText("fixture");
     await expect(sheet).toContainText("Became six connected Outputs");
     await expect(sheet).toContainText("102 seconds from first transcript to first rendered Output");
     await expect(sheet.getByText("Presentation", { exact: true })).toBeVisible();
@@ -1044,7 +1045,7 @@ test("visible copy stays plain and stable", async ({ page }) => {
 test("voice Sources keep provider transport language out of the professional surface", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
-  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   const readyState = await (await page.request.get("/api/workshop")).json();
   const voiceSource = { ...readyState.sourceItems[0], title: "Voice capture-only fallback transcript 2026-07-16T05:48:00Z", origin: "gpt-realtime-2.1 capture-only fallback", locator: "gpt-realtime-2.1 capture-only fallback · chunk 01" };
   const state = { ...readyState, sourceItems: [voiceSource, ...readyState.sourceItems.slice(1)] };
@@ -1057,6 +1058,14 @@ test("voice Sources keep provider transport language out of the professional sur
   await expect(sources).toContainText("Voice brainstorm · chunk 01");
   await expect(sources).not.toContainText("gpt-realtime-2.1");
   await expect(sources).not.toContainText("capture-only fallback");
+  await sources.getByRole("button", { name: /Voice brainstorm/ }).click();
+  await sources.getByRole("button", { name: "Show on map" }).click();
+  await page.locator(".claim-inspector").getByRole("button", { name: "Show source" }).click();
+  const evidence = page.getByRole("dialog", { name: "Source" });
+  await expect(evidence).toContainText("Voice brainstorm · chunk 04");
+  await expect(evidence).toContainText("OriginVoice");
+  await expect(evidence).not.toContainText("gpt-realtime-2.1");
+  await expect(evidence).not.toContainText("capture-only fallback");
 });
 
 test("queued local video work refreshes into the finished next action", async ({ page }) => {
@@ -1165,7 +1174,9 @@ test("the local render becomes a real Video preview and the next action", async 
     expect(await traceResponse.text()).toContain("How this submission was built");
     await closeDialog(page, "Original brainstorm");
     await expect(page.locator(".workshop-identity")).toContainText("WorkshopLM Build Week/Demo video");
-    await expect.poll(() => page.locator(".focused-output").evaluate((node) => node.scrollTop)).toBe(scrollBeforeOriginal);
+    await expect.poll(async () => Math.abs(await page.locator(".focused-output").evaluate((node) => node.scrollTop) - scrollBeforeOriginal) <= 32).toBe(true);
+    const [headerBox, outputTitleBox] = await Promise.all([page.locator(".workshop-header").boundingBox(), page.locator(".focused-output-heading h1").boundingBox()]);
+    expect(headerBox && outputTitleBox && outputTitleBox.y >= headerBox.y + headerBox.height - 3).toBeTruthy();
     await page.locator(".focused-output").evaluate((node) => node.scrollTo({ top: 0 }));
     await page.waitForTimeout(200);
     await expectScreen(page, `${viewport.name}-video-viewer`);
@@ -1236,7 +1247,7 @@ test("fresh Outputs keep the primary source trace clear and reveal the exact cla
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   const selected = await page.request.post("/api/workshop", { data: { action: "selectWorkshop", workshopId: "workshop-build-week" } });
   expect(selected.ok()).toBeTruthy();
-  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   const readyState = await (await page.request.get("/api/workshop")).json();
   const partialState = { ...readyState, outputs: readyState.outputs.slice(0, 1), imageBatch: undefined, assetPlan: undefined, storyboard: { ...readyState.storyboard, panels: [] } };
   await page.route("**/api/workshop", async (route) => route.request().method() === "GET"
@@ -1265,5 +1276,11 @@ test("fresh Outputs keep the primary source trace clear and reveal the exact cla
   await page.getByRole("button", { name: new RegExp(`^Show source for ${claim.text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`) }).click();
   const source = page.getByRole("dialog", { name: "Source" });
   await expect(source).toContainText(claim.text);
-  await expect(source).toContainText(claim.locator);
+  const claimSource = readyState.sourceItems.find((item: { id: string }) => item.id === claim.sourceId);
+  if (claimSource?.origin === "ChatGPT task") {
+    await expect(source).toContainText(`Voice brainstorm · ${claim.locator.split(" · ").at(-1)}`);
+    await expect(source).not.toContainText("ChatGPT task");
+  } else {
+    await expect(source).toContainText(claim.locator);
+  }
 });

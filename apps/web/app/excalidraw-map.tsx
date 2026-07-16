@@ -25,7 +25,7 @@ export type ExcalidrawMapNode = {
   height: number;
 };
 
-type Source = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; claimCount: number };
+type Source = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number };
 type MapEdge = { id: string; from: string; to: string; kind: string; label?: string };
 type MapStyle = { accent: string; ink: string; paper: string };
 type SceneElement = MapSceneElement & {
@@ -47,7 +47,11 @@ const sourceShapeId = (sourceId: string) => `map-source-${sourceId}`;
 const toSceneX = (value: number) => NODE_OFFSET_X + value * NODE_SCALE_X;
 const toSceneY = (value: number) => value * (SCENE_HEIGHT / 100);
 const toSceneWidth = (value: number) => value * (SCENE_WIDTH / 100);
-const sourceTitle = (source: Source) => source.title.startsWith("Voice capture-only fallback transcript") ? "Voice brainstorm" : source.title;
+const sourceTitle = (source: Source) => source.title.startsWith("Voice capture-only fallback transcript")
+  || source.title === "Raw voice brainstorm"
+  || source.origin.toLowerCase() === "chatgpt task"
+  ? "Voice brainstorm"
+  : source.origin === "Founder-provided recording" ? "Founder brainstorm" : source.title;
 
 function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: MapEdge[], style?: MapStyle) {
   const accent = style?.accent ?? "#0285ff";

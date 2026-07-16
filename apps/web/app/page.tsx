@@ -87,12 +87,20 @@ type ImageBatchPanel = NonNullable<PersistedWorkshop["imageBatch"]>["panels"][nu
 const VIEW_TITLES: Record<ObjectView, string> = { conversation: "Conversation", map: "Map", brief: "Brief", outputs: "Outputs", storyboard: "Storyboard", output: "Output" };
 const outputTitle = (type: "deck" | "infographic") => type === "deck" ? "Presentation" : "Infographic";
 const outputType = (type: "deck" | "infographic") => type === "deck" ? "Presentation" : "Infographic";
-const sourceDisplayTitle = (source: SourceItem) => source.origin.includes("capture-only fallback")
-  ? "Voice brainstorm"
-  : source.origin === "Founder-provided recording" ? "Founder brainstorm" : source.title;
-const sourceDisplayOrigin = (source: SourceItem) => source.origin.includes("capture-only fallback")
-  ? "Voice"
-  : source.origin === "Founder-provided recording" ? "Recording" : source.origin;
+const isVoiceSource = (source: SourceItem) => source.origin.includes("capture-only fallback")
+  || source.origin.toLowerCase() === "chatgpt task"
+  || source.title === "Raw voice brainstorm";
+const sourceDisplayTitle = (source: SourceItem) => source.origin === "Founder-provided recording"
+  ? "Founder brainstorm"
+  : isVoiceSource(source) ? "Voice brainstorm" : source.title;
+const sourceDisplayOrigin = (source: SourceItem) => source.origin === "Founder-provided recording"
+  ? "Recording"
+  : isVoiceSource(source) ? "Voice" : source.origin;
+const sourceEvidenceLocator = (source: SourceItem, locator: string) => {
+  if (!isVoiceSource(source) && source.origin !== "Founder-provided recording") return locator;
+  const position = locator.split(" · ").at(-1);
+  return [sourceDisplayTitle(source), position].filter(Boolean).join(" · ");
+};
 const claimDisplayLocator = (claim: { sourceId: string; locator: string }, state: Pick<PersistedWorkshop, "sourceItems"> | null) => {
   const source = state?.sourceItems.find((candidate) => candidate.id === claim.sourceId);
   const position = claim.locator.split(" · ").at(-1);
@@ -389,8 +397,13 @@ export default function WorkshopPage() {
     setSheet(null);
     window.setTimeout(() => {
       const scroll = returnScrollRef.current;
-      if (scroll?.element.isConnected) scroll.element.scrollTop = scroll.top;
       returnFocusRef.current?.focus({ preventScroll: true });
+      if (scroll?.element.isConnected) {
+        const restoreScroll = () => { if (scroll.element.isConnected) scroll.element.scrollTop = scroll.top; };
+        restoreScroll();
+        window.requestAnimationFrame(restoreScroll);
+        window.setTimeout(restoreScroll, 100);
+      }
       returnScrollRef.current = null;
     }, 0);
   }
@@ -609,7 +622,7 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
 function ClaimInspector({ node, source, busy, onClose, onSave, onShowSource }: { node: MapNode; source?: SourceItem; busy: boolean; onClose: () => void; onSave: (title: string) => void; onShowSource: () => void }) {
   const [title, setTitle] = useState(node.title);
   useEffect(() => setTitle(node.title), [node.id, node.title]);
-  return <Card className="claim-inspector"><header><div><small>{node.kind === "grounded" ? "Sourced claim" : node.kind === "derived" ? "Derived point" : "Idea"}</small><strong>{node.title}</strong></div><IconButton label="Close claim" onClick={onClose}><CloseIcon /></IconButton></header><Input label="Claim" value={title} onChange={(event) => setTitle(event.target.value)} /><blockquote>{source?.excerpt ?? node.body}</blockquote><p className="source-locator">{source?.locator ?? node.locator}</p><div className="button-row"><Button variant="secondary" disabled={busy || title.trim() === node.title || !title.trim()} onClick={() => onSave(title.trim())}>Save</Button><Button variant="secondary" size="small" onClick={onShowSource}>Show source</Button></div></Card>;
+  return <Card className="claim-inspector"><header><div><small>{node.kind === "grounded" ? "Sourced claim" : node.kind === "derived" ? "Derived point" : "Idea"}</small><strong>{node.title}</strong></div><IconButton label="Close claim" onClick={onClose}><CloseIcon /></IconButton></header><Input label="Claim" value={title} onChange={(event) => setTitle(event.target.value)} /><blockquote>{source?.excerpt ?? node.body}</blockquote><p className="source-locator">{source ? sourceEvidenceLocator(source, source.locator) : node.locator}</p><div className="button-row"><Button variant="secondary" disabled={busy || title.trim() === node.title || !title.trim()} onClick={() => onSave(title.trim())}>Save</Button><Button variant="secondary" size="small" onClick={onShowSource}>Show source</Button></div></Card>;
 }
 
 function frameSection(markdown: string | undefined, heading: string) {
@@ -777,7 +790,7 @@ function FocusedOutputView({ state, outputId, busy, onPost, onOpenOutput, onShow
     const evidence = panel.evidence[0];
     return <section className="focused-image-card" key={panel.id} aria-label={role}>{hasPreview ? <a href={`/api/workshop/artifacts/${panel.id}`} target="_blank" rel="noreferrer" aria-label={`Open ${role}`}>{preview}</a> : preview}<div className="focused-image-caption"><strong>{role}</strong><Status tone={panel.state === "generated" ? "current" : "waiting"}>{status}</Status></div><p>{panel.revisionRequest && panel.state === "selected_for_regeneration" ? `Change requested: ${panel.revisionRequest}` : idea}</p><div className="focused-image-actions"><Button variant="secondary" size="small" onClick={() => onShowSource({ sourceId: evidence?.sourceId, claimId: evidence?.claimId, locator: evidence?.locator })}>Show source</Button>{panel.state !== "planned" && <Button variant="secondary" size="small" disabled={busy || panel.state === "selected_for_regeneration"} onClick={() => { onRequestReplacement(panel.id); }}>{panel.state === "selected_for_regeneration" ? "Requested" : "Request replacement"}</Button>}</div></section>;
   })}</div></article>;
-  return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail}</p>{(output?.stale || video?.stale) && <Status tone="waiting">Needs update</Status>}</div><div className="button-row">{isVideo && <Button size="small" onClick={onEditStoryboard}>Edit storyboard</Button>}{output?.editableRelativePath && <ButtonLink size="small" href={`${href}?format=editable`}>Download PowerPoint</ButtonLink>}{isVideo && <Button variant="secondary" size="small" onClick={onShowOriginal}>Show original</Button>}<ButtonLink variant="secondary" size="small" href={href} target="_blank" rel="noreferrer">{isVideo ? "Open video" : "Open preview"}</ButtonLink></div></div><div className={`focused-output-preview ${isVideo ? "video-preview" : ""}`} data-domain-ui="artifact-preview">{isVideo ? <video controls src={href} /> : <iframe title={title} sandbox="allow-same-origin" src={href} />}</div>{artifactClaims.length > 0 && <section className="artifact-source-trail" aria-labelledby="artifact-source-heading"><div><h2 id="artifact-source-heading">Sources in this output</h2><p>Select a claim to see the exact source text.</p></div><ListGroup>{artifactClaims.map((claim) => <ListRowAction key={claim.id} aria-label={`Show source for ${claim.text}`} onClick={() => onShowSource({ sourceId: claim.sourceId, claimId: claim.id, locator: claim.locator })}><span><strong>{claim.text}</strong><small>{claimDisplayLocator(claim, state)}</small></span></ListRowAction>)}</ListGroup></section>}{versionHistory.length > 1 && <section className="artifact-source-trail output-version-history" aria-labelledby="output-version-history-heading"><div><h2 id="output-version-history-heading">Version history</h2><p>Open earlier work without replacing the current version.</p></div><ListGroup>{versionHistory.map((item) => { const version = "type" in item ? outputVersion(item, state?.outputs ?? []) : item.version; return <ListRowAction key={item.id} aria-label={`Open ${title}, version ${version}`} onClick={() => onOpenOutput(item.id)}><span><strong>Version {version}</strong><small>{item.id === outputId ? "Current view" : item.stale ? "Needs update" : "Up to date"}</small></span></ListRowAction>; })}</ListGroup></section>}</article>;
+  return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail}</p>{(output?.stale || video?.stale) && <Status tone="waiting">Needs update</Status>}</div><div className="button-row">{isVideo && <Button size="small" onClick={onEditStoryboard}>Edit storyboard</Button>}{output?.editableRelativePath && <ButtonLink size="small" href={`${href}?format=editable`}>Download PowerPoint</ButtonLink>}{isVideo && <Button variant="secondary" size="small" onPointerDown={(event) => event.preventDefault()} onClick={(event) => { event.currentTarget.focus({ preventScroll: true }); onShowOriginal(); }}>Show original</Button>}<ButtonLink variant="secondary" size="small" href={href} target="_blank" rel="noreferrer">{isVideo ? "Open video" : "Open preview"}</ButtonLink></div></div><div className={`focused-output-preview ${isVideo ? "video-preview" : ""}`} data-domain-ui="artifact-preview">{isVideo ? <video controls src={href} /> : <iframe title={title} sandbox="allow-same-origin" src={href} />}</div>{artifactClaims.length > 0 && <section className="artifact-source-trail" aria-labelledby="artifact-source-heading"><div><h2 id="artifact-source-heading">Sources in this output</h2><p>Select a claim to see the exact source text.</p></div><ListGroup>{artifactClaims.map((claim) => <ListRowAction key={claim.id} aria-label={`Show source for ${claim.text}`} onClick={() => onShowSource({ sourceId: claim.sourceId, claimId: claim.id, locator: claim.locator })}><span><strong>{claim.text}</strong><small>{claimDisplayLocator(claim, state)}</small></span></ListRowAction>)}</ListGroup></section>}{versionHistory.length > 1 && <section className="artifact-source-trail output-version-history" aria-labelledby="output-version-history-heading"><div><h2 id="output-version-history-heading">Version history</h2><p>Open earlier work without replacing the current version.</p></div><ListGroup>{versionHistory.map((item) => { const version = "type" in item ? outputVersion(item, state?.outputs ?? []) : item.version; return <ListRowAction key={item.id} aria-label={`Open ${title}, version ${version}`} onClick={() => onOpenOutput(item.id)}><span><strong>Version {version}</strong><small>{item.id === outputId ? "Current view" : item.stale ? "Needs update" : "Up to date"}</small></span></ListRowAction>; })}</ListGroup></section>}</article>;
 }
 
 function ImageReplacementSheet({ panel, busy, onClose, onSubmit }: { panel?: ImageBatchPanel; busy: boolean; onClose: () => void; onSubmit: (panelId: string, revisionRequest: string) => Promise<boolean> }) {
@@ -796,7 +809,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   const segment = state?.transcriptSegments?.[0];
   const source = state?.sourceItems.find((item) => /brainstorm|transcript/i.test(item.title)) ?? state?.sourceItems[0];
   const original = segment?.text ?? source?.excerpt ?? "No brainstorm transcript is attached to this Workshop yet.";
-  const sourceKind = segment ? (segment.transport === "webrtc" ? "Realtime transcript" : "Recorded fixture transcript") : "Sanitized source excerpt";
+  const sourceKind = segment || (source && (isVoiceSource(source) || source.origin === "Founder-provided recording")) ? "Voice transcript" : "Source excerpt";
   const sourceLocator = segment ? new Date(segment.capturedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : source?.locator;
   const elapsedSeconds = state?.firstTranscriptAt && state.firstRenderedOutputAt
     ? Math.max(0, Math.round((Date.parse(state.firstRenderedOutputAt) - Date.parse(state.firstTranscriptAt)) / 1000))
@@ -1015,7 +1028,8 @@ function SourcesSheet({ sources, activeIds, selected, pending, busy, onClose, on
 }
 
 function EvidenceSheet({ source, evidence, onClose, onShowMap }: { source: SourceItem; evidence: EvidenceSelection | null; onClose: () => void; onShowMap: () => void }) {
-  return <SideSheet title="Source" onClose={onClose}><blockquote className="evidence-quote">“{evidence?.excerpt ?? source.excerpt}”</blockquote><p className="source-locator">{evidence?.locator ?? source.locator}</p><dl className="evidence-meta"><dt>Source</dt><dd>{sourceDisplayTitle(source)}</dd><dt>Origin</dt><dd>{sourceDisplayOrigin(source)}</dd></dl><Button onClick={onShowMap}>Show on map</Button></SideSheet>;
+  const locator = evidence?.locator ?? source.locator;
+  return <SideSheet title="Source" onClose={onClose}><blockquote className="evidence-quote">“{evidence?.excerpt ?? source.excerpt}”</blockquote><p className="source-locator">{sourceEvidenceLocator(source, locator)}</p><dl className="evidence-meta"><dt>Source</dt><dd>{sourceDisplayTitle(source)}</dd><dt>Origin</dt><dd>{sourceDisplayOrigin(source)}</dd></dl><Button onClick={onShowMap}>Show on map</Button></SideSheet>;
 }
 
 function AddSourceSheet({ onClose, onPost }: { onClose: () => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null> }) {

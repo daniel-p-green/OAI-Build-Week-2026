@@ -8697,8 +8697,6 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 - Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
 
----
-
 ## 2026-07-16 10:51 CT — Current public main survives a clean-room judge run
 
 **Area:** Distribution truth / clean installation / optional judge path
@@ -8720,6 +8718,41 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 ### Decisions
 
 - Clean-clone proof is tied to the exact current public commit, not inherited from an older passing checkout. This recheck covers the generated-copy, source-language, status-notice, recapture, and rough-cut milestones added after the prior proof.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 11:29 CT — Voice provenance leaves the implementation vocabulary behind
+
+**Area:** UI language / Source trust / responsive evidence / demo film
+
+### Changed
+
+- Audited the remaining visible provenance language after the broader UI simplification. Three implementation phrases still reached the exact surfaces judges will see: the seeded voice Source appeared as `Raw voice brainstorm` from `ChatGPT task`, its locator exposed the raw task timestamp, and the meta reveal said `Recorded fixture transcript` or `Sanitized source excerpt`.
+- Unified voice-facing language across Sources, the Excalidraw Map, claim inspection, exact Source evidence, focused Output trails, and the original-brainstorm reveal. Voice material now appears as `Voice brainstorm` or `Founder brainstorm`; its origin is `Voice` or `Recording`; the reveal says `Voice transcript`; and the visible locator keeps only the useful position, such as `Voice brainstorm · chunk 04`.
+- Preserved the exact original task/provider locator in persisted Source, claim, chunk, Storyboard, and build-trace provenance. This is a display-layer repair, not a provenance rewrite or weaker evidence model.
+- Strengthened the focused-object return path. Pointer focus no longer causes the Original brainstorm trigger to move the Video before the sheet opens, focused output containers opt out of browser scroll anchoring, and close restoration reapplies the saved position after layout. The browser contract now checks the professional invariant: the return is within one line and the object title remains visibly aligned below the app header.
+- Made the affected production-browser fixtures independently seedable instead of relying on earlier serial tests to have created the completed Workshop. Accepted source, evidence, Map, Style, focused Output, mobile, and original-reveal baselines now use the current professional language. The visual threshold remains bounded at 0.3% for desktop/compact and 0.6% for general mobile antialiasing; the existing 1.5% exception remains limited to media-heavy mobile Output previews.
+- Rebuilt the canonical sixteen-screen gallery, twelve-beat browser capture, and 2:20 Cedar rough cut so judge evidence matches the product. The new fixture is 52.2 seconds with SHA-256 `69de3439f342a13f02d00bd671bd145230d65e0a9f50ca324e05d22adc214e56`; the rough cut hashes to `6d353cc1684510c94405721dd7056efd350d3fc9987c0b6388f495b66357f03a`.
+
+### Verified
+
+- Visually inspected the responsive Voice Source sheet, exact Source evidence, desktop/compact/mobile original reveal, the 12-beat capture contact sheet, the dedicated reveal frame, and the rebuilt ten-shot film contact sheet. The useful Source position remains legible; raw task/provider and fixture terminology do not appear; the focused Video title and actions remain visible after the sheet closes.
+- The complete production-browser suite passed all 29 cases in one run. It covers the official Apps in ChatGPT component contract, reset and completed Workshops, voice capture, Conversation, Sources, exact evidence, Map, Brief, Style, Outputs, selective image replacement, Storyboard, local Video, original reveal, focus containment, reduced motion, contrast, logical zoom, desktop, compact, and mobile.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 30 web tests and all 120 worker tests. `pnpm demo:e2e` passed the complete recorded Source-to-render seam.
+- `pnpm demo:film:verify` passed the 140-second draft with 302 words, eight ready shots, two honestly blocked shots, and the same four founder/final-package evidence slots. `pnpm submission:packet:verify` passed with the current Terra, six GPT Image 2 panels, Cedar product/editorial narration, sixteen-screen gallery, and updated rough cut.
+- The gallery ZIP hashes to `e3d6c86bbda89c94fdea6d2a3b940ef917443836642431281b9e2bc886e0ad40`; its contact sheet hashes to `36d7a5bd00f61a243a0c2bd04f894e7cbe88188223032dd18afce519326cd146`. The rough-cut contact sheet hashes to `c460f171494a83706dd9380fe3ad279ba4cb9f6e638454affd6fe4ff75c6cb8f`.
+- No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no exact dollar debit is inferred.
+
+### Decisions
+
+- Professionals need the exact Source position, not transport or host implementation mechanics. Raw provenance remains inspectable in durable artifacts, while primary UI names the thing the professional understands.
+- Visual regression checks should enforce visible composition and interaction invariants while tolerating bounded browser text antialiasing. They must not convert subpixel rendering noise into false product failures.
 - The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
 
 ### Open items

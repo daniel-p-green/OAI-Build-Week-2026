@@ -4,7 +4,7 @@ Audit date: 2026-07-16 CT. This is a current-state audit, not a completion claim
 
 | Requirement | Current evidence | Status |
 | --- | --- | --- |
-| Local Capture → Shape → Deliver seam | `pnpm demo:e2e` records grounded Sources, Map, approved Brief, Style, Outputs, approved five-panel Storyboard, and MP4. The refreshed 51.84-second browser fixture records all twelve visible beats against the current workbench. | Proven locally |
+| Local Capture → Shape → Deliver seam | `pnpm demo:e2e` records grounded Sources, Map, approved Brief, Style, Outputs, approved five-panel Storyboard, and MP4. The refreshed 52.2-second browser fixture records all twelve visible beats against the current workbench. | Proven locally |
 | Editable Excalidraw Map | Production-route browser coverage directly edits bound text, moves a semantic node, persists size/position/title through typed history, and proves WorkshopLM Undo; responsive screenshots cover desktop, compact, and mobile review. | Proven locally |
 | Brief, Style, Outputs, Storyboard, and stale state | Worker/domain tests and production-route browser runs are recorded in `log.md`; Outputs retain real previews, version history, freshness, and source coverage. | Proven locally |
 | Weekly professional return visit | An isolated Monday-to-Thursday Workshop added a new meeting, expanded the Map, invalidated dependent work, preserved the saved Style, and generated Presentation Version 2 with exact trace to the new Source while retaining stale Version 1 history. | Proven locally |

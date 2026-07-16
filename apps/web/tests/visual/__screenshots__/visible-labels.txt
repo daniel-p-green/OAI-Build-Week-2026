@@ -32,7 +32,7 @@ Storyboard
 Storyboard5 editable panelsApproved
 StyleWorkshopLM editorialReady
 Success looks like
-TXTRaw voice brainstorm5 claims
+TXTVoice brainstorm5 claims
 The product promise
 Undo
 WEBWorkshopLM direction2 claims
