@@ -8411,3 +8411,30 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - Founder capture, final ready package, final public MP4, human film taste review, intended-audience deck review, `/feedback`, release, Devpost, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 09:24 CT — Film and Devpost evidence gates are reconciled
+
+**Area:** Submission truth / film handoff / regression guard
+
+### Changed
+
+- A judge-facing wording sweep found the rough-cut README still required an eligible `/feedback` Session ID before replacing the final meta-reveal shot. That contradicted the implemented film verifier and the canonical demo script, which correctly treat `/feedback` as a separate Devpost form requirement.
+- Corrected shot ten to require only the verified non-partial founder-derived Output set. The handoff now states explicitly that `/feedback` does not prove film content.
+- Added the rough-cut README to `pnpm submission:packet:verify` and require both the final-package sentence and the separate-Devpost boundary so the documents cannot drift silently again.
+
+### Verified
+
+- `pnpm submission:packet:verify` passed with Terra, six GPT Image 2 panels, five product Cedar clips, the ten-clip 2:20 editorial film, sixteen current UI screens, eight ready shots, two blocked shots, and four honest unresolved founder/final-package slots.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages. No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Decisions
+
+- `/feedback` is required for the Devpost submission record, but it is not visual evidence that WorkshopLM created the founder-derived Output set. Film and form gates stay separate.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder capture, final ready package, final public MP4, human film taste review, intended-audience deck review, `/feedback`, release, Devpost, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

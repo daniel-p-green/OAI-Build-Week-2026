@@ -29,7 +29,7 @@ What works:
 What must change before publication:
 
 1. Replace shot 3 with the honestly dated founder brainstorm, an inspected Realtime turn, and the resulting GPT-5.6 Map.
-2. Replace shot 10 only after the final non-partial submission Output set and eligible `/feedback` Session ID exist. Until then, the self-produced-submission claim stays visibly pending.
+2. Replace shot 10 only after the final non-partial submission Output set exists. Until then, the self-produced-submission claim stays visibly pending. `/feedback` remains a separate Devpost submission requirement, not a film-content gate.
 3. Have a human listen to the current Cedar narration and grade pronunciation, energy, pacing, and any final music balance. The Whisper round trip and silence checks prove intelligibility and timing, not taste.
 
 ## Verified build

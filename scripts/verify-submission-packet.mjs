@@ -16,17 +16,19 @@ const paths = {
   checklist: "research/hackathon/SUBMISSION-CHECKLIST.md",
   provider: "artifacts/live/provider-run.json",
   narration: "outputs/demo-film-narration/manifest.json",
+  roughReadme: "outputs/demo-film-rough-cut/README.md",
   roughCut: "outputs/demo-film-rough-cut/manifest.json",
   filmPlan: "submission/demo-film-plan.json",
   uiGallery: "outputs/workshoplm-current-ui/manifest.json",
 };
 
-const [devpost, script, ledger, audit, checklist, provider, narration, roughCut, filmPlan, uiGallery] = await Promise.all([
+const [devpost, script, ledger, audit, checklist, roughReadme, provider, narration, roughCut, filmPlan, uiGallery] = await Promise.all([
   readText(paths.devpost),
   readText(paths.script),
   readText(paths.ledger),
   readText(paths.audit),
   readText(paths.checklist),
+  readText(paths.roughReadme),
   readJson(paths.provider),
   readJson(paths.narration),
   readJson(paths.roughCut),
@@ -55,6 +57,7 @@ for (const phrase of forbidden) {
 assert(devpost.includes("**GPT-5.6 runs the product.**"), "Devpost copy does not include the verified GPT-5.6 runtime result.");
 assert(devpost.includes("six GPT Image 2 visuals") && devpost.includes("five Cedar Storyboard clips"), "Devpost copy does not include verified provider media.");
 assert(script.includes("Target: 2:20") && script.includes("**No.** Dated recording and transcript are missing"), "Demo script is not reconciled to the current 2:20 founder-gated edit.");
+assert(roughReadme.includes("Replace shot 10 only after the final non-partial submission Output set exists.") && roughReadme.includes("`/feedback` remains a separate Devpost submission requirement, not a film-content gate."), "Rough-cut handoff incorrectly treats /feedback as film evidence.");
 assert(ledger.includes("Last reconciled: 2026-07-16 CT") && audit.includes("Audit date: 2026-07-16 CT"), "Submission truth files are not dated to the current reconciliation.");
 
 assert(provider.sourceMode === "authorized-sample" && provider.founderSource === false, "Provider evidence no longer records the authorized-sample boundary.");
