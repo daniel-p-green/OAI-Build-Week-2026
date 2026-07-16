@@ -908,6 +908,29 @@ test("finished Video reveals the original brainstorm without adding navigation",
   }
 });
 
+test("finished Audio Overview keeps playback visible at desktop and mobile widths", async ({ page }) => {
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  const fixtureEnvironment = { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" };
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: fixtureEnvironment, stdio: "pipe" });
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-audio-player.ts", root], { cwd: process.cwd(), env: fixtureEnvironment, stdio: "pipe" });
+
+  for (const viewport of [viewports[0], viewports[2]]) {
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto("/");
+    await openWorkshopView(page, "outputs");
+    await page.getByRole("button", { name: /^Open Audio Overview/ }).click();
+    await expect(page.getByText("Audio ready", { exact: true })).toBeVisible();
+    await expect(page.getByText("Cedar voice · AI-generated voice", { exact: true })).toBeVisible();
+    const player = page.locator(".audio-player audio[controls]");
+    await expect(player).toBeVisible();
+    await expect.poll(async () => (await player.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(40);
+    const audio = await page.request.get(await player.getAttribute("src") ?? "");
+    expect(audio.ok()).toBeTruthy();
+    expect(audio.headers()["content-type"]).toContain("audio/wav");
+    await expectScreen(page, `${viewport.name}-audio-overview`);
+  }
+});
+
 test("Video history preserves prior versions without adding another navigation surface", async ({ page }) => {
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });

@@ -10,6 +10,7 @@ import { migrate } from "../apps/worker/src/db/migrate.ts";
 import { executeOne } from "../apps/worker/src/executor.ts";
 import { applyWorkshopAction, approveVisualDna, createImageBatch, createSketch, createVisualDna, dismissWorkshopOrientation, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, resolveWorkshopArtifact, updateWorkshopOnboarding } from "../apps/worker/src/workshop-service.ts";
 import { seedJudgeProviderImages } from "./seed-judge-images.ts";
+import { seedJudgeProviderAudio } from "./seed-judge-audio.ts";
 
 async function main() {
 const root = resolve(process.cwd(), ".workshoplm", "acceptance");
@@ -56,6 +57,7 @@ const infographicState = await generateOutput("infographic", root);
 if (infographicState.outputs.length !== 2 || deckState.outputs[0]?.type !== "deck" || infographicState.outputs[1]?.type !== "infographic") throw new Error("persisted artifact outputs were not created");
 const audioOverview = generateAudioOverview(root).audioOverviews.at(-1);
 if (!audioOverview || audioOverview.sections.length !== 3 || audioOverview.sections.some((section) => !section.evidence.length) || audioOverview.status !== "script_ready") throw new Error("grounded Audio Overview script was not created");
+await seedJudgeProviderAudio(root);
 const deckOutput = deckState.outputs.find((output) => output.type === "deck");
 if (!deckOutput || deckOutput.claimIds.length !== 4) throw new Error("recorded fixture did not produce the four-part professional deck narrative");
 const deckHtml = await readFile(resolve(root, deckOutput.relativePath), "utf8");
@@ -77,7 +79,9 @@ if (video.state !== "succeeded" || !(await stat(resolve(root, "generated", "work
 const finalState = readWorkshopState(root);
 if (finalState.onboarding.step !== "complete" || !finalState.onboarding.mapOrientationDismissed || !finalState.onboarding.outputsOrientationDismissed) throw new Error("recorded fixture did not open directly on the judge-ready Map");
 if (!finalState.imageBatch || finalState.imageBatch.panels.length !== 6 || finalState.imageBatch.panels.some((panel) => panel.state !== "generated" || !panel.relativePath || !panel.sha256 || panel.provenance?.model !== "gpt-image-2")) throw new Error("recorded fixture did not preserve the provider-backed coherent image set");
-if (finalState.audioOverviews.length !== 1 || finalState.audioOverviews[0]?.stale || finalState.audioOverviews[0]?.status !== "script_ready") throw new Error("recorded fixture did not preserve one current grounded Audio Overview script");
+if (finalState.audioOverviews.length !== 1 || finalState.audioOverviews[0]?.stale || finalState.audioOverviews[0]?.status !== "audio_ready" || finalState.audioOverviews[0]?.audio?.model !== "gpt-4o-mini-tts" || finalState.audioOverviews[0]?.audio?.voice !== "cedar") throw new Error("recorded fixture did not preserve one current provider-backed Audio Overview");
+const audioArtifact = resolveWorkshopArtifact(finalState.audioOverviews[0].id, root);
+if (audioArtifact?.contentType !== "audio/wav" || (await stat(audioArtifact.path)).size !== finalState.audioOverviews[0].audio.byteCount) throw new Error("recorded fixture did not expose the exact provider-backed Audio Overview bytes");
 if (finalState.videos.length !== 1 || finalState.videos[0]?.stale || !(await stat(resolve(root, finalState.videos[0].relativePath))).isFile()) throw new Error("recorded fixture did not preserve one current immutable Video version");
 const buildTrace = finalState.videos[0]?.buildTrace;
 if (!buildTrace || !(await stat(resolve(root, buildTrace.htmlPath))).isFile() || !(await stat(resolve(root, buildTrace.dataPath))).isFile()) throw new Error("recorded fixture did not preserve the Video build trace");
@@ -90,7 +94,7 @@ if (!buildTraceHtml.includes("Raw thinking became a finished submission") || !bu
 const finalGates = deriveGates({ transcriptSegments: 2, boardApprovedCurrent: true, briefCurrent: finalState.briefApproved, styleLockedCurrent: Boolean(finalState.style && !finalState.style.stale), storyboardApprovedCurrent: finalState.storyboardApproved, videoRenderedCurrent: finalState.videoState === "rendered" });
 if (!finalGates.video_rendered) throw new Error("video-rendered gate was not recorded");
 
-console.log(JSON.stringify({ mode: "recorded-fixture", status: "passed", grounding: answer.citations.length, gates: finalGates, outputs: finalState.outputs.map((output) => output.relativePath), sketch: { version: sketch.version, ideas: sketch.nodes.length, artifact: sketch.relativePath }, audioOverview: { id: audioOverview.id, sections: audioOverview.sections.length, status: audioOverview.status }, imagePanels: finalState.imageBatch.panels.length, imageMode: "hash-bound-provider-fixture", assetPlanItems: assetPlan.items.length, storyboardPanels: generatedStoryboard.panels.length, videoArtifact: video.artifact?.relativePath, buildTrace: buildTrace.htmlPath, elapsed: "deterministic" }));
+console.log(JSON.stringify({ mode: "recorded-fixture", status: "passed", grounding: answer.citations.length, gates: finalGates, outputs: finalState.outputs.map((output) => output.relativePath), sketch: { version: sketch.version, ideas: sketch.nodes.length, artifact: sketch.relativePath }, audioOverview: { id: audioOverview.id, sections: audioOverview.sections.length, status: finalState.audioOverviews[0].status, mode: "hash-bound-provider-fixture" }, imagePanels: finalState.imageBatch.panels.length, imageMode: "hash-bound-provider-fixture", assetPlanItems: assetPlan.items.length, storyboardPanels: generatedStoryboard.panels.length, videoArtifact: video.artifact?.relativePath, buildTrace: buildTrace.htmlPath, elapsed: "deterministic" }));
 }
 
 main().catch((error: unknown) => { console.error(error); process.exitCode = 1; });

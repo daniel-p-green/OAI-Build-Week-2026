@@ -9267,3 +9267,34 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The complete `15:04 CT — The last internal UI language leaves the workbench` milestone was appended using an ambiguous repeated open-items anchor and therefore appears immediately before the already-present `14:45 CT` milestone rather than after it.
 - No historical entry was moved or rewritten. Treat the milestone's explicit 15:04 timestamp as authoritative and this correction as the chronological tail marker.
+
+---
+
+## 2026-07-16 15:37 CT — The judge Workshop gets its real Cedar briefing
+
+**Area:** OpenAI voice / grounded replay / responsive UI / submission evidence
+
+### Changed
+
+- Added a fail-closed judge-fixture seeder for the already verified 35.7-second `gpt-4o-mini-tts` Cedar Audio Overview. It rehashes the tracked WAV and requires the current Audio Overview ID, title, complete script, section copy, claim IDs, exact Source/chunk/locator edges, disclosure, model, voice, request ID, byte count, and duration to match before recording provider provenance in the sanitized Workshop.
+- Proved the guard by attempting to reuse the artifact against the separate one-claim recording draft: the source/script mismatch was rejected, and that draft stayed on its honest fallback. The six-claim acceptance Workshop passes and exposes the exact `1,713,644`-byte WAV with SHA-256 `4929d08428849a07771f6264836389c1fb126ce75e80b99fa8a40d099f843a96`.
+- Fixed a mobile flex-layout defect that collapsed native audio controls to zero height. The focused Audio Overview now keeps its player, 36-second duration, Cedar/AI-voice disclosure, and three editable source-linked sections visible at desktop and 390×844 widths.
+- Extended packet verification to require the provider metadata, exact audio hash and bytes, its narration role in the package, and the absence of the former no-provider-speech limitation. Rebuilt the judge package from 24 to 25 verified assets and refreshed the clean sample film's generated `25 hashed assets` meta-reveal.
+
+### Verified
+
+- Inspected the actual acceptance Workshop at desktop and 390×844 in the production server. `GET /api/workshop/artifacts/audio-overview-v1` returned `200`; accepted captures are `artifacts/ui-review/judge-audio-overview-desktop-2026-07-16.png` and `artifacts/ui-review/judge-audio-overview-mobile-2026-07-16.png`.
+- The complete production-browser suite passed 31/31 scenarios, including a new desktop/mobile Audio Overview regression that requires visible playback controls and fetches a real WAV route. `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 120 worker tests and 30 web tests.
+- `pnpm demo:e2e` passed the complete Source-to-Video seam with `audio_ready` and `mode: hash-bound-provider-fixture`. `pnpm submission:build` produced 25 assets; `pnpm submission:verify` reported valid, current, and untampered. `pnpm demo:film:verify-sample` passed the rebuilt 140.021-second H.264/AAC movie with SHA-256 `5ac26ed6505b1402d83b33499c78cca36fa2c58f8663116fa26be6a30427d1d8`. `pnpm submission:packet:verify` passed and reports six provider-backed images, one provider-backed Cedar Audio Overview, and zero paid replay calls.
+- `git diff --check` passed. No OpenAI request ran; the evidence ledger remains at 104 provider HTTP operations and exact dollar debit remains unavailable from provider responses.
+
+### Decisions
+
+- Provider artifacts may be replayed in the no-credential judge path only when content, grounding edges, provenance, and bytes all match. A nearby but semantically different Workshop must fail rather than inherit impressive-looking media.
+- Audio Overview and Video narration remain separate evidence claims. The judge Audio Overview is provider-backed; the fixture Video narration remains explicitly disclosed as fallback audio.
+- `PLAN-2026-07-13.md` remained advisory only for enduring principles. Its pre-existing user modification was untouched and will be excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, founder/target-audience film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

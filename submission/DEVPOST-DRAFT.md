@@ -48,7 +48,7 @@ Codex built WorkshopLM from a goal file. WorkshopLM then used the same provenanc
 
 This project started as two files: a goal document and an operating agreement for autonomous agents. Codex, running on GPT-5.6, implemented the product from that goal file across the submission period, working through an evidence-gated checklist, verifying its own work, and appending every milestone to a public, append-only build log. The log even records the moment the system caught itself: one agent claimed the UI rebuild was complete, a second agent disproved the claim with computed-style evidence, reopened the checklist, and rebuilt it properly. That entry is in the repo, timestamped, unedited.
 
-WorkshopLM currently preserves a traced, 18-asset partial Output set from sanitized sources through Sources, Map, approved Brief, Style, editable PowerPoint files, grounded Audio Overview script, Storyboard, and local Video, with hashes and per-scene provenance. `Show original` lets a reviewer walk from a finished fixture Output to the transcript excerpt that started it.
+WorkshopLM currently preserves a traced, 25-asset partial Output set from sanitized sources through Sources, Map, approved Brief, Style, editable PowerPoint files, a grounded playable Cedar Audio Overview, Storyboard, and local Video, with hashes and per-scene provenance. `Show original` lets a reviewer walk from a finished fixture Output to the transcript excerpt that started it.
 
 `[LIVE: The final Devpost copy, deck, thumbnail, Storyboard, narration, and public demo Video were produced and verified as one WorkshopLM Output set.]`
 `[FALLBACK: The current recorded fixture proves the traced production model, but the final public submission was assembled from those verified outputs outside the product.]`
@@ -89,7 +89,7 @@ That runs the complete recorded seam (Sources → Map → Brief → Style → Ou
 
 ### Scope, honestly
 
-The verified provider run generated the six GPT Image 2 visuals and five Cedar Storyboard clips shown in the product Video. A controlled `gpt-realtime-2.1` WebRTC conversation searched and fetched exact Workshop Sources, persisted transcript and tool provenance, handled interruption, and completed one explicitly confirmed Brief approval. The no-credential fixture remains a separate deterministic inspection path with disclosed fallback narration. ChatGPT Work invocation is not claimed; the verified plugin surface is Codex desktop and CLI.
+The verified provider run generated the six GPT Image 2 visuals, one grounded Cedar Audio Overview, and five Cedar Storyboard clips shown in the product Video. A controlled `gpt-realtime-2.1` WebRTC conversation searched and fetched exact Workshop Sources, persisted transcript and tool provenance, handled interruption, and completed one explicitly confirmed Brief approval. The no-credential fixture replays the exact sanitized image and Audio Overview bytes with recorded hashes and zero paid calls; its local Video narration remains a separately disclosed fallback. ChatGPT Work invocation is not claimed; the verified plugin surface is Codex desktop and CLI.
 Every public claim in this description is reconciled against the evidence ledger in the repository. Where the product knows less than certainty, it says so on screen too.
 
 ---

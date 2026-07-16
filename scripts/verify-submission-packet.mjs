@@ -25,10 +25,13 @@ const paths = {
   thumbnailManifest: "outputs/demo-film-plan/thumbnail-preview.json",
   uiGallery: "outputs/workshoplm-current-ui/manifest.json",
   judgeImages: "fixtures/judge-provider-images/manifest.json",
+  judgeAudio: "artifacts/live-review/audio-overview.json",
+  judgeAudioFile: "artifacts/live-review/audio-overview.wav",
+  acceptanceManifest: ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
   package: "package.json",
 };
 
-const [devpost, script, ledger, audit, checklist, roughReadme, sampleReadme, provider, narration, roughCut, sampleCut, filmPlan, thumbnailManifest, uiGallery, judgeImages, packageJson] = await Promise.all([
+const [devpost, script, ledger, audit, checklist, roughReadme, sampleReadme, provider, narration, roughCut, sampleCut, filmPlan, thumbnailManifest, uiGallery, judgeImages, judgeAudio, acceptanceManifest, packageJson] = await Promise.all([
   readText(paths.devpost),
   readText(paths.script),
   readText(paths.ledger),
@@ -44,6 +47,8 @@ const [devpost, script, ledger, audit, checklist, roughReadme, sampleReadme, pro
   readJson(paths.thumbnailManifest),
   readJson(paths.uiGallery),
   readJson(paths.judgeImages),
+  readJson(paths.judgeAudio),
+  readJson(paths.acceptanceManifest),
   readJson(paths.package),
 ]);
 
@@ -66,7 +71,7 @@ for (const phrase of forbidden) {
 }
 
 assert(devpost.includes("**GPT-5.6 runs the product.**"), "Devpost copy does not include the verified GPT-5.6 runtime result.");
-assert(devpost.includes("six GPT Image 2 visuals") && devpost.includes("five Cedar Storyboard clips"), "Devpost copy does not include verified provider media.");
+assert(devpost.includes("six GPT Image 2 visuals") && devpost.includes("one grounded Cedar Audio Overview") && devpost.includes("five Cedar Storyboard clips"), "Devpost copy does not include verified provider media.");
 assert(script.includes("Target: 2:20") && script.includes("**No.** Dated recording and transcript are missing"), "Demo script is not reconciled to the current 2:20 founder-gated edit.");
 assert(roughReadme.includes("Replace shot 10 only after the final non-partial submission Output set exists.") && roughReadme.includes("`/feedback` remains a separate Devpost submission requirement, not a film-content gate."), "Rough-cut handoff incorrectly treats /feedback as film evidence.");
 assert(sampleReadme.includes("It is intentionally not founder footage or the public submission video.") && sampleReadme.includes("pnpm demo:film:verify-sample"), "Sample-film handoff does not preserve its truth boundary or verifier.");
@@ -129,6 +134,12 @@ for (const panel of judgeImages.panels) {
   const bytes = await readFile(resolve(repository, "fixtures/judge-provider-images", panel.file));
   assert(createHash("sha256").update(bytes).digest("hex") === panel.sha256, `Judge image fixture hash mismatch: ${panel.id}`);
 }
+const judgeAudioBytes = await readFile(resolve(repository, paths.judgeAudioFile));
+assert(judgeAudio.audio?.model === "gpt-4o-mini-tts" && judgeAudio.audio.voice === "cedar" && judgeAudio.audio.durationSeconds > 0 && judgeAudio.audio.sha256 === judgeAudio.downloadedSha256, "Judge Audio Overview provider provenance is incomplete.");
+assert(createHash("sha256").update(judgeAudioBytes).digest("hex") === judgeAudio.audio.sha256 && judgeAudioBytes.length === judgeAudio.audio.byteCount, "Judge Audio Overview fixture hash mismatch.");
+const packagedAudio = acceptanceManifest.assets?.find((asset) => asset.type === "audio_overview" && asset.provenance === "narration");
+assert(packagedAudio?.relativePath === "audio-overview.wav" && packagedAudio.sha256 === judgeAudio.audio.sha256 && packagedAudio.byteCount === judgeAudio.audio.byteCount, "Acceptance package does not contain the verified Cedar Audio Overview.");
+assert(!(acceptanceManifest.limitations ?? []).some((item) => item.includes("no provider-generated speech file")), "Acceptance package still claims the Cedar Audio Overview is missing.");
 const unresolvedSlots = [...devpost.matchAll(/`\[(LIVE|FALLBACK):/g)].length;
 assert(unresolvedSlots === 4, `Expected four founder/final-package slots, found ${unresolvedSlots}.`);
 
@@ -139,6 +150,6 @@ process.stdout.write(`${JSON.stringify({
   diagnosticRoughCut: { status: roughCut.status, seconds: roughCut.video.durationSeconds },
   thumbnail: { composition: thumbnailManifest.composition, dimensions: thumbnailManifest.dimensions, sha256: thumbnailManifest.thumbnailSha256 },
   uiGallery: { screenshots: uiGallery.screenshots.length, providerBackedOutputs: "08-current-outputs.png" },
-  judgeFixture: { providerBackedImages: judgeImages.panels.length, paidReplayCalls: 0 },
+  judgeFixture: { providerBackedImages: judgeImages.panels.length, providerBackedAudioOverview: { model: judgeAudio.audio.model, voice: judgeAudio.audio.voice, seconds: judgeAudio.audio.durationSeconds }, paidReplayCalls: 0 },
   unresolvedFounderSlots: unresolvedSlots,
 }, null, 2)}\n`);

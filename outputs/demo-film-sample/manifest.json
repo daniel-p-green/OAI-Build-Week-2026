@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance Output set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-16T20:03:51.450Z",
+  "builtAt": "2026-07-16T20:37:23.598Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "voice": {
@@ -15,7 +15,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "e9247846803d3cbaa2d508a1a5b6da55a91e81a2dc7653e9045b28004a545aee",
+    "sha256": "5ac26ed6505b1402d83b33499c78cca36fa2c58f8663116fa26be6a30427d1d8",
     "durationSeconds": 140.021333,
     "streams": [
       {
@@ -33,12 +33,12 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "05c46aec199873666a6e851385f4b94359995378a0e027ee138e70d08a7be48d"
+    "sha256": "ee2363ef3c81b20de47675d3dc9c8f053a292eebabd81f0999691308b1acfd05"
   },
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "09d133f40ee058d9f57533e83df8bcc088ffa6b48694d1df904b0a736bef3fa4"
+      "sha256": "2c850cbbd2c3a32a20f8d85d05c88500a643f54130f0229cd89f87b2dc6b0cec"
     },
     {
       "relativePath": "review/02.jpg",
@@ -46,27 +46,27 @@
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "9d095e518f698bc4c23225be15f4cf898113fcd3d4bf1be5b77b53254368a7b0"
+      "sha256": "f3d96f8ef0bb3e7881b3cf0df8ba31e3d049282ca658ca72305a3767319c3130"
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "4d23809947b4175b315b553ad0639c07693e9c5527ac77a37b72d25f68b9aad8"
+      "sha256": "d143ac8eb210ba7b7ffa624b883c741389b65d448c8fa354d5624d29dd47810d"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "03d3fd247269619330886428be22346f8ccccf9e4877df0ce6d6d01b88ec5ce7"
+      "sha256": "fb1d74ea13eb8d106d060c49014222d570a2b3a8c9c4eacbea1785ecbf757b35"
     },
     {
       "relativePath": "review/06.jpg",
-      "sha256": "611f92c6cbc62b06c693a219def6aa5d2e491cc11260e9161569492ed039ffc5"
+      "sha256": "2009516c74f7072c7f0cdac58ef37b2aa70893c40fe6a3723e4d4e0933062182"
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "b601924b1e32761b1cd10fa0d4d5e8671fc1f15f8f3d338140aa8b0e57ee6a9d"
+      "sha256": "753b8daee9891a3c2eb3a60c3980a9cef4d2123cb99a0baceb8e185e2eab4c1f"
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "2cdd6be2b6930526681812e31088e255c1b1d74f098b9431102598b90c48a47b"
+      "sha256": "a5b9bf7562c9ad7ed61473bdcc7f4e615a07fac0fe2e7482bea1e9ceb49cf1c9"
     },
     {
       "relativePath": "review/09.jpg",
@@ -74,7 +74,7 @@
     },
     {
       "relativePath": "review/10.jpg",
-      "sha256": "2292a7f8d27a42765747d1f82b2e8cb61fe4634ae0111eb7ef1caa1217eb8429"
+      "sha256": "205180dc32b78ce242759ed3aad0c36da2dd914955fb587485a1384cde69189a"
     }
   ],
   "metaRevealEvidence": {
@@ -86,11 +86,11 @@
     },
     "submissionManifest": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
-      "sha256": "a618349510fb15cf9597fdd2ae1861c77884351c5d487ea875d9181cb478f8f8"
+      "sha256": "8919568d14b2bcab90750385af84137dde94316f701340a7d841efedfe844b05"
     },
     "buildTrace": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/BUILD-TRACE.json",
-      "sha256": "a6949260a430cdb2b901799636e3679f9e72a375ffb7e6af8787c72b2c9b01ec"
+      "sha256": "dda293ecc838ac09cc934ed1a414bbc28544adc0cc326f546c2351f46c2ab875"
     }
   },
   "shots": [
@@ -107,8 +107,8 @@
       "sourceBeats": [
         "map"
       ],
-      "sourceStartSeconds": 0.631,
-      "sourceEndSeconds": 2.332,
+      "sourceStartSeconds": 0.854,
+      "sourceEndSeconds": 2.553,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
@@ -148,8 +148,8 @@
       "sourceBeats": [
         "sources"
       ],
-      "sourceStartSeconds": 2.832,
-      "sourceEndSeconds": 4.335,
+      "sourceStartSeconds": 3.053,
+      "sourceEndSeconds": 4.557,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
@@ -170,8 +170,8 @@
         "source-trace",
         "map-edit"
       ],
-      "sourceStartSeconds": 5.035,
-      "sourceEndSeconds": 7.529,
+      "sourceStartSeconds": 5.257,
+      "sourceEndSeconds": 7.755,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
@@ -191,8 +191,8 @@
       "sourceBeats": [
         "brief-approval"
       ],
-      "sourceStartSeconds": 8.46,
-      "sourceEndSeconds": 9.801,
+      "sourceStartSeconds": 8.68,
+      "sourceEndSeconds": 10.024,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
@@ -212,8 +212,8 @@
       "sourceBeats": [
         "style"
       ],
-      "sourceStartSeconds": 10.701,
-      "sourceEndSeconds": 11.689,
+      "sourceStartSeconds": 10.924,
+      "sourceEndSeconds": 11.92,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
@@ -234,8 +234,8 @@
         "create-outputs",
         "output-evidence"
       ],
-      "sourceStartSeconds": 12.608,
-      "sourceEndSeconds": 18.289,
+      "sourceStartSeconds": 12.838,
+      "sourceEndSeconds": 18.681,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
@@ -256,8 +256,8 @@
         "storyboard-edit",
         "storyboard-approval"
       ],
-      "sourceStartSeconds": 18.476,
-      "sourceEndSeconds": 21.593,
+      "sourceStartSeconds": 18.867,
+      "sourceEndSeconds": 21.982,
       "motion": {
         "type": "editorial-push-in",
         "maxScale": 1.06,
