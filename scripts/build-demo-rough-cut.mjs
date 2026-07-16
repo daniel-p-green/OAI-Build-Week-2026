@@ -12,6 +12,7 @@ const outputVideo = resolve(outputRoot, "workshoplm-demo-rough-cut.mp4");
 const contactSheet = resolve(outputRoot, "contact-sheet.jpg");
 const manifestPath = resolve(outputRoot, "manifest.json");
 const reviewRoot = resolve(outputRoot, "review");
+const narrationManifestPath = process.env.WORKSHOPLM_ROUGH_CUT_NARRATION_MANIFEST ? resolve(repository, process.env.WORKSHOPLM_ROUGH_CUT_NARRATION_MANIFEST) : undefined;
 const voice = process.env.WORKSHOPLM_ROUGH_CUT_VOICE || "Samantha";
 const fixedSpeechRate = process.env.WORKSHOPLM_ROUGH_CUT_RATE ? Number(process.env.WORKSHOPLM_ROUGH_CUT_RATE) : undefined;
 const width = 1280;
@@ -74,6 +75,16 @@ function overlaySvg(shot, index) {
 
 async function main() {
   const plan = JSON.parse(await readFile(planPath, "utf8"));
+  const providerNarration = narrationManifestPath ? JSON.parse(await readFile(narrationManifestPath, "utf8")) : undefined;
+  if (providerNarration) {
+    if (providerNarration.model !== "gpt-4o-mini-tts" || providerNarration.voice !== "cedar" || providerNarration.shots?.length !== plan.shots.length) throw new Error("The provider narration manifest does not match the film plan.");
+    for (const shot of providerNarration.shots) {
+      const bytes = await readFile(resolve(repository, shot.relativePath));
+      if (sha256(bytes) !== shot.sha256) throw new Error(`Provider narration ${shot.id} no longer matches its manifest.`);
+      const planShot = plan.shots.find((candidate) => candidate.id === shot.id);
+      if (!planShot || shot.slotSeconds !== planShot.endSeconds - planShot.startSeconds || shot.durationSeconds > shot.slotSeconds * 1.5) throw new Error(`Provider narration ${shot.id} no longer fits the film plan.`);
+    }
+  }
   const captureManifestPath = resolve(repository, plan.captureManifest);
   const capture = JSON.parse(await readFile(captureManifestPath, "utf8"));
   const sourceVideo = resolve(dirname(captureManifestPath), capture.video.relativePath);
@@ -95,14 +106,15 @@ async function main() {
     const duration = shot.endSeconds - shot.startSeconds;
     const shotSpeechRate = guideVoiceRate(shot.narration, duration);
     const stem = `${String(index + 1).padStart(2, "0")}-${shot.id}`;
-    const audioPath = resolve(temporaryRoot, `${stem}.aiff`);
+    const providerShot = providerNarration?.shots.find((candidate) => candidate.id === shot.id);
+    const audioPath = providerShot ? resolve(repository, providerShot.relativePath) : resolve(temporaryRoot, `${stem}.aiff`);
     const basePath = resolve(temporaryRoot, `${stem}-base.mp4`);
     const overlayPath = resolve(temporaryRoot, `${stem}-overlay.png`);
     const overlaySource = resolve(temporaryRoot, `${stem}-overlay.svg`);
     const segmentPath = resolve(temporaryRoot, `${stem}.mp4`);
     await writeFile(overlaySource, overlaySvg(shot, index), "utf8");
     run("rsvg-convert", ["-w", String(width), "-h", String(height), overlaySource, "-o", overlayPath]);
-    run("say", ["-v", voice, "-r", String(shotSpeechRate), "-o", audioPath, shot.narration]);
+    if (!providerShot) run("say", ["-v", voice, "-r", String(shotSpeechRate), "-o", audioPath, shot.narration]);
 
     const selectedBeats = shot.captureBeats.map((id) => beatsById.get(id)).filter(Boolean);
     const externalVideo = shot.state === "ready"
@@ -114,22 +126,22 @@ async function main() {
       const presentationDuration = Math.min(duration, sourceDuration / playbackRate);
       const holdDuration = Math.max(0, duration - presentationDuration);
       run("ffmpeg", ["-y", "-i", externalVideo, "-vf", `setpts=PTS/${playbackRate.toFixed(5)},scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5,trim=duration=${presentationDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${duration},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
-      shotRecords.push({ id: shot.id, state: shot.state, durationSeconds: duration, guideVoiceRate: shotSpeechRate, sourceBeats: [], externalVideo: shot.requiredEvidence.find((item) => resolve(repository, item.path) === externalVideo)?.path, sourceDurationSeconds: sourceDuration });
+      shotRecords.push({ id: shot.id, state: shot.state, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: [], externalVideo: shot.requiredEvidence.find((item) => resolve(repository, item.path) === externalVideo)?.path, sourceDurationSeconds: sourceDuration });
     } else if (selectedBeats.length) {
       const sourceStart = Math.max(0, selectedBeats[0].startMs / 1000 - 0.2);
       const sourceEnd = Math.min(capture.video.durationSeconds, selectedBeats.at(-1).endMs / 1000 - 0.3);
       const sourceDuration = Math.max(0.5, sourceEnd - sourceStart);
       const holdDuration = Math.max(0, duration - sourceDuration);
       run("ffmpeg", ["-y", "-ss", sourceStart.toFixed(3), "-i", sourceVideo, "-vf", `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5,trim=duration=${sourceDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${duration},zoompan=z='min(zoom+0.00012,1.04)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s=${width}x${height}:fps=30,format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
-      shotRecords.push({ id: shot.id, state: shot.state, durationSeconds: duration, guideVoiceRate: shotSpeechRate, sourceBeats: shot.captureBeats, sourceStartSeconds: Number(sourceStart.toFixed(3)), sourceEndSeconds: Number(sourceEnd.toFixed(3)) });
+      shotRecords.push({ id: shot.id, state: shot.state, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: shot.captureBeats, sourceStartSeconds: Number(sourceStart.toFixed(3)), sourceEndSeconds: Number(sourceEnd.toFixed(3)) });
     } else {
       run("ffmpeg", ["-y", "-loop", "1", "-i", resolve(repository, "outputs/workshoplm-current-ui/01-map.png"), "-t", String(duration), "-vf", `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5,fps=30,format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
-      shotRecords.push({ id: shot.id, state: shot.state, durationSeconds: duration, guideVoiceRate: shotSpeechRate, sourceBeats: [], stillFallback: "outputs/workshoplm-current-ui/01-map.png" });
+      shotRecords.push({ id: shot.id, state: shot.state, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: [], stillFallback: "outputs/workshoplm-current-ui/01-map.png" });
     }
 
     const audioDuration = Number(probe(audioPath).format?.duration || 0);
     const targetSpeechDuration = Math.max(1, duration - 0.55);
-    const tempo = Math.max(0.6, Math.min(2, audioDuration / targetSpeechDuration));
+    const tempo = providerShot ? Math.max(1, Math.min(2, audioDuration / targetSpeechDuration)) : Math.max(0.6, Math.min(2, audioDuration / targetSpeechDuration));
     const audioFilter = `${Math.abs(tempo - 1) > 0.01 ? `atempo=${tempo.toFixed(5)},` : ""}aresample=48000,volume=0.96,apad=whole_dur=${duration}`;
     run("ffmpeg", ["-y", "-i", basePath, "-loop", "1", "-i", overlayPath, "-i", audioPath, "-filter_complex", `[0:v][1:v]overlay=0:0:shortest=1[v];[2:a]${audioFilter}[a]`, "-map", "[v]", "-map", "[a]", "-t", String(duration), "-r", "30", "-c:v", "libx264", "-preset", "fast", "-crf", "22", "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", segmentPath]);
     const reviewPath = resolve(reviewRoot, `${String(index + 1).padStart(2, "0")}.jpg`);
@@ -149,11 +161,11 @@ async function main() {
   const manifest = {
     schemaVersion: 1,
     status: "editorial-rough-cut",
-    disclosure: "Truthful fixture rough cut with a local macOS guide voice. This is not provider narration, final host footage, or the public submission video.",
+    disclosure: providerNarration ? "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video." : "Truthful fixture rough cut with a local macOS guide voice. This is not provider narration, final host footage, or the public submission video.",
     builtAt: new Date().toISOString(),
     plan: "submission/demo-film-plan.json",
     sourceCapture: plan.captureManifest,
-    voice: { provider: "local macOS say", name: voice, ratePolicy: fixedSpeechRate ? `fixed ${fixedSpeechRate}` : "adaptive 120–180 words per minute", finalProviderNarration: false },
+    voice: providerNarration ? { provider: "OpenAI", model: providerNarration.model, name: providerNarration.voice, disclosure: providerNarration.disclosure, requestCount: providerNarration.requestCount, finalProviderNarration: true } : { provider: "local macOS say", name: voice, ratePolicy: fixedSpeechRate ? `fixed ${fixedSpeechRate}` : "adaptive 120–180 words per minute", finalProviderNarration: false },
     video: { relativePath: "workshoplm-demo-rough-cut.mp4", sha256: sha256(videoBytes), durationSeconds: Number(inspected.format?.duration || 0), streams: inspected.streams || [] },
     contactSheet: { relativePath: "contact-sheet.jpg", sha256: sha256(sheetBytes) },
     reviewFrames: await Promise.all(reviewFrames.map(async (path) => ({ relativePath: `review/${path.split("/").at(-1)}`, sha256: sha256(await readFile(path)) }))),
@@ -161,8 +173,8 @@ async function main() {
     limitations: [
       `${plan.shots.filter((shot) => shot.state === "blocked").length} shots remain visibly marked FINAL EVIDENCE PENDING.`,
       "The walkthrough uses the sanitized deterministic fixture and planned image panels.",
-      "The guide voice is local macOS speech synthesis, not OpenAI narration.",
-      "Founder brainstorm, Realtime, GPT-5.6, GPT Image 2, provider narration, final Output set, and public-export evidence remain gated elsewhere."
+      providerNarration ? "OpenAI Cedar narration is present; founder footage and final editorial export remain pending." : "The guide voice is local macOS speech synthesis, not OpenAI narration.",
+      providerNarration ? "Founder brainstorm, final Source-derived Output set, and public-export evidence remain gated elsewhere." : "Founder brainstorm, Realtime, GPT-5.6, GPT Image 2, provider narration, final Output set, and public-export evidence remain gated elsewhere."
     ]
   };
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");

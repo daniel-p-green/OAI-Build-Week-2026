@@ -18,6 +18,7 @@
     "demo:capture-draft": "pnpm --filter @workshoplm/web capture:demo",
     "demo:film:rough": "node scripts/build-demo-rough-cut.mjs",
     "demo:film:prepare-live": "tsx scripts/prepare-live-film-evidence.ts",
+    "demo:film:narrate": "tsx scripts/generate-demo-film-narration.ts",
     "demo:film:verify": "tsx scripts/verify-demo-film.ts",
     "demo:film:verify-final": "tsx scripts/verify-demo-film.ts --final",
     "dogfood:deck:build": "tsx scripts/rebuild-dogfood-deck.ts",

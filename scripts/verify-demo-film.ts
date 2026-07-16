@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
-type RequiredEvidence = { label: string; path: string; validator?: "ready-submission-manifest" | "provider-run" | "realtime-turn" | "video-media" | "av-media" };
+type RequiredEvidence = { label: string; path: string; validator?: "ready-submission-manifest" | "provider-run" | "realtime-turn" | "film-narration" | "video-media" | "av-media" };
 type FilmShot = {
   id: string;
   title: string;
@@ -93,6 +93,21 @@ async function inspectEvidence(item: RequiredEvidence): Promise<{ exists: boolea
       if (turn.transport !== "webrtc" || turn.model !== "gpt-realtime-2.1" || turn.transcriptionModel !== "gpt-realtime-whisper" || turn.captureMode !== "controlled-synthetic-microphone-audio" || turn.founderRecording !== false || !turn.successfulToolCallCount || !turn.limitation) return { exists: true, satisfied: false, issue: "Realtime evidence does not preserve its verified transport and non-founder boundary." };
     } catch {
       return { exists: true, satisfied: false, issue: "Realtime-turn evidence is not valid JSON." };
+    }
+  }
+  if (item.validator === "film-narration") {
+    try {
+      const narration = JSON.parse(await readFile(resolve(repository, item.path), "utf8")) as { model?: string; voice?: string; requestCount?: number; shots?: Array<{ id?: string; relativePath?: string; sha256?: string; durationSeconds?: number; slotSeconds?: number; requestId?: string }> };
+      const currentPlan = JSON.parse(await readFile(planPath, "utf8")) as FilmPlan;
+      if (narration.model !== "gpt-4o-mini-tts" || narration.voice !== "cedar" || narration.requestCount !== currentPlan.shots.length || narration.shots?.length !== currentPlan.shots.length) return { exists: true, satisfied: false, issue: "Film narration does not contain one Cedar clip per current shot." };
+      for (const shot of narration.shots) {
+        const planned = currentPlan.shots.find((candidate) => candidate.id === shot.id);
+        if (!planned || !shot.relativePath || !shot.sha256 || !shot.requestId || shot.slotSeconds !== planned.endSeconds - planned.startSeconds || !shot.durationSeconds || shot.durationSeconds > shot.slotSeconds * 1.5) return { exists: true, satisfied: false, issue: `Film narration ${shot.id ?? "unknown"} no longer fits the current plan.` };
+        const actualHash = createHash("sha256").update(await readFile(resolve(repository, shot.relativePath))).digest("hex");
+        if (actualHash !== shot.sha256) return { exists: true, satisfied: false, issue: `Film narration ${shot.id} no longer matches its hash.` };
+      }
+    } catch {
+      return { exists: true, satisfied: false, issue: "Film narration evidence is invalid or references missing audio." };
     }
   }
   if (item.validator === "video-media" || item.validator === "av-media") {

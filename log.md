@@ -7359,3 +7359,34 @@ The 02:15 CT grounded Realtime voice and simplified visual-contract milestone wa
 The 03:05 CT provider-backed film-input and two-blocker rough-cut milestone was inserted after an earlier matching `Codex Session ID` marker instead of the physical end of this append-only file. Its evidence and decisions are unchanged. This note restores the chronological boundary without rewriting history. The 03:05 milestone supersedes the earlier film-readiness count: the current verifier has eight ready shots, two blocked shots, and five missing or unsatisfied final-evidence items.
 
 The final acceptance sequence also proved that `pnpm demo:e2e` intentionally resets `.workshoplm/acceptance` and removes any prior submission manifest. A standalone `pnpm submission:verify` immediately after that reset failed with the expected missing-manifest error; `pnpm submission:build && pnpm submission:verify` then passed, followed by the semantic film verifier. The required order is reset/acceptance → submission build → submission verify, not verification against pre-reset state.
+
+---
+
+## 2026-07-16 03:13 CT — Cedar editorial master tightened to 2:20
+
+**Area:** Demo narration / Editorial pacing / Live-provider evidence
+
+### Changed
+
+- Added a bounded, explicit-opt-in ten-request film narration generator. It binds every Cedar WAV to the current ten-shot plan with request ID, byte count, duration, slot duration, and SHA-256.
+- Taught the rough-cut builder to verify and consume provider narration without changing the honest `editorial-rough-cut` state. It refuses a missing, changed, overlong, or plan-mismatched clip.
+- Recut the same ten-beat story from 162 seconds to 140 seconds after the first natural-Cedar assembly exposed long dead holds. Provider narration is no longer slowed to fill a shot; only clips longer than their available slot are modestly compressed, and shorter clips keep their natural cadence.
+
+### Verified
+
+- Ten `gpt-4o-mini-tts` Cedar requests completed with ten distinct request IDs and playable WAVs. Individual durations range from 10.65 to 16.6 seconds; every clip fits its revised 12–18 second slot without excessive compression.
+- The 140.021333-second editorial MP4 has H.264 video, AAC 48 kHz audio, and SHA-256 `8e1cfe904a93659893b05c5b38ee7d64e205d0486710604fc0ab06f6854f1396`.
+- A full local Whisper round trip recovered every intended sentence, including WorkshopLM, Realtime, GPT 5.6, GPT Image 2, HyperFrames, the two approvals, source trace, and Codex's implementation role. Minor recognizer spellings such as `texturpt` do not change the audible script or stored source text.
+- `silencedetect` found no gap longer than 1.81 seconds. The former 4–6 second dead holds are gone; the written pace is 129.4 words per minute over the final 2:20 plan.
+- `pnpm demo:film:verify` still reports eight ready shots and two honestly blocked shots. Cedar narration improves the review artifact without weakening the founder/meta finality gates.
+
+### Decisions
+
+- A shorter 2:20 film is stronger than a 2:42 film padded around a naturally brisk professional voice. The judge story and all ten required beats are unchanged.
+- Do not regenerate these ten clips merely because the founder Source changes; the editorial narration describes the product workflow and remains valid unless the final script changes materially.
+- The complete provider evidence ledger is now 97 HTTP operations. Exact dollar debit remains unavailable; no exact spend is invented, and the run remains safely inside the authorized $50 ceiling.
+
+### Open items
+
+- Founder physical-microphone capture and transcript, final Source-derived Output set, eligible Session ID record, final edited export, external deck review, and public link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

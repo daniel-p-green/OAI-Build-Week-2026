@@ -5,11 +5,11 @@
   "planStatus": "draft",
   "finalReady": false,
   "timeline": {
-    "durationSeconds": 162,
+    "durationSeconds": 140,
     "maxDurationSeconds": 175,
     "shots": 10,
     "narrationWords": 302,
-    "narrationWordsPerMinute": 111.9
+    "narrationWordsPerMinute": 129.4
   },
   "capture": {
     "status": "fixture-draft",

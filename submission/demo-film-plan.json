@@ -3,7 +3,7 @@
   "status": "draft",
   "publicTitle": "WorkshopLM — Turn raw thinking into finished work",
   "thumbnailText": "From rough thought to finished work",
-  "targetDurationSeconds": 162,
+  "targetDurationSeconds": 140,
   "maxDurationSeconds": 175,
   "captureManifest": "outputs/demo-recording-draft/manifest.json",
   "finalVideoPath": "outputs/demo-film-final/workshoplm-demo.mp4",
@@ -12,18 +12,24 @@
       "id": "promise",
       "title": "The promise",
       "startSeconds": 0,
-      "endSeconds": 12,
+      "endSeconds": 13,
       "state": "ready",
       "captureBeats": ["map"],
       "narration": "From your meetings and documents to a deck you can defend, with every claim traced to its source. WorkshopLM turns raw professional thinking into finished work without separating conversation from production.",
       "requiredMoments": [],
-      "requiredEvidence": []
+      "requiredEvidence": [
+        {
+          "label": "Hash-bound OpenAI Cedar editorial narration",
+          "path": "outputs/demo-film-narration/manifest.json",
+          "validator": "film-narration"
+        }
+      ]
     },
     {
       "id": "codex-doorway",
       "title": "Codex is the conversation surface",
-      "startSeconds": 12,
-      "endSeconds": 22,
+      "startSeconds": 13,
+      "endSeconds": 26,
       "state": "ready",
       "captureBeats": [],
       "narration": "WorkshopLM is one unified plugin. Codex stays the conversation surface, uses the project's grounded tools, and opens the visual Workshop only when spatial editing is useful.",
@@ -38,8 +44,8 @@
     {
       "id": "capture-and-shape",
       "title": "Messy thought becomes a grounded Map",
-      "startSeconds": 22,
-      "endSeconds": 45,
+      "startSeconds": 26,
+      "endSeconds": 44,
       "state": "blocked",
       "captureBeats": ["sources"],
       "narration": "I begin with an honestly dated, unstructured brainstorm. OpenAI Realtime preserves the spoken turn, then GPT-5.6 shapes it with the selected sources into a semantic Map. Every factual node keeps its exact source locator.",
@@ -68,8 +74,8 @@
     {
       "id": "evidence-and-control",
       "title": "Evidence remains inspectable and editable",
-      "startSeconds": 45,
-      "endSeconds": 60,
+      "startSeconds": 44,
+      "endSeconds": 58,
       "state": "ready",
       "captureBeats": ["source-trace", "map-edit"],
       "narration": "This is not a flattened summary. I can open a factual claim to its exact excerpt, move it, or rewrite it. A meaningful change automatically marks dependent work as needing an update.",
@@ -79,8 +85,8 @@
     {
       "id": "brief-approval",
       "title": "First approval: Brief",
-      "startSeconds": 60,
-      "endSeconds": 75,
+      "startSeconds": 58,
+      "endSeconds": 70,
       "state": "ready",
       "captureBeats": ["brief-approval"],
       "narration": "When the thinking is right, the first approval turns this exact Map into an inspectable Brief. Source coverage and unresolved evidence remain visible before production begins.",
@@ -90,8 +96,8 @@
     {
       "id": "style",
       "title": "One reviewable visual system",
-      "startSeconds": 75,
-      "endSeconds": 88,
+      "startSeconds": 70,
+      "endSeconds": 82,
       "state": "ready",
       "captureBeats": ["style"],
       "narration": "Style is set once and stays reviewable. Palette, typography, layouts, image treatment, and negative rules remain consistent across the deck and every supporting asset.",
@@ -101,8 +107,8 @@
     {
       "id": "outputs",
       "title": "A deck you can defend",
-      "startSeconds": 88,
-      "endSeconds": 107,
+      "startSeconds": 82,
+      "endSeconds": 96,
       "state": "ready",
       "captureBeats": ["create-outputs"],
       "narration": "The hero output is a branded deck I can edit and defend. Every factual claim keeps exact evidence, while the infographic and coherent GPT Image 2 set support the same story and visual system.",
@@ -123,8 +129,8 @@
     {
       "id": "storyboard-approval",
       "title": "Second approval: Storyboard",
-      "startSeconds": 107,
-      "endSeconds": 125,
+      "startSeconds": 96,
+      "endSeconds": 109,
       "state": "ready",
       "captureBeats": ["storyboard-edit", "storyboard-approval"],
       "narration": "Unlike a black-box video generator, WorkshopLM shows the Storyboard first. I can rewrite a panel, inspect its source, and then make the second and final blocking approval.",
@@ -134,8 +140,8 @@
     {
       "id": "render-and-trace",
       "title": "Approved work renders locally",
-      "startSeconds": 125,
-      "endSeconds": 143,
+      "startSeconds": 109,
+      "endSeconds": 124,
       "state": "ready",
       "captureBeats": ["video-render", "output-evidence"],
       "narration": "The local HyperFrames worker accepts only that approved current Storyboard, synchronizes the OpenAI narration, and renders the Video. Show source still follows a finished claim back through the Brief and Map to evidence.",
@@ -151,8 +157,8 @@
     {
       "id": "meta-reveal",
       "title": "The submission proves the product",
-      "startSeconds": 143,
-      "endSeconds": 162,
+      "startSeconds": 124,
+      "endSeconds": 140,
       "state": "blocked",
       "captureBeats": ["original-reveal"],
       "narration": "Now the reveal: that rough brainstorm became the submission you just watched. The source trail, two human decisions, and build record stayed attached. WorkshopLM produced its own assets, while Codex accelerated the implementation and verification.",

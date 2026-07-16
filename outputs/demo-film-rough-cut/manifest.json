@@ -1,20 +1,22 @@
 {
   "schemaVersion": 1,
   "status": "editorial-rough-cut",
-  "disclosure": "Truthful fixture rough cut with a local macOS guide voice. This is not provider narration, final host footage, or the public submission video.",
-  "builtAt": "2026-07-16T08:03:09.336Z",
+  "disclosure": "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video.",
+  "builtAt": "2026-07-16T08:12:04.944Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "voice": {
-    "provider": "local macOS say",
-    "name": "Samantha",
-    "ratePolicy": "adaptive 120–180 words per minute",
-    "finalProviderNarration": false
+    "provider": "OpenAI",
+    "model": "gpt-4o-mini-tts",
+    "name": "cedar",
+    "disclosure": "AI-generated voice",
+    "requestCount": 10,
+    "finalProviderNarration": true
   },
   "video": {
     "relativePath": "workshoplm-demo-rough-cut.mp4",
-    "sha256": "4175979e5bcf18254433dedd20544ba28d1f271b0577c729ae38f7cb61b41bfa",
-    "durationSeconds": 162.021333,
+    "sha256": "8e1cfe904a93659893b05c5b38ee7d64e205d0486710604fc0ab06f6854f1396",
+    "durationSeconds": 140.021333,
     "streams": [
       {
         "codec_name": "h264",
@@ -31,28 +33,28 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "7a9ace29482521952da513143cba625eb3491890ab27ee287dcd5f1563830aa2"
+    "sha256": "22df822c9db73d536cfeaefa3a6f9448845c21d6279183f2b0bf10428e698785"
   },
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "30eaca06710584e8f2281dd79bf1dd94cf04187aaafab2c1c70fb8f54319a2a9"
+      "sha256": "bc269d915e3635e3528edd46107edfee2bae7eca6caef5a81bceae62b2859575"
     },
     {
       "relativePath": "review/02.jpg",
-      "sha256": "3e1c054f17b35a1d3462088259825a89b92f1d640547a63f43e7ae04386c68e7"
+      "sha256": "d423cabf17fa263042787480b6a2f06c081330a346465492624d96d24f60a9f6"
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "717e23099234e76a92975fe3c3e56efcb6a72fc432b2d9797138bc762e12f126"
+      "sha256": "c0e90f097d93598bb6503655a8d5173aae953f5f52337269dbcde3b31d1c3fda"
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "8af2c55a82307b40ad8c55440692cef25a31a39a29995b4010e0856018b54391"
+      "sha256": "14b08bafa5f8cfe0c11c2661e7ecd2745f5600be9febd6f73282d28b22047c18"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "f6f2078d470edb101b8e6d5082e3adddd6f0e4caa4d0b495280919617d82fcc7"
+      "sha256": "d46c4698c124bf3433191c3682fd9e81e4a34df43313cb05a7417fccabb49fd4"
     },
     {
       "relativePath": "review/06.jpg",
@@ -60,27 +62,32 @@
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "8c66fb952013e0f3080be8337c517cc099c16ce9471e7d813da7a7d94160ac57"
+      "sha256": "4837835991445b6fa95d3e9a6dc196ece3ae165d1def02c702ea2c6f69074bc6"
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "de5bf42a49a8d12a8fb591c0cca476d4d9bd5fe54a00e0af4113b01960fc78ae"
+      "sha256": "3fadc9e19395c2019b32f7987478e0102a3f4cb27740b17158268b75fc7a58f8"
     },
     {
       "relativePath": "review/09.jpg",
-      "sha256": "9c5894a4b84e503b60dee681f1b8c17c55560ca6fa834d9b09dac4fd525f24f7"
+      "sha256": "3f8f24b1080d1211ae8ac3414d76fd70f80714a16071387e17660c93b279e72b"
     },
     {
       "relativePath": "review/10.jpg",
-      "sha256": "46e640dd73abad55ee7d95d0fd28da49ca5b14b272e65c01f30bf12bb61f077d"
+      "sha256": "c9ea20647511353cf90f7fb3d4ed5fd782cdbd230771797b8010d1d81752f73b"
     }
   ],
   "shots": [
     {
       "id": "promise",
       "state": "ready",
-      "durationSeconds": 12,
-      "guideVoiceRate": 175,
+      "durationSeconds": 13,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_4baf607eaff0434582f45ec597ce3b1f",
+        "sha256": "daa3849d77c11e767dae8965c48c9952bd4d7b071291997d67deac7a8912f4e6"
+      },
       "sourceBeats": [
         "map"
       ],
@@ -90,8 +97,13 @@
     {
       "id": "codex-doorway",
       "state": "ready",
-      "durationSeconds": 10,
-      "guideVoiceRate": 179,
+      "durationSeconds": 13,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_9bad20020f4e456fb6f1332b0349d06f",
+        "sha256": "594f855355d7c4599c7f86fc0e25615f46d211bf8784467e7b9f10e63c9988b6"
+      },
       "sourceBeats": [],
       "externalVideo": "outputs/demo-film-inputs/codex-doorway.mov",
       "sourceDurationSeconds": 12
@@ -99,8 +111,13 @@
     {
       "id": "capture-and-shape",
       "state": "blocked",
-      "durationSeconds": 23,
-      "guideVoiceRate": 120,
+      "durationSeconds": 18,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_ab4cb9c79aac41eaa8b4ab799e7e7194",
+        "sha256": "b33fb99ffe9e5b80f719d5da00286dbd3dc1e41c8dabb4aa0408b9446442dca8"
+      },
       "sourceBeats": [
         "sources"
       ],
@@ -110,8 +127,13 @@
     {
       "id": "evidence-and-control",
       "state": "ready",
-      "durationSeconds": 15,
-      "guideVoiceRate": 142,
+      "durationSeconds": 14,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_5fa723425b8e4b3ca80634aff4a43407",
+        "sha256": "015d7239d7f96f16138fca7efd0f0588ef920a84660d23727964b8359906392d"
+      },
       "sourceBeats": [
         "source-trace",
         "map-edit"
@@ -122,8 +144,13 @@
     {
       "id": "brief-approval",
       "state": "ready",
-      "durationSeconds": 15,
-      "guideVoiceRate": 120,
+      "durationSeconds": 12,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_230ab49a7db24e2da5e71c45e0699b08",
+        "sha256": "c4518deb635ab11e9fbf5dc95799a8689915135ef9e09c59032c1468f795d3e7"
+      },
       "sourceBeats": [
         "brief-approval"
       ],
@@ -133,8 +160,13 @@
     {
       "id": "style",
       "state": "ready",
-      "durationSeconds": 13,
-      "guideVoiceRate": 124,
+      "durationSeconds": 12,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_c956e59b23ad4b7692290f9530da43b5",
+        "sha256": "b1c0e7bd172ddc834e0667cb2faa2084d9f56925bdc68e39d2cac1069d388139"
+      },
       "sourceBeats": [
         "style"
       ],
@@ -144,8 +176,13 @@
     {
       "id": "outputs",
       "state": "ready",
-      "durationSeconds": 19,
-      "guideVoiceRate": 120,
+      "durationSeconds": 14,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_cee65297a43e44c990ad429ad397fc4a",
+        "sha256": "5ec1b60cc990cda57a53f234366fb1faa8acee61817cd7fe6580cc06e0df3ef1"
+      },
       "sourceBeats": [],
       "externalVideo": "outputs/demo-film-inputs/provider-image-gallery.mov",
       "sourceDurationSeconds": 6
@@ -153,8 +190,13 @@
     {
       "id": "storyboard-approval",
       "state": "ready",
-      "durationSeconds": 18,
-      "guideVoiceRate": 120,
+      "durationSeconds": 13,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_522fec504ce14669bb8bd04f24392951",
+        "sha256": "bdbe295821c5171219c37b52189fb36caae685acb361e9b182e4844873178516"
+      },
       "sourceBeats": [
         "storyboard-edit",
         "storyboard-approval"
@@ -165,8 +207,13 @@
     {
       "id": "render-and-trace",
       "state": "ready",
-      "durationSeconds": 18,
-      "guideVoiceRate": 121,
+      "durationSeconds": 15,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_40ffbda194c94f4e962eba94b5c34f04",
+        "sha256": "31564a35f685b9882848fcde315db9e7639e69cf161c723259a858c4d4085552"
+      },
       "sourceBeats": [],
       "externalVideo": "outputs/demo-film-inputs/provider-narrated-video.mp4",
       "sourceDurationSeconds": 25.002667
@@ -174,8 +221,13 @@
     {
       "id": "meta-reveal",
       "state": "blocked",
-      "durationSeconds": 19,
-      "guideVoiceRate": 122,
+      "durationSeconds": 16,
+      "narration": {
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_6f9db693871c4236b851c35c49e057b9",
+        "sha256": "8dcf9dfa2ed9070751cad3737ab6d4c7eebe7f4b04ed1bda7a1c35b906aa8e17"
+      },
       "sourceBeats": [
         "original-reveal"
       ],
@@ -186,7 +238,7 @@
   "limitations": [
     "2 shots remain visibly marked FINAL EVIDENCE PENDING.",
     "The walkthrough uses the sanitized deterministic fixture and planned image panels.",
-    "The guide voice is local macOS speech synthesis, not OpenAI narration.",
-    "Founder brainstorm, Realtime, GPT-5.6, GPT Image 2, provider narration, final Output set, and public-export evidence remain gated elsewhere."
+    "OpenAI Cedar narration is present; founder footage and final editorial export remain pending.",
+    "Founder brainstorm, final Source-derived Output set, and public-export evidence remain gated elsewhere."
   ]
 }

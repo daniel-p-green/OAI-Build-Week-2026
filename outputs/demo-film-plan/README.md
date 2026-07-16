@@ -2,10 +2,10 @@
 
 Status: **draft**
 
-- Planned runtime: 162s (2:42)
+- Planned runtime: 140s (2:20)
 - Hard ceiling: 175s
 - Shots: 10
-- Narration words: 302 (111.9 words per minute)
+- Narration words: 302 (129.4 words per minute)
 - Source walkthrough: 37.76s, fixture-draft, hash verified
 - Ready shots: 8
 - Blocked shots: 2
@@ -20,13 +20,13 @@ Status: **draft**
 
 ## Edit sequence
 
-- 000-012 · **The promise** · ready · fixture beats: map
-- 012-022 · **Codex is the conversation surface** · ready
-- 022-045 · **Messy thought becomes a grounded Map** · blocked · fixture beats: sources
-- 045-060 · **Evidence remains inspectable and editable** · ready · fixture beats: source-trace, map-edit
-- 060-075 · **First approval: Brief** · ready · fixture beats: brief-approval
-- 075-088 · **One reviewable visual system** · ready · fixture beats: style
-- 088-107 · **A deck you can defend** · ready · fixture beats: create-outputs
-- 107-125 · **Second approval: Storyboard** · ready · fixture beats: storyboard-edit, storyboard-approval
-- 125-143 · **Approved work renders locally** · ready · fixture beats: video-render, output-evidence
-- 143-162 · **The submission proves the product** · blocked · fixture beats: original-reveal
+- 000-013 · **The promise** · ready · fixture beats: map
+- 013-026 · **Codex is the conversation surface** · ready
+- 026-044 · **Messy thought becomes a grounded Map** · blocked · fixture beats: sources
+- 044-058 · **Evidence remains inspectable and editable** · ready · fixture beats: source-trace, map-edit
+- 058-070 · **First approval: Brief** · ready · fixture beats: brief-approval
+- 070-082 · **One reviewable visual system** · ready · fixture beats: style
+- 082-096 · **A deck you can defend** · ready · fixture beats: create-outputs
+- 096-109 · **Second approval: Storyboard** · ready · fixture beats: storyboard-edit, storyboard-approval
+- 109-124 · **Approved work renders locally** · ready · fixture beats: video-render, output-evidence
+- 124-140 · **The submission proves the product** · blocked · fixture beats: original-reveal
