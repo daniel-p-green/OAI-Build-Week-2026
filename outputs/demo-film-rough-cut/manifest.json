@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "editorial-rough-cut",
   "disclosure": "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video.",
-  "builtAt": "2026-07-16T14:12:18.639Z",
+  "builtAt": "2026-07-16T14:15:28.824Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "voice": {
@@ -15,7 +15,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-rough-cut.mp4",
-    "sha256": "631c2bc1507c841c94ebb5cafe9ef1a21b807f1b708fdec29b6df90712854d35",
+    "sha256": "46ac7709f313d702af166183bc6f8b9ac15986179c60fee4420a6da08071e2a7",
     "durationSeconds": 140.021333,
     "streams": [
       {
@@ -33,12 +33,12 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "ddea88cea231d42ef620e973da6322eaf7236f9bd2fbb08adf41f9f49140408e"
+    "sha256": "9e6d5d531fffae27b4a572bd2f517ef4fadfe35c47ac216e9bc64745ad162d13"
   },
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "bdbad47dacaffed6379442ebd0499e3f576e4065f8119aca18952711146451d8"
+      "sha256": "e0eef58ff6a8acd5f76b76457b35425d4fbf7ad08e101ccf8839dc5d91510def"
     },
     {
       "relativePath": "review/02.jpg",
@@ -46,19 +46,19 @@
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "cacbc12e6dda28d0846307a0efefbc047b1021998ade87207882111ff8a8911c"
+      "sha256": "83d430e2f534987725f5705665a2a9adf5c671ecd76c3a13daf7c3616bd5193a"
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "83d0c821c8fcc4559ef28feb5c94996cc30bbdedc6084d8f52845e72bfcbaef9"
+      "sha256": "7e79c1dac451f299f23e96d0c8804508072f318d61c03471fbfbb55e27d68c19"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "58c38484799592ecd0de9bb82d20e42fc6adde7cde05c4f57204603bbff1f6f4"
+      "sha256": "12713f2f4c8f899d85b7dfd32854203048428445e6701d2d89026e5bf622e944"
     },
     {
       "relativePath": "review/06.jpg",
-      "sha256": "2dd76504ba80a67a9c5e87158a8099da66795512ce8fa6854d992a220a28c715"
+      "sha256": "01fc79fc438d1b467e7d3644b23e91faf36791c7521aa106959cb5e62f5eb64c"
     },
     {
       "relativePath": "review/07.jpg",
@@ -66,7 +66,7 @@
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "5598ab5bcf4af8b40e79338d75dd8b376ad500b811da2a596763f2cf59058c9f"
+      "sha256": "6d45a634737bd71b1b9e7e71b9000b00aae027e0efcd1818e362b2fc53bfd601"
     },
     {
       "relativePath": "review/09.jpg",
@@ -74,7 +74,7 @@
     },
     {
       "relativePath": "review/10.jpg",
-      "sha256": "8e3f36658f359832e7c2e6f8f73d367721a9b990c0a99951a142e62172ec9849"
+      "sha256": "7b45e1096b592c123e011e58effb0eec14e638814715be5a7ebb17b85f22ed10"
     }
   ],
   "shots": [
@@ -92,7 +92,7 @@
         "map"
       ],
       "sourceStartSeconds": 0.696,
-      "sourceEndSeconds": 2.798
+      "sourceEndSeconds": 2.398
     },
     {
       "id": "codex-doorway",
@@ -122,7 +122,7 @@
         "sources"
       ],
       "sourceStartSeconds": 2.898,
-      "sourceEndSeconds": 5.003
+      "sourceEndSeconds": 4.403
     },
     {
       "id": "evidence-and-control",
@@ -139,7 +139,7 @@
         "map-edit"
       ],
       "sourceStartSeconds": 5.103,
-      "sourceEndSeconds": 8.38
+      "sourceEndSeconds": 7.58
     },
     {
       "id": "brief-approval",
@@ -155,7 +155,7 @@
         "brief-approval"
       ],
       "sourceStartSeconds": 8.508,
-      "sourceEndSeconds": 10.659
+      "sourceEndSeconds": 9.859
     },
     {
       "id": "style",
@@ -171,7 +171,7 @@
         "style"
       ],
       "sourceStartSeconds": 10.759,
-      "sourceEndSeconds": 12.528
+      "sourceEndSeconds": 11.728
     },
     {
       "id": "outputs",
@@ -202,7 +202,7 @@
         "storyboard-approval"
       ],
       "sourceStartSeconds": 17.248,
-      "sourceEndSeconds": 20.849
+      "sourceEndSeconds": 20.349
     },
     {
       "id": "render-and-trace",
@@ -232,7 +232,7 @@
         "original-reveal"
       ],
       "sourceStartSeconds": 38.573,
-      "sourceEndSeconds": 41.36
+      "sourceEndSeconds": 41.121
     }
   ],
   "limitations": [

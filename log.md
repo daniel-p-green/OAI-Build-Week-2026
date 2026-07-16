@@ -8350,3 +8350,33 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - A human taste review of Cedar pacing and the provider Video remains open, along with founder recording, final ready package, final public MP4, intended-audience deck review, `/feedback`, release, Devpost, and link verification.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 09:15 CT — Judge-film visuals now match their narrated proof
+
+**Area:** Demo film / editorial alignment / evidence quality
+
+### Changed
+
+- Continued the full-frame review after repairing captions and found three narration/visual mismatches. Short captured actions played once and then held their last frame for most of the shot, so evidence/edit held on the later Brief, Brief approval held on the next Style sheet, and Style held on the later Outputs screen.
+- Added an explicit `captureEndHoldbackSeconds` edit control to captured film-plan shots. The compositor now stops each source beat before unrelated navigation begins, and the verifier rejects holdbacks outside 0.2–2 seconds.
+- Tuned the Map, Source, evidence/edit, Brief, Style, Storyboard, and original-reveal beats independently, then rebuilt the complete rough cut and evidence set.
+
+### Verified
+
+- Full-resolution review accepted the repaired midpoint frames: shot four shows the editable verified-claim inspector, shot five shows the approved Brief and `Choose style` next action, shot six shows `WorkshopLM editorial · Version 1` applied, and shot eight shows the approved editable Storyboard with `Create video` next.
+- `pnpm demo:film:verify` passed the unchanged 140-second, ten-shot plan with eight ready shots, two blocked shots, and four honest missing founder/final-export evidence items.
+- `pnpm demo:film:rough` rebuilt the H.264/AAC OpenAI Cedar edit at 140.021333 seconds with SHA-256 `46ac7709f313d702af166183bc6f8b9ac15986179c60fee4420a6da08071e2a7`.
+- `pnpm submission:packet:verify` and `pnpm check` passed. No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Decisions
+
+- A shot is not truthful merely because its source clip contains the claimed action somewhere. The frame held under the narration must show the same object, state, and consequence.
+- Capture timing is now explicit plan data rather than an implicit compositor constant, so founder footage can be aligned without rewriting the edit engine.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder capture and final meta-reveal remain the only blocked film shots. Human taste review, intended-audience deck review, final ready package, final public MP4, `/feedback`, release, Devpost, and link checks remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

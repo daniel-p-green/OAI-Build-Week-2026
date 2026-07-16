@@ -16,6 +16,7 @@
       "endSeconds": 13,
       "state": "ready",
       "captureBeats": ["map"],
+      "captureEndHoldbackSeconds": 0.7,
       "narration": "From your meetings and documents to a deck you can defend, with every claim traced to its source. WorkshopLM turns raw professional thinking into finished work without separating conversation from production.",
       "requiredMoments": [],
       "requiredEvidence": [
@@ -51,6 +52,7 @@
       "endSeconds": 44,
       "state": "blocked",
       "captureBeats": ["sources"],
+      "captureEndHoldbackSeconds": 0.9,
       "narration": "I begin with an honestly dated, unstructured brainstorm. OpenAI Realtime preserves the spoken turn, then GPT-5.6 shapes it with the selected sources into a semantic Map. Every factual node keeps its exact source locator.",
       "requiredMoments": ["founder-brainstorm", "realtime-voice", "gpt-5.6-map"],
       "requiredEvidence": [
@@ -84,6 +86,7 @@
       "endSeconds": 58,
       "state": "ready",
       "captureBeats": ["source-trace", "map-edit"],
+      "captureEndHoldbackSeconds": 1.1,
       "narration": "This is not a flattened summary. I can open a factual claim to its exact excerpt, move it, or rewrite it. A meaningful change automatically marks dependent work as needing an update.",
       "requiredMoments": ["source-trace", "edit-control"],
       "requiredEvidence": []
@@ -96,6 +99,7 @@
       "endSeconds": 70,
       "state": "ready",
       "captureBeats": ["brief-approval"],
+      "captureEndHoldbackSeconds": 1.1,
       "narration": "When the thinking is right, the first approval turns this exact Map into an inspectable Brief. Source coverage and unresolved evidence remain visible before production begins.",
       "requiredMoments": ["brief-approval"],
       "requiredEvidence": []
@@ -108,6 +112,7 @@
       "endSeconds": 82,
       "state": "ready",
       "captureBeats": ["style"],
+      "captureEndHoldbackSeconds": 1.1,
       "narration": "Style is set once and stays reviewable. Palette, typography, layouts, image treatment, and negative rules remain consistent across the deck and every supporting asset.",
       "requiredMoments": [],
       "requiredEvidence": []
@@ -143,6 +148,7 @@
       "endSeconds": 109,
       "state": "ready",
       "captureBeats": ["storyboard-edit", "storyboard-approval"],
+      "captureEndHoldbackSeconds": 0.8,
       "narration": "Unlike a black-box video generator, WorkshopLM shows the Storyboard first. I can rewrite a panel, inspect its source, and then make the second and final blocking approval.",
       "requiredMoments": ["storyboard-approval"],
       "requiredEvidence": []
@@ -173,6 +179,7 @@
       "endSeconds": 140,
       "state": "blocked",
       "captureBeats": ["original-reveal"],
+      "captureEndHoldbackSeconds": 0.7,
       "narration": "Now the reveal: that rough brainstorm became the submission you just watched. The source trail, two human decisions, and build record stayed attached. WorkshopLM produced its own assets, while Codex accelerated the implementation and verification.",
       "requiredMoments": ["original-reveal", "codex-evidence", "final-submission-output-set"],
       "requiredEvidence": [
