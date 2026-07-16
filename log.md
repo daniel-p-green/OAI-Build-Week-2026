@@ -2718,6 +2718,8 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
+---
+
 ## 2026-07-15 18:18 CT — Real Codex doorway replaces the rough-cut placeholder
 
 **Area:** Host proof / Meta-demo / Privacy-safe capture
@@ -6947,4 +6949,44 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 ### Open items
 
 - This closes current deterministic browser regression drift. It does not close the provider-backed proof, intended-audience `Send`/`Revise`, founder recording, public Video, links, or `/feedback` Session ID gates.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 23:51 CT — The external proof slide earns its third metric
+
+**Area:** Product wedge / Deck renderer / External dogfood / Send-it quality
+
+### Changed
+
+- Re-read the product-first roadmap against the current `GOAL.md`. The weekly professional persona, grounded branded deck wedge, send-it bar, trust and return-visit gates, reality ladder, and kill list were already locked; no hackathon-only scope replaced them.
+- Inspected the nine-slide AI Collective chapter-launch candidate at full resolution. The plan and decision slides were already balanced; the actionable defect was the evidence slide, which visually promoted only two of its three strongest verified measures.
+- Extended the shared HTML and editable-PowerPoint renderer from at most two headline metrics to a responsive one-, two-, or three-metric composition.
+- Reframed the external proof content so `180+ chapters`, `40+ countries`, and `400+ organizers` share equal hierarchy while the global-community sentence remains supporting context.
+- Inspected the complete contact sheet after the metric repair. It exposed two populated split slides still sacrificing roughly a quarter of the canvas to giant decorative page numbers.
+- Rebuilt populated split slides as a quiet claim/context composition separated by one Accent rule in HTML and editable PowerPoint. Sparse editorial slides retain their deliberate oversized index treatment.
+
+### Verified
+
+- `pnpm --filter @workshoplm/production test` passed 14 renderer tests, including a new three-metric regression.
+- `pnpm dogfood:deck:build` regenerated the nine-slide HTML, editable PowerPoint, PDF, individual previews, contact sheet, and hashes.
+- Full-resolution inspection of `preview-03.png` confirmed a balanced three-column evidence layout with no overflow or duplicate measure in the supporting copy.
+- Full-resolution inspection of `preview-04.png` and `preview-06.png` confirmed that the event-format and sustainability claims now use the reclaimed canvas cleanly, with no overflow or empty decorative rail.
+- `unzip -t` reported no errors in the `.pptx`; `pdfinfo` reported nine 16:9 pages; `pdftotext` recovered all three figures, their labels, supporting sentence, source name, and page number.
+- `pnpm check` passed all 13 packages, including 14 production, 106 worker, 27 web, 16 domain, and seven plugin tests.
+- `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. The 18-asset package remains valid, current, untampered, and honestly `partial` with five named provider limitations.
+- `pnpm demo:film:verify` passed the 2:42 draft truth gate with six ready shots, four blocked shots, and no final-video claim.
+- No paid provider request ran.
+
+### Decisions
+
+- Output quality means promoting the information a professional needs to scan, not merely preserving it somewhere on the slide.
+- The renderer should support the content hierarchy chosen by the Brief. It must not force a strong third fact into paragraph copy because a template was designed around two columns.
+- Page furniture must earn its space. A large index remains valid for an intentionally sparse editorial beat, but not when it compresses a populated professional slide.
+- External `Send` remains a human audience judgment. Internal visual inspection can improve the candidate but cannot close that gate.
+
+### Open items
+
+- Put the rebuilt deck in front of its intended AI Collective audience and obtain a cold `Send` or specific `Revise`; treat any required revision as product work.
+- Provider-backed Map, Realtime, Images, narration, founder recording, final public Video and links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.

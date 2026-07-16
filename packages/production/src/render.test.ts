@@ -23,6 +23,8 @@ describe("production renderers", () => {
     expect(deck).toContain('class="slide cover"');
     expect(deck).toContain('class="slide statement"');
     expect(deck).toContain('class="slide split"');
+    expect(deck).toContain('class="split-heading"');
+    expect(deck).toContain('class="split-body"');
     expect(deck).toContain('class="slide recommendation"');
     expect(deck).toContain('class="brand-logo"');
     expect(deck).toContain("WorkshopLM · Client presentation");
@@ -62,6 +64,13 @@ describe("production renderers", () => {
     expect(deck).toContain("Source: AI Collective Newsletter");
     expect(deck).not.toContain("Source: AI Collective Newsletter · chunk 79");
     expect(deck).toContain('data-source="newsletter · chunk 79"');
+  });
+  it("promotes three source-backed metrics into the evidence composition", () => {
+    const deck = renderDeck({ ...brief, blocks: [{ id: "scale", heading: "180+ chapters, 40+ countries, 400+ organizers", body: "A global community spanning independent builders and major AI labs.", citations: ["newsletter · chunk 79"], layout: "proof" }] });
+    expect(deck).toContain('class="metric-grid" data-count="3"');
+    expect(deck).toContain("<strong>180+</strong><span>chapters</span>");
+    expect(deck).toContain("<strong>40+</strong><span>countries</span>");
+    expect(deck).toContain("<strong>400+</strong><span>organizers</span>");
   });
   it("renders execution plans and decision lists as distinct professional layouts", () => {
     const deck = renderDeck({ ...brief, blocks: [
