@@ -1,6 +1,6 @@
 # Product opportunity and hackathon strategy
 
-> Host-boundary update, 2026-07-15: Codex desktop/CLI owns conversation and plugin commands; the in-app browser owns the visual Sources/Map/Outputs GUI; WorkshopLM's capture-only Realtime control owns voice. The installed classic ChatGPT app does not expose the unified local plugin, so ChatGPT Work parity is not claimed. See root `DESIGN.md`, `GOAL.md`, and the approved technical spec for current implementation truth.
+> Host-boundary update, 2026-07-15: Codex desktop/CLI owns development, plugin, and launch responsibilities; WorkshopLM's self-contained in-app browser owns the professional's grounded text and Realtime voice Conversation plus Sources, Map, Brief, Style, and Outputs. The installed classic ChatGPT app does not expose the unified local plugin, so ChatGPT Work parity is not claimed. See root `DESIGN.md`, `GOAL.md`, and the approved technical spec for current implementation truth.
 
 Updated: 2026-07-13
 

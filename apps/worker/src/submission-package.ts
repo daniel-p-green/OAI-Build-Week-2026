@@ -37,6 +37,7 @@ function fingerprintMaterial(state: WorkshopState) {
     storyboardApproved: state.storyboardApproved,
     imageBatch: state.imageBatch ?? null,
     narration: state.narration ?? null,
+    audioOverviews: state.audioOverviews,
     aiRuns: state.aiRuns,
     outputs: state.outputs,
     videos: state.videos,
@@ -58,6 +59,10 @@ function currentVideo(state: WorkshopState) {
   return [...state.videos].reverse().find((video) => !video.stale);
 }
 
+function currentAudioOverview(state: WorkshopState) {
+  return [...state.audioOverviews].reverse().find((overview) => !overview.stale);
+}
+
 function assertBuildable(state: WorkshopState, root: string): SubmissionInputSnapshot {
   if (!state.briefApproved || !state.frame || state.frame.stale) throw new Error("Submission packaging requires an approved current brief.");
   if (!state.style || state.style.stale) throw new Error("Submission packaging requires a current Style.");
@@ -70,6 +75,8 @@ function assertBuildable(state: WorkshopState, root: string): SubmissionInputSna
   if (!video || video.storyboardVersion !== state.storyboard.version || video.styleVersion !== state.style.version || video.imageBatchId !== state.imageBatch.id) throw new Error("Submission packaging requires a Video rendered from the current approved inputs.");
   if (!video.buildTrace) throw new Error("Submission packaging requires the rendered Video's build trace.");
   if (!state.outputs.some((output) => output.type === "deck" && !output.stale) || !state.outputs.some((output) => output.type === "infographic" && !output.stale)) throw new Error("Submission packaging requires current presentation and infographic Outputs.");
+  const audioOverview = currentAudioOverview(state);
+  if (!audioOverview || !audioOverview.claimIds.length || audioOverview.sections.some((section) => !section.evidence.length)) throw new Error("Submission packaging requires a current grounded Audio Overview script.");
   if (![video.relativePath, video.provenancePath, video.buildTrace.htmlPath, video.buildTrace.dataPath].every((path) => inside(root, resolve(root, path)))) throw new Error("Video evidence path escaped the Workshop data root.");
   return {
     graphRevision: graphRevision(state),
@@ -77,11 +84,12 @@ function assertBuildable(state: WorkshopState, root: string): SubmissionInputSna
     styleVersion: state.style.version,
     assetPlanVersion: state.assetPlan.version,
     storyboardVersion: state.storyboard.version,
+    audioOverviewVersion: audioOverview.version,
     imageBatchId: state.imageBatch.id,
     narrationStoryboardVersion: state.narration && !state.narration.stale ? state.narration.storyboardVersion : undefined,
     activeSourceIds: [...state.activeSourceIds].sort(),
     claimIds: unique(state.claims.filter((claim) => state.activeSourceIds.includes(claim.sourceId)).map((claim) => claim.id)),
-    outputIds: unique([...state.outputs.filter((output) => !output.stale).map((output) => output.id), video.id]),
+    outputIds: unique([...state.outputs.filter((output) => !output.stale).map((output) => output.id), audioOverview.id, video.id]),
     videoState: "rendered",
   };
 }
@@ -98,6 +106,9 @@ export function submissionLimitations(state: WorkshopState): string[] {
   const narrationIds = state.narration?.panels.map((panel) => panel.panelId) ?? [];
   const providerNarration = Boolean(state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version && narrationIds.length === state.storyboard.panels.length && new Set(narrationIds).size === narrationIds.length && state.storyboard.panels.every((panel) => narrationIds.includes(panel.id)) && state.narration.panels.every((panel) => panel.model === "gpt-4o-mini-tts" && panel.voice === "marin" && Boolean(panel.relativePath) && /^[a-f0-9]{64}$/.test(panel.sha256)));
   if (!providerNarration) limitations.push("The video uses deterministic placeholder tones; provider-generated narration is not present.");
+  const audioOverview = currentAudioOverview(state);
+  const providerAudioOverview = Boolean(audioOverview?.status === "audio_ready" && audioOverview.audio?.model === "gpt-4o-mini-tts" && audioOverview.audio.voice === "marin" && audioOverview.audio.durationSeconds > 0 && audioOverview.audio.byteCount > 0 && /^[a-f0-9]{64}$/.test(audioOverview.audio.sha256));
+  if (!providerAudioOverview) limitations.push("The Audio Overview includes a grounded reviewed script, but no provider-generated speech file is present.");
   return limitations;
 }
 
@@ -110,11 +121,11 @@ export type BuildSubmissionOptions = { outputDirectory?: string; renderThumbnail
 
 function devpostCopy(state: WorkshopState, limitations: string[], elapsed: string): string {
   const liveMap = state.aiRuns.length ? `GPT-5.6 runs recorded: ${state.aiRuns.length}.` : "No live GPT-5.6 run is claimed by this package.";
-  return `# WorkshopLM\n\n**Turn raw thinking into finished work.**\n\nWorkshopLM is a professional thought-to-delivery workspace built for OpenAI Build Week's Work & Productivity track. A team starts with conversation and selected sources, shapes them into an editable grounded Map, approves that Map as a Brief, applies a locked Style, and creates source-traceable work: a presentation, infographic, coherent image set, editable Storyboard, and narrated local Video.\n\n## What makes it different\n\n- Every factual claim retains a path to an exact source locator.\n- The Map stays editable before production begins.\n- Brief and Storyboard approval are the only blocking gates.\n- Style rules and evidence survive across every Output.\n- Dependency changes mark downstream work as Needs update.\n- The product packages its own hackathon submission with hashes and an input fingerprint.\n\n## Built with OpenAI and Codex\n\nWorkshopLM is implemented as a local pnpm/Turborepo product with a unified plugin doorway and an in-app browser workspace. ${liveMap} GPT Image 2 and OpenAI narration are recorded only when their provider provenance exists. The local video renderer refuses to run before Storyboard approval.\n\n## Demonstrated result\n\nThis Output set was produced from one approved Workshop state in ${elapsed}. Its manifest links ${state.claims.length} grounded claims across ${state.activeSourceIds.length} active sources to the included submission assets.\n\n## Current package limitations\n\n${limitations.length ? limitations.map((item) => `- ${item}`).join("\n") : "- None. This package contains inspected provider-backed media."}\n`;
+  return `# WorkshopLM\n\n**Turn raw thinking into finished work.**\n\nWorkshopLM is a professional thought-to-delivery workspace built for OpenAI Build Week's Work & Productivity track. A team starts with conversation and selected sources, shapes them into an editable grounded Map, approves that Map as a Brief, applies a locked Style, and creates source-traceable work: a presentation, infographic, Audio Overview, coherent image set, editable Storyboard, and narrated local Video.\n\n## What makes it different\n\n- Every factual claim retains a path to an exact source locator.\n- The Map stays editable before production begins.\n- Brief and Storyboard approval are the only blocking gates.\n- Style rules and evidence survive across every Output.\n- Dependency changes mark downstream work as Needs update.\n- The product packages its own hackathon submission with hashes and an input fingerprint.\n\n## Built with OpenAI and Codex\n\nWorkshopLM is implemented as a local pnpm/Turborepo product with a unified plugin doorway and a self-contained in-app browser workspace. Codex accelerated and verified the build; WorkshopLM owns the professional's grounded text and Realtime voice Conversation. ${liveMap} GPT Image 2 and OpenAI speech are recorded only when their provider provenance exists. The local video renderer refuses to run before Storyboard approval.\n\n## Demonstrated result\n\nThis Output set was produced from one approved Workshop state in ${elapsed}. Its manifest links ${state.claims.length} grounded claims across ${state.activeSourceIds.length} active sources to the included submission assets.\n\n## Current package limitations\n\n${limitations.length ? limitations.map((item) => `- ${item}`).join("\n") : "- None. This package contains inspected provider-backed media."}\n`;
 }
 
 function readmeNarrative(state: WorkshopState, limitations: string[]): string {
-  return `# WorkshopLM submission narrative\n\nWorkshopLM turns a raw professional brainstorm into finished, source-traceable work through one Capture → Shape → Deliver path. The judge-facing product runs locally through the WorkshopLM plugin in Codex desktop/CLI; Codex owns conversation and commands while the local in-app browser owns Sources, Map, Brief, Style, Outputs, Storyboard, and source trace. Voice enters through WorkshopLM's capture-only Realtime control. ChatGPT Work parity is not claimed.\n\n## The meta-demo\n\nThis submission package was built from the same approved Workshop state as the demo. The included manifest records the source scope, claim IDs, input versions, file hashes, and dependency fingerprint for the Devpost copy, repository narrative, presentation, infographic, image manifest, thumbnails, Storyboard, narration, evidence report, and Video.\n\n## Evidence boundary\n\nThe package status is **${limitations.length ? "partial" : "ready"}**. It does not turn configured providers, deterministic fixtures, or planned media into live-use claims. See \`EVIDENCE.md\` and \`manifest.json\` for the exact boundary.\n\n## Workshop state\n\n- Active sources: ${state.activeSourceIds.length}\n- Grounded claims: ${state.claims.filter((claim) => state.activeSourceIds.includes(claim.sourceId)).length}\n- Brief version: ${state.frame?.version}\n- Style version: ${state.style?.version}\n- Storyboard version: ${state.storyboard.version}\n- Current Outputs: ${state.outputs.filter((output) => !output.stale).length}\n`;
+  return `# WorkshopLM submission narrative\n\nWorkshopLM turns a raw professional brainstorm into finished, source-traceable work through one Capture → Shape → Deliver path. The judge-facing product runs locally through the WorkshopLM plugin doorway and one self-contained in-app browser workspace. WorkshopLM owns the grounded text and Realtime voice Conversation, Sources, Map, Brief, Style, Outputs, Storyboard, and exact source trace. Codex is the development and launch host, not the professional's chat surface. ChatGPT Work parity is not claimed.\n\n## The meta-demo\n\nThis submission package was built from the same approved Workshop state as the demo. The included manifest records the source scope, claim IDs, input versions, file hashes, and dependency fingerprint for the Devpost copy, repository narrative, presentation, infographic, Audio Overview, image manifest, thumbnails, Storyboard, narration, evidence report, and Video.\n\n## Evidence boundary\n\nThe package status is **${limitations.length ? "partial" : "ready"}**. It does not turn configured providers, deterministic fixtures, or planned media into live-use claims. See \`EVIDENCE.md\` and \`manifest.json\` for the exact boundary.\n\n## Workshop state\n\n- Active sources: ${state.activeSourceIds.length}\n- Grounded claims: ${state.claims.filter((claim) => state.activeSourceIds.includes(claim.sourceId)).length}\n- Brief version: ${state.frame?.version}\n- Style version: ${state.style?.version}\n- Audio Overview version: ${currentAudioOverview(state)?.version}\n- Storyboard version: ${state.storyboard.version}\n- Current Outputs: ${state.outputs.filter((output) => !output.stale).length + (currentAudioOverview(state) ? 1 : 0)}\n`;
 }
 
 function storyboardMarkdown(state: WorkshopState): string {
@@ -127,13 +138,22 @@ function narrationMarkdown(state: WorkshopState): string {
   return `# Narration\n\n${provider ? `${state.narration!.disclosure}. Model provenance and hashes are recorded for every copied audio panel.` : "This package contains the approved narration script. The recorded fixture video uses deterministic placeholder tones; it does not claim provider-generated voice."}\n\n${state.storyboard.panels.map((panel, index) => `## ${index + 1}. ${panel.title}\n\n${panel.narration}`).join("\n\n")}\n`;
 }
 
+function audioOverviewMarkdown(state: WorkshopState): string {
+  const overview = currentAudioOverview(state)!;
+  const audio = overview.audio;
+  const metadata = audio ? `\n- Duration: ${audio.durationSeconds.toFixed(1)} seconds\n- Model: ${audio.model}\n- Voice: ${audio.voice}\n- SHA-256: \`${audio.sha256}\`\n- Disclosure: ${overview.disclosure}` : `\n- Speech status: reviewed script only\n- Disclosure if generated: ${overview.disclosure}`;
+  const sections = overview.sections.map((section, index) => `## ${index + 1}. ${section.title}\n\n${section.text}\n\nSources: ${section.evidence.map((reference) => reference.locator).join("; ")}`).join("\n\n");
+  return `# Audio Overview\n\nVersion ${overview.version} · ${overview.posture.replaceAll("_", " ")} · ${overview.claimIds.length} sourced points${metadata}\n\n${sections}\n`;
+}
+
 function imageManifestMarkdown(state: WorkshopState): string {
   return `# Image set\n\nImage batch ${state.imageBatch!.id}, locked to Brief version ${state.imageBatch!.briefVersion}, graph revision ${state.imageBatch!.graphRevision}, and Style version ${state.imageBatch!.styleVersion}.\n\n${state.imageBatch!.panels.map((panel, index) => `- **${index + 1}. ${panel.prompt}** — ${panel.state}${panel.provenance ? `; ${panel.provenance.model}; ${panel.provenance.size}; ${panel.provenance.quality}` : ""}${panel.error ? `; ${panel.error}` : ""}; sources: ${panel.evidence.map((reference) => reference.locator).join("; ") || "none"}`).join("\n")}\n`;
 }
 
 function evidenceMarkdown(state: WorkshopState, limitations: string[], fingerprint: string): string {
   const claims = state.claims.filter((claim) => state.activeSourceIds.includes(claim.sourceId));
-  return `# Submission evidence\n\nInput fingerprint: \`${fingerprint}\`\n\n## Active sources\n\n${state.sourceItems.filter((source) => state.activeSourceIds.includes(source.id)).map((source) => `- **${source.title}** — ${source.origin}; ${source.locator}; ${source.permission}`).join("\n")}\n\n## Grounded claims\n\n${claims.length ? claims.map((claim) => `- \`${claim.id}\` — ${claim.text} (${claim.locator})`).join("\n") : "- The current fixture has no normalized claim records; output locators come from the grounded Map."}\n\n## Provider evidence\n\n- GPT-5.6 grounded Map runs: ${state.aiRuns.length}\n- GPT Image 2 panels: ${state.imageBatch!.panels.filter((panel) => panel.provenance?.model === "gpt-image-2").length}/${state.imageBatch!.panels.length}\n- OpenAI narration panels: ${state.narration && !state.narration.stale ? state.narration.panels.length : 0}/${state.storyboard.panels.length}\n- Local video state: ${state.videoState}\n\n## Limitations\n\n${limitations.length ? limitations.map((item) => `- ${item}`).join("\n") : "- None."}\n`;
+  const audioOverview = currentAudioOverview(state);
+  return `# Submission evidence\n\nInput fingerprint: \`${fingerprint}\`\n\n## Active sources\n\n${state.sourceItems.filter((source) => state.activeSourceIds.includes(source.id)).map((source) => `- **${source.title}** — ${source.origin}; ${source.locator}; ${source.permission}`).join("\n")}\n\n## Grounded claims\n\n${claims.length ? claims.map((claim) => `- \`${claim.id}\` — ${claim.text} (${claim.locator})`).join("\n") : "- The current fixture has no normalized claim records; output locators come from the grounded Map."}\n\n## Provider evidence\n\n- GPT-5.6 grounded Map runs: ${state.aiRuns.length}\n- GPT Image 2 panels: ${state.imageBatch!.panels.filter((panel) => panel.provenance?.model === "gpt-image-2").length}/${state.imageBatch!.panels.length}\n- OpenAI narration panels: ${state.narration && !state.narration.stale ? state.narration.panels.length : 0}/${state.storyboard.panels.length}\n- Audio Overview: ${audioOverview?.status ?? "missing"}${audioOverview?.audio ? `; ${audioOverview.audio.model}; ${audioOverview.audio.voice}; ${audioOverview.audio.durationSeconds.toFixed(1)} seconds` : "; reviewed script only"}\n- Local video state: ${state.videoState}\n\n## Limitations\n\n${limitations.length ? limitations.map((item) => `- ${item}`).join("\n") : "- None."}\n`;
 }
 
 async function writeText(path: string, content: string) {
@@ -161,6 +181,7 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   const state = readWorkshopState(dataRoot);
   const inputs = assertBuildable(state, dataRoot);
   const imageBatch = state.imageBatch!;
+  const audioOverview = currentAudioOverview(state)!;
   const video = currentVideo(state)!;
   const videoPath = resolve(dataRoot, video.relativePath);
   const videoProvenancePath = resolve(dataRoot, video.provenancePath);
@@ -191,6 +212,7 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   await writeText(join(packageRoot, "README-NARRATIVE.md"), readmeNarrative(state, limitations));
   await writeText(join(packageRoot, "STORYBOARD.md"), storyboardMarkdown(state));
   await writeText(join(packageRoot, "NARRATION.md"), narrationMarkdown(state));
+  await writeText(join(packageRoot, "AUDIO-OVERVIEW.md"), audioOverviewMarkdown(state));
   await writeText(join(packageRoot, "IMAGE-SET.md"), imageManifestMarkdown(state));
   await writeText(join(packageRoot, "EVIDENCE.md"), evidenceMarkdown(state, limitations, fingerprint));
 
@@ -233,6 +255,10 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
       await writeFile(join(packageRoot, "narration", `panel-${index + 1}${extname(panel.relativePath) || ".wav"}`), bytes);
     }
   }
+  if (audioOverview.audio) {
+    const bytes = await assertRecordedHash(dataRoot, audioOverview.audio.relativePath, audioOverview.audio.sha256, `Audio Overview ${audioOverview.id}`);
+    await writeFile(join(packageRoot, `audio-overview${extname(audioOverview.audio.relativePath) || ".wav"}`), bytes);
+  }
   const generatedPanels = imageBatch.panels.filter((panel) => panel.state === "generated" && panel.relativePath);
   if (generatedPanels.length) await mkdir(join(packageRoot, "images"), { recursive: true });
   for (const [index, panel] of generatedPanels.entries()) {
@@ -247,6 +273,7 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   if (editableDeckName) assets.push(await assetFor(packageRoot, "deck", editableDeckName, "application/vnd.openxmlformats-officedocument.presentationml.presentation", deck.claimIds, sourceLocators, "workshop_output"));
   assets.push(await assetFor(packageRoot, "infographic", infographicName, "text/html", infographic.claimIds, sourceLocators, "workshop_output"));
   if (editableInfographicName) assets.push(await assetFor(packageRoot, "infographic", editableInfographicName, "application/vnd.openxmlformats-officedocument.presentationml.presentation", infographic.claimIds, sourceLocators, "workshop_output"));
+  assets.push(await assetFor(packageRoot, "audio_overview", "AUDIO-OVERVIEW.md", "text/markdown", audioOverview.claimIds, unique(audioOverview.sections.flatMap((section) => section.evidence.map((reference) => reference.locator))), "source_trace"));
   assets.push(await assetFor(packageRoot, "image_manifest", "IMAGE-SET.md", "text/markdown", claimIds, sourceLocators, "source_trace"));
   for (const [name] of thumbnailSpecs) assets.push(await assetFor(packageRoot, "thumbnail", name, "image/png", claimIds, sourceLocators, "generated_preview"));
   assets.push(await assetFor(packageRoot, "storyboard", "STORYBOARD.md", "text/markdown", claimIds, sourceLocators, "source_trace"));
@@ -257,6 +284,7 @@ export async function buildSubmissionOutputSet(root: string, options: BuildSubmi
   assets.push(await assetFor(packageRoot, "evidence", "BUILD-TRACE.json", "application/json", claimIds, sourceLocators, "source_trace"));
   assets.push(await assetFor(packageRoot, "evidence", "EVIDENCE.md", "text/markdown", claimIds, sourceLocators, "source_trace"));
   if (state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version) for (const [index, panel] of state.narration.panels.entries()) assets.push(await assetFor(packageRoot, "narration", `narration/panel-${index + 1}${extname(panel.relativePath) || ".wav"}`, "audio/wav", claimIds, sourceLocators, "narration"));
+  if (audioOverview.audio) assets.push(await assetFor(packageRoot, "audio_overview", `audio-overview${extname(audioOverview.audio.relativePath) || ".wav"}`, "audio/wav", audioOverview.claimIds, unique(audioOverview.sections.flatMap((section) => section.evidence.map((reference) => reference.locator))), "narration"));
   for (const [index, panel] of generatedPanels.entries()) {
     const panelClaimIds = unique(panel.evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []));
     const panelSourceLocators = unique(panel.evidence.map((reference) => reference.locator));

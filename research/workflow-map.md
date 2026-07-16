@@ -1,6 +1,6 @@
 # WorkshopLM workflow map
 
-> Host-boundary update, 2026-07-15: Codex desktop/CLI is the conversation and plugin surface, the plugin provides local `search`/`fetch` and optional app/MCP sources, the in-app browser provides Sources/Map/Outputs, and WorkshopLM's capture-only Realtime control provides voice. The installed classic ChatGPT app does not expose the unified local plugin, so Work parity is not claimed. Root `DESIGN.md`, `GOAL.md`, and the approved technical spec override older composer-specific language below.
+> Host-boundary update, 2026-07-15: Codex desktop/CLI is the development, plugin, and launch host; the self-contained in-app browser provides WorkshopLM's grounded text and Realtime voice Conversation, local `search`/`fetch`, Sources, Map, Brief, Style, and Outputs. The installed classic ChatGPT app does not expose the unified local plugin, so Work parity is not claimed. Root `DESIGN.md`, `GOAL.md`, and the approved technical spec override older host-specific language below.
 
 Updated: 2026-07-13
 

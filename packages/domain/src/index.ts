@@ -461,6 +461,7 @@ export const SubmissionAssetType = z.enum([
   "readme_narrative",
   "deck",
   "infographic",
+  "audio_overview",
   "image_manifest",
   "image",
   "thumbnail",
@@ -487,6 +488,7 @@ export const SubmissionInputSnapshot = z.object({
   styleVersion: z.number().int().positive(),
   assetPlanVersion: z.number().int().positive(),
   storyboardVersion: z.number().int().positive(),
+  audioOverviewVersion: z.number().int().positive(),
   imageBatchId: z.string().min(1),
   narrationStoryboardVersion: z.number().int().positive().optional(),
   activeSourceIds: z.array(z.string().min(1)),
@@ -495,7 +497,7 @@ export const SubmissionInputSnapshot = z.object({
   videoState: z.literal("rendered"),
 }).strict();
 export type SubmissionInputSnapshot = z.infer<typeof SubmissionInputSnapshot>;
-const requiredSubmissionAssets = new Set<SubmissionAssetType>(["devpost_description", "readme_narrative", "deck", "infographic", "image_manifest", "thumbnail", "storyboard", "narration", "video", "evidence"]);
+const requiredSubmissionAssets = new Set<SubmissionAssetType>(["devpost_description", "readme_narrative", "deck", "infographic", "audio_overview", "image_manifest", "thumbnail", "storyboard", "narration", "video", "evidence"]);
 export const SubmissionOutputSet = z.object({
   schemaVersion: z.literal(1),
   id: z.string().min(1),

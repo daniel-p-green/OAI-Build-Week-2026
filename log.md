@@ -2718,8 +2718,6 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
----
-
 ## 2026-07-15 18:18 CT — Real Codex doorway replaces the rough-cut placeholder
 
 **Area:** Host proof / Meta-demo / Privacy-safe capture
@@ -6777,4 +6775,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - One explicitly authorized `gpt-4o-mini-tts` generation must still be audibly inspected before the Audio Overview goal item can close.
 - Provider-backed GPT-5.6, Realtime, GPT Image 2, and Video narration proof; the external deck cold `Send`/`Revise` judgment; founder recording; final public Video and links; and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 23:00 CT — Submission trace now includes Audio Overview
+
+**Area:** Submission Output set / Provenance / Judge-facing claims
+
+### Changed
+
+- Made the grounded Audio Overview a required member of the traced submission Output set. The package input fingerprint now binds its exact immutable version, and a package cannot build without a current grounded script.
+- Added `AUDIO-OVERVIEW.md` with the reviewed sections and exact claim, Source, chunk, and locator edges. A provider-generated WAV is included only when its recorded SHA-256 matches the stored file; otherwise the manifest names the missing speech evidence instead of treating the script as audio.
+- Expanded the recorded fixture package from 17 to 18 required assets and added Audio Overview state and provider provenance to the evidence report.
+- Corrected stale generated copy that implied Codex owned the professional conversation surface. WorkshopLM's in-app browser owns grounded text and Realtime voice Conversation; Codex remains the development, verification, plugin, and launch host.
+- Reconciled current architecture, workflow, opportunity, Devpost, and evidence-audit documents to the same host boundary and 18-asset package truth.
+
+### Verified
+
+- `pnpm check` passed all 13 packages, including 106 worker, 25 web, 16 domain, and seven plugin tests.
+- Added submission regressions for the required Audio Overview, exact Source locator export, corrected host copy, 18-asset manifest, and hash-verified WAV copying.
+- `pnpm demo:e2e` passed with the grounded three-section Audio Overview in the deterministic seam.
+- `pnpm submission:build` and `pnpm submission:verify` passed with 18 valid, current, untampered assets. The manifest remains honestly `partial` and lists five evidence gaps: provider Realtime, GPT-5.6 Map reasoning, six GPT Image 2 panels, Video narration, and Audio Overview speech.
+- `pnpm demo:film:verify` passed the draft truth gate at 162 seconds, with six ready shots and four evidence-blocked shots. The final video remains absent and the partial manifest is not accepted as final-ready evidence.
+- `git diff --check`, the scoped credential scan, and the current-document stale-claim scan passed. No paid provider request ran.
+
+### Decisions
+
+- A grounded script is a real professional Output, but it is not provider-generated speech. The submission package preserves that distinction in both the asset list and limitations.
+- The professional Conversation surface is part of WorkshopLM's product UI. Codex accelerates and hosts the development/plugin doorway but is not represented as the product's source-grounded chat interface.
+- Submission provenance must bind every required Output version; adding Audio Overview without including its version in the fingerprint would permit an undetected stale package.
+
+### Open items
+
+- Explicit provider authorization and audible inspection are still required for Audio Overview speech, alongside the other provider evidence families.
+- The external deck cold `Send`/`Revise` judgment, founder recording, final public Video and links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.

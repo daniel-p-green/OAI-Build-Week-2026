@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { buildSubmissionOutputSet, submissionLimitations, verifySubmissionOutputSet } from "./submission-package.js";
 import { buildWorkshopVideoProvenance } from "./executor.js";
-import { applyWorkshopAction, createImageBatch, generateAssetPlan, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, recordRenderedVideo } from "./workshop-service.js";
+import { applyWorkshopAction, createImageBatch, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, recordAudioOverviewAudio, recordRenderedVideo } from "./workshop-service.js";
 
 const roots: string[] = [];
 afterEach(async () => { await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true }))); });
@@ -18,6 +18,7 @@ async function buildableWorkshop() {
   lockManualStyle({}, root);
   await generateOutput("deck", root);
   await generateOutput("infographic", root);
+  generateAudioOverview(root);
   generateAssetPlan(root);
   createImageBatch(root);
   generateStoryboard(root);
@@ -52,7 +53,7 @@ describe("submission Output set", () => {
     expect(built.outputSet.status).toBe("partial");
     expect(built.outputSet.limitations).toEqual(expect.arrayContaining([expect.stringContaining("no live GPT-5.6"), expect.stringContaining("0 of 6"), expect.stringContaining("placeholder tones")]));
     expect(built.outputSet.assets.filter((asset) => asset.type === "thumbnail")).toHaveLength(3);
-    expect(built.outputSet.assets.map((asset) => asset.type)).toEqual(expect.arrayContaining(["devpost_description", "readme_narrative", "deck", "infographic", "image_manifest", "storyboard", "narration", "video", "evidence"]));
+    expect(built.outputSet.assets.map((asset) => asset.type)).toEqual(expect.arrayContaining(["devpost_description", "readme_narrative", "deck", "infographic", "audio_overview", "image_manifest", "storyboard", "narration", "video", "evidence"]));
     expect(built.outputSet.assets).toEqual(expect.arrayContaining([
       expect.objectContaining({ type: "deck", relativePath: "presentation.pptx", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation" }),
       expect.objectContaining({ type: "infographic", relativePath: "infographic.pptx", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation" }),
@@ -60,12 +61,14 @@ describe("submission Output set", () => {
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "VIDEO-PROVENANCE.json", mimeType: "application/json", provenance: "video_render" }));
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "BUILD-TRACE.html", mimeType: "text/html", provenance: "source_trace" }));
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "BUILD-TRACE.json", mimeType: "application/json", provenance: "source_trace" }));
-    expect(built.outputSet.assets).toHaveLength(17);
+    expect(built.outputSet.assets).toHaveLength(18);
     await expect(readFile(join(built.manifestPath, "..", "DEVPOST.md"), "utf8")).resolves.toContain("No live GPT-5.6 run is claimed");
-    await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("Codex owns conversation and commands");
+    await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("WorkshopLM owns the grounded text and Realtime voice Conversation");
+    await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("Codex is the development and launch host, not the professional's chat surface");
     await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("ChatGPT Work parity is not claimed");
     await expect(readFile(join(built.manifestPath, "..", "STORYBOARD.md"), "utf8")).resolves.toContain("Sanitized fixture · chunk 01");
     await expect(readFile(join(built.manifestPath, "..", "IMAGE-SET.md"), "utf8")).resolves.toContain("Sanitized fixture · chunk 01");
+    await expect(readFile(join(built.manifestPath, "..", "AUDIO-OVERVIEW.md"), "utf8")).resolves.toContain("Sanitized fixture · chunk 01");
     await expect(verifySubmissionOutputSet(root, built.manifestPath)).resolves.toEqual({ valid: true, stale: false, tampered: false, issues: [] });
   });
 
@@ -79,6 +82,17 @@ describe("submission Output set", () => {
     const rebuilt = await buildSubmissionOutputSet(root, { renderThumbnail: fakeThumbnail });
     lockManualStyle({ accent: "#1155AA" }, root);
     await expect(verifySubmissionOutputSet(root, rebuilt.manifestPath)).resolves.toMatchObject({ valid: false, stale: true, tampered: false, issues: [expect.stringContaining("inputs changed")] });
+  });
+
+  it("copies a hash-verified Audio Overview speech file beside its grounded script", async () => {
+    const root = await buildableWorkshop(); const overview = readWorkshopState(root).audioOverviews.at(-1)!;
+    const bytes = Buffer.from("valid-audio-overview-fixture"); const relativePath = join("generated", `${overview.id}.wav`); const digest = createHash("sha256").update(bytes).digest("hex");
+    await writeFile(join(root, relativePath), bytes);
+    recordAudioOverviewAudio(overview.id, { relativePath, sha256: digest, byteCount: bytes.length, durationSeconds: 1.5, model: "gpt-4o-mini-tts", voice: "marin", instructions: "Clear executive briefing", requestId: "speech-overview-1", generatedAt: new Date().toISOString() }, root);
+    const built = await buildSubmissionOutputSet(root, { renderThumbnail: fakeThumbnail });
+    expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "audio_overview", relativePath: "audio-overview.wav", mimeType: "audio/wav", sha256: digest, provenance: "narration" }));
+    await expect(readFile(join(built.manifestPath, "..", "audio-overview.wav"))).resolves.toEqual(bytes);
+    expect(built.outputSet.limitations).not.toContain("The Audio Overview includes a grounded reviewed script, but no provider-generated speech file is present.");
   });
 
   it("refuses a submission when the rendered Video provenance was changed after approval", async () => {
@@ -95,9 +109,11 @@ describe("submission Output set", () => {
       aiRuns: [{ id: "ai-run-1", operation: "grounded_graph" as const, model: "gpt-5.6-sol" as const, inputClaimIds: state.claims.map((claim) => claim.id), outputSha256: "a".repeat(64), requestId: "response-1", createdAt: generatedAt }],
       imageBatch: { ...state.imageBatch!, panels: state.imageBatch!.panels.map((panel) => ({ ...panel, state: "generated" as const, relativePath: `generated/${panel.id}.png`, sha256: "b".repeat(64), provenance: { model: "gpt-image-2" as const, size: "1024x1024", quality: "medium" as const, referenceId: state.imageBatch!.referenceId, requestId: `image-${panel.id}`, generatedAt } })) },
       narration: { storyboardVersion: state.storyboard.version, disclosure: "AI-generated voice" as const, stale: false, failures: [], createdAt: generatedAt, panels: state.storyboard.panels.map((panel, index) => ({ panelId: panel.id, relativePath: `generated/panel-${index + 1}.wav`, sha256: "c".repeat(64), model: "gpt-4o-mini-tts" as const, voice: "marin" as const, instructions: "Clear narration", requestId: `speech-${index + 1}`, generatedAt })) },
+      audioOverviews: state.audioOverviews.map((overview) => ({ ...overview, status: "audio_ready" as const, audio: { relativePath: `generated/${overview.id}.wav`, sha256: "d".repeat(64), byteCount: 16_044, durationSeconds: 1, model: "gpt-4o-mini-tts" as const, voice: "marin" as const, instructions: "Clear executive briefing", requestId: "speech-overview-1", generatedAt } })),
     };
     expect(submissionLimitations(readyState)).toEqual([]);
     expect(submissionLimitations({ ...readyState, aiRuns: [] })).toContain("The recorded fixture uses the deterministic grounded Map path; no live GPT-5.6 reasoning run is present.");
     expect(submissionLimitations({ ...readyState, narration: { ...readyState.narration, panels: readyState.narration.panels.slice(1) } })).toContain("The video uses deterministic placeholder tones; provider-generated narration is not present.");
+    expect(submissionLimitations({ ...readyState, audioOverviews: readyState.audioOverviews.map((overview) => ({ ...overview, status: "script_ready" as const, audio: undefined })) })).toContain("The Audio Overview includes a grounded reviewed script, but no provider-generated speech file is present.");
   });
 });

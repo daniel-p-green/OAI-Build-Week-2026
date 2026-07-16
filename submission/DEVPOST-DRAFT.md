@@ -48,7 +48,7 @@ Codex built WorkshopLM from a goal file. WorkshopLM then used the same provenanc
 
 This project started as two files: a goal document and an operating agreement for autonomous agents. Codex, running on GPT-5.6, implemented the product from that goal file across the submission period, working through an evidence-gated checklist, verifying its own work, and appending every milestone to a public, append-only build log. The log even records the moment the system caught itself: one agent claimed the UI rebuild was complete, a second agent disproved the claim with computed-style evidence, reopened the checklist, and rebuilt it properly. That entry is in the repo, timestamped, unedited.
 
-WorkshopLM currently preserves a traced, 17-asset partial Output set from sanitized sources through Sources, Map, approved Brief, Style, editable PowerPoint files, Storyboard, and local Video, with hashes and per-scene provenance. `Show original` lets a reviewer walk from a finished fixture Output to the transcript excerpt that started it.
+WorkshopLM currently preserves a traced, 18-asset partial Output set from sanitized sources through Sources, Map, approved Brief, Style, editable PowerPoint files, grounded Audio Overview script, Storyboard, and local Video, with hashes and per-scene provenance. `Show original` lets a reviewer walk from a finished fixture Output to the transcript excerpt that started it.
 
 `[LIVE: The final Devpost copy, deck, thumbnail, Storyboard, narration, and public demo Video were produced and verified as one WorkshopLM Output set.]`
 `[FALLBACK: The current recorded fixture proves the traced production model, but the final public submission was assembled from those verified outputs outside the product.]`
