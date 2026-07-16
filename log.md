@@ -8530,3 +8530,35 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - Founder capture, founder-derived ready package, final public MP4, human film taste review, intended-audience deck review, `/feedback`, release, Devpost, and logged-out submitted-link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 10:02 CT — Submission thumbnail shows the actual product promise
+
+**Area:** Judge-facing media / Output quality / deterministic packaging
+
+### Changed
+
+- Audited `pnpm demo:thumbnail` against the send-it bar and found it still extracted the frame at one second from the local Storyboard Video. The command technically produced a PNG but did not communicate WorkshopLM's product, transformation, or professional quality.
+- Replaced the frame grab with a deterministic 1280×720 title composition using the film plan's locked `From rough thought to finished work` copy and the canonical provider-backed Outputs screen. The result uses the quiet black, white, and status-green product language already present in the official workbench rather than introducing a separate campaign style.
+- The thumbnail renderer now binds the source Video, film plan, product proof, dimensions, and final PNG by SHA-256. It writes the runtime asset under the selected Workshop data root and a checked-in preview plus deterministic manifest under `outputs/demo-film-plan/`.
+- Extended `pnpm submission:packet:verify` to reject the wrong dimensions, a changed image or product-proof hash, drift from the locked film-plan text, or Google/NotebookLM marks.
+
+### Verified
+
+- `pnpm demo:thumbnail` rendered the fixture asset and deterministic preview with SHA-256 `fceb6d2c279eacc4c5197bd2fb4261a8fc57052b06238c3cd75476f9437c04e3`; the source Video remains bound at `6e6206288b89724f1a32a044b22e07d85f1ebf4ecf2b114d617f25c69ffe6fc3`.
+- Inspected the 1280×720 PNG after lossless render and a 640×360 JPEG reduction. The WorkshopLM name, three-line promise, Capture-to-Deliver shorthand, source-trace statement, and real Outputs proof remain identifiable at both review sizes without collisions or trademark leakage.
+- `pnpm submission:packet:verify` passed with the new composition, exact 1280×720 dimensions, verified PNG and product-proof hashes, Terra, six GPT Image 2 panels, Cedar media, sixteen current UI screens, and the unchanged four honest founder/final-package slots.
+- `pnpm demo:e2e` passed the complete recorded Source-to-render seam, and `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 119 worker tests. A post-reset thumbnail rebuild reproduced the exact same PNG hash.
+- No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Decisions
+
+- A submission thumbnail is a product proof surface, not an arbitrary Video still. Its pixels must remain deterministic and tied to current evidence even though the final public upload is a later external action.
+- The visual should foreground one promise and one real product surface. Additional feature lists, model badges, and decorative generated art would reduce clarity.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- The thumbnail is ready as a local candidate, but the founder-derived final Output set, public Video and Devpost upload, and logged-out submitted-link check remain open. Founder capture, intended-audience deck review, film taste review, `/feedback`, and release also remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
