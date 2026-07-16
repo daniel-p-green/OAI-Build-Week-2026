@@ -29,7 +29,9 @@ describe("Realtime client-secret boundary", () => {
     const sent = JSON.parse(String(fetchImpl.mock.calls[0]![1]?.body)) as { session: ReturnType<typeof realtimeSessionConfig>["session"] };
     expect(secret.mode).toBe("conversation");
     expect(sent.session).toMatchObject({ output_modalities: ["audio"], tool_choice: "auto", audio: { input: { turn_detection: { create_response: true, interrupt_response: true } }, output: { voice: "cedar" } } });
+    expect(sent.session.instructions).toMatch(/always call search or fetch/);
     expect(sent.session.tools).toEqual(openAiWorkshopTools("realtime"));
+    expect(sent.session.audio.input.transcription).toEqual({ model: "gpt-realtime-whisper", language: "en" });
   });
 
   it("rejects incomplete provider responses", async () => {

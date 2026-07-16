@@ -1,40 +1,32 @@
 010203040506Image set6 imagesPlanned3 sources
 01Presentation02Infographic03Image set04Storyboard05Demo videoStoryboard5 panelsApproved3 sources
-01Presentation4s
-02Infographic4s
-03Image set4s
-04Storyboard4s
-05Demo video6s
-41 wordsAudio OverviewAudio · Version 1Ready for review3 sourced points
+01Presentation5s
+02Infographic5s
+03Image set5s
+04Storyboard5s
+05Demo video5s
 Add material
-Audio Overview
-Audio Overview41 wordsReady for review
 Back to Brief
 Back to Map
 Back to Outputs
 BriefVersion 3Approved
 Build notes · §2
-Capture3 active sourcesReady
-Collapse Production
+ChatAsk your sources
+Collapse Create
 Collapse Sources
-ConversationAsk across selected Sources
 Create video
-DeliverStyle and OutputsIn progress
 Edit
 Evidence
+Expand Sources
 Goal · capture
 Image set
-Image set0 of 6 readyIn progress
 Infographic
 InfographicInfographic · Version 1Up to date3 sources
-InfographicOne-page visualUp to date
 Outputs
+Outputs3 readyUp to date
 PDFBuild Week brief3 claims
 Presentation
 PresentationPresentation · Version 1Up to date3 sources
-PresentationVersion 1Up to date
-ShapeMap and BriefApproved
-Show on map
 Show source
 Storyboard
 Storyboard5 editable panelsApproved

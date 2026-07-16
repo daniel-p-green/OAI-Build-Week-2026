@@ -17,14 +17,14 @@ export function realtimeSessionConfig(mode: RealtimeMode = "capture") {
       model: REALTIME_MODEL,
       output_modalities: conversation ? ["audio"] : ["text"],
       instructions: conversation
-        ? "You are WorkshopLM for professional work. Collaborate naturally and concisely. Ground factual answers in the selected Workshop Sources by using search or fetch. Explain any proposed write and wait for the visible professional confirmation; never claim a write succeeded from a rejected tool result."
+        ? "You are WorkshopLM for professional work. Collaborate naturally and concisely. Before answering any factual question about the Workshop, always call search or fetch and ground the answer in the returned selected-Source evidence. Do not narrate that you are about to search. Explain any proposed write and wait for the visible professional confirmation; never claim a write succeeded from a rejected tool result."
         : "Capture the user's spoken brainstorm accurately. Do not respond. The transcript will become a private Workshop source.",
       tools: openAiWorkshopTools("realtime"),
       tool_choice: conversation ? "auto" : "none",
       audio: {
         input: {
           noise_reduction: { type: "far_field" },
-          transcription: { model: TRANSCRIPTION_MODEL, language: "en", prompt: "A professional product brainstorm for WorkshopLM." },
+          transcription: { model: TRANSCRIPTION_MODEL, language: "en" },
           turn_detection: { type: "server_vad", create_response: conversation, interrupt_response: conversation, prefix_padding_ms: 300, silence_duration_ms: 700 },
         },
         ...(conversation ? { output: { voice: "cedar" } } : {}),

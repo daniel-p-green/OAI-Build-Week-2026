@@ -2,12 +2,12 @@
 
 import { Button, Card } from "@workshoplm/ui";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { emptyRealtimeTranscript, realtimeAssistantTranscript, realtimeTranscriptEvidence, realtimeTranscriptText, reduceRealtimeTranscript, type RealtimeTranscriptState } from "./realtime-transcript";
+import { emptyRealtimeTranscript, realtimeAssistantTranscript, realtimeInterruptionEvidence, realtimeTranscriptEvidence, realtimeTranscriptText, reduceRealtimeTranscript, type RealtimeTranscriptState } from "./realtime-transcript";
 
 type CapturePhase = "idle" | "connecting" | "recording" | "review" | "saving" | "error";
 type RealtimeMode = "capture" | "conversation";
 type TokenResponse = { value?: string; expiresAt?: number; model?: "gpt-realtime-2.1"; transcriptionModel?: "gpt-realtime-whisper"; mode?: RealtimeMode; error?: string };
-type SaveEvidence = { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] } };
+type SaveEvidence = { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] }; interruptions?: { responseIds: string[]; eventIds: string[] } };
 
 export function RealtimeCapture({ disabled = false, mode = "capture", continuationOutput, onContinuationSent, onSave, onProviderToolEvent }: { disabled?: boolean; mode?: RealtimeMode; continuationOutput?: Record<string, unknown>; onContinuationSent?: () => void; onSave: (text: string, evidence: SaveEvidence) => Promise<boolean>; onProviderToolEvent?: (event: unknown) => Promise<Record<string, unknown> | undefined> }) {
   const [phase, setPhase] = useState<CapturePhase>("idle");
@@ -22,6 +22,7 @@ export function RealtimeCapture({ disabled = false, mode = "capture", continuati
   const modelRef = useRef<{ model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper" } | null>(null);
   const text = useMemo(() => realtimeTranscriptText(transcript), [transcript]);
   const providerEvents = useMemo(() => realtimeTranscriptEvidence(transcript), [transcript]);
+  const interruptions = useMemo(() => realtimeInterruptionEvidence(transcript), [transcript]);
   const assistant = useMemo(() => realtimeAssistantTranscript(transcript), [transcript]);
 
   function release() {
@@ -113,7 +114,7 @@ export function RealtimeCapture({ disabled = false, mode = "capture", continuati
     setPhase("saving");
     const provider = modelRef.current;
     if (!provider || !providerEvents.itemIds.length || providerEvents.itemIds.length !== providerEvents.eventIds.length) { setError("Provider transcript evidence is incomplete. Record the thought again."); setPhase("review"); return; }
-    const saved = await onSave(text.trim(), { transport: "webrtc", ...provider, ...providerEvents, assistant: mode === "conversation" && assistant.text && assistant.responseId ? { text: assistant.text, responseId: assistant.responseId, eventIds: assistant.eventIds } : undefined });
+    const saved = await onSave(text.trim(), { transport: "webrtc", ...provider, ...providerEvents, assistant: mode === "conversation" && assistant.text && assistant.responseId ? { text: assistant.text, responseId: assistant.responseId, eventIds: assistant.eventIds } : undefined, interruptions: interruptions.responseIds.length ? interruptions : undefined });
     if (saved) { release(); return; }
     setError("The transcript was captured but could not be added. Try again.");
     setPhase("review");

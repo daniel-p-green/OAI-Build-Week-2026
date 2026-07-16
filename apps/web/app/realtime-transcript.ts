@@ -1,5 +1,5 @@
-export type RealtimeTranscriptState = { draftByItem: Record<string, string>; finalByItem: Record<string, string>; eventByItem: Record<string, string>; assistantDraftByResponse: Record<string, string>; assistantFinalByResponse: Record<string, string>; assistantEventByResponse: Record<string, string>; error?: string };
-export const emptyRealtimeTranscript = (): RealtimeTranscriptState => ({ draftByItem: {}, finalByItem: {}, eventByItem: {}, assistantDraftByResponse: {}, assistantFinalByResponse: {}, assistantEventByResponse: {} });
+export type RealtimeTranscriptState = { draftByItem: Record<string, string>; finalByItem: Record<string, string>; eventByItem: Record<string, string>; assistantDraftByResponse: Record<string, string>; assistantFinalByResponse: Record<string, string>; assistantEventByResponse: Record<string, string>; interruptionEventByResponse: Record<string, string>; error?: string };
+export const emptyRealtimeTranscript = (): RealtimeTranscriptState => ({ draftByItem: {}, finalByItem: {}, eventByItem: {}, assistantDraftByResponse: {}, assistantFinalByResponse: {}, assistantEventByResponse: {}, interruptionEventByResponse: {} });
 
 function record(value: unknown): Record<string, unknown> | undefined {
   return value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : undefined;
@@ -32,6 +32,12 @@ export function reduceRealtimeTranscript(state: RealtimeTranscriptState, rawEven
     const eventId = typeof event.event_id === "string" ? event.event_id : "";
     return { ...state, assistantDraftByResponse: { ...state.assistantDraftByResponse, [responseId]: transcript }, assistantFinalByResponse: { ...state.assistantFinalByResponse, [responseId]: transcript }, assistantEventByResponse: eventId ? { ...state.assistantEventByResponse, [responseId]: eventId } : state.assistantEventByResponse };
   }
+  if (event.type === "response.cancelled" || (event.type === "response.done" && record(event.response)?.status === "cancelled")) {
+    const cancelledId = typeof event.response_id === "string" ? event.response_id : typeof record(event.response)?.id === "string" ? String(record(event.response)?.id) : "";
+    const eventId = typeof event.event_id === "string" ? event.event_id : "";
+    if (!cancelledId || !eventId) return state;
+    return { ...state, interruptionEventByResponse: { ...state.interruptionEventByResponse, [cancelledId]: eventId } };
+  }
   if (event.type === "error") {
     const error = record(event.error);
     const code = error?.code;
@@ -46,9 +52,23 @@ export function realtimeTranscriptEvidence(state: RealtimeTranscriptState): { it
   return { itemIds, eventIds: itemIds.map((itemId) => state.eventByItem[itemId]!) };
 }
 
+export function realtimeInterruptionEvidence(state: RealtimeTranscriptState): { responseIds: string[]; eventIds: string[] } {
+  const responseIds = Object.keys(state.interruptionEventByResponse);
+  return { responseIds, eventIds: responseIds.map((responseId) => state.interruptionEventByResponse[responseId]!) };
+}
+
 export function realtimeTranscriptText(state: RealtimeTranscriptState): string {
   const final = Object.values(state.finalByItem).map((value) => value.trim()).filter(Boolean);
-  if (final.length) return final.join("\n");
+  if (final.length) {
+    const distinct: Array<{ text: string; normalized: string }> = [];
+    for (const text of final) {
+      const normalized = text.toLocaleLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+      const overlapping = distinct.findIndex((candidate) => normalized.length >= 24 && candidate.normalized.length >= 24 && (normalized.endsWith(candidate.normalized) || candidate.normalized.endsWith(normalized)));
+      if (overlapping < 0) distinct.push({ text, normalized });
+      else if (normalized.length > distinct[overlapping]!.normalized.length) distinct[overlapping] = { text, normalized };
+    }
+    return distinct.map((item) => item.text).join("\n");
+  }
   return Object.values(state.draftByItem).map((value) => value.trim()).filter(Boolean).join("\n");
 }
 

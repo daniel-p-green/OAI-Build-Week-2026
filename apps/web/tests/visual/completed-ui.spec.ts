@@ -111,7 +111,10 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await page.getByRole("button", { name: "Undo" }).click();
   await expect.poll(async () => (await (await page.request.get("/api/workshop")).json()).mapNodes.find((node: { id: string }) => node.id === "promise")?.x).toBe(11);
 
-  await page.getByRole("complementary", { name: "Sources" }).getByRole("button", { name: "Add material" }).focus();
+  // Begin at the control immediately before the contextual next action. The Map
+  // canvas intentionally owns many keyboard stops, so starting in Sources would
+  // test Excalidraw's internal tab order rather than WorkshopLM's workflow.
+  await page.getByRole("button", { name: "Collapse Create" }).focus();
   await pressTabUntil(page, "Approve brief");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("The product promise");
@@ -150,7 +153,7 @@ test("grounded Conversation preserves source scope, citations, and responsive wo
   for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/");
-    if (viewport.width > 900) await page.getByRole("complementary", { name: "Sources" }).getByRole("button", { name: "Conversation" }).click();
+    if (viewport.width > 900) await page.getByRole("complementary", { name: "Sources" }).getByRole("button", { name: "Chat" }).click();
     else await page.getByRole("button", { name: "Chat" }).click();
     const surface = page.getByRole("region", { name: "WorkshopLM Conversation" });
     await expect(surface).toBeVisible();

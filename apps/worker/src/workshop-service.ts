@@ -19,7 +19,7 @@ export type WorkshopChunk = { id: string; sourceId: string; text: string; locato
 export type WorkshopClaim = { id: string; sourceId: string; chunkId: string; text: string; evidenceState: "verified"; locator: string };
 export type WorkshopCandidate = { id: string; category: "goal" | "audience" | "claim" | "constraint" | "question"; text: string; sourceId: string; chunkId: string; locator: string };
 export type WorkshopMapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
-export type RealtimeCaptureEvidence = { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] } };
+export type RealtimeCaptureEvidence = { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] }; interruptions?: { responseIds: string[]; eventIds: string[] } };
 export type WorkshopTranscriptSegment = { id: string; origin: "manual_import" | "realtime_fallback"; transport: "fixture" | "webrtc"; text: string; capturedAt: string; provider?: Omit<RealtimeCaptureEvidence, "transport"> };
 export type WorkshopConversationTurn = DomainConversationTurn;
 export type WorkshopToolInvocation = DomainWorkshopToolCall;
@@ -759,8 +759,9 @@ export async function captureFallbackTranscript(text: string, root?: string, evi
   const voiceMode = evidence?.assistant ? "conversation" : "capture-only fallback";
   const ingested = await ingestSource({ title: `Voice ${voiceMode} transcript ${capturedAt}`, origin: `gpt-realtime-2.1 ${voiceMode}`, type: "TXT", text: normalized, permission: "private" }, root);
   if (evidence && (!evidence.itemIds.length || !evidence.eventIds.length || evidence.itemIds.some((value) => !value.trim()) || evidence.eventIds.some((value) => !value.trim()))) throw new Error("Realtime capture evidence requires provider item and event IDs.");
+  if (evidence?.interruptions && (!evidence.interruptions.responseIds.length || evidence.interruptions.responseIds.length !== evidence.interruptions.eventIds.length || evidence.interruptions.responseIds.some((value) => !value.trim()) || evidence.interruptions.eventIds.some((value) => !value.trim()))) throw new Error("Realtime interruption evidence requires matching provider response and event IDs.");
   const digest = createHash("sha256").update(`${capturedAt}\n${normalized}`).digest("hex").slice(0, 12);
-  const segment: WorkshopTranscriptSegment = { id: `fallback-${digest}`, origin: "realtime_fallback", transport: evidence?.transport ?? "fixture", text: normalized, capturedAt, provider: evidence ? { model: evidence.model, transcriptionModel: evidence.transcriptionModel, itemIds: [...new Set(evidence.itemIds)], eventIds: [...new Set(evidence.eventIds)] } : undefined };
+  const segment: WorkshopTranscriptSegment = { id: `fallback-${digest}`, origin: "realtime_fallback", transport: evidence?.transport ?? "fixture", text: normalized, capturedAt, provider: evidence ? { model: evidence.model, transcriptionModel: evidence.transcriptionModel, itemIds: [...new Set(evidence.itemIds)], eventIds: [...new Set(evidence.eventIds)], interruptions: evidence.interruptions ? { responseIds: [...new Set(evidence.interruptions.responseIds)], eventIds: [...new Set(evidence.interruptions.eventIds)] } : undefined } : undefined };
   const source = ingested.sourceItems.at(-1);
   const reply = groundedConversationReply(ingested, normalized, root);
   const assistantText = evidence?.assistant?.text ? normalizeSourceText(evidence.assistant.text) : reply.text;

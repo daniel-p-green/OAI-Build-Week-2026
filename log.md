@@ -2720,6 +2720,51 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-16 02:15 CT — Grounded Realtime voice and simplified visual contract verified
+
+**Area:** Live OpenAI / Realtime voice / Grounding / Interruption / Visual acceptance
+
+### Changed
+
+- Removed `audio.input.transcription.prompt` from the `gpt-realtime-2.1` session configuration after the live provider returned `400` because that model does not support the field. The exact supported transcription shape is now regression-tested.
+- Strengthened voice instructions so factual Workshop answers must use the shared grounded `search`/`fetch` tools before answering; writes remain behind the existing visible confirmation gate.
+- Collapsed overlapping ASR completions so a shorter provider completion cannot duplicate the end of a spoken turn while retaining every provider item/event ID as evidence.
+- Persisted interruption provenance from both `response.cancelled` and `response.done` with cancelled status. Saved capture evidence now carries the matching response and event IDs through the worker contract.
+- Kept the Conversation activity summary calm by hiding a recovered read-tool failure only when a later call with the same tool and channel succeeds. Unrecovered failures remain visible.
+- Added an explicitly authorized, isolated `live-realtime-proof.ts` harness that exercises the real browser WebRTC transport with deterministic microphone audio without mutating the live operator fixture.
+- Reconciled the full visual snapshot set to the simplified Sources / current object / Create workbench. The accessibility test now begins immediately before the contextual next action instead of traversing Excalidraw's internal keyboard stops, and the old `Conversation` selector now follows the shipped `Chat` label.
+
+### Verified
+
+- A live grounded WebRTC run used `gpt-realtime-2.1` with `gpt-realtime-whisper`, persisted the spoken question and spoken answer, and completed one grounded `search` plus two exact `fetch` calls. Every successful call retains model, response, call, and event IDs. Evidence: `artifacts/live-review/realtime-grounded-conversation.json` and `.png`.
+- A separate live WebRTC run recorded a real cancelled provider response when the user interrupted, then completed the redirected one-sentence answer with the same three grounded read calls. The saved Source/turn contains matching interruption response/event IDs. Evidence: `artifacts/live-review/realtime-interruption.json` and `.png`.
+- Full-resolution inspection accepted the refreshed desktop Map, Outputs, Storyboard, Conversation, compact states, and 390×844 Outputs composition. The final production-build browser run passed all 28 visual/accessibility/responsive cases without snapshot updates.
+- `pnpm check` passed all 13 packages: 30 web tests, 109 worker tests, 16 domain tests, 15 production tests, seven plugin tests, and every remaining suite.
+- `pnpm demo:e2e` passed Capture → grounded Map → approved Brief/Style → six-image plan → five-panel Storyboard → approved rendered Video with one artifact-to-source trace.
+- `pnpm submission:build` and `pnpm submission:verify` passed integrity checks. The deterministic acceptance set remains honestly `partial`; its fixture limitations do not erase or replace the separate live-provider evidence.
+- Artifact SHA-256 values: grounded JSON `cfc5412410e6949900815d451b33729f024ff2e736cfa28eb76427f4bf7575ec`, grounded screenshot `bb5d997d964bb18c948d4af6696d749240f1272bedf768299839f368e091baf2`, interruption JSON `c56ab2cb18a91f44cd206dd1c4eb7c157008a53570da6df513b1e46ce3ef5a0d`, interruption screenshot `93abdcb02026a1fe3b3b36d16416dd95cfa92b849bb7106b9589cfa88a7ee07b`.
+
+### Decisions
+
+- Controlled Chrome is accepted as real provider/WebRTC proof because it exercised the shipped browser code, server-minted client secret, remote audio track, provider tools, durable persistence, and interruption events. It does not substitute for the founder's recording in the Codex in-app browser.
+- The Codex in-app browser reached the current product and a valid Realtime token, but automation could not accept its microphone permission while it remained `prompt`. That is a recording interaction, not a provider or product-seam failure.
+- A provider read retry that recovers should not make a successful grounded answer look broken. Diagnostic history remains durable; only the surface summary is condensed.
+- `PLAN-2026-07-13.md` remains secondary to `GOAL.md`, implemented state, current evidence, and the user's prompt. Its unrelated working-tree modification remains preserved and excluded from this milestone.
+
+### Spend and request evidence
+
+- This increment initiated 22 additional OpenAI provider HTTP operations: four direct or in-app-browser client-secret probes and nine controlled proof sessions, each with one client-secret request and one WebRTC call. Together with the previously logged 42 attempts, the overnight run initiated 64 provider HTTP operations.
+- Exact dollar debit is not returned by these responses. The additional Realtime sessions were short and the observed request shape remains safely below the authorized $50 ceiling, but no invented exact spend figure is claimed.
+
+### Open items
+
+- Grant microphone access once in the Codex in-app browser and record the founder's real brainstorm; capture one provider-originated write crossing the already-tested visible confirmation gate.
+- Replace the sample Source, selectively regenerate only the outputs that the founder Source makes stale, and record the final under-three-minute public film.
+- Obtain one external professional `Send` or blocking `Revise` response. The standalone provider Audio Overview, public links, and `/feedback` remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-16 01:33 CT — Live OpenAI seam and decisive product-quality pass
 
 **Area:** Live providers / Grounded Map / GPT Image 2 / Cedar narration / HyperFrames / UI simplification / Visual QA
@@ -7226,3 +7271,9 @@ The new 01:33 CT live-provider and product-quality milestone was inserted after 
 - Obtain one external professional deck review. `/feedback` remains intentionally deferred.
 - Exact OpenAI dollar debit is not exposed by the response artifacts. This session made 42 attempts and stayed within the authorized $50 operating ceiling based on the recorded request envelope.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 02:18 CT — Realtime milestone placement correction
+
+The 02:15 CT grounded Realtime voice and simplified visual-contract milestone was inserted after an earlier matching `Codex Session ID` marker instead of the physical end of this append-only file. Its evidence and decisions are unchanged. This later note restores the chronological boundary without rewriting history. The 02:15 milestone supersedes the older open-item statement immediately above: grounded Realtime speech, read tools, interruption, and durable provider provenance are live-proven; the founder's in-app-browser microphone recording and one provider-originated confirmed write remain open.

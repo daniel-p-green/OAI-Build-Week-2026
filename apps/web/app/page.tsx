@@ -779,14 +779,18 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   </SideSheet>;
 }
 
-function ConversationView({ state, busy, streamingReply, realtimeContinuation, onRealtimeContinuationSent, onSend, onVoiceSave, onVoiceToolEvent, onConfirmTool, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; streamingReply: string; realtimeContinuation?: Record<string, unknown>; onRealtimeContinuationSent: () => void; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] } }) => Promise<boolean>; onVoiceToolEvent: (event: unknown) => Promise<Record<string, unknown> | undefined>; onConfirmTool: (call: ConversationToolCall) => Promise<boolean>; onShowSource: (target?: EvidenceTarget) => void }) {
+function ConversationView({ state, busy, streamingReply, realtimeContinuation, onRealtimeContinuationSent, onSend, onVoiceSave, onVoiceToolEvent, onConfirmTool, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; streamingReply: string; realtimeContinuation?: Record<string, unknown>; onRealtimeContinuationSent: () => void; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] }; interruptions?: { responseIds: string[]; eventIds: string[] } }) => Promise<boolean>; onVoiceToolEvent: (event: unknown) => Promise<Record<string, unknown> | undefined>; onConfirmTool: (call: ConversationToolCall) => Promise<boolean>; onShowSource: (target?: EvidenceTarget) => void }) {
   const [draft, setDraft] = useState("");
   const [voiceOpen, setVoiceOpen] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
   const turns = state?.conversationTurns ?? [];
   const toolCalls = state?.toolCalls ?? [];
   const confirmedProviderCalls = new Set(toolCalls.filter((call) => call.explicitUserIntent && call.provider?.callId).map((call) => `${call.channel}:${call.provider!.callId}`));
-  const visibleToolCalls = toolCalls.filter((call) => !(call.provider?.callId && !call.explicitUserIntent && call.result.summary.includes("requires explicit user intent") && confirmedProviderCalls.has(`${call.channel}:${call.provider.callId}`)));
+  const visibleToolCalls = toolCalls.filter((call) => {
+    if (call.provider?.callId && !call.explicitUserIntent && call.result.summary.includes("requires explicit user intent") && confirmedProviderCalls.has(`${call.channel}:${call.provider.callId}`)) return false;
+    if (call.result.isError && call.effect === "none" && toolCalls.some((later) => later.channel === call.channel && later.name === call.name && !later.result.isError && Date.parse(later.completedAt) > Date.parse(call.completedAt))) return false;
+    return true;
+  });
   const timeline = [
     ...turns.map((turn) => ({ kind: "turn" as const, at: turn.createdAt, value: turn })),
     ...visibleToolCalls.map((call) => ({ kind: "tool" as const, at: call.completedAt, value: call })),

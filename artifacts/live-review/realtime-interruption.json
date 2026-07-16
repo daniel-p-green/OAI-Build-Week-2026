@@ -1,0 +1,63 @@
+{
+  "verifiedAt": "2026-07-16T07:05:49.965Z",
+  "transport": "webrtc",
+  "model": "gpt-realtime-2.1",
+  "transcriptionModel": "gpt-realtime-whisper",
+  "transcript": "Selected sources explain in detail what the final workshop LM demo should prove.\nStop, give me the short answer in one sentence.",
+  "assistant": "Okay,\nLet me keep this tight and grounded in the selected sources while I pin down the core claim.\nIt should prove a continuous Capture to Shape to Deliver workflow that turns a messy spoken idea into a grounded map, an approved brief, visuals, an editable storyboard, and a final demo video, with visible source locators on factual claims and a public video under three minutes.",
+  "successfulToolCalls": [
+    {
+      "name": "search",
+      "provider": {
+        "model": "gpt-realtime-2.1",
+        "responseId": "resp_E2AS7CXvVXY7KpNK92WX4",
+        "callId": "call_NkGEaNRaRSuxFXDu",
+        "eventId": "event_E2AS8Qk8wosdLfNUCS04n"
+      },
+      "summary": "Found 2 grounded evidence chunks."
+    },
+    {
+      "name": "fetch",
+      "provider": {
+        "model": "gpt-realtime-2.1",
+        "responseId": "resp_E2AS8kSszT8NVHHpQgZCS",
+        "callId": "call_D6JZZ8hH98EpKxrh",
+        "eventId": "event_E2AS9c314OHhJ2WQ0XHMV"
+      },
+      "summary": "Fetched grounded evidence chunk chunk-e3f49c2f9afa-1."
+    },
+    {
+      "name": "fetch",
+      "provider": {
+        "model": "gpt-realtime-2.1",
+        "responseId": "resp_E2AS8kSszT8NVHHpQgZCS",
+        "callId": "call_J93SvDupJGfCWlV6",
+        "eventId": "event_E2AS9xPMjSdEaz3YuIXqs"
+      },
+      "summary": "Fetched grounded evidence chunk chunk-820da955489c-1."
+    }
+  ],
+  "savedSegment": {
+    "id": "fallback-619466dc7b5b",
+    "provider": {
+      "model": "gpt-realtime-2.1",
+      "transcriptionModel": "gpt-realtime-whisper",
+      "itemIds": [
+        "item_E2ARvjnmMa9VsnwO6R2lD",
+        "item_E2AS1Gvhpobr1PZ87lIHJ"
+      ],
+      "eventIds": [
+        "event_E2AS2E8Mo7PmdrsQup7M8",
+        "event_E2AS5bbXOskOeRNpxmRt8"
+      ],
+      "interruptions": {
+        "responseIds": [
+          "resp_E2AS1AcXiKt8Mk6zf99Dl"
+        ],
+        "eventIds": [
+          "event_E2AS1aEqsH1ojioWbAHor"
+        ]
+      }
+    }
+  }
+}
