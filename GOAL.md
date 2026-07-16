@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 19:03 CT
+Last updated: 2026-07-15 19:13 CT
 
 ## Status
 
@@ -623,6 +623,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
   - 2026-07-15 live-browser repair: the acceptance builder now completes onboarding and dismisses tutorial cues, and `pnpm demo:serve` opens the exact verified `.workshoplm/acceptance` data root instead of an unrelated fresh workspace. A Codex in-app-browser reload exposed and then verified the repair for a more serious seam: Excalidraw's mount-time shape normalization no longer posts false Map edits or revokes the approved Brief, Storyboard, rendered Video, and current Outputs. Real position, size, and label deltas remain persistable under focused regression tests. Keep this daily gate open until submission.
 - [x] Verify the full Capture → Shape → Deliver flow in the live application.
 - [x] Verify realistic desktop, tablet, and mobile behavior.
+  - 2026-07-15 focused-output regression proof: the claim-level source trail initially made an older broad `Show source` selector ambiguous and left mobile Video evidence partially below a fixed, non-scrollable canvas. Focused artifacts now scroll vertically at 390px, use a compact 16:9 Video player, expose all four claim rows, and retain zero horizontal overflow. The refreshed production snapshot suite passes all 27 tests across 1200px desktop, 1024px compact, and 390px mobile, including exact primary-action, source-trail, playback, original-reveal, reduced-motion, contrast, and 200% logical-zoom checks.
 - [x] Verify schema, gate, graph, grounding, rendering, and integration tests.
 - [x] Verify failure recovery and partial-package behavior.
 - [ ] Verify all submitted links, the repeatable recording setup, and the optional inspection instructions in a fresh ChatGPT/Codex in-app browser session.

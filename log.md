@@ -6092,3 +6092,33 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Record and inspect one provider-backed Realtime turn, rerun this preflight to unlock its exact twelve-request command, and obtain explicit spend authorization before executing it.
 - Provider-backed Map, six-image gallery, narration, founder brainstorm, cold professional `Send`/`Revise`, final public Video, and `/feedback` Session ID remain open under `GOAL.md`.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 19:13 CT — Mobile Video keeps playback and every source claim reachable
+
+**Area:** Responsive UX / Focused Outputs / Visual acceptance
+
+### Changed
+
+- Extended the responsive acceptance contract for focused Presentation and Video: the primary `Show source` action is now distinguished from four claim-specific source actions, every claim trail must be visible, and the document must remain free of horizontal overflow at each recorded width.
+- The first visual run exposed a real 390px defect: Video provenance extended below a fixed, non-scrollable focused canvas. Mobile focused artifacts now scroll vertically; Presentation retains its useful scaled preview, Video uses a compact 16:9 player, and the claim list no longer clips inside a fixed-height region.
+- Refreshed only the intentional Presentation, Video, and original-reveal baselines across desktop, compact, and mobile after inspecting the changed frames.
+
+### Verified
+
+- Inspected the refreshed 1024×768 Presentation frame: the preview remains dominant and four claims form a quiet two-column evidence rail with no horizontal overflow.
+- Inspected the refreshed 390×844 Presentation and Video frames. The Video header keeps `Show source`, `Show original`, and `Open video`; the player is fully visible; `Sources in this output` and all four claim rows are reachable in the same vertical surface.
+- A normal, non-update visual run passed all 27 production-browser tests across 1200×800 desktop, 1024×768 compact, and 390×844 mobile, including reduced motion, contrast, 200% logical zoom, exact source trace, Video playback, and first-use flows.
+- `pnpm check` passed all 13 packages with 19 web tests and 85 worker tests. `pnpm demo:e2e` passed all six gates; `pnpm submission:build` and `pnpm submission:verify` validated the truthful 17-asset `partial` set; `pnpm demo:film:verify` retained six ready shots and four explicitly evidence-blocked shots; `git diff --check` passed.
+
+### Decisions
+
+- Claim-level provenance is not responsive merely because it avoids horizontal overflow. Every evidence action must also be reachable inside the actual fixed app viewport.
+- On mobile, a standard 16:9 Video player and one vertical scroll path are simpler and more useful than preserving the desktop preview's flexible-height grid.
+
+### Open items
+
+- Record and inspect one provider-backed Realtime turn, rerun the zero-spend preflight, and obtain explicit spend authorization before the exact twelve-request live run.
+- Provider-backed Map, six-image gallery, narration, founder brainstorm, cold professional `Send`/`Revise`, final public Video, and `/feedback` Session ID remain open under `GOAL.md`.
+- Codex Session ID: unavailable on this surface; not inferred.
