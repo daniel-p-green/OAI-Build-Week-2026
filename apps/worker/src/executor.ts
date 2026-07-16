@@ -8,7 +8,7 @@ import { writeWorkshopBuildTrace } from "./build-trace.js";
 import { openLocalDatabase } from "./db/client.js";
 import { migrate } from "./db/migrate.js";
 import { finishJob, leaseNext } from "./queue.js";
-import { assertStoryboardGrounding, readWorkshopState, recordRenderedVideo, setVideoState, workshopGeneratedPath, type StoryboardPanel, type WorkshopState } from "./workshop-service.js";
+import { assertStoryboardGrounding, readWorkshopState, recordRenderedVideo, recordVideoFailure, setVideoState, workshopGeneratedPath, type StoryboardPanel, type WorkshopState } from "./workshop-service.js";
 
 const execFile = promisify(rawExecFile);
 export type ExecuteResult = { jobId?: string; state: "idle" | "succeeded" | "failed"; artifact?: StoredArtifact; error?: string };
@@ -131,5 +131,5 @@ export async function executeOne(root: string, run: RunCommand = defaultRun) : P
     await copyFile(provenancePath, join(root, workshopGeneratedPath(state.id, "workshoplm-demo.provenance.json")));
     recordRenderedVideo({ storyboardVersion: state.storyboard.version, styleVersion: state.style!.version, visualDnaVersion: state.visualDna?.version, imageBatchId: state.imageBatch?.id, relativePath: relative(root, output), provenancePath: relative(root, provenancePath), artifactPath: artifact.relativePath, sha256: artifact.sha256, byteCount: artifact.byteCount, claimIds: [...new Set(state.storyboard.panels.flatMap((panel) => panel.claimIds))], buildTrace }, root, state.id);
     finishJob(db, job.id, "succeeded"); return { jobId: job.id, state: "succeeded", artifact };
-  } catch (caught) { const error = caught instanceof Error ? caught.message : "Unknown render failure"; const retrying = job.attempts < 2; finishJob(db, job.id, retrying ? "retrying" : "failed", error); setVideoState(retrying ? "queued" : "blocked", root, job.workshopId); return { jobId: job.id, state: "failed", error }; }
+  } catch (caught) { const error = caught instanceof Error ? caught.message : "Unknown render failure"; const retrying = job.attempts < 2; finishJob(db, job.id, retrying ? "retrying" : "failed", error); if (retrying) setVideoState("queued", root, job.workshopId); else recordVideoFailure(error, job.attempts, root, job.workshopId); return { jobId: job.id, state: "failed", error }; }
 }

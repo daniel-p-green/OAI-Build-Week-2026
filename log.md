@@ -2718,8 +2718,6 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
----
-
 ## 2026-07-15 18:18 CT — Real Codex doorway replaces the rough-cut placeholder
 
 **Area:** Host proof / Meta-demo / Privacy-safe capture
@@ -6706,5 +6704,39 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 ### Open items
 
 - Production's complete failed/partial/retry state coverage remains open; provider-backed text, speech, image, and narration proof is still required.
+- The external deck cold `Send`/`Revise` judgment, founder recording, final public Video and links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 22:20 CT — Production failures become recoverable work
+
+**Area:** Production rail / Failure recovery / Partial success / Video jobs
+
+### Changed
+
+- Preserved Presentation and Infographic failures in durable Workshop state instead of letting a transient error toast disappear. Each failed deliverable names what happened, confirms that the approved Brief and Style are safe, and clears only after that deliverable succeeds.
+- Exposed the existing two-attempt Video retry budget in product state. The first renderer failure requeues automatically; the second becomes a calm terminal `Couldn't create` state with `Try video again`.
+- Changed queued Video from an inert `Creating…` state to a cancellable `Waiting` state. Cancellation preserves the approved Storyboard, records `Cancelled`, and offers the same bounded restart path.
+- Made partial image failure route to the focused Image set with `Review image`; only the failed panel offers `Request replacement`. A requested replacement now holds the dominant action at `Creating replacement…` instead of sending the professional to approve a stale Storyboard.
+- Kept all recovery inside the official Production rail, existing focused Image set, and existing Apps in ChatGPT primitives. No job dashboard, settings surface, tab, or raw provider/queue language was added.
+
+### Verified
+
+- In an isolated seeded Workshop in the real Codex in-app browser, queued Video showed `Cancel video`; cancelling showed `Cancelled` and `Try video again`; a controlled renderer failure stopped after two attempts, preserved the approved Storyboard, and showed `Couldn't create` plus `Try video again`.
+- One controlled image failure showed `Partly ready`, `1 image needs attention`, and `Review image`. The focused Hero concept alone showed `Request replacement`; after selection it showed `Replacement requested`, Storyboard became `Needs update`, Video returned to `Planned`, and the dominant action remained `Creating replacement…`.
+- One persisted Infographic failure retained the current Presentation, showed the safe recovery message and `Couldn't create`, and exposed `Try outputs again`. Browser console and warning logs were empty.
+- The exact browser paths and screenshots are recorded in `artifacts/ui/production-recovery-qa-2026-07-15.md`. Visual inspection confirmed the partial Image set and failed Infographic states render cleanly in the 1280×720 workbench.
+- `pnpm check` passed all 13 packages, including 25 web and 100 worker tests. `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. The 17-asset package remains honestly `partial` with the same four provider limitations. `git diff --check` and the scoped credential scan passed. No paid provider request ran.
+
+### Decisions
+
+- Durable failure belongs to the work item that failed, not to a global notification or a separate queue-management product.
+- Automatic Video retry is capped at two attempts. A professional may explicitly start a fresh bounded run after terminal failure or cancellation.
+- Selective image replacement must make stale downstream approval visible and wait for new image work; it cannot silently recreate the full batch or let the old Storyboard advance.
+
+### Open items
+
+- Provider-backed text, speech, image, and narration proof remains required; this increment proves recovery behavior with deterministic local controls, not live provider reliability.
 - The external deck cold `Send`/`Revise` judgment, founder recording, final public Video and links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.

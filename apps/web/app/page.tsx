@@ -59,7 +59,9 @@ type PersistedWorkshop = {
   onboarding: { step: "welcome" | "style" | "sources" | "complete"; outcome?: WorkshopOutcome; mapOrientationDismissed: boolean; outputsOrientationDismissed: boolean; completedAt?: string; styleAnalysis?: { status: "reviewing" | "ready" | "error"; url: string; startedAt: string; completedAt?: string; suggestion?: WebsiteStyleSuggestion; error?: string } };
   briefApproved: boolean;
   storyboardApproved: boolean;
-  videoState: "blocked" | "queued" | "rendering" | "rendered";
+  videoState: "blocked" | "queued" | "rendering" | "rendered" | "failed" | "cancelled";
+  videoRecovery?: { outcome: "failed" | "cancelled"; message: string; attempts: number; updatedAt: string };
+  outputRecovery?: Partial<Record<"deck" | "infographic", { message: string; attempts: number; updatedAt: string }>>;
   transcriptSegments?: { id: string; origin: "chatgpt" | "realtime_fallback"; transport: "fixture" | "webrtc"; text: string; capturedAt: string }[];
   conversationTurns?: ConversationTurn[];
   toolCalls?: ConversationToolCall[];
@@ -93,7 +95,8 @@ function outputSetStatus(state: PersistedWorkshop | null) {
   const generationStarted = Boolean(state.outputs.length || state.assetPlan || state.imageBatch);
   const currentVideo = [...(state.videos ?? [])].sort((left, right) => right.version - left.version)[0];
   const failedImages = Boolean(state.imageBatch?.panels.some((panel) => panel.state === "failed"));
-  const incomplete = Boolean(generationStarted && (!deck || !infographic || !state.imageBatch || !state.storyboard.panels.length)) || failedImages;
+  const failedOutputs = Boolean(state.outputRecovery && Object.keys(state.outputRecovery).length);
+  const incomplete = Boolean(generationStarted && (!deck || !infographic || !state.imageBatch || !state.storyboard.panels.length)) || failedImages || failedOutputs;
   const replacementIds = new Set(state.imageBatch?.panels.filter((panel) => panel.state === "selected_for_regeneration").map((panel) => panel.id) ?? []);
   const replacementOnlyStoryboardStale = replacementIds.size > 0
     && state.storyboard.stale
@@ -186,6 +189,9 @@ export default function WorkshopPage() {
   const selectedOutput = useMemo(() => state?.outputs.find((output) => output.id === selectedOutputId), [state, selectedOutputId]);
   const canDeliver = Boolean(state?.briefApproved && state.style && !state.style.stale);
   const outputsNeedUpdate = outputSetStatus(state).actionRequired;
+  const outputFailureCount = Object.keys(state?.outputRecovery ?? {}).length;
+  const imageFailureCount = state?.imageBatch?.panels.filter((panel) => panel.state === "failed").length ?? 0;
+  const imageReplacementCount = state?.imageBatch?.panels.filter((panel) => panel.state === "selected_for_regeneration").length ?? 0;
 
   async function reload() {
     setLoadState("loading");
@@ -235,6 +241,7 @@ export default function WorkshopPage() {
       return next;
     } catch (error) {
       setNotice({ message: error instanceof Error ? error.message : "That action did not work", tone: "error" });
+      try { const response = await fetch("/api/workshop"); if (response.ok) setState(await response.json() as PersistedWorkshop); } catch { /* Keep the last readable Workshop state. */ }
       return null;
     } finally {
       setBusy(false);
@@ -369,12 +376,14 @@ export default function WorkshopPage() {
   }
 
   async function createOutputs() {
-    if (!state?.outputs.some((output) => output.type === "deck" && !output.stale)) await post({ action: "generateOutput", outputType: "deck" });
-    if (!state?.outputs.some((output) => output.type === "infographic" && !output.stale)) await post({ action: "generateOutput", outputType: "infographic" });
-    await post({ action: "generateAssetPlan" });
-    if (!state?.imageBatch || state.imageBatch.stale || state.imageBatch.panels.some((panel) => panel.state === "failed" || panel.state === "selected_for_regeneration")) await post({ action: "createImageBatch" });
-    await post({ action: "generateStoryboard" });
-    setNotice({ message: "Outputs created from your Brief, Style, and Sources.", tone: "status" });
+    let complete = true;
+    const run = async (body: Record<string, unknown>) => { const next = await post(body); complete = Boolean(next) && complete; return next; };
+    if (state?.outputRecovery?.deck || !state?.outputs.some((output) => output.type === "deck" && !output.stale)) await run({ action: "generateOutput", outputType: "deck" });
+    if (state?.outputRecovery?.infographic || !state?.outputs.some((output) => output.type === "infographic" && !output.stale)) await run({ action: "generateOutput", outputType: "infographic" });
+    await run({ action: "generateAssetPlan" });
+    if (!state?.imageBatch || state.imageBatch.stale || state.imageBatch.panels.some((panel) => panel.state === "failed" || panel.state === "selected_for_regeneration")) await run({ action: "createImageBatch" });
+    await run({ action: "generateStoryboard" });
+    setNotice(complete ? { message: "Outputs created from your Brief, Style, and Sources.", tone: "status" } : { message: "Some Outputs need attention. Your finished work is still available.", tone: "error" });
     openView("outputs");
   }
 
@@ -414,15 +423,23 @@ export default function WorkshopPage() {
       ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => { void post({ action: "approveBrief" }).then((next) => next && openView("brief")); }}>Approve brief</Button>
       : !canDeliver
         ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => openSheet("style")}>Choose style</Button>
+        : imageFailureCount
+          ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => openOutput("images")}>Review {imageFailureCount === 1 ? "image" : "images"}</Button>
         : !(state.outputs.length || state.imageBatch) || outputsNeedUpdate
-          ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => { void createOutputs(); }}>{state.outputs.length ? "Update outputs" : "Create outputs"}</Button>
+          ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => { void createOutputs(); }}>{outputFailureCount ? "Try outputs again" : state.outputs.length ? "Update outputs" : "Create outputs"}</Button>
+          : imageReplacementCount
+            ? <Button variant="secondary" disabled>Creating replacement…</Button>
           : !state.storyboardApproved
             ? view === "storyboard"
               ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy || state.storyboard.stale || !state.storyboard.panels.length} onClick={() => { void post({ action: "approveStoryboard" }); }}>Approve storyboard</Button>
               : <Button variant={sheet ? "secondary" : "primary"} onClick={() => openView("storyboard")}>Review storyboard</Button>
             : state.videoState === "rendered"
               ? <Button variant={sheet ? "secondary" : "primary"} onClick={() => openOutput([...state.videos].reverse().find((video) => !video.stale)?.id ?? "video")}>View video</Button>
-              : <Button variant={sheet ? "secondary" : "primary"} disabled={busy || state.videoState === "queued" || state.videoState === "rendering"} onClick={() => { void post({ action: "renderVideo" }); }}>{state.videoState === "queued" || state.videoState === "rendering" ? "Creating…" : "Create video"}</Button>;
+              : state.videoState === "queued"
+                ? <Button variant="secondary" disabled={busy} onClick={() => { void post({ action: "cancelVideoRender" }); }}>Cancel video</Button>
+                : state.videoState === "rendering"
+                  ? <Button variant="secondary" disabled>Creating…</Button>
+                  : <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => { void post({ action: "renderVideo" }); }}>{state.videoState === "failed" || state.videoState === "cancelled" ? "Try video again" : "Create video"}</Button>;
 
   if (loadState === "ready" && state && state.onboarding.step !== "complete") {
     return <OnboardingFlow state={state} styleLibrary={styleLibrary} busy={busy} notice={notice} onPost={post} />;
@@ -850,7 +867,8 @@ function ProductionRail({ open, state, view, action, onCollapse, onOpenView, onO
   const infographic = latest("infographic");
   const currentVideo = [...(state?.videos ?? [])].reverse().find((video) => !video.stale) ?? [...(state?.videos ?? [])].reverse()[0];
   const generatedImages = state?.imageBatch?.panels.filter((panel) => panel.state === "generated").length ?? 0;
-  const failedImages = state?.imageBatch?.panels.some((panel) => panel.state === "failed");
+  const failedImageCount = state?.imageBatch?.panels.filter((panel) => panel.state === "failed").length ?? 0;
+  const pendingImageCount = state?.imageBatch?.panels.filter((panel) => panel.state === "planned" || panel.state === "selected_for_regeneration").length ?? 0;
   const briefReady = Boolean(state?.briefApproved && !state.frame?.stale);
   const styleReady = Boolean(state?.style && !state.style.stale);
   const hasOutputs = Boolean(deck || infographic || state?.imageBatch || state?.storyboard.panels.length || currentVideo);
@@ -868,11 +886,11 @@ function ProductionRail({ open, state, view, action, onCollapse, onOpenView, onO
     <ListGroup className="production-list">
       <ProductionItem title="Brief" detail={briefReady ? `Version ${state?.frame?.version ?? 1}` : "Map sign-off"} status={state?.frame?.stale ? "Needs update" : briefReady ? "Approved" : "Needs review"} tone={briefReady && !state?.frame?.stale ? "current" : "waiting"} onClick={() => onOpenView(briefReady ? "brief" : "map")} ariaLabel={briefReady ? "View brief" : "Review Brief"} />
       <ProductionItem title="Style" detail={styleReady ? state?.style?.name ?? "Company Style" : "Company and intent"} status={state?.style?.stale ? "Needs update" : styleReady ? "Ready" : "Not selected"} tone={styleReady ? "current" : "waiting"} onClick={onOpenStyle} />
-      <ProductionItem title="Presentation" detail={deck ? `Version ${outputVersion(deck, state?.outputs ?? [])}` : "Editable PowerPoint"} status={deck?.stale ? "Needs update" : deck ? "Up to date" : "Planned"} tone={deck && !deck.stale ? "current" : "waiting"} onClick={deck ? () => onOpenOutput(deck.id) : undefined} />
-      <ProductionItem title="Infographic" detail="One-page visual" status={infographic?.stale ? "Needs update" : infographic ? "Up to date" : "Planned"} tone={infographic && !infographic.stale ? "current" : "waiting"} onClick={infographic ? () => onOpenOutput(infographic.id) : undefined} />
-      <ProductionItem title="Image set" detail={state?.imageBatch ? `${generatedImages} of ${state.imageBatch.panels.length} ready` : "Six coherent visuals"} status={state?.imageBatch?.stale ? "Needs update" : failedImages ? "Incomplete" : state?.imageBatch && generatedImages === state.imageBatch.panels.length ? "Up to date" : "Planned"} tone={state?.imageBatch && !state.imageBatch.stale && !failedImages && generatedImages === state.imageBatch.panels.length ? "current" : "waiting"} onClick={state?.imageBatch ? () => onOpenOutput("images") : undefined} />
+      <ProductionItem title="Presentation" detail={state?.outputRecovery?.deck?.message ?? (deck ? `Version ${outputVersion(deck, state?.outputs ?? [])}` : "Editable PowerPoint")} status={state?.outputRecovery?.deck ? "Couldn't create" : deck?.stale ? "Needs update" : deck ? "Up to date" : "Planned"} tone={deck && !deck.stale && !state?.outputRecovery?.deck ? "current" : "waiting"} onClick={deck ? () => onOpenOutput(deck.id) : undefined} />
+      <ProductionItem title="Infographic" detail={state?.outputRecovery?.infographic?.message ?? "One-page visual"} status={state?.outputRecovery?.infographic ? "Couldn't create" : infographic?.stale ? "Needs update" : infographic ? "Up to date" : "Planned"} tone={infographic && !infographic.stale && !state?.outputRecovery?.infographic ? "current" : "waiting"} onClick={infographic ? () => onOpenOutput(infographic.id) : undefined} />
+      <ProductionItem title="Image set" detail={state?.imageBatch ? failedImageCount ? `${failedImageCount} ${failedImageCount === 1 ? "image needs" : "images need"} attention` : pendingImageCount ? `${generatedImages} of ${state.imageBatch.panels.length} ready` : `${generatedImages} images ready` : "Six coherent visuals"} status={state?.imageBatch?.stale ? "Needs update" : failedImageCount ? "Partly ready" : state?.imageBatch && generatedImages === state.imageBatch.panels.length ? "Up to date" : state?.imageBatch ? "In progress" : "Planned"} tone={state?.imageBatch && !state.imageBatch.stale && !failedImageCount && generatedImages === state.imageBatch.panels.length ? "current" : "waiting"} onClick={state?.imageBatch ? () => onOpenOutput("images") : undefined} ariaLabel={failedImageCount ? "Review images that need attention" : "View Image set"} />
       <ProductionItem title="Storyboard" detail={state?.storyboard.panels.length ? `${state.storyboard.panels.length} editable panels` : "Review before Video"} status={state?.storyboard.stale ? "Needs update" : state?.storyboardApproved ? "Approved" : state?.storyboard.panels.length ? "Needs review" : "Planned"} tone={state?.storyboardApproved && !state.storyboard.stale ? "current" : "waiting"} onClick={state?.storyboard.panels.length ? () => onOpenView("storyboard") : undefined} ariaLabel="View storyboard" />
-      <ProductionItem title="Video" detail={currentVideo ? `Version ${currentVideo.version}` : "From approved Storyboard"} status={currentVideo?.stale ? "Needs update" : currentVideo ? "Up to date" : state?.videoState === "queued" || state?.videoState === "rendering" ? "Creating" : "Planned"} tone={currentVideo && !currentVideo.stale ? "current" : "waiting"} onClick={currentVideo ? () => onOpenOutput(currentVideo.id) : undefined} />
+      <ProductionItem title="Video" detail={currentVideo ? `Version ${currentVideo.version}` : state?.videoState === "failed" || state?.videoState === "cancelled" ? state.videoRecovery?.message ?? "Your approved Storyboard is safe." : "From approved Storyboard"} status={currentVideo?.stale ? "Needs update" : currentVideo ? "Up to date" : state?.videoState === "queued" ? "Waiting" : state?.videoState === "rendering" ? "Creating" : state?.videoState === "failed" ? "Couldn't create" : state?.videoState === "cancelled" ? "Cancelled" : "Planned"} tone={currentVideo && !currentVideo.stale ? "current" : "waiting"} onClick={currentVideo ? () => onOpenOutput(currentVideo.id) : undefined} />
     </ListGroup>
     </>}
   </WorkbenchRail>;

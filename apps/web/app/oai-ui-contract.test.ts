@@ -87,6 +87,13 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(appCss).toContain("grid-template-columns: 48px minmax(0, 1fr) 48px");
   });
 
+  it("keeps partial and failed production recovery inside the existing rail", () => {
+    for (const copy of ["Partly ready", "image needs", "images need", "Couldn't create", "Cancelled", "Try video again", "Cancel video", "Try outputs again", "Creating replacement…", "Your approved Storyboard is safe.", "Some Outputs need attention. Your finished work is still available."]) expect(page).toContain(copy);
+    expect(page).toContain('action: "cancelVideoRender"');
+    expect(page).toContain('ariaLabel={failedImageCount ? "Review images that need attention" : "View Image set"}');
+    expect(page).not.toContain("Job queue");
+  });
+
   it("keeps reusable Styles inside the existing Style sheet", () => {
     expect(page).toContain('fetch("/api/workshop?view=styles")');
     expect(page).toContain('action: "applyStyleLibrary"');
