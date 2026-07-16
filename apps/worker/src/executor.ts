@@ -163,7 +163,7 @@ export async function executeOne(root: string, run: RunCommand = defaultRun) : P
     }
     if (run === defaultRun) {
       await run("npx", ["hyperframes", "lint", staging, "--json"]);
-      await run("npx", ["hyperframes", "inspect", staging, "--json", "--at-transitions"]);
+      await run("npx", ["hyperframes", "check", staging, "--json", "--at-transitions"]);
     }
     const nextVersion = state.videos.reduce((highest, video) => Math.max(highest, video.version), 0) + 1;
     const versionName = `workshoplm-demo-v${nextVersion}`;

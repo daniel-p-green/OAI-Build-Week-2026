@@ -5,7 +5,7 @@ import { resolve } from "node:path";
 import { promisify } from "node:util";
 
 const exec = promisify(execFile);
-const root = resolve(process.cwd(), ".workshoplm");
+const root = resolve(process.env.WORKSHOPLM_DATA_ROOT ?? resolve(process.cwd(), ".workshoplm", "acceptance"));
 const video = resolve(root, "generated", "workshoplm-demo.mp4");
 const outputDirectory = resolve(root, "submission");
 const thumbnail = resolve(outputDirectory, "workshoplm-demo-thumbnail.png");
