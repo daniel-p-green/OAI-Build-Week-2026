@@ -539,7 +539,7 @@ export default function WorkshopPage() {
 
 const OUTCOME_OPTIONS: Array<{ id: WorkshopOutcome; title: string; detail: string; defaultName: string }> = [
   { id: "client_facing_pitch", title: "Client pitch", detail: "A persuasive recommendation with every claim sourced.", defaultName: "Client pitch" },
-  { id: "board_deck", title: "Board presentation", detail: "A concise leadership narrative grounded in your Sources.", defaultName: "Board presentation" },
+  { id: "board_deck", title: "Board slides", detail: "A concise leadership narrative grounded in your Sources.", defaultName: "Board slides" },
   { id: "internal_workshop", title: "Team workshop", detail: "A practical working session with clear actions.", defaultName: "Team workshop" },
 ];
 
@@ -699,7 +699,7 @@ function StyleSheet({ style, analysisSuggestion, defaultIntent, library, busy, o
     void onPost({ action: "lockManualStyle", manualStyle }).then((next) => next && onClose());
   };
   const useSavedStyle = (entry: StyleLibraryEntry) => { void onPost({ action: "applyStyleLibrary", styleLibraryId: entry.id, intentProfile: defaultIntent ?? entry.intentProfile }).then((next) => next && onClose()); };
-  const intentLabel = intent === "board_deck" ? "Board presentation" : intent === "internal_workshop" ? "Team workshop" : "Client pitch";
+  const intentLabel = intent === "board_deck" ? "Board slides" : intent === "internal_workshop" ? "Team workshop" : "Client pitch";
   const toggleAsset = (url: string) => setSelectedAssetUrls((current) => current.includes(url) ? current.filter((candidate) => candidate !== url) : [...current, url].slice(0, 3));
 
   return <SideSheet title="Style" onClose={onClose}><p className="sheet-intro">{analysisSuggestion ? `We found this on ${new URL(analysisSuggestion.referenceUrl).hostname}. Keep what is right.` : "Use one visual system across every Output."}</p>
@@ -729,8 +729,8 @@ function OutputsView({ state, onOpenOutput, onOpenStoryboard, onDismissOrientati
   return <article className="outputs-view">
     <h1 className="visually-hidden">Outputs</h1>
     {!ready ? <StateMessage state="empty" title="Choose a Style">Your Brief is ready. Add a Style to create Outputs.</StateMessage> : <>
-      {!state?.onboarding.outputsOrientationDismissed && heroDeckId && <Card className="outputs-orientation"><div><strong>Your presentation is ready.</strong><p>Show source traces a claim back to its material. The Storyboard is your second and final approval before Video.</p></div><div className="button-row"><Button variant="secondary" size="small" onClick={() => onOpenOutput(heroDeckId)}>Open presentation</Button><Button variant="secondary" size="small" onClick={onDismissOrientation}>Got it</Button></div></Card>}
-      {(state?.outputs.length ?? 0) === 0 && !state?.sketch && !state?.imageBatch && !state?.audioOverviews.length && <StateMessage state="empty" title="Create your first Outputs">Turn this Brief into a presentation, hand-drawn Sketch, infographic, Audio Overview, image set, and Storyboard.</StateMessage>}
+      {!state?.onboarding.outputsOrientationDismissed && heroDeckId && <Card className="outputs-orientation"><div><strong>Your slides are ready.</strong><p>Show source traces a claim back to its material. The Storyboard is your second and final approval before Video.</p></div><div className="button-row"><Button variant="secondary" size="small" onClick={() => onOpenOutput(heroDeckId)}>Open slides</Button><Button variant="secondary" size="small" onClick={onDismissOrientation}>Got it</Button></div></Card>}
+      {(state?.outputs.length ?? 0) === 0 && !state?.sketch && !state?.imageBatch && !state?.audioOverviews.length && <StateMessage state="empty" title="Create your first Outputs">Turn this Brief into slides, a hand-drawn Sketch, infographic, Audio Overview, image set, and Storyboard.</StateMessage>}
       {partial && !needsUpdate && <StateMessage state="partial" title="Some Outputs are ready">Review what is finished, then update Outputs to complete the set.</StateMessage>}
       {needsUpdate && <StateMessage state="needs-update" title="Outputs need an update">Your Sources, Brief, or Style changed. Update Outputs before sharing them.</StateMessage>}
       <section className="output-grid">{outputs.map((output) => {
@@ -887,7 +887,7 @@ function ConversationView({ state, busy, streamingReply, realtimeContinuation, o
   return <ConversationSurface className="conversation-view" aria-label="WorkshopLM Conversation">
     <header className="conversation-heading"><div><h1>Work with your sources</h1><p>{state?.activeSourceIds.length ?? 0} selected · answers stay linked to Sources</p></div></header>
     <div className="conversation-thread" aria-live="polite">
-      {!timeline.length && <div className="conversation-empty"><h2>What should we make clear?</h2><p>Ask a question across the selected Sources. Voice capture adds your spoken thought as a private Source before WorkshopLM responds.</p><div className="conversation-prompts"><Button variant="secondary" size="small" onClick={() => setDraft("What is the strongest recommendation in these sources?")}>Find the recommendation</Button><Button variant="secondary" size="small" onClick={() => setDraft("Which source should lead the presentation?")}>Find the lead source</Button></div></div>}
+      {!timeline.length && <div className="conversation-empty"><h2>What should we make clear?</h2><p>Ask a question across the selected Sources. Voice capture adds your spoken thought as a private Source before WorkshopLM responds.</p><div className="conversation-prompts"><Button variant="secondary" size="small" onClick={() => setDraft("What is the strongest recommendation in these sources?")}>Find the recommendation</Button><Button variant="secondary" size="small" onClick={() => setDraft("Which source should lead the slides?")}>Find the lead source</Button></div></div>}
       {timeline.map((entry) => entry.kind === "turn" ? <article className={`conversation-turn conversation-turn--${entry.value.role}`} key={entry.value.id}>
         <small>{entry.value.role === "assistant" ? "WorkshopLM" : "You"}{entry.value.input === "voice" ? " · Voice" : ""}</small>
         <p>{entry.value.text}</p>
@@ -1050,7 +1050,7 @@ function HowItWorksSheet({ onClose }: { onClose: () => void }) {
   const steps = [
     { title: "Capture", detail: "Talk, paste meeting notes, add a public page, or use a local PDF." },
     { title: "Shape", detail: "Organize your ideas on the Map and approve the Brief." },
-    { title: "Deliver", detail: "Create the presentation and supporting Outputs, then approve the Storyboard before Video." },
+    { title: "Deliver", detail: "Create slides and supporting Outputs, then approve the Storyboard before Video." },
   ];
   return <SideSheet title="How WorkshopLM works" onClose={onClose}>
     <p className="sheet-intro">From your meetings and documents to polished slides, visuals, audio, and video—with every factual claim traced to its source.</p>

@@ -232,7 +232,7 @@ export function createWorkshop(title: string, root?: string): WorkshopState {
 }
 function onboardingOutcome(value: unknown): WorkshopOutcome {
   if (value === "client_facing_pitch" || value === "board_deck" || value === "internal_workshop") return value;
-  throw new Error("Choose Client pitch, Board presentation, or Team workshop.");
+  throw new Error("Choose Client pitch, Board slides, or Team workshop.");
 }
 export function updateWorkshopOnboarding(input: { title?: string; outcome?: WorkshopOutcome; step?: WorkshopOnboarding["step"] }, root?: string): WorkshopState {
   const current = readWorkshopState(root);
@@ -415,7 +415,7 @@ export function resolveWorkshopArtifact(id: string, root?: string, workshopId?: 
   const path = resolve(dataRoot, editable || output.relativePath);
   if (!path.startsWith(`${dataRoot}/`)) return undefined;
   return editable
-    ? { path, contentType: "application/vnd.openxmlformats-officedocument.presentationml.presentation", fileName: `${output.id}.pptx` }
+    ? { path, contentType: "application/vnd.openxmlformats-officedocument.presentationml.presentation", fileName: output.type === "deck" ? `slides-v${output.id.match(/v(\d+)$/)?.[1] ?? "1"}.pptx` : `${output.id}.pptx` }
     : { path, contentType: "text/html; charset=utf-8" };
 }
 function syncEvidenceIndex(db: ReturnType<typeof dbFor>, state: WorkshopState) {
@@ -1138,7 +1138,7 @@ export function generateAssetPlan(root?: string): WorkshopState {
   const createdAt = new Date().toISOString();
   const version = (current.assetPlan?.version ?? 0) + 1;
   const definitions = [
-    ["deck", "Presentation", "The approved Brief becomes a polished presentation you can defend."],
+    ["deck", "Slides", "The approved Brief becomes polished slides you can defend."],
     ["infographic", "Infographic", "The same evidence becomes a one-page visual for faster decisions."],
     ["images", "Image set", "Six on-brand images share one coherent visual language."],
     ["storyboard", "Storyboard", "Review and edit every frame before committing to video."],
@@ -1321,7 +1321,7 @@ async function generatedDeckCoverVisual(current: WorkshopState, root: string): P
     ?? current.imageBatch.panels.find((candidate) => candidate.state === "generated");
   if (!panel?.relativePath || !panel.sha256) return undefined;
   const bytes = await readFile(join(root, panel.relativePath));
-  if (createHash("sha256").update(bytes).digest("hex") !== panel.sha256) throw new Error("Presentation visual hash no longer matches the reviewed image.");
+  if (createHash("sha256").update(bytes).digest("hex") !== panel.sha256) throw new Error("Slides visual hash no longer matches the reviewed image.");
   const dimensions = validateBrandAsset(bytes, "image/png");
   return { data: `data:image/png;base64,${bytes.toString("base64")}`, aspectRatio: dimensions.width / dimensions.height, panelId: panel.id, panelVersion: panel.version, sha256: panel.sha256 };
 }
@@ -1355,7 +1355,7 @@ export async function generateOutput(type: "deck" | "infographic", root?: string
   return write({ ...current, outputRecovery, outputs: [...priorOutputs, { id: outputId, type, relativePath: rendered.relativePath, editableRelativePath: rendered.editableRelativePath, artifactPath: stored.relativePath, editableArtifactPath: editableStored?.relativePath, claimIds: blocks.map((block) => block.id), imageBatchId: coverVisual ? current.imageBatch?.id : undefined, imagePanels, stale: false, createdAt }], firstRenderedOutputAt: current.firstRenderedOutputAt ?? createdAt, updatedAt: createdAt }, root);
 }
 
-export function recordOutputFailure(type: "deck" | "infographic", root?: string): WorkshopState { const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); const previous = current.outputRecovery?.[type]; const label = type === "deck" ? "Presentation" : "Infographic"; return write({ ...current, outputRecovery: { ...current.outputRecovery, [type]: { message: `${label} could not be created. Your Brief and Style are safe.`, attempts: (previous?.attempts ?? 0) + 1, updatedAt } }, updatedAt }, root); }
+export function recordOutputFailure(type: "deck" | "infographic", root?: string): WorkshopState { const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); const previous = current.outputRecovery?.[type]; const label = type === "deck" ? "Slides" : "Infographic"; return write({ ...current, outputRecovery: { ...current.outputRecovery, [type]: { message: `${label} could not be created. Your Brief and Style are safe.`, attempts: (previous?.attempts ?? 0) + 1, updatedAt } }, updatedAt }, root); }
 
 function audioOverviewPosture(state: WorkshopState): WorkshopAudioOverview["posture"] {
   return state.style?.intentProfile === "board_deck" ? "decision_review" : state.style?.intentProfile === "internal_workshop" ? "overview" : "executive";

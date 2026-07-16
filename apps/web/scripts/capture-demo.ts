@@ -137,7 +137,7 @@ async function main(): Promise<void> {
       await expect(page.locator('img[src*="image-panel-"]').first()).toBeVisible();
     }, 2600);
 
-    await beat("output-evidence", "Follow a presentation back to its source", async () => {
+    await beat("output-evidence", "Follow Slides back to their source", async () => {
       await page.getByRole("button", { name: /^Open Sketch/ }).click();
       await expect(page.getByRole("heading", { name: "Sketch", exact: true })).toBeVisible();
       await page.waitForTimeout(900);

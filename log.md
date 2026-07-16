@@ -9380,6 +9380,36 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Founder recording and transcript, founder-derived ready Output set, final HyperFrames run, founder/target-audience film taste review, intended-audience Slides review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
 
+## 2026-07-16 16:51 CT — Slides language is now true across product, package, and film
+
+### Changed
+
+- Audited the claim that new UI and public language used `Slides` and found a real contradiction: the main Output cards already said Slides, but onboarding still offered `Board presentation`, the ready-state guidance said `Your presentation is ready`, the Storyboard's first generated panel was `Presentation`, recovery errors and build traces used that label, and the public package exported `presentation.html` / `presentation.pptx`.
+- Reconciled every active user-facing surface to `Slides`: onboarding and Style intent now say `Board slides`; Output guidance says `Your slides are ready` and `Open slides`; Conversation and help copy say slides; asset planning creates a `Slides` Storyboard panel; recovery and integrity errors say Slides; PowerPoint metadata says source-defensible slides; build trace labels the Output `Slides`; and public README, Devpost, claim-ledger, and evidence-audit prose now use the same vocabulary while explicitly naming the supporting Output set.
+- Preserved backward compatibility where it is real implementation vocabulary. The `deck` domain value, TypeScript identifiers, PowerPoint MIME type, provider-search synonyms, historical commit/log text, and immutable evidence paths remain unchanged. New professional downloads use `slides-vN.pptx`, and the submission package now exposes `slides.html` plus `slides.pptx` while retaining the internal manifest type `deck`.
+- Added a browser-level copy regression that fails if `Deck` or `Presentation` returns to visible product buttons or headings. Refreshed only the inspected desktop, compact, and mobile Storyboard baselines plus the visible-label inventory.
+
+### Verified
+
+- The first sandboxed worker run passed 113/120 tests but seven existing website-style cases could not resolve their public test domains. The authorized network-capable rerun passed all 120/120, confirming the failure was environmental rather than a product regression.
+- `pnpm demo:e2e` passed the complete recorded seam with `Slides` in the connected build trace. `pnpm submission:build` produced a valid 25-asset partial package; literal manifest inspection confirmed `slides.html` and `slides.pptx`. `pnpm submission:verify` reported valid, current, untampered, and zero issues.
+- The production-browser suite first exposed the intentionally changed Storyboard baseline. Inspected the actual desktop frame before accepting it, then visually accepted the compact and mobile frames: `Slides` fits the panel strip, editor, narration, and visual preview without collision or truncation. A clean no-update rerun passed all 31/31 scenarios; the new focused forbidden-term regression also passed independently.
+- Recaptured the real 12-beat fixture walkthrough at 56.72 seconds with SHA-256 `d28e6202c7cbdc87cdb20be7c232336b6d1d93c7aba82bbe6ff23cb28ec6f62f`. Its contact sheet visibly shows `Your slides are ready`, `Open slides`, the focused `Slides` object, `Client slides` inside the generated preview, and `Slides proof` in Storyboard.
+- Rebuilt the actual film through local HyperFrames 0.7.60. The 7.6 MB H.264/AAC movie remains 140.010667 seconds and now has SHA-256 `8de24f5a84dc0210b700887840922056990c4b877cab7632180d4bb1a64a727c`; DESIGN hash is `ce1d8f0923ec1c683f37f245ca84225da2405fb6f91aa79ce92466e9b8a8406c`, FRAME hash is `e004093353699f3b15335e5e45ebf810db9bc80214860ddc431efaf2c8ad679e`, and transition-aware runtime/layout checks reported zero errors. The one known non-blocking warning remains the intentionally dense ten-transition editorial timeline.
+- `pnpm demo:film:verify-sample`, `pnpm submission:packet:verify`, and `pnpm check` all passed. The complete check covered lint, typecheck, and tests across thirteen packages, including 120 worker, 30 web, and 19 production-renderer tests. No OpenAI request ran; the evidence ledger remains at 107 provider HTTP operations.
+
+### Decisions
+
+- `Slides` is the professional noun everywhere a person sees, downloads, reviews, or shares this Output. It is the hero deliverable, not the product category; Infographic, Sketch, Image set, Audio Overview, Storyboard, and Video stay equally explicit around it.
+- Backward-compatible internal identifiers are not renamed during the hackathon when doing so would create migration risk without user value. The regression boundary is visible language and exported filenames, not private schema implementation.
+- Historical build evidence remains immutable even when an old milestone or commit title says deck or presentation. The current UI, package, film, and public narrative carry the corrected vocabulary.
+- `PLAN-2026-07-13.md` remained advisory only for enduring principles. Its pre-existing user modification was untouched and will be excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final HyperFrames run, founder/target-audience film taste review, intended-audience Slides review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
 ## 2026-07-16 16:31 CT — The opening five seconds now prove the product
 
 ### Changed
@@ -9405,3 +9435,20 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Founder recording and transcript, founder-derived ready Output set, final HyperFrames run, founder/target-audience film taste review, intended-audience Slides review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 16:52 CT — Slides milestone log-order correction
+
+- The complete 16:51 CT `Slides language is now true across product, package, and film` entry was appended against an earlier repeated open-items anchor and therefore appears immediately before the 16:31 opening-film entry in this append-only file.
+- No historical entry was moved, deleted, or rewritten. This correction is the chronological tail marker; the 16:51 milestone remains authoritative for the Slides-language implementation, verification, film hash, and remaining gates.
+
+---
+
+## 2026-07-16 16:54 CT — External reviewer package joins the Slides vocabulary
+
+- The post-pass search found one additional active professional surface outside the main app: the AI Collective cold-review packet still offered `Open presentation`, described the artifact as a presentation/deck, and rendered `Client presentation` on its cover. Internal CSS classes, script variables, and the existing `dogfood:deck:*` commands remain unchanged for compatibility.
+- Updated the shared renderer's browser title and cover identity to Slides, updated the external README and cold-review action/alt text/manifest, rebuilt all nine Slides through the editable PowerPoint and LibreOffice/PDF round trip, and rebuilt the deterministic privacy-safe reviewer ZIP.
+- Visually inspected the new nine-slide contact sheet. It preserves the accepted layouts, exact AI Collective mark and palette, readable sources, decisions, plan, and recommendation while the cover now says `AI COLLECTIVE · CLIENT SLIDES`. The review ZIP passed archive integrity with six declared files; review ID is `aic-655e7b36d6138279` and ZIP SHA-256 is `5c0397c5773c97100ee59d0007271d5403377d385e31844f7e573a7284fe148e`.
+- `pnpm --filter @workshoplm/production test` passed all 19 renderer tests and `git diff --check` passed. No OpenAI request ran; the provider-operation ledger remains 107.
+- Founder and intended-audience judgment gates remain open. Rebuilding the review instrument does not count as receiving `Send` or a blocking `Revise` decision.

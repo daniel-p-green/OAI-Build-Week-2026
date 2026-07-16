@@ -303,7 +303,7 @@ test("an empty Workshop reaches editable Slides through one obvious path", async
     await expect(page.getByRole("button", { name: "Create outputs" })).toBeVisible();
     await page.getByRole("button", { name: "Create outputs" }).click();
 
-    await expect(page.getByText("Your presentation is ready.")).toBeVisible();
+    await expect(page.getByText("Your slides are ready.")).toBeVisible();
     await page.getByRole("button", { name: "Got it" }).click();
     await expect(page.getByRole("heading", { name: "Slides" })).toBeVisible();
     await page.locator('[data-output-role="hero"]').click();
@@ -381,7 +381,7 @@ test("Style starts from a website and preserves the Workshop outcome", async ({ 
     if (await createAnother.isVisible()) await createAnother.click();
     await expect(sheet.getByRole("button", { name: /Website/ })).toHaveAttribute("aria-pressed", "true");
     await sheet.getByRole("textbox", { name: "Website" }).fill("https://example.com/brand");
-    await expect(sheet.getByText("For Board presentation")).toBeVisible();
+    await expect(sheet.getByText("For Board slides")).toBeVisible();
     await expect(sheet.getByText("Use it for")).toHaveCount(0);
     await sheet.getByRole("button", { name: "Review style" }).click();
     await expect(sheet.getByRole("status")).toContainText("Found 3 colors, 1 font candidate, and 1 brand asset");
@@ -429,7 +429,7 @@ test("a completed website review hands off from the editable Map without blockin
   await expect(sheet.getByRole("textbox", { name: "Heading" })).toHaveValue("Studio Sans");
   await expect(sheet.getByText("Found on the website · usage not verified")).toBeVisible();
   await expect(sheet.getByText("System fallback · candidate not used until confirmed")).toBeVisible();
-  await expect(sheet.getByText("For Board presentation")).toBeVisible();
+  await expect(sheet.getByText("For Board slides")).toBeVisible();
   await sheet.getByRole("button", { name: "Save company style" }).click();
   await expect.poll(() => posted.at(-1)?.action).toBe("lockWebsiteStyle");
   await expect.poll(() => (posted.at(-1)?.manualStyle as Record<string, unknown>)?.fontsConfirmed).toBe(false);
@@ -1143,7 +1143,9 @@ test("visible copy stays plain and stable", async ({ page }) => {
     for (const value of await page.getByRole("button").allTextContents()) if (value.trim()) labels.add(value.replace(/\s+/g, " ").trim());
     for (const value of await page.getByRole("heading").allTextContents()) if (value.trim()) labels.add(value.replace(/\s+/g, " ").trim());
   }
-  expect(`${[...labels].sort().join("\n")}\n`).toMatchSnapshot("visible-labels.txt");
+  const visibleCopy = `${[...labels].sort().join("\n")}\n`;
+  expect(visibleCopy).not.toMatch(/\b(?:Deck|Presentation)\b/);
+  expect(visibleCopy).toMatchSnapshot("visible-labels.txt");
 });
 
 test("voice Sources keep provider transport language out of the professional surface", async ({ page }) => {
@@ -1312,7 +1314,7 @@ test("a new professional reaches the real Map through the durable first-use path
   await expect(page.getByRole("heading", { name: "Turn raw thinking into finished work." })).toBeVisible();
   await expect(page.getByRole("radiogroup", { name: "What are you making?" })).toBeVisible();
   await expectScreen(page, "desktop-onboarding-welcome");
-  await page.getByRole("radio", { name: /Board presentation/ }).click();
+  await page.getByRole("radio", { name: /Board slides/ }).click();
   await page.getByLabel("Workshop name").fill("Acme leadership update");
   await page.getByRole("button", { name: "Continue" }).click();
 
@@ -1343,7 +1345,7 @@ test("a new professional reaches the real Map through the durable first-use path
   await expect(page.getByRole("dialog", { name: "Source" })).toContainText("Professional teams lose hours turning meeting notes into client-ready work");
   await closeDialog(page, "Source");
   await page.getByRole("button", { name: "Choose style" }).click();
-  await expect(page.getByRole("dialog", { name: "Style" })).toContainText("For Board presentation");
+  await expect(page.getByRole("dialog", { name: "Style" })).toContainText("For Board slides");
   await expectScreen(page, "desktop-onboarding-style");
   await page.getByRole("button", { name: /Use saved style WorkshopLM editorial/ }).click();
   await expect(page.getByRole("button", { name: "Create outputs" })).toBeVisible();

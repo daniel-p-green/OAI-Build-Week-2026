@@ -1,13 +1,13 @@
 {
   "schemaVersion": 2,
-  "reviewId": "aic-53586afb923fa3ca",
-  "purpose": "Uncoached Send or Revise review of the external WorkshopLM dogfood deck.",
+  "reviewId": "aic-655e7b36d6138279",
+  "purpose": "Uncoached Send or Revise review of the external WorkshopLM Slides candidate.",
   "privacy": "Contains only the shareable AI Collective brief, its editable handoff, and local feedback tools. No private Workshop data or network submission.",
   "files": {
-    "START-HERE.html": "45ed59a4236debb4a16fff92e38bcc3a33416768bb5b2ea47f0da3032a067105",
-    "AI-Collective-chapter-launch.pdf": "53586afb923fa3ca5cb18f20a8eb11ca3c1d372b8f4c3617369af53af359b611",
-    "AI-Collective-chapter-launch.pptx": "5822212f210596bbcb27c64c3f3b66e86896d21a4158cce62c7c6b4dc9512805",
-    "contact-sheet.png": "e5ff2b29f6ead9c995f2030e843c89fbc9ca3ba959d142cfaa4323737e0cdce1",
-    "FEEDBACK.txt": "fa745e02fec6e74b676283261f7d6bd9e60158179a4495e01241afd2ed854a1d"
+    "START-HERE.html": "aff7290e66f1602e9d4f94b339cf9428a553f27acb08ea7dcefcfbbce2f0e0c0",
+    "AI-Collective-chapter-launch.pdf": "655e7b36d6138279c8901de9a64648b81dd1e8a777ff914b35dd23222c167c44",
+    "AI-Collective-chapter-launch.pptx": "5e8f710addde0369e6bd0a20c2f92a2ef90bbfc93431ba0dafb913c2c9ca4004",
+    "contact-sheet.png": "3354644da83763116b9794937d34cdcae3aa75e41bde7a761f60c96873ea4491",
+    "FEEDBACK.txt": "8259123264c6d9f810750a5dd771785fa1deb0a1d68fbfdec4586a2ff5895605"
   }
 }

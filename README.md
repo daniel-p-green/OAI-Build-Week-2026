@@ -4,7 +4,7 @@
 
 WorkshopLM turns meetings, documents, and half-formed thinking into polished slides and a coordinated set of source-defensible deliverables. It is built for consultants, strategists, and enablement leads who produce client-facing or leadership-facing work every week.
 
-Notebook-style tools help people understand source material. WorkshopLM is designed to help them ship from it: speak or type in the focused Conversation, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create a presentation that remains editable in PowerPoint. A shareable hand-drawn Sketch with immutable versions, Infographic, Image set, Storyboard, and Video are supporting Outputs around that wedge.
+Notebook-style tools help people understand source material. WorkshopLM is designed to help them ship from it: speak or type in the focused Conversation, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create polished slides that remain editable in PowerPoint. A shareable hand-drawn Sketch with immutable versions, Infographic, Image set, Audio Overview, Storyboard, and Video form the coordinated Output set around that wedge.
 
 WorkshopLM runs locally in the Codex in-app browser as one focused workbench. Conversation, Sources, Map, Brief, Style, Outputs, and Storyboard stay in one product surface; contextual views and sheets preserve the full workflow without a persistent tab maze. Codex desktop/CLI is the verified plugin host and build environment. ChatGPT Work support is not claimed.
 
@@ -12,7 +12,7 @@ WorkshopLM runs locally in the Codex in-app browser as one focused workbench. Co
 
 ```text
 Meeting or documents → grounded Map → approved Brief + reusable Style
-  → editable, source-defensible Presentation → supporting Outputs → approved Storyboard → Video
+  → editable, source-defensible Slides → supporting Outputs → approved Storyboard → Video
 ```
 
 Two approvals carry visible consequence: `Approve brief` freezes the production direction, and `Approve storyboard` authorizes Video. Source or Style changes preserve history while marking dependent work `Needs update`.
@@ -27,10 +27,10 @@ The repository currently provides a local-first deterministic seam with:
 - an editable, persisted Excalidraw Map with typed operations and versioned approvals;
 - materialized `FRAME.md`, `DESIGN.md`, style-token, asset-plan, slides, infographic, and editable Storyboard artifacts;
 - independent brief and storyboard approval gates, stale propagation, retry, and queued-render cancellation;
-- source-traceable presentation and infographic previews plus editable PowerPoint handoffs with claim locators and source notes;
+- source-traceable Slides and Infographic previews plus editable PowerPoint handoffs with claim locators and source notes;
 - a playable, grounded Cedar Audio Overview plus a versioned local HyperFrames Video render with per-scene provenance for the approved sanitized Storyboard fixture, and an inspected provider-backed Video using five OpenAI Cedar narration clips;
 - a unified `0.1.3` plugin whose stdio tools search and fetch grounded local evidence, route authorized workflow writes through the same loopback Workshop API, and declare Granola and Google Drive as optional host-provided source apps using the current plugin manifest contract;
-- a responsive Apps in ChatGPT-aligned interface where the current Presentation is the hero Output and supporting work remains one interaction away.
+- a responsive Apps in ChatGPT-aligned interface where the current Slides are the hero Output and supporting work remains one interaction away.
 
 This is active Build Week work, not a claim that every locked capability is complete. The authorized sample run has now proven a grounded `gpt-5.6-terra` Map, six accepted GPT Image 2 panels, a live grounded Realtime conversation, OpenAI Cedar narration, and a local HyperFrames Video. The no-credential recorded fixture remains a separate deterministic path: it replays six hash-bound sanitized GPT Image 2 files and one hash-bound Cedar Audio Overview while clearly labeling the Video's fallback narration. Native ChatGPT durable voice synchronization is not supported, and the founder-derived final package and public demo remain open. See [GOAL.md](GOAL.md) for the exact completion definition, [log.md](log.md) for dated evidence, and the [public claim ledger](submission/CLAIM-LEDGER.md) for the allowed wording and proof boundary.
 
@@ -47,7 +47,7 @@ pnpm judge:start
 
 `pnpm judge:start` recreates the no-credential acceptance Workshop and serves that exact data root in one command. It does not require OpenAI credentials or paid model calls. The fixture completes first-use onboarding, dismisses tutorial cues, and opens directly on the grounded Map. `pnpm demo:render` can independently rerun the approved sanitized fixture through the local HyperFrames worker, and `pnpm demo:thumbnail` builds a hash-bound 1280×720 product thumbnail from the rendered Video, locked film plan, and current Outputs proof. Ordinary `pnpm dev` intentionally opens the default product workspace rather than the judge fixture.
 
-After `pnpm judge:start` starts the server, open the printed local URL in the Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, a source-traced hand-drawn Sketch, real presentation and infographic previews, editable PowerPoint files, six hash-bound GPT Image 2 visuals, a playable 35.7-second Cedar Audio Overview, an editable image-bound Storyboard, and the local Video rendered from those reviewed frames. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
+After `pnpm judge:start` starts the server, open the printed local URL in the Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, a source-traced hand-drawn Sketch, real Slides and Infographic previews, editable PowerPoint files, six hash-bound GPT Image 2 visuals, a playable 35.7-second Cedar Audio Overview, an editable image-bound Storyboard, and the local Video rendered from those reviewed frames. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
 
 Two paid routing benchmark passes compared Sol, Terra, and Luna on compact grounded-graph, brief, and claim-triage cases. Their recorded latency, token usage, and deterministic JSON/evidence checks selected `gpt-5.6-terra` at medium reasoning as the current product default. Any rerun remains explicitly spend-gated and must not infer dollar costs from token counts.
 

@@ -74,7 +74,7 @@ describe("submission Output set", () => {
     expect(built.outputSet.assets.filter((asset) => asset.type === "thumbnail")).toHaveLength(3);
     expect(built.outputSet.assets.map((asset) => asset.type)).toEqual(expect.arrayContaining(["devpost_description", "readme_narrative", "deck", "infographic", "audio_overview", "image_manifest", "storyboard", "narration", "video", "evidence"]));
     expect(built.outputSet.assets).toEqual(expect.arrayContaining([
-      expect.objectContaining({ type: "deck", relativePath: "presentation.pptx", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation" }),
+      expect.objectContaining({ type: "deck", relativePath: "slides.pptx", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation" }),
       expect.objectContaining({ type: "infographic", relativePath: "infographic.pptx", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation" }),
     ]));
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "VIDEO-PROVENANCE.json", mimeType: "application/json", provenance: "video_render" }));

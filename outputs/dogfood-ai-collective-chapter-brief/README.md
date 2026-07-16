@@ -13,7 +13,7 @@ The active Style used the official AI Collective mark supplied by Daniel, exact 
 
 ## Rebuild
 
-`deck-input.json` is the reviewable, source-grounded brief used by the current renderer. `ai-collective-logo.png` is the authorized mark already supplied for this project. From the repository root, rebuild the HTML, editable PowerPoint, PDF round trip, and slide previews with:
+`deck-input.json` is the internal, reviewable source brief used by the current Slides renderer. `ai-collective-logo.png` is the authorized mark already supplied for this project. From the repository root, rebuild the HTML, editable PowerPoint, PDF round trip, and slide previews with:
 
 ```sh
 pnpm dogfood:deck:build
@@ -40,17 +40,17 @@ This package is ready for that review. It has not yet received an external send-
 
 ## Share the cold-review packet
 
-Build the privacy-safe reviewer bundle from the current deck with:
+Build the privacy-safe reviewer bundle from the current Slides candidate with:
 
 ```sh
 pnpm dogfood:review:build
 ```
 
-Send `workshoplm-ai-collective-cold-review.zip`. Its `START-HERE.html` shows the complete presentation, links the PDF and editable PowerPoint, and asks for exactly one decision: `Send` or the first blocking `Revise`. Feedback downloads locally as a text file; the page has no analytics, account requirement, form endpoint, or network submission. `FEEDBACK.txt` is included as a no-JavaScript fallback.
+Send `workshoplm-ai-collective-cold-review.zip`. Its `START-HERE.html` shows the complete Slides artifact, links the PDF and editable PowerPoint, and asks for exactly one decision: `Send` or the first blocking `Revise`. Feedback downloads locally as a text file; the page has no analytics, account requirement, form endpoint, or network submission. `FEEDBACK.txt` is included as a no-JavaScript fallback.
 
 The bundle is a review instrument, not review evidence. Do not close the professional gate until a real intended-audience reviewer returns the completed feedback.
 
-When that text file returns, validate and preserve it against the exact deck version with:
+When that text file returns, validate and preserve it against the exact Slides version with:
 
 ```sh
 pnpm dogfood:review:ingest -- /path/to/workshoplm-cold-review.txt

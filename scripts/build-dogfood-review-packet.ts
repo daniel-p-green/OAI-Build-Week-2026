@@ -31,8 +31,8 @@ function reviewHtml(reviewId: string) {
     <div class="eyebrow">Cold professional review</div>
     <h1>Would you send this under your own name?</h1>
     <p class="lede">Review the brief as finished client-facing work. Grade the artifact, not the effort behind it. Choose <strong>Send</strong>, or name the first thing that makes it <strong>Revise</strong>.</p>
-    <div class="actions"><a class="primary" href="AI-Collective-chapter-launch.pdf" target="_blank">Open presentation</a><a href="AI-Collective-chapter-launch.pptx">Download editable PowerPoint</a></div>
-    <img class="deck" src="contact-sheet.png" alt="Nine-slide AI Collective chapter launch presentation contact sheet">
+    <div class="actions"><a class="primary" href="AI-Collective-chapter-launch.pdf" target="_blank">Open slides</a><a href="AI-Collective-chapter-launch.pptx">Download editable PowerPoint</a></div>
+    <img class="deck" src="contact-sheet.png" alt="Nine-slide AI Collective chapter launch contact sheet">
     <section class="review" aria-labelledby="review-title">
       <h2 id="review-title">Your decision</h2>
       <p>Please make the decision before reading project notes or receiving an explanation.</p>
@@ -74,7 +74,7 @@ async function main() {
   const packet = join(source, "review-packet");
   const zipPath = join(source, "workshoplm-ai-collective-cold-review.zip");
   const deckInput = JSON.parse(await readFile(join(source, "deck-input.json"), "utf8")) as { blocks?: unknown[] };
-  if (deckInput.blocks?.length !== 8) throw new Error("Cold-review packet requires the current nine-slide deck.");
+  if (deckInput.blocks?.length !== 8) throw new Error("Cold-review packet requires the current nine-slide Slides artifact.");
 
   const copies = [
     ["chapter-launch-brief.pdf", "AI-Collective-chapter-launch.pdf"],
@@ -97,7 +97,7 @@ async function main() {
 
   const packetFiles = ["START-HERE.html", "AI-Collective-chapter-launch.pdf", "AI-Collective-chapter-launch.pptx", "contact-sheet.png", "FEEDBACK.txt"];
   const hashes = Object.fromEntries(await Promise.all(packetFiles.map(async (file) => [file, await sha256(join(packet, file))])));
-  const manifest = { schemaVersion: 2, reviewId, purpose: "Uncoached Send or Revise review of the external WorkshopLM dogfood deck.", privacy: "Contains only the shareable AI Collective brief, its editable handoff, and local feedback tools. No private Workshop data or network submission.", files: hashes };
+  const manifest = { schemaVersion: 2, reviewId, purpose: "Uncoached Send or Revise review of the external WorkshopLM Slides candidate.", privacy: "Contains only the shareable AI Collective brief, its editable handoff, and local feedback tools. No private Workshop data or network submission.", files: hashes };
   await writeFile(join(packet, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
   packetFiles.push("manifest.json");
   for (const file of packetFiles) await utimes(join(packet, file), fixedMtime, fixedMtime);

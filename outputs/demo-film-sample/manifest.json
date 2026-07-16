@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance Output set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-16T21:30:42.824Z",
+  "builtAt": "2026-07-16T21:47:47.776Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "compositor": {
@@ -13,7 +13,7 @@
     "jitterProneZoompan": false,
     "transition": "design-accent-wipe",
     "design": {
-      "sha256": "f102b3d6fb936d91673272aed89f17266fba071b9c04ea9fad9920b30e917e6f",
+      "sha256": "ce1d8f0923ec1c683f37f245ca84225da2405fb6f91aa79ce92466e9b8a8406c",
       "source": ".workshoplm/acceptance/generated/DESIGN-v1.md"
     },
     "frame": {
@@ -32,7 +32,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "b10db6660ea593281f49aa111862793b0cf598d6927c6fcb3de4de1d537aefcb",
+    "sha256": "8de24f5a84dc0210b700887840922056990c4b877cab7632180d4bb1a64a727c",
     "durationSeconds": 140.010667,
     "streams": [
       {
@@ -50,7 +50,7 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "30f3a736f4081f0522ed2d65c741a512fcd4eba1fa43ee5a7a06dcce1080e1ee"
+    "sha256": "8f3a48fb7411b444a2c0a4825728a9a9f69e61c1756f5c00f0b6455761b5d4fc"
   },
   "openingProofFrame": {
     "relativePath": "review/opening-proof.jpg",
@@ -60,7 +60,7 @@
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "58e6d587c9aeb2fa83e101257dc1165955061d0251cbd9969ed6206e3f40b8d7"
+      "sha256": "221f45d62b4574e44daa35066ff0a93fec91344c23b2b6bc7ee19ece5802a14f"
     },
     {
       "relativePath": "review/02.jpg",
@@ -68,27 +68,27 @@
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "2e884fe5be8e10878e1433462eb937f2bb44a1cd060942aa1c19d3aa3f3a709e"
+      "sha256": "f10e556a0ce2e8e83065fd6a8a82b89e0f3092613f700ddbf2185effde05ab2b"
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "06a0db66d4fadcb3eed539bb1e5dfd5058a0b5ae0a3d21b079eb0a323d75fccc"
+      "sha256": "06a581aaa78d638796e4acacdc0817b9edfcaa6bbf97c9e77032620ef3855b4d"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "ecc72df06398c6504b13ff824648528157a8348a44c8a605b08a9634bb030f25"
+      "sha256": "e1dd8c229b32ab84501c298b956b46e12908ec718c7131426e95bdd15e7e2bdc"
     },
     {
       "relativePath": "review/06.jpg",
-      "sha256": "571e09addb9dff3f3359b4ebe2dbc256dec9fa81957fb10dc6ef8d920f4815ed"
+      "sha256": "83d6074f8d384ac9decc890e8e26610453adf63c83c31aa1d22ae202e2247939"
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "8808b1b34833a2ae6e8e1d274573f89540a97a303d8df7dacb7597f0e946d7e8"
+      "sha256": "03e52d1189498d5e046368ced2fc5035b9bb0e0255c44bb68ad8911eb4420c11"
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "4531c58bfee3a432cc619baee35f59de809486584272df4767a0b75fe7abbfa4"
+      "sha256": "aee34c7d7015dacf66ca6182dc078ff0eb27451d80617ae46316c85ba49e2617"
     },
     {
       "relativePath": "review/09.jpg",
@@ -113,11 +113,11 @@
     },
     "submissionManifest": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
-      "sha256": "3cab24e1b893cbc42054e640b79fa8fecde58e087eb41dd7b4efe440148f56d4"
+      "sha256": "2c898e01dc743d9136efc74a29f97319253827d83edfd9178bb903e04e8bb06a"
     },
     "buildTrace": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/BUILD-TRACE.json",
-      "sha256": "47e6823cb3556f0934b9ffe1278b3d3b7ccd9465b1cad446e43f393ea47db1f3"
+      "sha256": "68e62aa1c3cc44de30551b979b5a827ba052dcdf3e0acde4d614024259aaa755"
     }
   },
   "shots": [
@@ -134,8 +134,8 @@
       "sourceBeats": [
         "map"
       ],
-      "sourceStartSeconds": 0.854,
-      "sourceEndSeconds": 2.553,
+      "sourceStartSeconds": 0.653,
+      "sourceEndSeconds": 2.354,
       "openingProof": {
         "type": "finished-work-to-map",
         "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/thumbnail-opening.png",
@@ -182,8 +182,8 @@
       "sourceBeats": [
         "sources"
       ],
-      "sourceStartSeconds": 3.053,
-      "sourceEndSeconds": 4.557,
+      "sourceStartSeconds": 2.854,
+      "sourceEndSeconds": 4.359,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "design-accent-wipe",
@@ -204,8 +204,8 @@
         "source-trace",
         "map-edit"
       ],
-      "sourceStartSeconds": 5.257,
-      "sourceEndSeconds": 7.755,
+      "sourceStartSeconds": 5.059,
+      "sourceEndSeconds": 7.554,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "design-accent-wipe",
@@ -225,8 +225,8 @@
       "sourceBeats": [
         "brief-approval"
       ],
-      "sourceStartSeconds": 8.68,
-      "sourceEndSeconds": 10.024,
+      "sourceStartSeconds": 8.478,
+      "sourceEndSeconds": 9.821,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "design-accent-wipe",
@@ -246,8 +246,8 @@
       "sourceBeats": [
         "style"
       ],
-      "sourceStartSeconds": 10.924,
-      "sourceEndSeconds": 11.92,
+      "sourceStartSeconds": 10.721,
+      "sourceEndSeconds": 11.722,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "design-accent-wipe",
@@ -268,8 +268,8 @@
         "create-outputs",
         "output-evidence"
       ],
-      "sourceStartSeconds": 12.838,
-      "sourceEndSeconds": 18.681,
+      "sourceStartSeconds": 12.634,
+      "sourceEndSeconds": 18.311,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "design-accent-wipe",
@@ -290,8 +290,8 @@
         "storyboard-edit",
         "storyboard-approval"
       ],
-      "sourceStartSeconds": 18.867,
-      "sourceEndSeconds": 21.982,
+      "sourceStartSeconds": 18.497,
+      "sourceEndSeconds": 21.669,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "design-accent-wipe",

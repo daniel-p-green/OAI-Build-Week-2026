@@ -14,8 +14,8 @@
     <div class="eyebrow">Cold professional review</div>
     <h1>Would you send this under your own name?</h1>
     <p class="lede">Review the brief as finished client-facing work. Grade the artifact, not the effort behind it. Choose <strong>Send</strong>, or name the first thing that makes it <strong>Revise</strong>.</p>
-    <div class="actions"><a class="primary" href="AI-Collective-chapter-launch.pdf" target="_blank">Open presentation</a><a href="AI-Collective-chapter-launch.pptx">Download editable PowerPoint</a></div>
-    <img class="deck" src="contact-sheet.png" alt="Nine-slide AI Collective chapter launch presentation contact sheet">
+    <div class="actions"><a class="primary" href="AI-Collective-chapter-launch.pdf" target="_blank">Open slides</a><a href="AI-Collective-chapter-launch.pptx">Download editable PowerPoint</a></div>
+    <img class="deck" src="contact-sheet.png" alt="Nine-slide AI Collective chapter launch contact sheet">
     <section class="review" aria-labelledby="review-title">
       <h2 id="review-title">Your decision</h2>
       <p>Please make the decision before reading project notes or receiving an explanation.</p>
@@ -41,7 +41,7 @@
       const status = document.querySelector('#status');
       if (!decision) { status.textContent = 'Choose Send or Revise first.'; return; }
       if (decision === 'Revise' && !blocker && !reason) { status.textContent = 'Name the first blocking issue before downloading.'; return; }
-      const text = ['WorkshopLM cold review', '', 'Review ID: aic-53586afb923fa3ca', 'Decision: ' + decision, 'Role: ' + (role || 'Not provided'), 'First blocker: ' + (blocker || 'None'), '', 'Reason:', reason || 'No additional comment.', ''].join('\n');
+      const text = ['WorkshopLM cold review', '', 'Review ID: aic-655e7b36d6138279', 'Decision: ' + decision, 'Role: ' + (role || 'Not provided'), 'First blocker: ' + (blocker || 'None'), '', 'Reason:', reason || 'No additional comment.', ''].join('\n');
       const href = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
       const link = document.createElement('a'); link.href = href; link.download = 'workshoplm-cold-review.txt'; link.click(); URL.revokeObjectURL(href);
       status.textContent = 'Feedback downloaded. Return that text file to the project team.';
