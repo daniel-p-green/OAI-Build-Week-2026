@@ -8105,3 +8105,56 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - The professional-own-material, external `Send`/`Revise`, founder capture, final package, final MP4, eligible Session ID, and public submission gates remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 08:09 CT — Focused Outputs lead with the finishing action
+
+**Area:** Product / professional Output review / visual hierarchy
+
+### Changed
+
+- Audited the accepted focused Presentation at desktop, compact, and mobile widths against the one-dominant-action rule. The primary black action was `Show source` even though the same exact claim trace was already directly below the artifact; editable PowerPoint was visually secondary.
+- Removed that duplicate header action. Presentation and Infographic now make `Download PowerPoint` primary, and Video makes `Edit storyboard` primary. `Open preview`, `Open video`, `Show original`, claim-by-claim source trace, and Version history remain available without competing for emphasis.
+- Updated the demo-capture source-trace beat to use the visible claim trail, which is the same interaction a professional now sees.
+- Added browser assertions for the new hierarchy: no duplicate exact `Show source` in focused headers, editable PowerPoint is primary for rendered documents, and Storyboard editing is primary for Video.
+
+### Verified
+
+- The first strict production-browser run rejected the retired desktop Presentation baseline. The actual replacement was visually inspected: it removes one redundant button, retains the complete artifact, and leaves exact source claims immediately below it.
+- The stateful snapshot-review run passed all 29 production-browser cases and regenerated only the eight focused Presentation/Video views whose action hierarchy actually changed, including the original-brainstorm sheet over Video.
+- A second strict `pnpm --filter @workshoplm/web test:visual` run rebuilt the production app and passed all 29 desktop, compact, mobile, recovery, accessibility, source-trace, and revision states in 1.1 minutes without snapshot updates.
+- `pnpm --filter @workshoplm/web test` passed all 30 web unit and contract tests.
+
+### Decisions
+
+- Source grounding stays prominent, but it has one consistent home: the claim trail adjacent to the artifact. The header is reserved for the action that finishes or revises the current object.
+- The stale dated plan remains untouched and excluded from execution and staging. No provider request ran; the evidence ledger remains 98 HTTP operations.
+
+### Open items
+
+- Run the broader repository, recorded seam, and submission packet gates before committing this milestone.
+- The professional-own-material, external `Send`/`Revise`, founder capture, final package, final MP4, eligible Session ID, and public submission gates remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 08:11 CT — Finishing-action hierarchy clears the complete seam
+
+**Area:** Integration / acceptance / submission evidence
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 118 worker, 30 web, and 19 production tests.
+- `pnpm demo:e2e` passed the complete recorded Capture → grounded Map → Brief → Style → editable Outputs → Storyboard → rendered Video seam.
+- `pnpm submission:packet:verify` passed with Terra, six GPT Image 2 panels, five product Cedar clips, the 2:20 Cedar editorial film, eight ready/two blocked shots, sixteen current UI screens, and four honest founder/final-package gaps.
+- `git diff --check` passed across the milestone while excluding only the preserved user-owned `PLAN-2026-07-13.md` modification.
+
+### Decisions
+
+- The action-hierarchy repair preserves the full capability and evidence floor and is ready to ship as an isolated milestone. No provider request ran; the evidence ledger remains 98 HTTP operations.
+
+### Open items
+
+- The professional-own-material, external `Send`/`Revise`, founder capture, final package, final MP4, eligible Session ID, and public submission gates remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -500,7 +500,8 @@ test.describe("completed Workshop judge path", () => {
       await expect(page.getByText("Presentation · Version 1 · 3 sources", { exact: true })).toBeVisible();
       if (viewport.width > 900) await expect(page.getByRole("complementary", { name: "Sources" })).toBeVisible();
       else await expect(page.getByRole("button", { name: "3 sources" })).toBeVisible();
-      await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveClass(/oai-button--primary/);
+      await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveCount(0);
+      await expect(page.getByRole("link", { name: "Download PowerPoint" })).toHaveClass(/oai-button--primary/);
       await expect(page.getByRole("region", { name: "Sources in this output" })).toBeVisible();
       await expect(page.getByRole("button", { name: /^Show source for / })).toHaveCount(4);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
@@ -776,7 +777,8 @@ test("finished Video reveals the original brainstorm without adding navigation",
     await page.getByRole("button", { name: "View brief" }).click();
     await page.getByRole("button", { name: "View outputs" }).click();
     await page.getByRole("button", { name: "Open Demo video" }).click();
-    await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveClass(/oai-button--primary/);
+    await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Edit storyboard" })).toHaveClass(/oai-button--primary/);
     await expect(page.getByRole("button", { name: /^Show source for / })).toHaveCount(4);
     const reveal = page.getByRole("button", { name: "Show original" });
     await reveal.click();
@@ -1099,9 +1101,9 @@ test("the local render becomes a real Video preview and the next action", async 
     await viewVideo.click();
     const player = page.locator(".focused-output-preview video[controls]");
     await expect(player).toBeVisible();
-    await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveClass(/oai-button--primary/);
+    await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveCount(0);
     const editStoryboard = page.getByRole("button", { name: "Edit storyboard" });
-    await expect(editStoryboard).toBeVisible();
+    await expect(editStoryboard).toHaveClass(/oai-button--primary/);
     await editStoryboard.click();
     await expect(page.getByRole("textbox", { name: "Panel title" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Approve storyboard" })).toHaveCount(0);
@@ -1209,15 +1211,15 @@ test("fresh Outputs keep the primary source trace clear and reveal the exact cla
   await heroPresentation.click();
 
   const notice = page.getByRole("status");
-  const showSource = page.getByRole("button", { name: "Show source", exact: true });
-  const [noticeBox, sourceBox] = await Promise.all([notice.boundingBox(), showSource.boundingBox()]);
+  const download = page.getByRole("link", { name: "Download PowerPoint" });
+  const [noticeBox, downloadBox] = await Promise.all([notice.boundingBox(), download.boundingBox()]);
   expect(noticeBox).not.toBeNull();
-  expect(sourceBox).not.toBeNull();
-  expect(noticeBox!.y + noticeBox!.height <= sourceBox!.y || sourceBox!.y + sourceBox!.height <= noticeBox!.y).toBeTruthy();
+  expect(downloadBox).not.toBeNull();
+  expect(noticeBox!.y + noticeBox!.height <= downloadBox!.y || downloadBox!.y + downloadBox!.height <= noticeBox!.y).toBeTruthy();
 
   const deck = readyState.outputs.filter((output: { type: string }) => output.type === "deck").at(-1);
   const claim = readyState.claims.find((item: { id: string }) => item.id === deck.claimIds[0]);
-  await showSource.click();
+  await page.getByRole("button", { name: new RegExp(`^Show source for ${claim.text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`) }).click();
   const source = page.getByRole("dialog", { name: "Source" });
   await expect(source).toContainText(claim.text);
   await expect(source).toContainText(claim.locator);

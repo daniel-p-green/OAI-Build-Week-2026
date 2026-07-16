@@ -128,7 +128,7 @@ async function main(): Promise<void> {
 
     await beat("output-evidence", "Follow a presentation back to its source", async () => {
       await page.getByRole("button", { name: "Open Presentation", exact: true }).click();
-      await page.getByRole("button", { name: "Show source", exact: true }).click();
+      await page.getByRole("button", { name: /^Show source for / }).first().click();
       await expect(page.getByRole("dialog", { name: "Source" })).toBeVisible();
     }, 1800);
     await page.getByRole("button", { name: "Close Source" }).click();
