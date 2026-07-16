@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "verifiedAt": "2026-07-16T08:01:44.520Z",
+  "verifiedAt": "2026-07-16T11:03:49.432Z",
   "workshopId": "workshop-build-week",
   "sourceMode": "authorized-sample",
   "founderSource": false,
@@ -160,15 +160,15 @@
     ]
   },
   "video": {
-    "id": "video-v2",
-    "version": 2,
-    "relativePath": "generated/videos/workshoplm-demo-v2.mp4",
-    "sha256": "c2c7d29423c60cdd22a99a54fb591fb44697c79291bab2fec97f8616c8c356e2",
-    "byteCount": 1250904,
+    "id": "video-v4",
+    "version": 4,
+    "relativePath": "generated/videos/workshoplm-demo-v4.mp4",
+    "sha256": "bc3723f7cdc39fe0f08824b33d8a59956ccb018eb1c44290518ef19e8a120212",
+    "byteCount": 6402117,
     "copiedFilmInput": {
       "relativePath": "outputs/demo-film-inputs/provider-narrated-video.mp4",
-      "sha256": "c2c7d29423c60cdd22a99a54fb591fb44697c79291bab2fec97f8616c8c356e2",
-      "byteCount": 1250904
+      "sha256": "bc3723f7cdc39fe0f08824b33d8a59956ccb018eb1c44290518ef19e8a120212",
+      "byteCount": 6402117
     },
     "durationSeconds": 25.002667,
     "streams": [
@@ -185,13 +185,13 @@
   "filmInputs": {
     "imageGallery": {
       "relativePath": "outputs/demo-film-inputs/provider-image-gallery.mov",
-      "sha256": "c4a42738426da86d353e1557d3fe6949320c24f53de6779e74598b60c996673e",
-      "byteCount": 80370
+      "sha256": "a328f0c14dfd026cfc50c7f07b1730755bca224d4d5480654a4b03b21bfff2f4",
+      "byteCount": 88617
     },
     "narratedVideo": {
       "relativePath": "outputs/demo-film-inputs/provider-narrated-video.mp4",
-      "sha256": "c2c7d29423c60cdd22a99a54fb591fb44697c79291bab2fec97f8616c8c356e2",
-      "byteCount": 1250904
+      "sha256": "bc3723f7cdc39fe0f08824b33d8a59956ccb018eb1c44290518ef19e8a120212",
+      "byteCount": 6402117
     }
   },
   "limitations": [

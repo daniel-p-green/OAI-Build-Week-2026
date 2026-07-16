@@ -1,0 +1,57 @@
+{
+  "capturedAt": "2026-07-16T06:00:00-05:00",
+  "video": {
+    "id": "video-v4",
+    "version": 4,
+    "stale": false,
+    "storyboardVersion": 2,
+    "styleVersion": 1,
+    "visualDnaVersion": 1,
+    "imageBatchId": "image-batch-v1",
+    "relativePath": "generated/videos/workshoplm-demo-v4.mp4",
+    "sha256": "bc3723f7cdc39fe0f08824b33d8a59956ccb018eb1c44290518ef19e8a120212",
+    "byteCount": 6402117,
+    "durationSeconds": 25.002667,
+    "width": 1920,
+    "height": 1080,
+    "framesPerSecond": 30,
+    "videoCodec": "h264",
+    "audioCodec": "aac",
+    "audioSampleRate": 48000,
+    "audioChannels": 2
+  },
+  "motion": {
+    "system": "calm-editorial",
+    "runtime": "local GSAP timeline rendered by HyperFrames",
+    "localRuntimeAsset": "gsap.min.js",
+    "copyEntranceSeconds": 0.58,
+    "sceneFadeSeconds": 0.18,
+    "imageTreatment": "restrained scale and horizontal settle across each approved panel",
+    "hardKillsAtClipBoundaries": true
+  },
+  "providerInputs": {
+    "newRequestsForThisMilestone": 0,
+    "narrationModel": "gpt-4o-mini-tts",
+    "narrationVoice": "cedar",
+    "narrationPanels": 5,
+    "generatedImagePanels": 5,
+    "narrationHashesUnchangedFromVersion2": true
+  },
+  "hyperframesCheck": {
+    "ok": true,
+    "lintErrors": 0,
+    "layoutErrors": 0,
+    "contrastChecksPassed": 25,
+    "contrastChecksTotal": 25,
+    "intentionalWarnings": {
+      "singleTimelineTrackDensity": 1,
+      "narrationShorterThanApprovedSceneSlot": 5
+    }
+  },
+  "review": {
+    "contactSheet": "artifacts/live-review/hyperframes-v4/contact-sheet.png",
+    "contactSheetSha256": "5f16216082e12197071dbbfdb1df34230c83e04e9c7e2119a5ccda87e0a702e6",
+    "internalVisualReview": "accepted",
+    "externalLeadershipOrSocialReview": "open"
+  }
+}

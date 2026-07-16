@@ -66,6 +66,9 @@ importers:
       '@workshoplm/production':
         specifier: workspace:*
         version: link:../../packages/production
+      gsap:
+        specifier: 3.14.2
+        version: 3.14.2
 
   packages/ai: {}
 
@@ -1510,6 +1513,9 @@ packages:
 
   glur@1.1.2:
     resolution: {integrity: sha512-l+8esYHTKOx2G/Aao4lEQ0bnHWg4fWtJbVoZZT9Knxi01pB8C80BR85nONLFwkkQoFRCmXY+BUcGZN3yZ2QsRA==}
+
+  gsap@3.14.2:
+    resolution: {integrity: sha512-P8/mMxVLU7o4+55+1TCnQrPmgjPKnwkzkXOK1asnR9Jg2lna4tEY5qBJjMmAaOBDDZWtlRjBXjLa0w53G/uBLA==}
 
   hachure-fill@0.5.2:
     resolution: {integrity: sha512-3GKBOn+m2LX9iq+JC1064cSFprJY4jL1jCXTcpnfER5HYE2l/4EfWSGzkPa/ZDBmYI0ZOEj5VHV/eKnPGkHuOg==}
@@ -3398,6 +3404,8 @@ snapshots:
       is-glob: 4.0.3
 
   glur@1.1.2: {}
+
+  gsap@3.14.2: {}
 
   hachure-fill@0.5.2: {}
 

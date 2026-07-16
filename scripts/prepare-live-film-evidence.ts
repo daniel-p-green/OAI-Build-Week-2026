@@ -77,7 +77,7 @@ async function main(): Promise<void> {
   const narratedVideo = await fileEvidence(narratedVideoPath, "outputs/demo-film-inputs/provider-narrated-video.mp4");
   assert(narratedVideo.sha256 === video.sha256, "The film-input Video copy changed bytes.");
 
-  const gallerySource = resolve(repository, "artifacts/ui-review/desktop-outputs.png");
+  const gallerySource = resolve(repository, "artifacts/ui-review/outputs-latest-only-desktop-2026-07-16.png");
   assert((await stat(gallerySource)).size > 0, "The inspected live Outputs screenshot is missing.");
   const galleryPath = resolve(filmInputRoot, "provider-image-gallery.mov");
   execFileSync("ffmpeg", ["-hide_banner", "-loglevel", "error", "-y", "-loop", "1", "-i", gallerySource, "-t", "6", "-vf", "scale=1920:1080:force_original_aspect_ratio=decrease,pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5,zoompan=z='min(zoom+0.00012,1.025)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s=1920x1080:fps=30,format=yuv420p", "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "20", "-movflags", "+faststart", galleryPath]);

@@ -1,6 +1,7 @@
 import { execFile as rawExecFile } from "node:child_process";
 import { createHash } from "node:crypto";
 import { copyFile, mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
 import { storeArtifact, type StoredArtifact } from "./artifacts/local-artifact-store.js";
@@ -11,6 +12,7 @@ import { finishJob, leaseNext } from "./queue.js";
 import { assertStoryboardGrounding, designDirectivesForStyle, readWorkshopState, recordRenderedVideo, recordVideoFailure, setVideoState, workshopGeneratedPath, type StoryboardPanel, type WorkshopState } from "./workshop-service.js";
 
 const execFile = promisify(rawExecFile);
+const require = createRequire(import.meta.url);
 export type ExecuteResult = { jobId?: string; state: "idle" | "succeeded" | "failed"; artifact?: StoredArtifact; error?: string };
 type RunCommand = (command: string, args: string[]) => Promise<unknown>;
 const defaultRun: RunCommand = async (command, args) => { await execFile(command, args, { cwd: resolve(process.cwd()), maxBuffer: 5_000_000 }); };
@@ -97,9 +99,33 @@ export function buildWorkshopVideoHtml(state: WorkshopState): string {
   const duration = state.storyboard.panels.reduce((total, panel) => total + panel.durationSeconds, 0);
   const disclosure = hasCurrentNarration(state) ? "AI-generated voice · OpenAI" : "deterministic local placeholder tone";
   let start = 0;
-  const scenes = state.storyboard.panels.map((panel, index) => { const image = currentImageForPanel(state, panel); const scene = `<section id="panel-${index + 1}" class="clip panel panel-${index % 3}${image ? " with-image" : ""}" data-start="${start}" data-duration="${panel.durationSeconds}" data-track-index="1">${image ? `<img class="scene-image" src="panel-${index + 1}.png" alt="">` : ""}<div class="copy"><div class="eyebrow">WORKSHOPLM · SOURCE-GROUNDED</div><h1>${escapeHtml(panel.title)}</h1><p>${escapeHtml(panel.narration)}</p></div><div class="panel-number">${String(index + 1).padStart(2, "0")} / ${String(state.storyboard.panels.length).padStart(2, "0")}</div><div class="disclosure">${disclosure}</div></section><audio id="panel-${index + 1}-audio" class="clip" src="panel-${index + 1}.wav" data-start="${start}" data-duration="${panel.durationSeconds}" data-track-index="2" data-volume="0.92"></audio>`; start += panel.durationSeconds; return scene; }).join("");
+  const scenes = state.storyboard.panels.map((panel, index) => { const image = currentImageForPanel(state, panel); const scene = `<section id="panel-${index + 1}" class="clip panel panel-${index % 3}${image ? " with-image" : ""}" data-start="${start}" data-duration="${panel.durationSeconds}" data-track-index="1"><div class="scene-content">${image ? `<img class="scene-image" src="panel-${index + 1}.png" alt="">` : ""}<div class="copy"><div class="eyebrow">WORKSHOPLM · SOURCE-GROUNDED</div><h1>${escapeHtml(panel.title)}</h1><p>${escapeHtml(panel.narration)}</p></div><div class="panel-number">${String(index + 1).padStart(2, "0")} / ${String(state.storyboard.panels.length).padStart(2, "0")}</div><div class="disclosure">${disclosure}</div></div></section><audio id="panel-${index + 1}-audio" class="clip" src="panel-${index + 1}.wav" data-start="${start}" data-duration="${panel.durationSeconds}" data-track-index="2" data-volume="0.92"></audio>`; start += panel.durationSeconds; return scene; }).join("");
+  start = 0;
+  const motion = state.storyboard.panels.map((panel, index) => {
+    const id = `#panel-${index + 1}`;
+    const image = currentImageForPanel(state, panel);
+    const enter = start;
+    const exit = Math.max(enter + 0.8, enter + panel.durationSeconds - 0.24);
+    const commands = [
+      `tl.set("${id} .scene-content",{opacity:0},0);`,
+      `tl.set("${id} .copy",{opacity:0,y:34},${enter});`,
+      `tl.to("${id} .scene-content",{opacity:1,duration:0.18,ease:"none"},${enter});`,
+      `tl.to("${id} .copy",{opacity:1,y:0,duration:0.58,ease:"power2.out"},${enter + 0.08});`,
+    ];
+    if (image) {
+      const direction = index % 2 ? -18 : 18;
+      commands.splice(2, 0, `tl.set("${id} .scene-image",{opacity:0,scale:1.035,x:${direction}},${enter});`);
+      commands.push(`tl.to("${id} .scene-image",{opacity:1,scale:1,x:0,duration:${Math.max(1, panel.durationSeconds - 0.2)},ease:"power1.out"},${enter});`);
+    }
+    commands.push(`tl.to("${id} .copy",{opacity:0,y:-12,duration:0.2,ease:"power1.in"},${exit});`);
+    commands.push(`tl.set("${id} .copy",{opacity:0},${enter + panel.durationSeconds});`);
+    commands.push(`tl.to("${id} .scene-content",{opacity:0,duration:0.18,ease:"none"},${enter + panel.durationSeconds - 0.18});`);
+    commands.push(`tl.set("${id} .scene-content",{opacity:0},${enter + panel.durationSeconds});`);
+    start += panel.durationSeconds;
+    return commands.join("");
+  }).join("");
   const background = avoidGradients ? style.ink : `radial-gradient(circle at 80% 10%,${style.accent} 0%,transparent 32%),${style.ink}`;
-  return `<!doctype html><html><head><meta charset="utf-8"><style>*{box-sizing:border-box}html,body,main{margin:0;width:1920px;height:1080px;overflow:hidden;background:${style.ink};color:${style.paper};font-family:${bodyFont}}.panel{position:absolute;inset:0;padding:104px 124px;display:flex;align-items:center;background:${background}}.scene-image{position:absolute;top:0;right:0;width:56%;height:100%;object-fit:cover}.panel-1 .scene-image{right:auto;left:0}.copy{position:relative;z-index:1;width:40%;display:flex;flex-direction:column;justify-content:center}.panel-1 .copy{margin-left:auto}.eyebrow{font-size:20px;letter-spacing:.14em;color:${style.accent};font-weight:700}h1{font-family:${headingFont};font-size:76px;line-height:1.02;margin:32px 0 28px;letter-spacing:-.03em}p{margin:0;font-size:30px;line-height:1.4;color:${style.paper}d8}.profile-board_deck h1{font-size:68px}.profile-internal_workshop h1{font-size:72px}.panel-number{position:absolute;top:54px;right:64px;font-size:17px;letter-spacing:.12em;color:${style.paper}a6}.panel-1 .panel-number{right:auto;left:64px}.disclosure{position:absolute;left:124px;bottom:56px;font-size:16px;letter-spacing:.02em;color:${style.paper}a6}.panel-1 .disclosure{right:124px;left:auto}</style></head><body><main class="profile-${style.intentProfile}" data-composition-id="workshoplm-storyboard-v${state.storyboard.version}" data-design-version="${state.designArtifact.version}" data-storyboard-label="APPROVED STORYBOARD V${state.storyboard.version}" data-audio-model="${hasCurrentNarration(state) ? "AI-generated voice · OpenAI gpt-4o-mini-tts" : "deterministic local placeholder tone"}" data-layout-rules="${escapeHtml(directives.layout.join(" | "))}" data-motion-rules="${escapeHtml(directives.motion.join(" | "))}" data-no-timeline data-start="0" data-duration="${duration}" data-width="1920" data-height="1080" data-fps="30">${scenes}</main></body></html>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><script src="gsap.min.js"></script><style>*{box-sizing:border-box}html,body,main{margin:0;width:1920px;height:1080px;overflow:hidden;background:${style.ink};color:${style.paper};font-family:${bodyFont}}.panel{position:absolute;inset:0}.scene-content{position:absolute;inset:0;padding:104px 124px;display:flex;align-items:center;background:${background};opacity:0}.scene-image{position:absolute;top:0;right:0;width:56%;height:100%;object-fit:cover}.panel-1 .scene-image{right:auto;left:0}.copy{position:relative;z-index:1;width:40%;display:flex;flex-direction:column;justify-content:center}.panel-1 .copy{margin-left:auto}.eyebrow{font-size:20px;letter-spacing:.14em;color:${style.accent};font-weight:700}h1{font-family:${headingFont};font-size:76px;line-height:1.02;margin:32px 0 28px;letter-spacing:-.03em}p{margin:0;font-size:30px;line-height:1.4;color:${style.paper}d8}.profile-board_deck h1{font-size:68px}.profile-internal_workshop h1{font-size:72px}.panel-number{position:absolute;top:48px;right:56px;padding:9px 12px 8px;border-radius:999px;background:#0D0D0Ddd;color:#FFFFFF;font-size:17px;line-height:1;letter-spacing:.12em}.panel-1 .panel-number{right:auto;left:56px}.disclosure{position:absolute;left:124px;bottom:56px;font-size:16px;letter-spacing:.02em;color:${style.paper}a6}.panel-1 .disclosure{right:124px;left:auto}</style></head><body><main class="profile-${style.intentProfile}" data-composition-id="workshoplm-storyboard-v${state.storyboard.version}" data-design-version="${state.designArtifact.version}" data-storyboard-label="APPROVED STORYBOARD V${state.storyboard.version}" data-audio-model="${hasCurrentNarration(state) ? "AI-generated voice · OpenAI gpt-4o-mini-tts" : "deterministic local placeholder tone"}" data-layout-rules="${escapeHtml(directives.layout.join(" | "))}" data-motion-rules="${escapeHtml(directives.motion.join(" | "))}" data-motion-system="calm-editorial" data-start="0" data-duration="${duration}" data-width="1920" data-height="1080" data-fps="30">${scenes}</main><script>window.__timelines=window.__timelines||{};const tl=gsap.timeline({paused:true});${motion}window.__timelines["workshoplm-storyboard-v${state.storyboard.version}"]=tl;</script></body></html>`;
 }
 export async function executeOne(root: string, run: RunCommand = defaultRun) : Promise<ExecuteResult> {
   const db = openLocalDatabase(join(root, "data", "workshoplm.sqlite")); migrate(db);
@@ -108,6 +134,7 @@ export async function executeOne(root: string, run: RunCommand = defaultRun) : P
   try {
     setVideoState("rendering", root, job.workshopId);
     const state = readWorkshopState(root, job.workshopId); const staging = join(root, workshopGeneratedPath(state.id, `storyboard-v${state.storyboard.version}-render`)); await mkdir(staging, { recursive: true }); await writeFile(join(staging, "index.html"), buildWorkshopVideoHtml(state));
+    await copyFile(require.resolve("gsap/dist/gsap.min.js"), join(staging, "gsap.min.js"));
     if (!state.designArtifact) throw new Error("Video render requires the current DESIGN.md.");
     await copyFile(join(root, state.designArtifact.markdownPath), join(staging, "DESIGN.md"));
     await copyFile(join(root, state.designArtifact.tokensPath), join(staging, "design.tokens.json"));

@@ -2718,8 +2718,6 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
----
-
 ## 2026-07-16 03:51 CT — Final film assembly is deterministic and fail-closed
 
 **Area:** Demo film / Meta reveal / Submission truth
@@ -7777,4 +7775,41 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 ### Open items
 
 - The intended-audience `Send` or first blocking `Revise` response remains the presentation gate. Founder capture, the founder-derived final operator run, verified final package, final MP4, eligible Session ID, and public submission links also remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 06:09 CT — Provider-narrated Video gains real editorial motion
+
+**Area:** HyperFrames rendering / professional Video quality / judge-visible evidence
+
+### Changed
+
+- Replaced the provider-narrated Video's static composition with a repository-local GSAP timeline rendered by HyperFrames. Every approved scene now has a restrained copy entrance, short scene fade, and subtle image scale/horizontal settle while retaining the exact approved Storyboard, Style, image, claim, Source, and Cedar narration inputs.
+- Added hard opacity kills at every clip boundary and animate only an inner scene wrapper rather than the HyperFrames clip element. This preserves correct state during nonlinear seeking and keeps HyperFrames in control of clip layout.
+- Copied the pinned GSAP runtime into each local staging directory instead of loading a CDN. The rendered demo remains deterministic and offline-capable beyond the already completed provider generation.
+- Increased the scene-number treatment to a high-contrast dark pill after the first inspection exposed a weak contrast edge.
+- Rendered immutable Video Version 4, refreshed the current provider-backed Outputs screenshot and canonical sixteen-screen gallery, and rebuilt the provider film inputs, final-style overlay preview, and 2:20 rough cut around the current Video.
+
+### Verified
+
+- The first HyperFrames lint run failed correctly on missing exit kills, direct clip animation, and initially visible fullscreen overlays. The implementation was repaired rather than bypassing the checks.
+- The final HyperFrames check reports `ok: true`, zero lint errors, zero layout errors, and 25/25 contrast passes. Its only intentional media-fit warnings record that the five Cedar clips are shorter than their approved five-second scenes; no narration is clipped.
+- Video Version 4 is a 25.002667-second 1920×1080 H.264/AAC MP4 with SHA-256 `bc3723f7cdc39fe0f08824b33d8a59956ccb018eb1c44290518ef19e8a120212`. Its provenance sidecar SHA-256 is `e5b06d3bda2157cf6bb8a7ec97f4e7fcbc6aa23f7c0b89dd05e06cb3d7e73da3`.
+- Twelve sampled frames across all five scenes passed internal visual inspection. The review contact sheet SHA-256 is `5f16216082e12197071dbbfdb1df34230c83e04e9c7e2119a5ccda87e0a702e6`; evidence is preserved under `artifacts/live-review/hyperframes-v4/`.
+- The live local Outputs surface showed `Video · Version 4` and `Up to date`. The refreshed 2:20 rough cut has SHA-256 `6fb6b24c101e70b495f7d149e1c4a4f408131b68272a842e0e477c66dd2b73a8` and passed contact-sheet inspection with the animated Image-set frame present.
+- `pnpm check` passed all thirteen packages with 116 worker, 30 web, and 17 production tests. `pnpm demo:e2e` passed the complete recorded-fixture seam.
+- `pnpm submission:packet:verify` passed with Terra, six provider images, five product Cedar clips, ten editorial Cedar clips, the 2:20 film, eight ready/two blocked shots, sixteen current UI screens, and four honest founder/final-package gaps. `pnpm demo:film:verify` remained correctly in draft mode.
+
+### Decisions
+
+- Motion is part of the professional quality bar, not decorative scope. A technically valid but static Video did not support the product's finished-work promise.
+- The Video uses calm editorial motion rather than spectacle: one readable entrance system, restrained image movement, and no competing transitions. The approved Storyboard remains the contract.
+- Local HyperFrames plus a pinned local timeline runtime remains the implementation boundary. No API, remote renderer, CDN, authentication, or additional video stack was introduced.
+- No provider request ran in this milestone. The evidence ledger remains 97 HTTP operations; exact dollar debit is unavailable and no exact spend is invented.
+
+### Open items
+
+- Internal visual review passed, but the leadership or professional social-post `Send`/`Revise` review remains open and the GOAL checkbox remains unchecked.
+- Founder capture, the founder-derived final operator run, verified final package, final MP4, eligible Session ID, and public submission links remain open.
 - Codex Session ID: unavailable on this surface; not inferred.

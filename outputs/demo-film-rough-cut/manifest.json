@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "editorial-rough-cut",
   "disclosure": "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video.",
-  "builtAt": "2026-07-16T09:59:32.220Z",
+  "builtAt": "2026-07-16T11:04:24.730Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "voice": {
@@ -15,7 +15,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-rough-cut.mp4",
-    "sha256": "517e7f3764cd08fc6913c09cb15e69761663e24894386cea4260a6ef49cfcf99",
+    "sha256": "6fb6b24c101e70b495f7d149e1c4a4f408131b68272a842e0e477c66dd2b73a8",
     "durationSeconds": 140.021333,
     "streams": [
       {
@@ -33,7 +33,7 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "db19cab17cf1791e89b56ea956a3076b378aa8deeb9dad505fe9b548341a07d3"
+    "sha256": "f2ef2a3e4f9eb073b833a2e872f764e3ec3630400e5931350f6a10ffb6dfa6f7"
   },
   "reviewFrames": [
     {
@@ -62,7 +62,7 @@
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "4837835991445b6fa95d3e9a6dc196ece3ae165d1def02c702ea2c6f69074bc6"
+      "sha256": "2c059e1fcfff084977800af82f869c65ac575a819569c7cad3859a9517175b38"
     },
     {
       "relativePath": "review/08.jpg",
@@ -70,7 +70,7 @@
     },
     {
       "relativePath": "review/09.jpg",
-      "sha256": "3f8f24b1080d1211ae8ac3414d76fd70f80714a16071387e17660c93b279e72b"
+      "sha256": "af0a697f579f1c1b3f4c55231ce9abde6a3576fe2438e6ec82863ffae5f0e90b"
     },
     {
       "relativePath": "review/10.jpg",
