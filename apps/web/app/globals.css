@@ -165,6 +165,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .conversation-tool { padding: 12px 14px; border-bottom: 1px solid rgba(13,13,13,.08); border-left: 2px solid var(--oai-green); color: #5d5d5d; }
 .conversation-tool small { font-size: 12px; font-weight: 600; line-height: 16px; }
 .conversation-tool p { margin: 3px 0 0; font-size: 13px; line-height: 18px; }
+.conversation-tool .oai-button { width: fit-content; margin-top: 10px; }
 .conversation-tool--error { border-left-color: var(--oai-red); }
 .conversation-citations { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 3px; }
 .conversation-citations .oai-token { min-height: 34px; height: auto; padding: 7px 12px; font-size: 12px; }

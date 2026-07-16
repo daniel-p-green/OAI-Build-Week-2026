@@ -40,7 +40,7 @@ type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; orig
 type EvidenceTarget = { sourceId?: string; claimId?: string; locator?: string };
 type EvidenceSelection = { excerpt: string; locator: string };
 type ConversationTurn = { id: string; role: "user" | "assistant"; text: string; input: "text" | "voice" | "system"; createdAt: string; evidence: { claimId?: string; sourceId: string; chunkId?: string; locator: string }[]; sourceId?: string; operation?: { name: "search" | "source_search" | "voice_capture"; status: "completed" } };
-type ConversationToolCall = { id: string; name: string; channel: "plugin" | "responses" | "realtime"; effect: string; status: "succeeded" | "failed"; startedAt: string; completedAt: string; result: { summary: string; isError: boolean } };
+type ConversationToolCall = { id: string; name: string; channel: "plugin" | "responses" | "realtime"; input: Record<string, unknown>; explicitUserIntent: boolean; effect: string; status: "succeeded" | "failed"; startedAt: string; completedAt: string; provider?: { model?: string; responseId?: string; callId?: string; eventId?: string }; result: { summary: string; isError: boolean } };
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
 type MapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
 type FontAvailability = "system" | "user_confirmed" | "unverified";
@@ -235,6 +235,23 @@ export default function WorkshopPage() {
     }
   }
 
+  async function confirmToolCall(call: ConversationToolCall): Promise<boolean> {
+    setBusy(true);
+    setNotice(null);
+    try {
+      const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "executeTool", toolCall: { name: call.name, arguments: call.input, channel: call.channel, explicitUserIntent: true, provider: call.provider } }) });
+      const confirmed = await response.json() as { state?: PersistedWorkshop; result?: { isError?: boolean; summary?: string }; error?: string };
+      if (!response.ok || !confirmed.state || confirmed.result?.isError) throw new Error(confirmed.error ?? confirmed.result?.summary ?? "That action could not be confirmed");
+      setState(confirmed.state);
+      return true;
+    } catch (error) {
+      setNotice({ message: error instanceof Error ? error.message : "That action could not be confirmed", tone: "error" });
+      return false;
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function analyzeWebsiteStyle(url: string) {
     setBusy(true);
     setNotice(null);
@@ -336,7 +353,7 @@ export default function WorkshopPage() {
         <section className="object-canvas" aria-label={currentTitle}>
           {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
           {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
-          {loadState === "ready" && view === "conversation" && <ConversationView state={state} busy={busy} onSend={async (text) => Boolean(await post({ action: "sendConversationMessage", text }))} onVoiceSave={async (text, capture) => Boolean(await post({ action: "captureFallbackTranscript", text, capture }))} onVoiceToolEvent={handleRealtimeToolEvent} onShowSource={showSource} />}
+          {loadState === "ready" && view === "conversation" && <ConversationView state={state} busy={busy} onSend={async (text) => Boolean(await post({ action: "sendConversationMessage", text }))} onVoiceSave={async (text, capture) => Boolean(await post({ action: "captureFallbackTranscript", text, capture }))} onVoiceToolEvent={handleRealtimeToolEvent} onConfirmTool={confirmToolCall} onShowSource={showSource} />}
           {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "map" }); }} onReviewStyle={() => openSheet("style")} onRetryStyle={(url) => { void post({ action: "beginWebsiteStyleAnalysis", url }); }} onUseDefaultStyle={() => { void post({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: state?.onboarding.outcome } }); }} />}
           {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
           {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
@@ -628,15 +645,17 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   </SideSheet>;
 }
 
-function ConversationView({ state, busy, onSend, onVoiceSave, onVoiceToolEvent, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[] }) => Promise<boolean>; onVoiceToolEvent: (event: unknown) => Promise<Record<string, unknown> | undefined>; onShowSource: (target?: EvidenceTarget) => void }) {
+function ConversationView({ state, busy, onSend, onVoiceSave, onVoiceToolEvent, onConfirmTool, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[] }) => Promise<boolean>; onVoiceToolEvent: (event: unknown) => Promise<Record<string, unknown> | undefined>; onConfirmTool: (call: ConversationToolCall) => Promise<boolean>; onShowSource: (target?: EvidenceTarget) => void }) {
   const [draft, setDraft] = useState("");
   const [voiceOpen, setVoiceOpen] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
   const turns = state?.conversationTurns ?? [];
   const toolCalls = state?.toolCalls ?? [];
+  const confirmedProviderCalls = new Set(toolCalls.filter((call) => call.explicitUserIntent && call.provider?.callId).map((call) => `${call.channel}:${call.provider!.callId}`));
+  const visibleToolCalls = toolCalls.filter((call) => !(call.provider?.callId && !call.explicitUserIntent && call.result.summary.includes("requires explicit user intent") && confirmedProviderCalls.has(`${call.channel}:${call.provider.callId}`)));
   const timeline = [
     ...turns.map((turn) => ({ kind: "turn" as const, at: turn.createdAt, value: turn })),
-    ...toolCalls.map((call) => ({ kind: "tool" as const, at: call.completedAt, value: call })),
+    ...visibleToolCalls.map((call) => ({ kind: "tool" as const, at: call.completedAt, value: call })),
   ].sort((left, right) => Date.parse(left.at) - Date.parse(right.at));
   useEffect(() => { endRef.current?.scrollIntoView({ block: "end" }); }, [timeline.length]);
 
@@ -654,7 +673,7 @@ function ConversationView({ state, busy, onSend, onVoiceSave, onVoiceToolEvent, 
         <small>{entry.value.role === "assistant" ? "WorkshopLM" : "You"}{entry.value.input === "voice" ? " · Voice" : ""}</small>
         <p>{entry.value.text}</p>
         {entry.value.evidence.length > 0 && <div className="conversation-citations" aria-label="Sources used">{entry.value.evidence.map((evidence, index) => { const source = state?.sourceItems.find((item) => item.id === evidence.sourceId); return <Token key={`${entry.value.id}-${evidence.chunkId ?? index}`} onClick={() => onShowSource(evidence)}>{source?.title ?? `Source ${index + 1}`}</Token>; })}</div>}
-      </article> : <ToolActivity call={entry.value} key={entry.value.id} />)}
+      </article> : <ToolActivity call={entry.value} confirmed={Boolean(entry.value.provider?.callId && confirmedProviderCalls.has(`${entry.value.channel}:${entry.value.provider.callId}`))} busy={busy} onConfirm={onConfirmTool} key={entry.value.id} />)}
       <div ref={endRef} />
     </div>
     <div className="conversation-compose">
@@ -677,13 +696,32 @@ const TOOL_ACTIVITY_LABELS: Record<string, string> = {
   workshop_approve_storyboard: "Approved Storyboard",
   workshop_render_video: "Started Video creation",
 };
-function ToolActivity({ call }: { call: ConversationToolCall }) {
+const TOOL_CONFIRM_LABELS: Record<string, string> = {
+  workshop_set_source_scope: "Update sources",
+  workshop_approve_brief: "Approve Brief",
+  workshop_create_output: "Create Output",
+  workshop_approve_storyboard: "Approve Storyboard",
+  workshop_render_video: "Create Video",
+};
+const TOOL_FAILURE_MESSAGES: Record<string, string> = {
+  search: "WorkshopLM couldn't search the selected Sources. Try asking again.",
+  fetch: "That source excerpt isn't available in the selected Sources.",
+  workshop_get_trace: "That Output's source trace isn't available.",
+  workshop_set_source_scope: "The selected Sources changed. Review them and try again.",
+  workshop_approve_brief: "The Map changed. Review the current Map before approving the Brief.",
+  workshop_create_output: "The Brief or Style changed. Review them before creating this Output.",
+  workshop_approve_storyboard: "The Storyboard changed. Review the current panels before approval.",
+  workshop_render_video: "Approve the current Storyboard before creating the Video.",
+};
+function ToolActivity({ call, confirmed, busy, onConfirm }: { call: ConversationToolCall; confirmed: boolean; busy: boolean; onConfirm: (call: ConversationToolCall) => Promise<boolean> }) {
   const channel = call.channel === "realtime" ? "Voice" : call.channel === "responses" ? "Chat" : "Plugin";
   const label = TOOL_ACTIVITY_LABELS[call.name] ?? "Workshop action";
-  const visibleLabel = call.result.isError ? `Couldn't complete: ${label.toLocaleLowerCase()}` : label;
+  const needsConfirmation = !confirmed && !call.explicitUserIntent && call.result.isError && call.result.summary.includes("requires explicit user intent") && Boolean(TOOL_CONFIRM_LABELS[call.name]);
+  const visibleLabel = needsConfirmation ? `Confirmation required · ${channel}` : call.result.isError ? `Couldn't complete: ${label.toLocaleLowerCase()} · ${channel}` : `${label} · ${channel}`;
   return <article className={`conversation-tool ${call.result.isError ? "conversation-tool--error" : ""}`} aria-label={`${label}: ${call.status}`}>
-    <small>{visibleLabel} · {channel}</small>
-    <p>{call.result.summary}</p>
+    <small>{visibleLabel}</small>
+    <p>{needsConfirmation ? `WorkshopLM needs your confirmation to ${TOOL_CONFIRM_LABELS[call.name]!.toLocaleLowerCase()}.` : call.result.isError ? (TOOL_FAILURE_MESSAGES[call.name] ?? "WorkshopLM couldn't complete that action. Try again.") : call.result.summary}</p>
+    {needsConfirmation && <Button size="small" disabled={busy} onClick={() => { void onConfirm(call); }}>{TOOL_CONFIRM_LABELS[call.name]}</Button>}
   </article>;
 }
 

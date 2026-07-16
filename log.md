@@ -6514,3 +6514,35 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Promote Realtime from capture-only to speech-to-speech with the same confirmation path, then live-verify interruption, one read, one write, transcript, and tool provenance after authorization.
 - Collapsible rails, contextual affected-work disclosure, the external deck's cold `Send`/`Revise` decision, provider media, founder recording, final public Video, public links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 21:21 CT — Model writes require one visible professional confirmation
+
+**Area:** Conversation / Trust / Approval safety
+
+### Changed
+
+- Added a shared confirmation retry contract for provider-generated writes. A call first rejected for missing explicit intent may be retried with the same provider call ID only after an explicit UI action; the confirmed attempt receives a distinct durable invocation ID and remains idempotent thereafter.
+- Added plain-language confirmation cards inside Conversation for Source selection, Brief approval, Output creation, Storyboard approval, and Video creation. Each uses the exact user action as its button label.
+- Suppressed the superseded failed-intent record after confirmation so the professional sees one final successful activity rather than a false lingering error. Durable state still retains both the rejected and confirmed attempts for audit.
+- Separated professional recovery copy from durable diagnostics. Malformed inputs and stale versions no longer expose `workshop_*` names, provider IDs, or schema internals in Conversation.
+
+### Verified
+
+- Worker tests prove an initial Realtime write stays unchanged, the exact provider call succeeds once after explicit intent, both intent states persist in order, and later provider retries replay without a second mutation.
+- Ran the real local browser/API seam against an isolated seeded Workshop. An official-shaped Realtime Brief-approval event produced `Confirmation required · Voice` and one `Approve Brief` button while `briefApproved` remained false. Clicking the activity button produced `Approved Brief · Voice`, set `briefApproved` true, persisted intents `[false, true]` with statuses `[failed, succeeded]`, removed the pending button, and exposed no `workshop_` text.
+- Narrow worker, web, UI-contract, and type checks passed. No paid provider request ran.
+
+### Decisions
+
+- A model asking to write and a professional authorizing the write are separate events. Voice phrasing alone is not inferred as consent in this implementation.
+- The rejected attempt remains in durable state for provenance but disappears from the visible timeline after its exact provider call is successfully confirmed.
+- Confirmation uses existing official Button and Conversation primitives; no modal, third approval system, or settings concept was introduced.
+
+### Open items
+
+- Build the actual spend-gated Responses SSE producer/continuation loop and persist its final assistant text plus grounded evidence.
+- Enable the same confirmation-aware Realtime speech loop, then live-verify interruption, one read, one write, transcript, and provider provenance after authorization.
+- The external deck `Send`/`Revise` review and all final provider/demo/submission evidence remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -46,7 +46,7 @@ function toolDefinition(name: WorkshopToolName): WorkshopToolDefinition {
   return definition;
 }
 function callId(input: ExecuteWorkshopToolInput, name: string, startedAt: string): string {
-  const stable = `${input.channel}\n${input.provider?.callId ?? `${name}\n${startedAt}\n${JSON.stringify(input.arguments ?? {})}`}`;
+  const stable = `${input.channel}\n${input.provider?.callId ?? `${name}\n${startedAt}\n${JSON.stringify(input.arguments ?? {})}`}\nintent:${Boolean(input.explicitUserIntent)}`;
   return `tool-call-${createHash("sha256").update(stable).digest("hex").slice(0, 16)}`;
 }
 function boundedError(error: unknown): string { return (error instanceof Error ? error.message : "Workshop tool execution failed.").slice(0, 1_000); }
@@ -110,8 +110,9 @@ export async function executeWorkshopTool(request: ExecuteWorkshopToolInput, roo
   const parsedName = WorkshopToolName.safeParse(request.name);
   if (!parsedName.success) throw new Error(`Unknown Workshop tool: ${request.name}.`);
   const name = parsedName.data; const definition = toolDefinition(name); let input: Record<string, unknown> = {};
-  const prior = request.provider?.callId ? active.toolCalls.find((call) => call.channel === request.channel && call.provider?.callId === request.provider?.callId) : undefined;
-  if (prior) return { call: prior, result: prior.result, state: active, replayed: true };
+  const prior = request.provider?.callId ? [...active.toolCalls].reverse().find((call) => call.channel === request.channel && call.provider?.callId === request.provider?.callId) : undefined;
+  const confirmedRetry = Boolean(prior && definition.requiresExplicitUserIntent && request.explicitUserIntent && !prior.explicitUserIntent && prior.status === "failed" && prior.result.summary.includes("requires explicit user intent"));
+  if (prior && !confirmedRetry) return { call: prior, result: prior.result, state: active, replayed: true };
   try { input = parseWorkshopToolInput(name, request.arguments ?? {}); }
   catch (error) {
     const completedAt = new Date().toISOString(); const result = { summary: boundedError(error), isError: true };

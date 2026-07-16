@@ -33,14 +33,15 @@ describe("shared Workshop tool executor", () => {
     const blocked = await executeWorkshopTool({ name: "workshop_set_source_scope", arguments: { workshopId: before.id, sourceIds: selected }, channel: "realtime", provider: { callId: "scope-blocked" } }, root);
     expect(blocked.result).toMatchObject({ isError: true, summary: expect.stringMatching(/explicit user intent/) });
     expect(blocked.state.activeSourceIds).toEqual(before.activeSourceIds);
-    const applied = await executeWorkshopTool({ name: "workshop_set_source_scope", arguments: { workshopId: before.id, sourceIds: selected }, channel: "realtime", explicitUserIntent: true, provider: { model: "gpt-realtime-2.1", callId: "scope-visible-1", eventId: "event-scope-1" } }, root);
+    const applied = await executeWorkshopTool({ name: "workshop_set_source_scope", arguments: { workshopId: before.id, sourceIds: selected }, channel: "realtime", explicitUserIntent: true, provider: { model: "gpt-realtime-2.1", callId: "scope-blocked", eventId: "event-scope-1" } }, root);
     expect(applied.result.isError).toBe(false);
     expect(applied.state.activeSourceIds).toEqual(selected);
     expect(applied.state.briefApproved).toBe(false);
-    const replayed = await executeWorkshopTool({ name: "workshop_set_source_scope", arguments: { workshopId: before.id, sourceIds: before.activeSourceIds }, channel: "realtime", explicitUserIntent: true, provider: { model: "gpt-realtime-2.1", callId: "scope-visible-1", eventId: "event-scope-1" } }, root);
+    const replayed = await executeWorkshopTool({ name: "workshop_set_source_scope", arguments: { workshopId: before.id, sourceIds: before.activeSourceIds }, channel: "realtime", explicitUserIntent: true, provider: { model: "gpt-realtime-2.1", callId: "scope-blocked", eventId: "event-scope-1" } }, root);
     expect(replayed.replayed).toBe(true);
     expect(replayed.state.activeSourceIds).toEqual(selected);
     expect(readWorkshopState(root).toolCalls).toHaveLength(2);
+    expect(readWorkshopState(root).toolCalls.map((call) => call.explicitUserIntent)).toEqual([false, true]);
   });
 
   it("persists stale-version rejection and approves only the exact current Map", async () => {
