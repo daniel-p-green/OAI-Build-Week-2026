@@ -9,22 +9,29 @@ const execFile = promisify(execFileCallback);
 export type FounderCaptureManifest = {
   schemaVersion: 1;
   recordedAt: string;
+  recordedAtEvidence: "embedded_media_creation_time" | "file_modified_time";
+  stagedAt: string;
   recording: { sourceName: string; relativePath: string; sha256: string; byteCount: number; durationSeconds: number; videoCodec?: string; audioCodec?: string };
   transcript: { sourceName: string; relativePath: string; sha256: string; byteCount: number; characterCount: number };
   provenance: "founder-provided-recording-and-transcript";
   providerRealtimeEvidence: false;
 };
 
-type ProbeResult = { format?: { duration?: string }; streams?: Array<{ codec_type?: string; codec_name?: string }> };
+type ProbeResult = { format?: { duration?: string; tags?: { creation_time?: string } }; streams?: Array<{ codec_type?: string; codec_name?: string; tags?: { creation_time?: string } }> };
 type Probe = (path: string) => Promise<ProbeResult>;
 
 const defaultProbe: Probe = async (path) => {
-  const { stdout } = await execFile("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-show_entries", "stream=codec_type,codec_name", "-of", "json", path], { maxBuffer: 2_000_000 });
+  const { stdout } = await execFile("ffprobe", ["-v", "error", "-show_entries", "format=duration:format_tags=creation_time", "-show_entries", "stream=codec_type,codec_name:stream_tags=creation_time", "-of", "json", path], { maxBuffer: 2_000_000 });
   return JSON.parse(stdout) as ProbeResult;
 };
 
 function sha256(bytes: Uint8Array): string {
   return createHash("sha256").update(bytes).digest("hex");
+}
+
+function validTimestamp(value: string | undefined): string | undefined {
+  if (!value || !Number.isFinite(Date.parse(value))) return undefined;
+  return new Date(value).toISOString();
 }
 
 export function validateFounderTranscript(raw: string): string {
@@ -35,7 +42,7 @@ export function validateFounderTranscript(raw: string): string {
   return text;
 }
 
-export async function inspectFounderCapture(recordingPath: string, transcriptPath: string, probe: Probe = defaultProbe): Promise<{ recordingPath: string; transcriptPath: string; recordingBytes: Buffer; transcriptBytes: Buffer; transcript: string; durationSeconds: number; videoCodec?: string; audioCodec?: string }> {
+export async function inspectFounderCapture(recordingPath: string, transcriptPath: string, probe: Probe = defaultProbe): Promise<{ recordingPath: string; transcriptPath: string; recordingBytes: Buffer; transcriptBytes: Buffer; transcript: string; durationSeconds: number; videoCodec?: string; audioCodec?: string; recordedAt: string; recordedAtEvidence: FounderCaptureManifest["recordedAtEvidence"] }> {
   const recording = resolve(recordingPath);
   const transcriptFile = resolve(transcriptPath);
   if (recording === transcriptFile) throw new Error("Founder recording and transcript must be separate files.");
@@ -48,7 +55,8 @@ export async function inspectFounderCapture(recordingPath: string, transcriptPat
   const audioCodec = media.streams?.find((stream) => stream.codec_type === "audio")?.codec_name;
   if (!Number.isFinite(durationSeconds) || durationSeconds < 3) throw new Error("Founder recording must contain at least three seconds of media.");
   if (!videoCodec || !audioCodec) throw new Error("Founder recording must contain both a video stream and an audio stream.");
-  return { recordingPath: recording, transcriptPath: transcriptFile, recordingBytes, transcriptBytes: Buffer.from(`${transcript}\n`), transcript, durationSeconds, videoCodec, audioCodec };
+  const embeddedRecordedAt = validTimestamp(media.format?.tags?.creation_time) ?? media.streams?.map((stream) => validTimestamp(stream.tags?.creation_time)).find(Boolean);
+  return { recordingPath: recording, transcriptPath: transcriptFile, recordingBytes, transcriptBytes: Buffer.from(`${transcript}\n`), transcript, durationSeconds, videoCodec, audioCodec, recordedAt: embeddedRecordedAt ?? recordingInfo.mtime.toISOString(), recordedAtEvidence: embeddedRecordedAt ? "embedded_media_creation_time" : "file_modified_time" };
 }
 
 export async function stageFounderCapture(input: Awaited<ReturnType<typeof inspectFounderCapture>>, root: string): Promise<FounderCaptureManifest> {
@@ -61,7 +69,9 @@ export async function stageFounderCapture(input: Awaited<ReturnType<typeof inspe
   await writeFile(join(resolve(root), transcriptRelativePath), input.transcriptBytes);
   const manifest: FounderCaptureManifest = {
     schemaVersion: 1,
-    recordedAt: new Date().toISOString(),
+    recordedAt: input.recordedAt,
+    recordedAtEvidence: input.recordedAtEvidence,
+    stagedAt: new Date().toISOString(),
     recording: { sourceName: basename(input.recordingPath), relativePath: recordingRelativePath, sha256: sha256(input.recordingBytes), byteCount: input.recordingBytes.byteLength, durationSeconds: input.durationSeconds, videoCodec: input.videoCodec, audioCodec: input.audioCodec },
     transcript: { sourceName: basename(input.transcriptPath), relativePath: transcriptRelativePath, sha256: sha256(input.transcriptBytes), byteCount: input.transcriptBytes.byteLength, characterCount: input.transcript.length },
     provenance: "founder-provided-recording-and-transcript",
@@ -80,7 +90,9 @@ export async function stageFounderFilmInputs(input: Awaited<ReturnType<typeof in
   await writeFile(join(output, transcriptRelativePath), input.transcriptBytes);
   const manifest: FounderCaptureManifest = {
     schemaVersion: 1,
-    recordedAt: new Date().toISOString(),
+    recordedAt: input.recordedAt,
+    recordedAtEvidence: input.recordedAtEvidence,
+    stagedAt: new Date().toISOString(),
     recording: { sourceName: basename(input.recordingPath), relativePath: recordingRelativePath, sha256: sha256(input.recordingBytes), byteCount: input.recordingBytes.byteLength, durationSeconds: input.durationSeconds, videoCodec: input.videoCodec, audioCodec: input.audioCodec },
     transcript: { sourceName: basename(input.transcriptPath), relativePath: transcriptRelativePath, sha256: sha256(input.transcriptBytes), byteCount: input.transcriptBytes.byteLength, characterCount: input.transcript.length },
     provenance: "founder-provided-recording-and-transcript",

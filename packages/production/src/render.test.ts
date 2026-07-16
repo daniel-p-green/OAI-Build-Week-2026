@@ -35,7 +35,7 @@ describe("production renderers", () => {
     expect(deck).toContain('class="split-body"');
     expect(deck).toContain('class="slide recommendation"');
     expect(deck).toContain('class="brand-logo"');
-    expect(deck).toContain("WorkshopLM · Client slides");
+    expect(deck).toContain("WorkshopLM · Client presentation");
     const infographic = renderInfographic(brief);
     expect(infographic).toContain("Source-defensible brief");
     expect(infographic).toContain('class="infographic-grid"');
@@ -146,7 +146,7 @@ describe("production renderers", () => {
     expect(client).toContain('class="deck intent-client-facing-pitch" data-intent="client_facing_pitch"');
     expect(client).toContain("02 · Core insight");
     expect(board).toContain('class="deck intent-board-deck" data-intent="board_deck"');
-    expect(board).toContain("WorkshopLM · Board slides");
+    expect(board).toContain("WorkshopLM · Board presentation");
     expect(board).toContain("02 · Executive summary");
     expect(board).toContain(".intent-board-deck .cover{background:var(--paper)");
     expect(workshop).toContain('class="deck intent-internal-workshop" data-intent="internal_workshop"');

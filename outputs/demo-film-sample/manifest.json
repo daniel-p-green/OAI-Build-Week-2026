@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance Output set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-16T22:13:16.302Z",
+  "builtAt": "2026-07-16T23:02:36.501Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "compositor": {
@@ -14,7 +14,7 @@
     "spatialTransforms": false,
     "transition": "design-accent-dip",
     "design": {
-      "sha256": "5183cea35605bc1690d0e0228f8da6f3c6efb3724f8af9681e8af48e67ae2326",
+      "sha256": "29ddc1bd9f40d118c7699c7943a7b95a9e138e8533a6967d8d429c5114a22807",
       "source": ".workshoplm/acceptance/generated/DESIGN-v1.md"
     },
     "frame": {
@@ -33,7 +33,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "c5f579f5c9ba19529b08b653efc786440ecbcb95ebae34107a175efd09b1e362",
+    "sha256": "0e673d3256947444bc7e2530785a3be4662c366adea68db8a78b21b093dec476",
     "durationSeconds": 140.010667,
     "streams": [
       {
@@ -51,7 +51,7 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "a769fcc92871a66d3ce95dd31129f90259073ea5e4b3a0bbfb903087da629faa"
+    "sha256": "7bd12c90c09ab1bb924e32f1fed216fd7af306e3add636f81bf1680d81285789"
   },
   "openingProofFrame": {
     "relativePath": "review/opening-proof.jpg",
@@ -93,7 +93,7 @@
     },
     {
       "relativePath": "review/09.jpg",
-      "sha256": "7eeaa7f23073d342fbf5c595c67f5d315b9e6bf8946d840f1ce93f0c616d69dd"
+      "sha256": "e52966ea2dfee2fb771ad852e49b10cb476fa9488c132891ea04a059c346693c"
     },
     {
       "relativePath": "review/10.jpg",
@@ -114,11 +114,11 @@
     },
     "submissionManifest": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
-      "sha256": "52d1e45cbc301071b0f8009a246bc03149338e71d4ae33d24c0aba1e1f664e51"
+      "sha256": "7df2075e9f12030880422a842a8ab779968fbaabed860bd8581ac78893387765"
     },
     "buildTrace": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/BUILD-TRACE.json",
-      "sha256": "066597c661ed83eacb3f05481ea56c417912c2efffa8b2c8f8fa446ee0dd149e"
+      "sha256": "25dff1a8227800fadaa02aadd6e951eef45af247fb4b071ae672ce72d8380475"
     }
   },
   "shots": [

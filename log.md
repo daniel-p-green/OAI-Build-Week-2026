@@ -9566,3 +9566,41 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The complete `17:28 CT — GOAL.md concurrent-edit reconciliation` entry and its `17:29 CT` log-order note were appended against earlier repeated anchors. They remain valid append-only evidence; this entry is the authoritative chronological tail marker.
 - Current truth is unchanged: `GOAL.md` is 209 lines with exactly five top-level sections and five active critical-path items. No product code or provider operation changed.
+
+---
+
+## 2026-07-16 18:04 CT — Founder handoff is privacy-safe and active product language matches the compass
+
+**Area:** Founder-run readiness / privacy and consent / product vocabulary / local HyperFrames proof
+
+### Changed
+
+- Changed `pnpm demo:founder` into a private, no-spend preflight by default. Authentic founder material stays inside the isolated Workshop, no public-film files are staged, and no paid command is exposed while any active Source remains private.
+- Added an explicit second consent step: the private preflight prints a shareable preflight command; only `--share-founder-source --stage-film-inputs` may copy validated founder evidence into the Git-ignored film-input directory and expose the paid run command. Staging without sharing now fails before state is created.
+- Separated evidence time from staging time in the founder manifest. Embedded media creation time is preferred; filesystem modification time is labeled as weaker evidence when no embedded timestamp exists; `stagedAt` records the later Workshop import separately.
+- Rehearsed private, shareable, and authorized-sample paths with real H264/AAC sample media and a tracked, explicitly non-founder transcript fixture. The rehearsal evidence records exact hashes, consent assertions, timestamp provenance, zero provider calls, and its limitations.
+- Aligned the live product surface, README, generated Devpost narrative, generated repository narrative, build trace, Presentation renderer labels, PowerPoint metadata, tests, and public package filenames with the product compass. `Presentation` is one first-class expression beside Graphics, Audio Overview, Map or Sketch, Storyboard, and Video; retired destination language is absent from the inspected active surfaces. Internal `deck` identifiers remain for persisted contract compatibility.
+- Hardened the sample-film builder to invoke the pinned local HyperFrames CLI directly and capture concise lint, check, and render diagnostics. This prevents package-runner ambiguity and keeps the local compositor deterministic.
+
+### Verified
+
+- `pnpm check` passed all thirteen packages outside the network-restricted sandbox: 121 worker, 30 web, and 19 production tests, plus the remaining package suites. The earlier sandbox-only website-test DNS failures were not product failures.
+- `pnpm demo:e2e` passed the complete recorded seam after the trace label changed to `Presentation`.
+- `pnpm submission:build` and `pnpm submission:verify` produced a valid, current, untampered 25-asset partial package with `presentation.html` and `presentation.pptx` names.
+- Local HyperFrames `0.7.60` lint, transition check, and render passed. The verified sample editorial film is 140.010667 seconds, H264/AAC at 1280×720, with SHA-256 `0e673d3256947444bc7e2530785a3be4662c366adea68db8a78b21b093dec476`; spatial transforms and jitter-prone zoom/pan remain disabled.
+- `pnpm demo:film:verify-sample` and `pnpm submission:packet:verify` passed. The packet still reports eight ready shots, two intentionally blocked final-evidence shots, six provider-backed images, five Cedar narration clips, and four unresolved founder slots.
+- Visual inspection of the rebuilt contact sheet and individual workbench and Infographic frames found no shake, frame drift, missing content, or design-system break. `git diff --check` passes.
+- Founder rehearsal input: sample video SHA-256 `bc3723f7cdc39fe0f08824b33d8a59956ccb018eb1c44290518ef19e8a120212`; authorized transcript SHA-256 `380fd39f6615e401f08135ce40e3a6e8256e3287e6b217223681de4020f0f77f`. No OpenAI provider request ran; the provider-operation ledger remains 107.
+
+### Decisions
+
+- The authentic founder run remains intentionally incomplete. A rehearsal proves the handoff mechanics, not founder provenance.
+- Public-film staging is a consequential privacy action and therefore requires an explicit shareable preflight even though all files remain local.
+- Internal serialized `deck` values remain unchanged to avoid a breaking persisted-data migration; every active user-facing label and public package filename uses `Presentation`.
+- `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+### Open items
+
+- Daniel still needs to record and provide the authentic founder brainstorm and transcript. Run the private preflight first, review it locally, then use the printed shareable preflight only after confirming those exact files belong in the public demonstration.
+- The four final founder-derived film slots remain blocked by design; no sample artifact is represented as authentic founder evidence.
+- Codex Session ID: unavailable on this surface; not inferred.

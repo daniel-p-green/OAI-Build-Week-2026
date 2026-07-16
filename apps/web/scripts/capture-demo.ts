@@ -128,7 +128,7 @@ async function main(): Promise<void> {
     await page.getByRole("button", { name: "View outputs" }).click();
     await beat("create-outputs", "Create the traced Output set", async () => {
       await page.getByRole("button", { name: "Create outputs" }).click();
-      await expect(page.getByRole("heading", { name: "Slides" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
       await expect(page.getByRole("heading", { name: "Image set" })).toBeVisible();
       await seedJudgeProviderImages(dataRoot);
       await generateOutput("deck", dataRoot);

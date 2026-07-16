@@ -87,7 +87,7 @@ const buildTrace = finalState.videos[0]?.buildTrace;
 if (!buildTrace || !(await stat(resolve(root, buildTrace.htmlPath))).isFile() || !(await stat(resolve(root, buildTrace.dataPath))).isFile()) throw new Error("recorded fixture did not preserve the Video build trace");
 if (resolveWorkshopArtifact("build-trace-data-v1", root)?.contentType !== "application/json; charset=utf-8") throw new Error("recorded fixture did not expose its exact trace data");
 const buildTraceData = JSON.parse(await readFile(resolve(root, buildTrace.dataPath), "utf8")) as { outputs: Array<{ label: string; status: string; sha256?: string }> };
-const expectedTraceOutputs = ["Slides", "Infographic", "Sketch", "Image set", "Audio Overview", "Storyboard", "Video"];
+const expectedTraceOutputs = ["Presentation", "Infographic", "Sketch", "Image set", "Audio Overview", "Storyboard", "Video"];
 if (buildTraceData.outputs.map((output) => output.label).join("|") !== expectedTraceOutputs.join("|") || buildTraceData.outputs.some((output) => !output.status || !output.sha256)) throw new Error("recorded fixture build trace did not preserve the complete connected Output set");
 const buildTraceHtml = await readFile(resolve(root, buildTrace.htmlPath), "utf8");
 if (!buildTraceHtml.includes("Raw thinking became a finished submission") || !buildTraceHtml.includes("7 connected Outputs") || buildTraceHtml.includes("image-batch-v1")) throw new Error("recorded fixture build trace did not present the complete professional narrative");

@@ -5,6 +5,7 @@ import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 
 const repository = resolve(import.meta.dirname, "..");
+const hyperframesCli = resolve(repository, "node_modules/hyperframes/dist/cli.js");
 const planPath = resolve(repository, "submission/demo-film-plan.json");
 const finalBuild = process.argv.includes("--final");
 const sampleEditorialBuild = process.argv.includes("--sample-editorial");
@@ -32,6 +33,17 @@ let finalAssemblyStarted = false;
 function run(command, args) {
   const effectiveArgs = command === "ffmpeg" ? ["-hide_banner", "-loglevel", "error", ...args] : args;
   execFileSync(command, effectiveArgs, { cwd: repository, stdio: "inherit" });
+}
+
+function runCaptured(command, args, label) {
+  try {
+    execFileSync(command, args, { cwd: repository, encoding: "utf8", maxBuffer: 2_000_000, stdio: ["ignore", "pipe", "pipe"] });
+    process.stdout.write(`${label} passed.\n`);
+  } catch (error) {
+    const diagnostic = [error?.stdout, error?.stderr].filter(Boolean).map((value) => value.toString()).join("\n").slice(-12_000);
+    if (diagnostic) process.stderr.write(`${diagnostic}\n`);
+    throw error;
+  }
 }
 
 function probe(path) {
@@ -360,9 +372,9 @@ async function main() {
   await copyFile(filmIdentity.frameMarkdownPath, resolve(compositionRoot, "FRAME.md"));
   await copyFile(filmIdentity.frameJsonPath, resolve(compositionRoot, "frame.json"));
   await writeFile(resolve(compositionRoot, "index.html"), hyperframesCompositionHtml(plan, filmIdentity), "utf8");
-  run("npx", ["hyperframes", "lint", compositionRoot, "--json"]);
-  run("npx", ["hyperframes", "check", compositionRoot, "--json", "--at-transitions"]);
-  run("npx", ["hyperframes", "render", compositionRoot, "--output", outputVideo, "--workers", "1", "--quality", finalBuild ? "high" : "standard"]);
+  runCaptured(process.execPath, [hyperframesCli, "lint", compositionRoot, "--json"], "HyperFrames lint");
+  runCaptured(process.execPath, [hyperframesCli, "check", compositionRoot, "--json", "--at-transitions"], "HyperFrames check");
+  runCaptured(process.execPath, [hyperframesCli, "render", compositionRoot, "--output", outputVideo, "--workers", "1", "--quality", finalBuild ? "high" : "standard"], "HyperFrames render");
   for (const [index, shot] of plan.shots.entries()) {
     const reviewPath = resolve(reviewRoot, `${String(index + 1).padStart(2, "0")}.jpg`);
     run("ffmpeg", ["-y", "-ss", String((shot.startSeconds + shot.endSeconds) / 2), "-i", outputVideo, "-frames:v", "1", "-q:v", "2", reviewPath]);

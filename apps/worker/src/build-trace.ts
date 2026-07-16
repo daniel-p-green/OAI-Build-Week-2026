@@ -77,7 +77,7 @@ function limitationsFor(state: WorkshopState, providerEvidence: WorkshopBuildTra
 }
 
 function humanIntent(intent: NonNullable<WorkshopState["style"]>["intentProfile"]): string {
-  if (intent === "board_deck") return "Board slides";
+  if (intent === "board_deck") return "Board presentation";
   if (intent === "internal_workshop") return "Team workshop";
   return "Client pitch";
 }
@@ -88,7 +88,7 @@ async function tracedOutputs(state: WorkshopState, root: string, video: Workshop
     .sort((left, right) => right.createdAt.localeCompare(left.createdAt))[0];
   const outputVersion = (id: string) => Number(id.match(/v(\d+)$/)?.[1] ?? 1);
   const outputs: TraceOutput[] = [];
-  for (const [type, label, format] of [["deck", "Slides", "Editable PowerPoint"], ["infographic", "Infographic", "Editable PowerPoint"]] as const) {
+  for (const [type, label, format] of [["deck", "Presentation", "Editable PowerPoint"], ["infographic", "Infographic", "Editable PowerPoint"]] as const) {
     const output = newest(type);
     if (!output) continue;
     outputs.push({ id: output.id, label, version: outputVersion(output.id), format, status: "Ready", sha256: await readFile(resolve(root, output.relativePath)).then(sha256).catch(() => undefined), claimIds: output.claimIds });

@@ -14,7 +14,7 @@
     "demo:serve": "WORKSHOPLM_DATA_ROOT=$PWD/.workshoplm/acceptance pnpm --filter @workshoplm/web dev",
     "judge:start": "pnpm demo:e2e && pnpm demo:serve",
     "demo:live": "tsx scripts/live-operator.ts",
-    "demo:founder": "tsx scripts/live-operator.ts --root .workshoplm/final-operator --stage-film-inputs",
+    "demo:founder": "tsx scripts/live-operator.ts --root .workshoplm/final-operator",
     "demo:render": "tsx scripts/run-worker-render.ts",
     "demo:thumbnail": "node scripts/render-thumbnail.mjs",
     "demo:capture-draft": "pnpm --filter @workshoplm/web capture:demo",

@@ -74,7 +74,7 @@ describe("submission Output set", () => {
     expect(built.outputSet.assets.filter((asset) => asset.type === "thumbnail")).toHaveLength(3);
     expect(built.outputSet.assets.map((asset) => asset.type)).toEqual(expect.arrayContaining(["devpost_description", "readme_narrative", "deck", "infographic", "audio_overview", "image_manifest", "storyboard", "narration", "video", "evidence"]));
     expect(built.outputSet.assets).toEqual(expect.arrayContaining([
-      expect.objectContaining({ type: "deck", relativePath: "slides.pptx", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation" }),
+      expect.objectContaining({ type: "deck", relativePath: "presentation.pptx", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation" }),
       expect.objectContaining({ type: "infographic", relativePath: "infographic.pptx", mimeType: "application/vnd.openxmlformats-officedocument.presentationml.presentation" }),
     ]));
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "VIDEO-PROVENANCE.json", mimeType: "application/json", provenance: "video_render" }));
@@ -87,7 +87,7 @@ describe("submission Output set", () => {
     expect(devpost).toMatch(/across \d+ active Sources?/);
     expect(devpost).toContain("pnpm judge:start");
     expect(devpost).toContain("Package status: **partial**");
-    await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("WorkshopLM owns the professional's Conversation, Sources, Map, Brief, Style, Outputs, Storyboard, and exact Source trace");
+    await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("WorkshopLM owns the professional's Conversation, Sources, Map, Brief, Style, created work, Storyboard, and exact Source trace");
     await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("Codex is the development and launch host, not the professional's chat surface");
     await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("ChatGPT Work parity is not claimed");
     await expect(readFile(join(built.manifestPath, "..", "STORYBOARD.md"), "utf8")).resolves.toContain("Sanitized fixture · chunk 01");

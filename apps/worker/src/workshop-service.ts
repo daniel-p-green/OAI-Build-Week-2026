@@ -232,7 +232,7 @@ export function createWorkshop(title: string, root?: string): WorkshopState {
 }
 function onboardingOutcome(value: unknown): WorkshopOutcome {
   if (value === "client_facing_pitch" || value === "board_deck" || value === "internal_workshop") return value;
-  throw new Error("Choose Client pitch, Board slides, or Team workshop.");
+  throw new Error("Choose Client pitch, Board presentation, or Team workshop.");
 }
 export function updateWorkshopOnboarding(input: { title?: string; outcome?: WorkshopOutcome; step?: WorkshopOnboarding["step"] }, root?: string): WorkshopState {
   const current = readWorkshopState(root);
@@ -1074,7 +1074,7 @@ export function applyStyleLibrary(styleId: string, requestedIntent?: WorkshopSty
   const style: WorkshopStyle = { ...snapshot, version: (current.style?.version ?? 0) + 1, libraryId: styleId, libraryFamilyId: familyId, libraryRevision: revision, intentProfile: intentProfile(requestedIntent ?? current.onboarding.outcome ?? entry.intentProfile), lockedAt, stale: false };
   return applyLockedStyle(current, style, root, false);
 }
-export function createVisualDna(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.style || current.style.stale) throw new Error("Visual DNA requires a current locked Style Foundation."); const createdAt = new Date().toISOString(); const profileRule = current.style.intentProfile === "board_deck" ? "Executive hierarchy with source-visible proof points." : current.style.intentProfile === "internal_workshop" ? "Facilitation-first working canvas with writable space." : "Client-ready narrative sequence with a decisive opening."; return write({ ...current, visualDna: { version: (current.visualDna?.version ?? 0) + 1, styleVersion: current.style.version, palette: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, compositionRules: [profileRule, "Repeat one accent-colored folded-plane motif across the complete image set.", ...current.style.references], textureRules: ["Matte paper forms, restrained depth, soft directional shadow, and clean negative space."], imageRules: ["Create diagrammatic concept visuals and section art suitable for direct placement in a professional deck.", "Prefer object-led editorial composition over people, devices, screens, or generic workplace scenes."], negativeRules: current.style.negativeRules, approved: false, stale: false, createdAt }, updatedAt: createdAt }, root); }
+export function createVisualDna(root?: string): WorkshopState { const current = readWorkshopState(root); if (!current.style || current.style.stale) throw new Error("Visual DNA requires a current locked Style Foundation."); const createdAt = new Date().toISOString(); const profileRule = current.style.intentProfile === "board_deck" ? "Executive hierarchy with source-visible proof points." : current.style.intentProfile === "internal_workshop" ? "Facilitation-first working canvas with writable space." : "Client-ready narrative sequence with a decisive opening."; return write({ ...current, visualDna: { version: (current.visualDna?.version ?? 0) + 1, styleVersion: current.style.version, palette: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper }, compositionRules: [profileRule, "Repeat one accent-colored folded-plane motif across the complete image set.", ...current.style.references], textureRules: ["Matte paper forms, restrained depth, soft directional shadow, and clean negative space."], imageRules: ["Create diagrammatic concept visuals and section art suitable for direct placement in a professional presentation.", "Prefer object-led editorial composition over people, devices, screens, or generic workplace scenes."], negativeRules: current.style.negativeRules, approved: false, stale: false, createdAt }, updatedAt: createdAt }, root); }
 function escapeSvg(value: string) { return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&apos;"); }
 function sketchLines(value: string, maxCharacters: number, maxLines: number) {
   const words = value.trim().split(/\s+/).filter(Boolean); const lines: string[] = []; let line = "";
@@ -1138,7 +1138,7 @@ export function generateAssetPlan(root?: string): WorkshopState {
   const createdAt = new Date().toISOString();
   const version = (current.assetPlan?.version ?? 0) + 1;
   const definitions = [
-    ["deck", "Slides", "The approved Brief becomes polished slides you can defend."],
+    ["deck", "Presentation", "The approved Brief becomes a polished, source-defensible Presentation."],
     ["infographic", "Infographic", "The same evidence becomes a one-page visual for faster decisions."],
     ["images", "Image set", "Six on-brand images share one coherent visual language."],
     ["storyboard", "Storyboard", "Review and edit every frame before committing to video."],
@@ -1321,7 +1321,7 @@ async function generatedDeckCoverVisual(current: WorkshopState, root: string): P
     ?? current.imageBatch.panels.find((candidate) => candidate.state === "generated");
   if (!panel?.relativePath || !panel.sha256) return undefined;
   const bytes = await readFile(join(root, panel.relativePath));
-  if (createHash("sha256").update(bytes).digest("hex") !== panel.sha256) throw new Error("Slides visual hash no longer matches the reviewed image.");
+  if (createHash("sha256").update(bytes).digest("hex") !== panel.sha256) throw new Error("Presentation visual hash no longer matches the reviewed image.");
   const dimensions = validateBrandAsset(bytes, "image/png");
   return { data: `data:image/png;base64,${bytes.toString("base64")}`, aspectRatio: dimensions.width / dimensions.height, panelId: panel.id, panelVersion: panel.version, sha256: panel.sha256 };
 }
@@ -1355,7 +1355,7 @@ export async function generateOutput(type: "deck" | "infographic", root?: string
   return write({ ...current, outputRecovery, outputs: [...priorOutputs, { id: outputId, type, relativePath: rendered.relativePath, editableRelativePath: rendered.editableRelativePath, artifactPath: stored.relativePath, editableArtifactPath: editableStored?.relativePath, claimIds: blocks.map((block) => block.id), imageBatchId: coverVisual ? current.imageBatch?.id : undefined, imagePanels, stale: false, createdAt }], firstRenderedOutputAt: current.firstRenderedOutputAt ?? createdAt, updatedAt: createdAt }, root);
 }
 
-export function recordOutputFailure(type: "deck" | "infographic", root?: string): WorkshopState { const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); const previous = current.outputRecovery?.[type]; const label = type === "deck" ? "Slides" : "Infographic"; return write({ ...current, outputRecovery: { ...current.outputRecovery, [type]: { message: `${label} could not be created. Your Brief and Style are safe.`, attempts: (previous?.attempts ?? 0) + 1, updatedAt } }, updatedAt }, root); }
+export function recordOutputFailure(type: "deck" | "infographic", root?: string): WorkshopState { const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); const previous = current.outputRecovery?.[type]; const label = type === "deck" ? "Presentation" : "Infographic"; return write({ ...current, outputRecovery: { ...current.outputRecovery, [type]: { message: `${label} could not be created. Your Brief and Style are safe.`, attempts: (previous?.attempts ?? 0) + 1, updatedAt } }, updatedAt }, root); }
 
 function audioOverviewPosture(state: WorkshopState): WorkshopAudioOverview["posture"] {
   return state.style?.intentProfile === "board_deck" ? "decision_review" : state.style?.intentProfile === "internal_workshop" ? "overview" : "executive";
@@ -1470,7 +1470,7 @@ export function createImageBatch(root?: string): WorkshopState {
     return { idea: outputBody(prose(current.title)), evidence: [] };
   };
   const roles = [
-    ["Hero concept", "Turn the approved idea into one memorable object-led transformation metaphor. Place the focal object in the lower-right and preserve generous upper-left negative space for a slide headline.", ["start", "turn", "become", "outcome", "promise", "professional", "client", "leadership"]],
+    ["Hero concept", "Turn the approved idea into one memorable object-led transformation metaphor. Place the focal object in the lower-right and preserve generous upper-left negative space for a presentation headline.", ["start", "turn", "become", "outcome", "promise", "professional", "client", "leadership"]],
     ["Systems diagram", "Translate the approved idea into an unlabeled systems diagram made from geometric nodes, layers, and connectors. Show relationships without implying invented quantities.", ["system", "map", "process", "workflow", "chain", "connect", "brief", "organize", "relationship"]],
     ["Evidence chain", "Show source-like paper forms progressing through connected proof points into one polished decision artifact. Make provenance visually legible without words or interface chrome.", ["evidence", "source", "claim", "trace", "provenance", "locator", "citation", "grounded", "defend"]],
     ["Decision visual", "Build a clear tension-to-resolution composition with two contrasting fields joined by one accent-colored bridge. Do not invent data, scales, or labels.", ["approve", "only", "must", "should", "decision", "gate", "review", "sign-off", "recommend"]],
@@ -1479,7 +1479,7 @@ export function createImageBatch(root?: string): WorkshopState {
   ] as const;
   const panels = roles.map(([role, direction, keywords], index) => {
     const grounded = evidenceFor(index, keywords);
-    const prompt = `Output role: ${role}. ${direction} Approved idea to communicate: ${grounded.idea}. Preserve the shared reference composition, palette, lighting, material treatment, folded-plane motif, and editorial restraint. This is panel ${index + 1} of one continuous six-panel art direction. Create a deck-ready 1:1 visual with no readable text, logos, watermarks, UI chrome, generic people-at-work scenes, device mockups, or stock-photo cliches.`;
+    const prompt = `Output role: ${role}. ${direction} Approved idea to communicate: ${grounded.idea}. Preserve the shared reference composition, palette, lighting, material treatment, folded-plane motif, and editorial restraint. This is panel ${index + 1} of one continuous six-panel art direction. Create a presentation-ready 1:1 visual with no readable text, logos, watermarks, UI chrome, generic people-at-work scenes, device mockups, or stock-photo cliches.`;
     return { id: panelIds[index]!, version: 1, prompt, evidence: grounded.evidence, state: "planned" as const, referenceId, history: [] };
   });
   return write({ ...current, imageBatch: { id: `image-batch-v${(current.imageBatch ? Number(current.imageBatch.id.match(/\d+$/)?.[0]) + 1 : 1)}`, graphRevision, briefVersion: current.frame.version, styleVersion: current.style.version, referenceId, referencePath, referenceSha256: createHash("sha256").update(referenceBytes).digest("hex"), coherence, createdAt, stale: false, panels }, updatedAt: createdAt }, root);

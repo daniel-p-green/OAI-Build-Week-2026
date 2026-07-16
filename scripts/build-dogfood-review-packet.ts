@@ -31,7 +31,7 @@ function reviewHtml(reviewId: string) {
     <div class="eyebrow">Cold professional review</div>
     <h1>Would you send this under your own name?</h1>
     <p class="lede">Review the brief as finished client-facing work. Grade the artifact, not the effort behind it. Choose <strong>Send</strong>, or name the first thing that makes it <strong>Revise</strong>.</p>
-    <div class="actions"><a class="primary" href="AI-Collective-chapter-launch.pdf" target="_blank">Open slides</a><a href="AI-Collective-chapter-launch.pptx">Download editable PowerPoint</a></div>
+    <div class="actions"><a class="primary" href="AI-Collective-chapter-launch.pdf" target="_blank">Open Presentation</a><a href="AI-Collective-chapter-launch.pptx">Download editable PowerPoint</a></div>
     <img class="deck" src="contact-sheet.png" alt="Nine-slide AI Collective chapter launch contact sheet">
     <section class="review" aria-labelledby="review-title">
       <h2 id="review-title">Your decision</h2>

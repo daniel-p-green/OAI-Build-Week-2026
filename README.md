@@ -1,10 +1,10 @@
 # WorkshopLM
 
-> Turn raw thinking into finished work.
+> Turn raw thinking into professional knowledge work.
 
-WorkshopLM turns meetings, documents, and half-formed thinking into polished slides and a coordinated set of source-defensible deliverables. It is built for consultants, strategists, and enablement leads who produce client-facing or leadership-facing work every week.
+WorkshopLM is the professional knowledge workspace that turns conversations and source material into presentations, graphics, Audio Overviews, visual Maps, Storyboards, and Videos. Every expression shares the same knowledge, visual identity, and connection to its Sources.
 
-Notebook-style tools help people understand source material. WorkshopLM is designed to help them ship from it: speak or type in the focused Conversation, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create polished slides that remain editable in PowerPoint. A shareable hand-drawn Sketch with immutable versions, Infographic, Image set, Audio Overview, Storyboard, and Video form the coordinated Output set around that wedge.
+Notebook-style tools help people learn from Sources. WorkshopLM helps professionals create from them: speak or type in Conversation, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create a polished Presentation that remains editable in PowerPoint. A shareable hand-drawn Sketch with immutable versions, Infographic, Graphics, Audio Overview, Storyboard, and Video are first-class expressions of the same Workshop.
 
 WorkshopLM runs locally in the Codex in-app browser as one focused workbench. Conversation, Sources, Map, Brief, Style, Outputs, and Storyboard stay in one product surface; contextual views and sheets preserve the full workflow without a persistent tab maze. Codex desktop/CLI is the verified plugin host and build environment. ChatGPT Work support is not claimed.
 
@@ -12,7 +12,7 @@ WorkshopLM runs locally in the Codex in-app browser as one focused workbench. Co
 
 ```text
 Meeting or documents → grounded Map → approved Brief + reusable Style
-  → editable, source-defensible Slides → supporting Outputs → approved Storyboard → Video
+  → coherent professional knowledge work → approved Storyboard → Video
 ```
 
 Two approvals carry visible consequence: `Approve brief` freezes the production direction, and `Approve storyboard` authorizes Video. Source or Style changes preserve history while marking dependent work `Needs update`.
@@ -25,12 +25,12 @@ The repository currently provides a local-first deterministic seam with:
 - normalized, locally searchable sanitized source fixtures and claim-level evidence in the recorded acceptance run;
 - local ingestion for pasted notes, public URLs, and absolute PDF paths, plus a live `gpt-realtime-2.1` WebRTC conversation that searched and fetched exact Workshop Sources, persisted transcript and tool provenance, handled interruption, and completed an explicitly confirmed Brief approval;
 - an editable, persisted Excalidraw Map with typed operations and versioned approvals;
-- materialized `FRAME.md`, `DESIGN.md`, style-token, asset-plan, slides, infographic, and editable Storyboard artifacts;
+- materialized `FRAME.md`, `DESIGN.md`, style-token, asset-plan, Presentation, Infographic, and editable Storyboard artifacts;
 - independent brief and storyboard approval gates, stale propagation, retry, and queued-render cancellation;
-- source-traceable Slides and Infographic previews plus editable PowerPoint handoffs with claim locators and source notes;
+- source-traceable Presentation and Infographic previews plus editable PowerPoint handoffs with claim locators and source notes;
 - a playable, grounded Cedar Audio Overview plus a versioned local HyperFrames Video render with per-scene provenance for the approved sanitized Storyboard fixture, and an inspected provider-backed Video using five OpenAI Cedar narration clips;
 - a unified `0.1.3` plugin whose stdio tools search and fetch grounded local evidence, route authorized workflow writes through the same loopback Workshop API, and declare Granola and Google Drive as optional host-provided source apps using the current plugin manifest contract;
-- a responsive Apps in ChatGPT-aligned interface where the current Slides are the hero Output and supporting work remains one interaction away.
+- a responsive Apps in ChatGPT-aligned interface where one current expression is the focus and the rest of the Workshop remains one interaction away.
 
 This is active Build Week work, not a claim that every locked capability is complete. The authorized sample run has now proven a grounded `gpt-5.6-terra` Map, six accepted GPT Image 2 panels, a live grounded Realtime conversation, OpenAI Cedar narration, and a local HyperFrames Video. The no-credential recorded fixture remains a separate deterministic path: it replays six hash-bound sanitized GPT Image 2 files and one hash-bound Cedar Audio Overview while clearly labeling the Video's fallback narration. Native ChatGPT durable voice synchronization is not supported, and the founder-derived final package and public demo remain open. See [GOAL.md](GOAL.md) for the exact completion definition, [log.md](log.md) for dated evidence, and the [public claim ledger](submission/CLAIM-LEDGER.md) for the allowed wording and proof boundary.
 
@@ -47,13 +47,13 @@ pnpm judge:start
 
 `pnpm judge:start` recreates the no-credential acceptance Workshop and serves that exact data root in one command. It does not require OpenAI credentials or paid model calls. The fixture completes first-use onboarding, dismisses tutorial cues, and opens directly on the grounded Map. `pnpm demo:render` can independently rerun the approved sanitized fixture through the local HyperFrames worker, and `pnpm demo:thumbnail` builds a hash-bound 1280×720 product thumbnail from the rendered Video, locked film plan, and current Outputs proof. Ordinary `pnpm dev` intentionally opens the default product workspace rather than the judge fixture.
 
-After `pnpm judge:start` starts the server, open the printed local URL in the Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, a source-traced hand-drawn Sketch, real Slides and Infographic previews, editable PowerPoint files, six hash-bound GPT Image 2 visuals, a playable 35.7-second Cedar Audio Overview, an editable image-bound Storyboard, and the local Video rendered from those reviewed frames. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
+After `pnpm judge:start` starts the server, open the printed local URL in the Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, a source-traced hand-drawn Sketch, real Presentation and Infographic previews, editable PowerPoint files, six hash-bound GPT Image 2 visuals, a playable 35.7-second Cedar Audio Overview, an editable image-bound Storyboard, and the local Video rendered from those reviewed frames. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
 
 Two paid routing benchmark passes compared Sol, Terra, and Luna on compact grounded-graph, brief, and claim-triage cases. Their recorded latency, token usage, and deterministic JSON/evidence checks selected `gpt-5.6-terra` at medium reasoning as the current product default. Any rerun remains explicitly spend-gated and must not infer dollar costs from token counts.
 
 ## Prepare the live demo run
 
-`pnpm demo:live` builds a fresh, isolated operator Workshop under `.workshoplm/live-operator/`. It ingests sanitized sources, captures a transcript through the documented fallback, approves the Brief, locks the official demo Style, and creates traced slides, an infographic, image plan, Audio Overview, and Storyboard. The Storyboard remains ready for the second deliberate approval after the real image set exists. The default command is a no-spend preflight: it validates both image coherence and every grounded narration input, prints the exact provider request count, and makes no OpenAI call.
+`pnpm demo:live` builds a fresh, isolated operator Workshop under `.workshoplm/live-operator/`. It ingests sanitized Sources, captures a transcript through the documented fallback, approves the Brief, locks the official demo Style, and creates a traced Presentation, Infographic, image plan, Audio Overview, and Storyboard. The Storyboard remains ready for the second deliberate approval after the real image set exists. The default command is a no-spend preflight: it validates both image coherence and every grounded narration input, prints the exact provider request count, and makes no OpenAI call.
 
 After explicit spend authorization, the same command uses `gpt-5.6-terra` at medium reasoning to build a claim-validated grounded Map, generates six GPT Image 2 panels concurrently, generates one `gpt-4o-mini-tts` Cedar WAV per approved Storyboard panel, and renders those clips through the local HyperFrames worker:
 
@@ -68,19 +68,21 @@ The inspected authorized-sample run is recorded in [`artifacts/live/provider-run
 
 ### Replace the sample with the founder brainstorm
 
-The founder handoff validates a recording and transcript, stages private local film inputs, and prepares the isolated final Workshop without paid calls:
+The founder handoff validates a recording and transcript, keeps the Source private inside the isolated final Workshop, and prepares a no-spend review before any public-film staging:
 
 ```bash
 pnpm demo:founder -- --founder-recording /absolute/path/founder.mov --founder-transcript /absolute/path/founder.txt
 ```
 
-Founder material is private by default. WorkshopLM refuses to build a public submission package while any active Source is private, and the staged raw founder files are ignored by Git. Only use the explicit consent flag when the recording and transcript are intentionally part of the public meta-demo:
+Founder material is private by default. The preflight prints `viewCommand` for local review, withholds the paid command, and does not copy the raw recording or transcript into the final film-input directory. WorkshopLM also refuses to build a public submission package while any active Source is private. Only continue when the recording and transcript are intentionally part of the public meta-demo, using the exact `shareablePreflightCommand` printed after review. Its equivalent is:
 
 ```bash
-pnpm demo:founder -- --founder-recording /absolute/path/founder.mov --founder-transcript /absolute/path/founder.txt --share-founder-source
+pnpm demo:live -- --root .workshoplm/final-operator --founder-recording /absolute/path/founder.mov --founder-transcript /absolute/path/founder.txt --share-founder-source --stage-film-inputs
 ```
 
-`--share-founder-source` marks that local Source as shareable so it may appear in the generated submission evidence and build trace; it does not upload or publish anything. The paid follow-up command printed by the preflight preserves the choice.
+`--share-founder-source` marks that local Source as shareable so it may appear in generated submission evidence and the build trace. `--stage-film-inputs` copies the validated recording and transcript into the Git-ignored local film-input directory. Neither flag uploads or publishes anything. Only the second preflight prints the paid follow-up command, preserving both choices.
+
+The founder manifest separates source time from staging time. It uses embedded media creation time when available; otherwise it records filesystem modification time and labels that weaker evidence explicitly. `stagedAt` always records when WorkshopLM copied the validated evidence.
 
 ## Checks
 

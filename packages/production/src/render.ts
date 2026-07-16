@@ -63,7 +63,7 @@ export function fitLogoBox(aspectRatio: number | undefined, maxWidth: number, ma
   if (ratio >= maxWidth / maxHeight) return { width: maxWidth, height: maxWidth / ratio };
   return { width: maxHeight * ratio, height: maxHeight };
 }
-const deckLabel = (brief: RenderBrief) => `${brief.style.name ?? "Workshop"} · ${brief.style.intent === "board_deck" ? "Board slides" : brief.style.intent === "internal_workshop" ? "Team workshop" : "Client slides"}`;
+const deckLabel = (brief: RenderBrief) => `${brief.style.name ?? "Workshop"} · ${brief.style.intent === "board_deck" ? "Board presentation" : brief.style.intent === "internal_workshop" ? "Team workshop" : "Client presentation"}`;
 const infographicLabel = (brief: RenderBrief) => brief.style.intent === "board_deck" ? "Leadership evidence brief" : brief.style.intent === "internal_workshop" ? "Workshop action brief" : "Source-defensible brief";
 const intentProfile = (brief: RenderBrief): IntentProfile => brief.style.intent ?? "client_facing_pitch";
 const intentClass = (brief: RenderBrief) => `intent-${intentProfile(brief).replaceAll("_", "-")}`;
@@ -138,7 +138,7 @@ export function renderDeck(brief: RenderBrief): string {
     if (layout === "decision") return `<section class="slide decision" data-page="${page}"><div>${eyebrow}${heading}${body}</div><div class="decision-list">${(block.items ?? []).map((item) => `<div class="decision-item">${escapeHtml(item)}</div>`).join("")}</div>${cite}</section>`;
     return `<section class="slide ${layout}${sparse ? " is-sparse" : ""}" data-page="${page}">${eyebrow}${heading}${body}${cite}</section>`;
   }).join("\n");
-  return shell(`${brief.workshopTitle} slides`, brief, `<main class="deck ${intentClass(brief)}" data-intent="${intentProfile(brief)}">${cover}${slides}</main>`);
+  return shell(`${brief.workshopTitle} presentation`, brief, `<main class="deck ${intentClass(brief)}" data-intent="${intentProfile(brief)}">${cover}${slides}</main>`);
 }
 
 export function renderInfographic(brief: RenderBrief): string {
@@ -163,7 +163,7 @@ export async function writeEditableDeck(path: string, brief: RenderBrief): Promi
   const pptx = new PptxGenJS();
   pptx.layout = "LAYOUT_WIDE";
   pptx.author = "WorkshopLM";
-  pptx.subject = "Grounded, source-defensible slides";
+  pptx.subject = "Grounded, source-defensible presentation";
   pptx.title = brief.workshopTitle;
   pptx.company = "WorkshopLM";
   pptx.lang = "en-US";

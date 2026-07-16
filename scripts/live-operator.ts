@@ -51,6 +51,7 @@ const stageFilmInputs = process.argv.includes("--stage-film-inputs");
 if (Boolean(founderRecordingPath) !== Boolean(founderTranscriptPath)) throw new Error("--founder-recording and --founder-transcript must be provided together.");
 if (shareFounderSource && (!founderRecordingPath || !founderTranscriptPath)) throw new Error("--share-founder-source requires a founder recording and transcript.");
 if (stageFilmInputs && (!founderRecordingPath || !founderTranscriptPath)) throw new Error("--stage-film-inputs requires a founder recording and transcript.");
+if (stageFilmInputs && !shareFounderSource) throw new Error("--stage-film-inputs requires --share-founder-source because it copies founder evidence into the final film input directory.");
 const liveOperatorPaidRequestCount = 13;
 const runArtifactPath = resolve(dirname(root), `${basename(root)}-run.json`);
 
@@ -96,7 +97,8 @@ async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: Prov
   if (founderCapture && stageFilmInputs) await stageFounderFilmInputs(founderCapture, resolve(repository, "outputs", "demo-film-inputs"));
   if (preservedCaptures.length) for (const capture of preservedCaptures) await captureFallbackTranscript(capture.text, root, capture.evidence);
   if (founderCapture) await captureImportedTranscript(founderCapture.transcript, { title: "Founder brainstorm", origin: "Founder-provided recording", permission: shareFounderSource ? "shareable" : "private" }, root);
-  else if (!preservedCaptures.length) await captureFallbackTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved brief, coherent visuals, an editable storyboard, and the final Build Week demo video.", root);
+  else if (!preservedCaptures.length && allowSample) await captureImportedTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved Brief, coherent visuals, an editable Storyboard, and the final Build Week demonstration Video.", { title: "Authorized sample brainstorm", origin: "Authorized sample script", permission: "sanitized" }, root);
+  else if (!preservedCaptures.length) await captureFallbackTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved Brief, coherent visuals, an editable Storyboard, and the final Build Week demonstration Video.", root);
   await ingestSource({
     title: "Build Week judge path",
     origin: "Sanitized operator fixture",
@@ -107,7 +109,7 @@ async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: Prov
     title: "WorkshopLM product direction",
     origin: "Sanitized operator fixture",
     permission: "sanitized",
-    text: "Professional teams start with unstructured voice or meeting notes. The approved Map becomes the brief. Brand rules govern the deck, infographic, image batch, storyboard, and narrated video. Only an approved current storyboard may render.",
+    text: "Professional teams start with unstructured voice or meeting notes. The approved Map becomes the Brief. Brand rules govern the presentation, infographic, image set, Storyboard, and narrated Video. Only an approved current Storyboard may render.",
   }, root);
   updateWorkshopOnboarding({ outcome: "client_facing_pitch", step: "complete" }, root);
   dismissWorkshopOrientation("map", root);
@@ -186,6 +188,23 @@ async function main(): Promise<void> {
     const narrationReadiness = validateNarrationReadiness(prepared);
     if (!narrationReadiness.valid) throw new Error(`Live narration plan is not ready: ${narrationReadiness.issues.join(" ")}`);
     const providerVoiceTurns = verifiedRealtimeCaptures(prepared).length;
+    const privateSources = prepared.sourceItems.filter((source) => source.permission === "private");
+    const founderSourcePermission = founderManifest ? (shareFounderSource ? "shareable" : "private") : null;
+    const founderPrivacyReviewRequired = founderSourcePermission === "private";
+    const publicPackageEligible = privateSources.length === 0;
+    const rootFlag = `--root ${shellQuote(relative(repository, root))}`;
+    const founderInputFlags = founderRecordingPath && founderTranscriptPath
+      ? ` --founder-recording ${shellQuote(founderRecordingPath)} --founder-transcript ${shellQuote(founderTranscriptPath)}`
+      : "";
+    const shareablePreflightCommand = founderPrivacyReviewRequired
+      ? `pnpm demo:live -- ${rootFlag}${founderInputFlags} --share-founder-source --stage-film-inputs`
+      : null;
+    const liveCommand = retryFailed
+      ? (requiredRequests > 0
+          ? `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${requiredRequests} OPENAI_API_KEY=... pnpm demo:live -- --execute --retry-failed ${rootFlag}`
+          : `pnpm demo:live -- --execute --retry-failed ${rootFlag}`)
+      : `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${liveOperatorPaidRequestCount} OPENAI_API_KEY=... pnpm demo:live -- --execute ${rootFlag}${founderInputFlags}${shareFounderSource ? " --share-founder-source" : ""}${stageFilmInputs ? " --stage-film-inputs" : ""}${allowSampleTranscript && providerVoiceTurns === 0 ? " --allow-sample-transcript" : ""}`;
+    const missingCapture = !retryFailed && providerVoiceTurns === 0 && !allowSampleTranscript && !founderManifest;
     const plan = {
       mode,
       status: executeLive ? "running" : "ready",
@@ -201,27 +220,38 @@ async function main(): Promise<void> {
       sampleTranscriptAuthorized: allowSampleTranscript && providerVoiceTurns === 0 && !founderManifest,
       founderCapture: founderManifest ?? null,
       founderFilmInputs: founderManifest && stageFilmInputs ? resolve(repository, "outputs", "demo-film-inputs") : null,
-      captureEvidence: providerVoiceTurns > 0 ? (founderManifest ? "provider-verified-realtime-and-founder-recording" : "provider-verified-realtime") : founderManifest ? "founder-provided-recording-and-transcript" : "authorized-sample-script",
+      founderSourcePermission,
+      founderPrivacyReviewRequired,
+      publicPackageEligible,
+      privateSources: privateSources.map((source) => ({ title: source.title, origin: source.origin })),
+      captureEvidence: providerVoiceTurns > 0
+        ? (founderManifest ? "provider-verified-realtime-and-founder-recording" : "provider-verified-realtime")
+        : founderManifest
+          ? "founder-provided-recording-and-transcript"
+          : allowSampleTranscript
+            ? "authorized-sample-script"
+            : "private-capture-placeholder",
       approvals: { brief: prepared.briefApproved, storyboard: prepared.storyboardApproved },
-      sources: prepared.sourceItems.filter((source) => source.origin === "Sanitized operator fixture" || source.origin.includes("capture-only fallback") || source.origin === "Founder-provided recording").map((source) => ({ title: source.title, origin: source.origin, permission: source.permission })),
+      sources: prepared.sourceItems.filter((source) => source.origin === "Sanitized operator fixture" || source.origin.includes("capture-only fallback") || source.origin === "Founder-provided recording" || source.origin === "Authorized sample script").map((source) => ({ title: source.title, origin: source.origin, permission: source.permission })),
       outputs: prepared.outputs.map((output) => ({ type: output.type, relativePath: output.relativePath, claims: output.claimIds.length })),
       imageReadiness,
       narrationReadiness,
       imagePlan: prepared.imageBatch?.panels.map((panel) => ({ id: panel.id, prompt: panel.prompt, evidence: panel.evidence })) ?? [],
       imageReviewRubric: [
-        "Each panel belongs in a client or leadership deck without relying on generic AI illustration.",
+        "Each panel belongs in a client or leadership presentation without relying on generic AI illustration.",
         "The six panels share one palette, folded-plane motif, material language, lighting model, and compositional restraint.",
         "Each panel communicates its grounded idea without readable text, invented quantities, logos, or UI chrome.",
         "Hero, systems diagram, evidence chain, decision visual, storyboard sequence, and section art are visibly distinct jobs.",
       ],
-      nextCommand: !retryFailed && providerVoiceTurns === 0 && !allowSampleTranscript && !founderManifest
-        ? null
-        : retryFailed
-        ? (requiredRequests > 0
-            ? `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${requiredRequests} OPENAI_API_KEY=... pnpm demo:live -- --execute --retry-failed --root ${shellQuote(relative(repository, root))}`
-            : `pnpm demo:live -- --execute --retry-failed --root ${shellQuote(relative(repository, root))}`)
-        : `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${liveOperatorPaidRequestCount} OPENAI_API_KEY=... pnpm demo:live -- --execute --root ${shellQuote(relative(repository, root))}${founderRecordingPath && founderTranscriptPath ? ` --founder-recording ${shellQuote(founderRecordingPath)} --founder-transcript ${shellQuote(founderTranscriptPath)}${shareFounderSource ? " --share-founder-source" : ""}${stageFilmInputs ? " --stage-film-inputs" : ""}` : allowSampleTranscript && providerVoiceTurns === 0 ? " --allow-sample-transcript" : ""}`,
-      nextAction: !retryFailed && providerVoiceTurns === 0 && !allowSampleTranscript && !founderManifest ? 'Open the viewCommand, choose "Add source", record a Realtime voice turn, add its transcript, supply a validated founder recording and transcript, or rerun with --allow-sample-transcript after explicit sample-script authorization.' : "Run nextCommand after explicit spend authorization.",
+      nextCommand: missingCapture || !publicPackageEligible ? null : liveCommand,
+      shareablePreflightCommand,
+      nextAction: missingCapture
+        ? 'Open the viewCommand, choose "Add source", record a Realtime voice turn, add its transcript, supply a validated founder recording and transcript, or rerun with --allow-sample-transcript after explicit sample-script authorization.'
+        : founderPrivacyReviewRequired
+          ? "Review the private founder Source with viewCommand. After explicit approval to include it in the public demonstration, run shareablePreflightCommand; that second preflight stages the final film inputs and prints the paid command."
+          : !publicPackageEligible
+            ? "The Workshop contains private Sources, so no paid public-package command is available. Use a validated founder capture with explicit sharing approval or the authorized sanitized sample path."
+            : "Run nextCommand only when the reviewed Source permissions and paid request ceiling are correct.",
       viewCommand: `WORKSHOPLM_DATA_ROOT=${shellQuote(root)} pnpm dev`,
     };
     await writeFile(resolve(root, "live-operator-plan.json"), `${JSON.stringify(plan, null, 2)}\n`);
