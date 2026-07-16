@@ -4,7 +4,8 @@ import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { chromium, expect, type Page } from "@playwright/test";
 import { executeOne } from "../../worker/src/executor.ts";
-import { captureFallbackTranscript, readWorkshopState } from "../../worker/src/workshop-service.ts";
+import { approveVisualDna, captureFallbackTranscript, createVisualDna, generateOutput, readWorkshopState } from "../../worker/src/workshop-service.ts";
+import { seedJudgeProviderImages } from "../../../scripts/seed-judge-images.ts";
 
 const repository = resolve(process.cwd(), "../..");
 const dataRoot = resolve(repository, ".workshoplm-recording-draft");
@@ -115,8 +116,13 @@ async function main(): Promise<void> {
       await page.getByRole("button", { name: "Choose style" }).click();
       const sheet = page.getByRole("dialog", { name: "Style" });
       await sheet.getByRole("button", { name: "Set manually" }).click();
+      await sheet.getByRole("textbox", { name: "Accent" }).fill("#1668E3");
+      await sheet.getByRole("textbox", { name: "Text" }).fill("#171816");
+      await sheet.getByRole("textbox", { name: "Background" }).fill("#F4F2EC");
       await sheet.getByRole("button", { name: "Use this style" }).click();
       await expect(sheet).toBeHidden();
+      createVisualDna(dataRoot);
+      approveVisualDna(dataRoot);
     }, 1800);
 
     await page.getByRole("button", { name: "View outputs" }).click();
@@ -124,10 +130,15 @@ async function main(): Promise<void> {
       await page.getByRole("button", { name: "Create outputs" }).click();
       await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
       await expect(page.getByRole("heading", { name: "Image set" })).toBeVisible();
+      await seedJudgeProviderImages(dataRoot);
+      await generateOutput("deck", dataRoot);
+      await page.reload();
+      await page.getByRole("button", { name: "View outputs" }).click();
+      await expect(page.locator('img[src*="image-panel-"]').first()).toBeVisible();
     }, 2600);
 
     await beat("output-evidence", "Follow a presentation back to its source", async () => {
-      await page.getByRole("button", { name: "Open Presentation", exact: true }).click();
+      await page.getByRole("button", { name: /^Open Presentation/ }).click();
       await page.getByRole("button", { name: /^Show source for / }).first().click();
       await expect(page.getByRole("dialog", { name: "Source" })).toBeVisible();
     }, 1800);
@@ -181,7 +192,7 @@ async function main(): Promise<void> {
     const manifest = {
       schemaVersion: 1,
       status: "fixture-draft",
-      disclosure: "Sanitized recorded fixture. No paid provider calls. Placeholder narration remains disclosed in the product state.",
+      disclosure: "Sanitized recorded fixture with hash-bound GPT Image 2 media. No paid provider calls occur during replay. Placeholder narration remains disclosed in the product state.",
       capturedAt: new Date().toISOString(),
       viewport: { width: 1200, height: 800 },
       video: { relativePath: "workshoplm-fixture-walkthrough.webm", sha256: createHash("sha256").update(bytes).digest("hex"), durationSeconds, streams: probe.streams ?? [] },
@@ -191,7 +202,7 @@ async function main(): Promise<void> {
       ],
       beats,
       finalState: { briefApproved: finalState.briefApproved, storyboardApproved: finalState.storyboardApproved, videoState: finalState.videoState, sources: finalState.activeSourceIds.length, outputs: finalState.outputs.length, imagePanels: finalState.imageBatch?.panels.length ?? 0, storyboardPanels: finalState.storyboard.panels.length },
-      limitations: ["This is automated browser footage for editorial review, not the final public demo.", "The image set is planned fixture media, not GPT Image 2 output.", "The local video uses disclosed deterministic fallback narration, not provider TTS.", "The required Codex plugin-doorway shot must be recorded separately from the real host surface."],
+      limitations: ["This is automated browser footage for editorial review, not the final public demo.", "The six GPT Image 2 files are checked-in sanitized provider outputs, not fresh generations during replay.", "The local video uses disclosed deterministic fallback narration, not provider TTS.", "The required Codex plugin-doorway shot must be recorded separately from the real host surface."],
     };
     await writeFile(resolve(outputRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
     await rm(temporaryVideoRoot, { recursive: true, force: true });

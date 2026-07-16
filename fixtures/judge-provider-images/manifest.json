@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Sanitized provider-backed image fixtures for the optional local judge Workshop",
+  "sourceMode": "sanitized-fixture",
+  "model": "gpt-image-2",
+  "quality": "medium",
+  "size": "1024x1024",
+  "referenceId": "style-v1-dna-v1",
+  "requestCount": 6,
+  "panels": [
+    {
+      "id": "image-panel-1",
+      "file": "image-panel-1-v1.png",
+      "sha256": "489e9a5da001b15823baab8e5dc3ef771a61a94ef3ae6ecc1af6cc1b97c83ed3",
+      "requestId": "req_c7e7342c88c54787a7b8f295f97bd1c4",
+      "generatedAt": "2026-07-16T16:44:14.993Z"
+    },
+    {
+      "id": "image-panel-2",
+      "file": "image-panel-2-v1.png",
+      "sha256": "ba9137bb4160e4215e177614c3465be78db4a9f2338e304b185726fe044117e5",
+      "requestId": "req_db797bc852ab4d6b83d8ae0cf062b689",
+      "generatedAt": "2026-07-16T16:44:01.604Z"
+    },
+    {
+      "id": "image-panel-3",
+      "file": "image-panel-3-v1.png",
+      "sha256": "7b7440bf3cfada93dad0e7cf0488fc61ebbd367dfd96dceb53c1e65a634c549c",
+      "requestId": "req_ae291cd0e6dd4765ac8f029a72ef94aa",
+      "generatedAt": "2026-07-16T16:44:02.021Z"
+    },
+    {
+      "id": "image-panel-4",
+      "file": "image-panel-4-v1.png",
+      "sha256": "99b13f3ad39020dce620cd958c4a6adf5da80408d59581209f28e262f1845cb4",
+      "requestId": "req_3705d58003554e9f89eddab7599fca34",
+      "generatedAt": "2026-07-16T16:44:25.690Z"
+    },
+    {
+      "id": "image-panel-5",
+      "file": "image-panel-5-v1.png",
+      "sha256": "687c16e036b7a40b47fbf7f4a72d276a847a593eb27bc53cd295990adfdf7515",
+      "requestId": "req_e2a5b1e21e5e465ea7a2949010201ac8",
+      "generatedAt": "2026-07-16T16:44:09.930Z"
+    },
+    {
+      "id": "image-panel-6",
+      "file": "image-panel-6-v1.png",
+      "sha256": "0dfdcc782c4924c67482d8a890cc6350427e91f99680f3331f30c3208b8eb7af",
+      "requestId": "req_1328d77e7a3b40a4ad299d60dbf204f6",
+      "generatedAt": "2026-07-16T16:44:21.095Z"
+    }
+  ]
+}

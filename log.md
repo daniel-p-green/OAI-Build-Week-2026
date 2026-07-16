@@ -8697,6 +8697,42 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 - Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
 
+---
+
+## 2026-07-16 12:08 CT — The no-credential judge Workshop receives exact provider imagery
+
+**Area:** Provider evidence / judge fixture / demo capture / submission truth
+
+### Changed
+
+- Ran one sanitized six-request GPT Image 2 batch for the optional judge Workshop, inspected every panel, and accepted a coherent black, white, and blue folded-paper family spanning the hero, systems diagram, evidence chain, decision visual, Storyboard sequence, and section art.
+- Added a hash-bound provider-image fixture with model, quality, size, reference, request ID, generation time, and SHA-256 provenance. The recorded acceptance path validates those records and exact bytes, copies them into its isolated data root, persists them as generated image versions, binds the hero to the Presentation and five current images to the Storyboard, and renders the approved Video locally without credentials or paid replay calls.
+- Updated the production fixture recorder to apply the exact sanitized Style, create and approve its Visual DNA, seed the reviewed provider files after Output creation, and require real imagery before capture. The refreshed screen recording and rough cut now show the image-backed Presentation and Storyboard instead of planned placeholders.
+- Tightened the submission-packet verifier so it rejects a missing image, hash mismatch, non-GPT-Image provenance, wrong request count, or a rough-cut disclosure that regresses to planned panels.
+- Reconciled `GOAL.md`, the README, demo script, evidence audit, film plan, and capture manifests to the new truth boundary. `PLAN-2026-07-13.md` remained untouched and excluded from this milestone.
+
+### Verified
+
+- The six checked-in PNGs match their manifest: `489e9a5da001b15823baab8e5dc3ef771a61a94ef3ae6ecc1af6cc1b97c83ed3`, `ba9137bb4160e4215e177614c3465be78db4a9f2338e304b185726fe044117e5`, `7b7440bf3cfada93dad0e7cf0488fc61ebbd367dfd96dceb53c1e65a634c549c`, `99b13f3ad39020dce620cd958c4a6adf5da80408d59581209f28e262f1845cb4`, `687c16e036b7a40b47fbf7f4a72d276a847a593eb27bc53cd295990adfdf7515`, and `0dfdcc782c4924c67482d8a890cc6350427e91f99680f3331f30c3208b8eb7af`.
+- `pnpm demo:e2e` passed after the implementation and again as the final acceptance run. It reported six generated provider-fixture panels, a current image-bound Presentation, five image-version Storyboard bindings, and a rendered Video with `imageMode: hash-bound-provider-fixture`.
+- `pnpm demo:capture-draft` passed a 58.8-second twelve-beat production capture with SHA-256 `0664ea8ccd365ab63475dce2410a90084f6dbc32c734be93a1180b7375c45f4a`. Visual inspection accepted its contact sheet (`efcbfedbb3c3f275c5eae5690e15d67889a6e206073a09299fa2f27785f18f6f`) and original-brainstorm reveal (`614277c74b4a071d68454d65a4da22ad84532c5fa0c37c10f7867af5187d6fac`).
+- The rebuilt 140.021333-second H.264/AAC rough cut hashes to `4280adfd66ae8e723cf8b9e83a03b1bec008cf6b8671e5e1b3a79f2630f72ba4`; its inspected contact sheet hashes to `15f383a5aab6a46d62a04c39c89048c8b5762f814c1b90fbade73feb7e3b8917`.
+- `pnpm demo:film:verify` passed with eight ready shots and the two honestly blocked founder/final-package shots. `pnpm submission:packet:verify` passed and reported six provider-backed judge images with zero paid replay calls.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 30 web tests and 120 worker tests.
+- A live `pnpm judge:start` smoke run on port 3113 returned HTTP 200 for the page, Workshop API, and first image route. The API exposed all six generated `gpt-image-2` panels, the exact Presentation hero dependency, five current Storyboard image edges, and the rendered Video; the served first PNG retained its exact 1024×1024 dimensions and manifest hash.
+- The evidence ledger is now 104 OpenAI HTTP operations: the prior 98 plus these six image requests. Exact dollar debit was not returned; the recorded request shape remains safely below the authorized $50 ceiling.
+
+### Decisions
+
+- The optional judge surface should visibly prove provider output quality without requiring a judge credential or silently spending money. Exact reviewed provider bytes plus immutable provenance are the smallest honest bridge between those requirements.
+- The fixture is a deterministic replay, not a claim that GPT Image 2 runs during `pnpm judge:start`. Product and submission copy disclose that boundary directly.
+- No additional speculative feature or provider request outranks replacing the sample Source with the founder brainstorm and producing the final audience-reviewed Output set.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
 ## 2026-07-16 10:51 CT — Current public main survives a clean-room judge run
 
 **Area:** Distribution truth / clean installation / optional judge path
@@ -8791,3 +8827,9 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 12:09 CT — Log sequence correction
+
+The 12:08 CT provider-backed judge-fixture entry was added after the 10:45 CT entry but before the already-existing 10:51, 11:29, and 11:35 CT entries because its append patch matched an earlier repeated footer. Its evidence and timestamp are correct; this note preserves the append-only record rather than silently relocating it.

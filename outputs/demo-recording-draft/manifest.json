@@ -1,16 +1,16 @@
 {
   "schemaVersion": 1,
   "status": "fixture-draft",
-  "disclosure": "Sanitized recorded fixture. No paid provider calls. Placeholder narration remains disclosed in the product state.",
-  "capturedAt": "2026-07-16T16:22:19.899Z",
+  "disclosure": "Sanitized recorded fixture with hash-bound GPT Image 2 media. No paid provider calls occur during replay. Placeholder narration remains disclosed in the product state.",
+  "capturedAt": "2026-07-16T16:55:59.236Z",
   "viewport": {
     "width": 1200,
     "height": 800
   },
   "video": {
     "relativePath": "workshoplm-fixture-walkthrough.webm",
-    "sha256": "69de3439f342a13f02d00bd671bd145230d65e0a9f50ca324e05d22adc214e56",
-    "durationSeconds": 52.2,
+    "sha256": "0664ea8ccd365ab63475dce2410a90084f6dbc32c734be93a1180b7375c45f4a",
+    "durationSeconds": 58.8,
     "streams": [
       {
         "codec_name": "vp8",
@@ -23,85 +23,85 @@
   "reviewImages": [
     {
       "relativePath": "contact-sheet.png",
-      "sha256": "6c8c9087bfa30172228e0d31aa6f15cbcbc4383b72e1443021152b048f9e6e4e"
+      "sha256": "efcbfedbb3c3f275c5eae5690e15d67889a6e206073a09299fa2f27785f18f6f"
     },
     {
       "relativePath": "original-reveal.png",
-      "sha256": "1617f9f6eaee0428b40b54a2f174ddc20876e62b6113c8b710965d79906273ad"
+      "sha256": "614277c74b4a071d68454d65a4da22ad84532c5fa0c37c10f7867af5187d6fac"
     }
   ],
   "beats": [
     {
       "id": "map",
       "label": "Grounded editable Map",
-      "startMs": 808,
-      "endMs": 3010
+      "startMs": 915,
+      "endMs": 3115
     },
     {
       "id": "sources",
       "label": "Contemporaneous fixture brainstorm and source scope",
-      "startMs": 3010,
-      "endMs": 5213
+      "startMs": 3115,
+      "endMs": 5320
     },
     {
       "id": "source-trace",
       "label": "Map claim to exact source excerpt",
-      "startMs": 5213,
-      "endMs": 7040
+      "startMs": 5320,
+      "endMs": 7150
     },
     {
       "id": "map-edit",
       "label": "Edit a semantic claim before approval",
-      "startMs": 7065,
-      "endMs": 8595
+      "startMs": 7186,
+      "endMs": 8717
     },
     {
       "id": "brief-approval",
       "label": "First gate: approve the Brief",
-      "startMs": 8619,
-      "endMs": 10860
+      "startMs": 8743,
+      "endMs": 10990
     },
     {
       "id": "style",
       "label": "Apply exact professional Style and intent",
-      "startMs": 10860,
-      "endMs": 12735
+      "startMs": 10990,
+      "endMs": 12883
     },
     {
       "id": "create-outputs",
       "label": "Create the traced Output set",
-      "startMs": 12753,
-      "endMs": 15438
+      "startMs": 12901,
+      "endMs": 15889
     },
     {
       "id": "output-evidence",
       "label": "Follow a presentation back to its source",
-      "startMs": 15438,
-      "endMs": 19111
+      "startMs": 15889,
+      "endMs": 17759
     },
     {
       "id": "storyboard-edit",
       "label": "Edit the Storyboard before rendering",
-      "startMs": 19176,
-      "endMs": 21241
+      "startMs": 17843,
+      "endMs": 19915
     },
     {
       "id": "storyboard-approval",
       "label": "Second gate: approve the Storyboard",
-      "startMs": 21241,
-      "endMs": 22888
+      "startMs": 19915,
+      "endMs": 21563
     },
     {
       "id": "video-render",
       "label": "Render the approved Storyboard locally",
-      "startMs": 22888,
-      "endMs": 49220
+      "startMs": 21563,
+      "endMs": 56187
     },
     {
       "id": "original-reveal",
       "label": "Reveal the original thought beside the finished work",
-      "startMs": 49220,
-      "endMs": 52271
+      "startMs": 56187,
+      "endMs": 59236
     }
   ],
   "finalState": {
@@ -109,13 +109,13 @@
     "storyboardApproved": true,
     "videoState": "rendered",
     "sources": 1,
-    "outputs": 2,
+    "outputs": 3,
     "imagePanels": 6,
     "storyboardPanels": 5
   },
   "limitations": [
     "This is automated browser footage for editorial review, not the final public demo.",
-    "The image set is planned fixture media, not GPT Image 2 output.",
+    "The six GPT Image 2 files are checked-in sanitized provider outputs, not fresh generations during replay.",
     "The local video uses disclosed deterministic fallback narration, not provider TTS.",
     "The required Codex plugin-doorway shot must be recorded separately from the real host surface."
   ]

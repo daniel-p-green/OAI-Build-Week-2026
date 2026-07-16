@@ -22,10 +22,11 @@ const paths = {
   thumbnail: "outputs/demo-film-plan/thumbnail-preview.png",
   thumbnailManifest: "outputs/demo-film-plan/thumbnail-preview.json",
   uiGallery: "outputs/workshoplm-current-ui/manifest.json",
+  judgeImages: "fixtures/judge-provider-images/manifest.json",
   package: "package.json",
 };
 
-const [devpost, script, ledger, audit, checklist, roughReadme, provider, narration, roughCut, filmPlan, thumbnailManifest, uiGallery, packageJson] = await Promise.all([
+const [devpost, script, ledger, audit, checklist, roughReadme, provider, narration, roughCut, filmPlan, thumbnailManifest, uiGallery, judgeImages, packageJson] = await Promise.all([
   readText(paths.devpost),
   readText(paths.script),
   readText(paths.ledger),
@@ -38,6 +39,7 @@ const [devpost, script, ledger, audit, checklist, roughReadme, provider, narrati
   readJson(paths.filmPlan),
   readJson(paths.thumbnailManifest),
   readJson(paths.uiGallery),
+  readJson(paths.judgeImages),
   readJson(paths.package),
 ]);
 
@@ -75,6 +77,7 @@ assert(provider.video?.streams?.some((stream) => stream.codec_name === "h264") &
 
 assert(narration.model === "gpt-4o-mini-tts" && narration.voice === "cedar" && narration.requestCount === 10 && narration.shots.length === 10, "Editorial Cedar narration manifest is incomplete.");
 assert(roughCut.voice?.provider === "OpenAI" && roughCut.voice.name === "cedar" && roughCut.voice.finalProviderNarration === true, "Rough cut has regressed from verified Cedar narration.");
+assert(roughCut.limitations?.some((item) => item.includes("six hash-bound GPT Image 2 replay files")) && !(roughCut.limitations ?? []).some((item) => item.includes("planned image panels")), "Rough cut does not disclose the provider-backed judge-image replay accurately.");
 assert(roughCut.shots?.length === 10 && roughCut.shots.every((shot) => shot.motion?.type === "editorial-push-in" && shot.motion?.maxScale === 1.06 && shot.motion?.ratePerFrame === 0.0001), "The editorial film no longer applies the verified restrained push-in and drift to every shot.");
 assert(Math.round(roughCut.video?.durationSeconds) === 140 && roughCut.video.streams.some((stream) => stream.codec_name === "h264") && roughCut.video.streams.some((stream) => stream.codec_name === "aac"), "Rough cut is not the verified 2:20 H.264/AAC edit.");
 assert(filmPlan.shots.at(-1)?.endSeconds === 140 && filmPlan.shots.filter((shot) => shot.state === "ready").length === 8 && filmPlan.shots.filter((shot) => shot.state === "blocked").length === 2, "Film plan is not at the eight-ready/two-blocked truth state.");
@@ -97,6 +100,11 @@ for (const shot of uiGallery.screenshots) {
 for (const retired of ["01-map.png", "06-workshop-details.png", "20-real-output-gallery.png"]) {
   assert(!existsSync(resolve(repository, "outputs/workshoplm-current-ui", retired)), `Retired UI evidence is still present: ${retired}`);
 }
+assert(judgeImages.model === "gpt-image-2" && judgeImages.requestCount === 6 && judgeImages.panels?.length === 6, "Judge fixture does not contain the six-panel GPT Image 2 replay manifest.");
+for (const panel of judgeImages.panels) {
+  const bytes = await readFile(resolve(repository, "fixtures/judge-provider-images", panel.file));
+  assert(createHash("sha256").update(bytes).digest("hex") === panel.sha256, `Judge image fixture hash mismatch: ${panel.id}`);
+}
 const unresolvedSlots = [...devpost.matchAll(/`\[(LIVE|FALLBACK):/g)].length;
 assert(unresolvedSlots === 4, `Expected four founder/final-package slots, found ${unresolvedSlots}.`);
 
@@ -106,5 +114,6 @@ process.stdout.write(`${JSON.stringify({
   editorialFilm: { seconds: roughCut.video.durationSeconds, voice: roughCut.voice.name, readyShots: 8, blockedShots: 2 },
   thumbnail: { composition: thumbnailManifest.composition, dimensions: thumbnailManifest.dimensions, sha256: thumbnailManifest.thumbnailSha256 },
   uiGallery: { screenshots: uiGallery.screenshots.length, providerBackedOutputs: "08-current-outputs.png" },
+  judgeFixture: { providerBackedImages: judgeImages.panels.length, paidReplayCalls: 0 },
   unresolvedFounderSlots: unresolvedSlots,
 }, null, 2)}\n`);

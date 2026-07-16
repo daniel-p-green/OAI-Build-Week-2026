@@ -297,7 +297,7 @@ async function main() {
     shots: shotRecords,
     limitations: finalBuild ? [] : [
       `${plan.shots.filter((shot) => shot.state === "blocked").length} shots remain visibly marked FINAL EVIDENCE PENDING.`,
-      "The walkthrough uses the sanitized deterministic fixture and planned image panels.",
+      "The walkthrough uses the sanitized deterministic fixture and six hash-bound GPT Image 2 replay files; it makes no paid image call during replay.",
       providerNarration ? "OpenAI Cedar narration is present; founder footage and final editorial export remain pending." : "The guide voice is local macOS speech synthesis, not OpenAI narration.",
       providerNarration ? "Founder brainstorm, final Source-derived Output set, and public-export evidence remain gated elsewhere." : "Founder brainstorm, Realtime, GPT-5.6, GPT Image 2, provider narration, final Output set, and public-export evidence remain gated elsewhere."
     ]

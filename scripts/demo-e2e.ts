@@ -8,7 +8,8 @@ import { renderDeck, renderInfographic } from "../packages/production/src/render
 import { openLocalDatabase } from "../apps/worker/src/db/client.ts";
 import { migrate } from "../apps/worker/src/db/migrate.ts";
 import { executeOne } from "../apps/worker/src/executor.ts";
-import { applyWorkshopAction, createImageBatch, dismissWorkshopOrientation, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, updateWorkshopOnboarding } from "../apps/worker/src/workshop-service.ts";
+import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDna, dismissWorkshopOrientation, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, updateWorkshopOnboarding } from "../apps/worker/src/workshop-service.ts";
+import { seedJudgeProviderImages } from "./seed-judge-images.ts";
 
 async function main() {
 const root = resolve(process.cwd(), ".workshoplm", "acceptance");
@@ -44,7 +45,10 @@ dismissWorkshopOrientation("map", root);
 dismissWorkshopOrientation("outputs", root);
 applyWorkshopAction("approveBrief", root);
 lockManualStyle({}, root);
+createVisualDna(root);
+approveVisualDna(root);
 createImageBatch(root);
+await seedJudgeProviderImages(root);
 const deckState = await generateOutput("deck", root);
 const infographicState = await generateOutput("infographic", root);
 if (infographicState.outputs.length !== 2 || deckState.outputs[0]?.type !== "deck" || infographicState.outputs[1]?.type !== "infographic") throw new Error("persisted artifact outputs were not created");
@@ -70,7 +74,7 @@ const video = await executeOne(root);
 if (video.state !== "succeeded" || !(await stat(resolve(root, "generated", "workshoplm-demo.mp4"))).isFile()) throw new Error("approved storyboard did not produce a local video");
 const finalState = readWorkshopState(root);
 if (finalState.onboarding.step !== "complete" || !finalState.onboarding.mapOrientationDismissed || !finalState.onboarding.outputsOrientationDismissed) throw new Error("recorded fixture did not open directly on the judge-ready Map");
-if (!finalState.imageBatch || finalState.imageBatch.panels.length !== 6) throw new Error("recorded fixture did not preserve the planned coherent image set");
+if (!finalState.imageBatch || finalState.imageBatch.panels.length !== 6 || finalState.imageBatch.panels.some((panel) => panel.state !== "generated" || !panel.relativePath || !panel.sha256 || panel.provenance?.model !== "gpt-image-2")) throw new Error("recorded fixture did not preserve the provider-backed coherent image set");
 if (finalState.audioOverviews.length !== 1 || finalState.audioOverviews[0]?.stale || finalState.audioOverviews[0]?.status !== "script_ready") throw new Error("recorded fixture did not preserve one current grounded Audio Overview script");
 if (finalState.videos.length !== 1 || finalState.videos[0]?.stale || !(await stat(resolve(root, finalState.videos[0].relativePath))).isFile()) throw new Error("recorded fixture did not preserve one current immutable Video version");
 const buildTrace = finalState.videos[0]?.buildTrace;
@@ -78,7 +82,7 @@ if (!buildTrace || !(await stat(resolve(root, buildTrace.htmlPath))).isFile() ||
 const finalGates = deriveGates({ transcriptSegments: 2, boardApprovedCurrent: true, briefCurrent: finalState.briefApproved, styleLockedCurrent: Boolean(finalState.style && !finalState.style.stale), storyboardApprovedCurrent: finalState.storyboardApproved, videoRenderedCurrent: finalState.videoState === "rendered" });
 if (!finalGates.video_rendered) throw new Error("video-rendered gate was not recorded");
 
-console.log(JSON.stringify({ mode: "recorded-fixture", status: "passed", grounding: answer.citations.length, gates: finalGates, outputs: finalState.outputs.map((output) => output.relativePath), audioOverview: { id: audioOverview.id, sections: audioOverview.sections.length, status: audioOverview.status }, imagePanels: finalState.imageBatch.panels.length, assetPlanItems: assetPlan.items.length, storyboardPanels: generatedStoryboard.panels.length, videoArtifact: video.artifact?.relativePath, buildTrace: buildTrace.htmlPath, elapsed: "deterministic" }));
+console.log(JSON.stringify({ mode: "recorded-fixture", status: "passed", grounding: answer.citations.length, gates: finalGates, outputs: finalState.outputs.map((output) => output.relativePath), audioOverview: { id: audioOverview.id, sections: audioOverview.sections.length, status: audioOverview.status }, imagePanels: finalState.imageBatch.panels.length, imageMode: "hash-bound-provider-fixture", assetPlanItems: assetPlan.items.length, storyboardPanels: generatedStoryboard.panels.length, videoArtifact: video.artifact?.relativePath, buildTrace: buildTrace.htmlPath, elapsed: "deterministic" }));
 }
 
 main().catch((error: unknown) => { console.error(error); process.exitCode = 1; });
