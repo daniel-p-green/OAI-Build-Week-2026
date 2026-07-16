@@ -6033,3 +6033,32 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Provider-backed Map, six-image gallery, Realtime turn, narration, founder brainstorm, cold professional `Send`/`Revise`, final public Video, and `/feedback` Session ID remain open under `GOAL.md`.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 18:59 CT — Every artifact claim now has a direct source gesture
+
+**Area:** Trust / Source grounding / Focused Outputs
+
+### Changed
+
+- Audited source trace across the Map, Brief, Presentation, Infographic, Image set, Storyboard, and Video. Image and Storyboard panels already exposed their own evidence, but focused Presentation and Infographic routed `Show source` to only the first claim and focused Video exposed no direct source action.
+- Added a compact `Sources in this output` trail beneath each focused Presentation, Infographic, and Video. It preserves artifact claim order, removes duplicate edges, shows each exact locator, and opens that claim's source sentence in one click.
+- Video now keeps `Show source`, `Show original`, and `Open video` as distinct actions. Its preview uses the available canvas height so the source trail remains visible without overlaying playback.
+- Added focused claim-order/deduplication coverage and extended the official-component/copy contract to protect the claim-level source trail.
+
+### Verified
+
+- Opened the verified fixture in the Codex in-app browser and followed Map → Brief → Outputs → Presentation. All four Presentation claims appeared with `Sanitized fixture · chunk 01` through `chunk 04`; selecting the second claim opened the exact sentence and locator for `chunk 02`, not a generic source summary.
+- Opened the rendered Video in the same browser. All four Video claim edges appeared below the unobscured player, while `Show source`, `Show original`, and `Open video` remained visible in the focused header.
+- `pnpm check` passed all 13 packages, including 19 web tests and 84 worker tests. `pnpm demo:e2e` passed all six gates; `pnpm submission:build` and `pnpm submission:verify` produced and validated the truthful 17-asset `partial` set; `pnpm demo:film:verify` retained six ready shots and four explicitly evidence-blocked shots; `git diff --check` passed.
+
+### Decisions
+
+- An artifact-level provenance record is necessary but insufficient for the professional trust promise. A user must be able to choose the factual claim they are evaluating and reach that exact sentence directly.
+- The source trail belongs inside the focused artifact, not in persistent navigation or another tab. This keeps provenance contextual and preserves the single-current-object interface.
+
+### Open items
+
+- Provider-backed Map, six-image gallery, Realtime turn, narration, founder brainstorm, cold professional `Send`/`Revise`, final public Video, and `/feedback` Session ID remain open under `GOAL.md`.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 18:54 CT
+Last updated: 2026-07-15 18:59 CT
 
 ## Status
 
@@ -106,6 +106,7 @@ These gates measure replacement value, not implementation breadth. Automated che
 #### Trust and return
 
 - [x] Factual presentation, infographic, Storyboard, and Video claims retain an inspectable path to exact source evidence in the recorded fixture.
+  - 2026-07-15 claim-level UI proof: focused Presentation, Infographic, and Video views now list every artifact claim with its exact locator rather than routing `Show source` to only the first claim. Selecting the second Presentation claim in the Codex in-app browser opened its exact `Sanitized fixture · chunk 02` sentence; Video exposes the same direct source action beside `Show original` and preserves the compact playback composition. Image panels and Storyboard panels retain their existing per-item `Show source` gesture.
 - [x] Meaningful Source changes make dependent work `Needs update`, preserve historical versions, and offer one clear regeneration action.
 - [x] Saved Styles carry across Workshops; a new weekly meeting can refresh the Map, Brief, and presentation without rebuilding the brand system.
 - [ ] One representative professional completes the weekly return path on their own material without project-team coaching.
