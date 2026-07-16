@@ -116,8 +116,8 @@ describe("production renderers", () => {
     const deck = renderDeck(sequenceBrief);
     expect(deck).toContain('class="slide sequence"');
     expect(deck).toContain("02 · How it works");
-    expect(deck).toContain('<div class="sequence-step"><span>Capture</span></div>');
-    expect(deck).toContain('<div class="sequence-step"><span>Deliver</span></div>');
+    expect(deck).toContain('<div class="sequence-step"><span>Capture</span><small>Gather the raw material.</small></div>');
+    expect(deck).toContain('<div class="sequence-step"><span>Deliver</span><small>Create the finished work.</small></div>');
     const root = await mkdtemp(join(tmpdir(), "workshoplm-sequence-"));
     const artifact = await writeRenderedArtifact(root, "sequence", "deck", sequenceBrief);
     expect((await readFile(join(root, artifact.editableRelativePath!))).byteLength).toBeGreaterThan(10_000);

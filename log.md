@@ -8468,3 +8468,34 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - Founder capture, final ready package, final public MP4, human film taste review, intended-audience deck review, `/feedback`, release, Devpost, and logged-out submitted-link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 09:42 CT — Presentation process slides carry real hierarchy
+
+**Area:** Output quality / editable presentation / visual review
+
+### Changed
+
+- Audited the remaining autonomous GOAL items against current artifacts. The clearest judge-visible weakness was still the provider deck's process slide: Capture, Shape, and Deliver were correctly recognized as a sequence, but the three editable cards contained only their labels.
+- Added one quiet supporting definition to each canonical stage in responsive HTML and editable PowerPoint: gather the raw material, organize what matters, and create the finished work.
+- Kept the definitions deliberately semantic rather than product-specific. The renderer improves comprehension without asserting that an arbitrary Source included voice, particular file types, or another unsupported capability.
+- Updated both renderer-level and worker integration coverage for the complete generated markup.
+
+### Verified
+
+- The first full `pnpm check` correctly failed because a worker integration assertion still required the old label-only HTML. The assertion was updated to the intended richer contract; the second full run passed lint, typecheck, and tests across all thirteen packages, including 119 worker tests.
+- A dedicated editable two-slide PowerPoint was generated through the real renderer, converted through LibreOffice to a 16:9 PDF, and inspected at 2001×1125. The accepted process slide has no clipping, overlap, duplicate text, or citation loss.
+- Direct PowerPoint XML inspection found exactly one stage label and one definition for each of Capture, Shape, and Deliver, plus the unchanged visible `Source: Voice brainstorm` footer.
+- `pnpm demo:e2e` passed the complete recorded seam after the final wording change. `pnpm submission:packet:verify` and `git diff --check` also passed. No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Decisions
+
+- Generated stage explanations may clarify a familiar workflow noun, but may not silently introduce a new sourced claim. Richer hierarchy and source discipline must land together.
+- Visual review artifacts are preserved under `artifacts/live-review/presentation-sequence-detail/` as editable PowerPoint, PDF, and a full-resolution JPEG.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- Intended-audience `Send` or blocking `Revise` feedback remains required before the presentation send-it gate can close. Founder capture, final ready package, final public MP4, film taste review, `/feedback`, release, Devpost, and logged-out submitted-link verification also remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

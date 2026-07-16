@@ -317,9 +317,9 @@ it("turns spoken transformation and process language into complete professional 
   expect(html).toContain("The path continues through an approved Brief, coherent visuals, an editable Storyboard, and the final demo Video.");
   expect(html).not.toContain("grounded Map, an…");
   expect(html).toContain('class="slide sequence"');
-  expect(html).toContain('<div class="sequence-step"><span>Capture</span></div>');
-  expect(html).toContain('<div class="sequence-step"><span>Shape</span></div>');
-  expect(html).toContain('<div class="sequence-step"><span>Deliver</span></div>');
+  expect(html).toContain('<div class="sequence-step"><span>Capture</span><small>Gather the raw material.</small></div>');
+  expect(html).toContain('<div class="sequence-step"><span>Shape</span><small>Organize what matters.</small></div>');
+  expect(html).toContain('<div class="sequence-step"><span>Deliver</span><small>Create the finished work.</small></div>');
   await rm(root, { recursive: true, force: true });
 });
 it("keeps source-locator metadata out of claims and writes a complete parallel transformation", async () => {
