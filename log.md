@@ -2718,8 +2718,6 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
----
-
 ## 2026-07-16 03:51 CT — Final film assembly is deterministic and fail-closed
 
 **Area:** Demo film / Meta reveal / Submission truth
@@ -8498,4 +8496,37 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 ### Open items
 
 - Intended-audience `Send` or blocking `Revise` feedback remains required before the presentation send-it gate can close. Founder capture, final ready package, final public MP4, film taste review, `/feedback`, release, Devpost, and logged-out submitted-link verification also remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 09:53 CT — Judge-film proof shots stay visually alive
+
+**Area:** Editorial film / objective quality control / submission evidence
+
+### Changed
+
+- Audited the current 2:20 Cedar rough cut with full-timeline freeze, black-frame, and EBU R128 measurements instead of relying on its contact sheet alone. Audio delivery was already strong, but five consecutive proof shots contained 12–18 second static holds after their short UI actions finished.
+- Added one restrained editorial motion treatment to every shot: a maximum 6% push-in with a duration-aware horizontal drift. This keeps the current proof surface dominant while preventing narration-backed screenshots from reading as an unfinished slide show.
+- Bound the motion contract into `pnpm submission:packet:verify`, including all ten shots, the maximum scale, and per-frame rate. Rebuilt the MP4, review frames, contact sheet, and manifest from the verified Cedar narration.
+
+### Verified
+
+- FFmpeg `freezedetect=n=0.0001:d=3` reduced repeated 12–18 second holds to one 3.03-second low-motion tail at the end of the honestly blocked founder-capture placeholder. `blackdetect` found no black interval.
+- FFmpeg EBU R128 measurement remains -22.9 LUFS integrated loudness, 4.4 LU loudness range, and -2.9 dB true peak. The motion repair did not disturb the accepted Cedar mix.
+- Visually inspected the regenerated 10-frame 1280x720 contact sheet at original resolution. The official workbench, exact-source reveal, Brief, Style, provider-backed Outputs, Storyboard, local Video, and original-brainstorm reveal remain legible; no proof caption is cropped or obscured.
+- `pnpm demo:film:verify` passed with a 140-second draft, eight ready shots, two blocked shots, and the same four honest founder/final-export evidence gaps.
+- `pnpm submission:packet:verify` passed with Terra, six GPT Image 2 panels, five product Cedar clips, ten editorial Cedar clips, sixteen current UI screens, eight ready shots, and two blocked shots.
+- `pnpm demo:e2e` passed the complete recorded Source-to-render seam. `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 119 worker tests.
+
+### Decisions
+
+- The single 3.03-second tail is accepted only in the draft because it belongs to the explicit founder-capture placeholder that the real recording replaces. It is not evidence that the final film is complete and does not close human taste review.
+- Motion stays subordinate to product proof: no decorative transition system, synthetic camera cuts, or new visual language was introduced.
+- No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder capture, founder-derived ready package, final public MP4, human film taste review, intended-audience deck review, `/feedback`, release, Devpost, and logged-out submitted-link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.

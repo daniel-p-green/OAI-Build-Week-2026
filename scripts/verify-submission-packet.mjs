@@ -72,6 +72,7 @@ assert(provider.video?.streams?.some((stream) => stream.codec_name === "h264") &
 
 assert(narration.model === "gpt-4o-mini-tts" && narration.voice === "cedar" && narration.requestCount === 10 && narration.shots.length === 10, "Editorial Cedar narration manifest is incomplete.");
 assert(roughCut.voice?.provider === "OpenAI" && roughCut.voice.name === "cedar" && roughCut.voice.finalProviderNarration === true, "Rough cut has regressed from verified Cedar narration.");
+assert(roughCut.shots?.length === 10 && roughCut.shots.every((shot) => shot.motion?.type === "editorial-push-in" && shot.motion?.maxScale === 1.06 && shot.motion?.ratePerFrame === 0.0001), "The editorial film no longer applies the verified restrained push-in and drift to every shot.");
 assert(Math.round(roughCut.video?.durationSeconds) === 140 && roughCut.video.streams.some((stream) => stream.codec_name === "h264") && roughCut.video.streams.some((stream) => stream.codec_name === "aac"), "Rough cut is not the verified 2:20 H.264/AAC edit.");
 assert(filmPlan.shots.at(-1)?.endSeconds === 140 && filmPlan.shots.filter((shot) => shot.state === "ready").length === 8 && filmPlan.shots.filter((shot) => shot.state === "blocked").length === 2, "Film plan is not at the eight-ready/two-blocked truth state.");
 

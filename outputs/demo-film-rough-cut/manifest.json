@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "editorial-rough-cut",
   "disclosure": "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video.",
-  "builtAt": "2026-07-16T14:15:28.824Z",
+  "builtAt": "2026-07-16T14:52:15.062Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "voice": {
@@ -15,7 +15,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-rough-cut.mp4",
-    "sha256": "46ac7709f313d702af166183bc6f8b9ac15986179c60fee4420a6da08071e2a7",
+    "sha256": "6ad97116946714ab28e280ace7d3e0a6df5188ab6ee4ca16a37a38d07e008692",
     "durationSeconds": 140.021333,
     "streams": [
       {
@@ -33,48 +33,48 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "9e6d5d531fffae27b4a572bd2f517ef4fadfe35c47ac216e9bc64745ad162d13"
+    "sha256": "df5510c352f1d37a3ec6535afb1edd93df99083df449dd8c580edb69865fc9e8"
   },
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "e0eef58ff6a8acd5f76b76457b35425d4fbf7ad08e101ccf8839dc5d91510def"
+      "sha256": "c77557358934805ea348317f435df96cbdba0ab920a88babfc5e0136b837480e"
     },
     {
       "relativePath": "review/02.jpg",
-      "sha256": "6e36a13a22024daa6d318b3204dac60cac23e7f9cc1f98e9770c2b26b5bf1675"
+      "sha256": "a0f8c207f2ec3735a4fca9df3cfed6b9be258d384675404970d472b4df2ee153"
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "83d430e2f534987725f5705665a2a9adf5c671ecd76c3a13daf7c3616bd5193a"
+      "sha256": "f07a153e457468a0efa9160188492391cc475b038a6c534cfb575dfc3027a668"
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "7e79c1dac451f299f23e96d0c8804508072f318d61c03471fbfbb55e27d68c19"
+      "sha256": "1b4193e97e4eafaa4aea8554f614aa67a86bd971829ae5eae333e61e66cd1a1d"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "12713f2f4c8f899d85b7dfd32854203048428445e6701d2d89026e5bf622e944"
+      "sha256": "73ea0e71e73c54375d241d00180d1c6523765f2c88c72765b0a2220a2a00ba67"
     },
     {
       "relativePath": "review/06.jpg",
-      "sha256": "01fc79fc438d1b467e7d3644b23e91faf36791c7521aa106959cb5e62f5eb64c"
+      "sha256": "c9ec54778d2e3e3a0bf80f5656c08b9831ba69cab882696664d3c65ab52b671a"
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "d26b568b55d1938f9cc7c06c9e9fbce8dbbd64b545fac8ec032eeb5f91d191f3"
+      "sha256": "77c5ffd5a7f840fa8ace1348b7039577d4382da37dfa17c1aceaffd4c36e27dd"
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "6d45a634737bd71b1b9e7e71b9000b00aae027e0efcd1818e362b2fc53bfd601"
+      "sha256": "e94b1bccc8c05761c768b41f6e8c3809b5850a53bad02c458ba1087ff6603eda"
     },
     {
       "relativePath": "review/09.jpg",
-      "sha256": "b6da06f2b24ad70ff42fed9c4094757a8fc34ea7850eea6903a3a83a0aa3697d"
+      "sha256": "e2c9bfea947b6c6d85935a936cb5b00ae7fb009886f025e26e35df994af1499d"
     },
     {
       "relativePath": "review/10.jpg",
-      "sha256": "7b45e1096b592c123e011e58effb0eec14e638814715be5a7ebb17b85f22ed10"
+      "sha256": "3eb39b36c465365dd198d02b171980cf573d7ea6cbc87a453da1618374b6fdc8"
     }
   ],
   "shots": [
@@ -92,7 +92,12 @@
         "map"
       ],
       "sourceStartSeconds": 0.696,
-      "sourceEndSeconds": 2.398
+      "sourceEndSeconds": 2.398,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
     },
     {
       "id": "codex-doorway",
@@ -106,7 +111,12 @@
       },
       "sourceBeats": [],
       "externalVideo": "outputs/demo-film-inputs/codex-doorway.mov",
-      "sourceDurationSeconds": 12
+      "sourceDurationSeconds": 12,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
     },
     {
       "id": "capture-and-shape",
@@ -122,7 +132,12 @@
         "sources"
       ],
       "sourceStartSeconds": 2.898,
-      "sourceEndSeconds": 4.403
+      "sourceEndSeconds": 4.403,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
     },
     {
       "id": "evidence-and-control",
@@ -139,7 +154,12 @@
         "map-edit"
       ],
       "sourceStartSeconds": 5.103,
-      "sourceEndSeconds": 7.58
+      "sourceEndSeconds": 7.58,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
     },
     {
       "id": "brief-approval",
@@ -155,7 +175,12 @@
         "brief-approval"
       ],
       "sourceStartSeconds": 8.508,
-      "sourceEndSeconds": 9.859
+      "sourceEndSeconds": 9.859,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
     },
     {
       "id": "style",
@@ -171,7 +196,12 @@
         "style"
       ],
       "sourceStartSeconds": 10.759,
-      "sourceEndSeconds": 11.728
+      "sourceEndSeconds": 11.728,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
     },
     {
       "id": "outputs",
@@ -185,7 +215,12 @@
       },
       "sourceBeats": [],
       "externalVideo": "outputs/demo-film-inputs/provider-image-gallery.mov",
-      "sourceDurationSeconds": 6
+      "sourceDurationSeconds": 6,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
     },
     {
       "id": "storyboard-approval",
@@ -202,7 +237,12 @@
         "storyboard-approval"
       ],
       "sourceStartSeconds": 17.248,
-      "sourceEndSeconds": 20.349
+      "sourceEndSeconds": 20.349,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
     },
     {
       "id": "render-and-trace",
@@ -216,7 +256,12 @@
       },
       "sourceBeats": [],
       "externalVideo": "outputs/demo-film-inputs/provider-narrated-video.mp4",
-      "sourceDurationSeconds": 25.002667
+      "sourceDurationSeconds": 25.002667,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
     },
     {
       "id": "meta-reveal",
@@ -232,7 +277,12 @@
         "original-reveal"
       ],
       "sourceStartSeconds": 38.573,
-      "sourceEndSeconds": 41.121
+      "sourceEndSeconds": 41.121,
+      "motion": {
+        "type": "editorial-push-in",
+        "maxScale": 1.06,
+        "ratePerFrame": 0.0001
+      }
     }
   ],
   "limitations": [
