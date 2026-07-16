@@ -8595,3 +8595,36 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - The package integration is complete for both fixture and provider-ready mechanics, but the founder-derived ready package, public upload, film taste review, intended-audience deck review, `/feedback`, release, Devpost, and link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 10:13 CT — The self-produced package now tells the winning product story
+
+**Area:** Generated submission copy / Meta-demo / claim integrity
+
+### Changed
+
+- Audited the actual `DEVPOST.md` and `README-NARRATIVE.md` inside the traced 18-asset Output set instead of assuming the stronger hand-authored submission draft reached the package. The files were accurate but generic: they listed features, buried the professional problem, and did not make the two approvals, claim-level receipts, last-10-percent path, or meta-demo compelling.
+- Rebuilt the generated Devpost narrative around the weekly professional handoff gap, the complete Capture → Shape → Deliver product path, two consequential sign-offs, reusable Style, exact Source trace, editable Outputs, version/staleness behavior, and the fact that the package is itself product proof.
+- Added dynamic OpenAI/Codex evidence: current GPT-5.6 Map run count, GPT Image 2 panel count, verified Realtime turns, Storyboard speech coverage, Audio Overview status, Codex build role, HyperFrames provenance, elapsed state, Source/claim totals, package status, and exact limitations all come from the current Workshop rather than fixed launch copy.
+- Replaced the generic repository narrative with a concise six-step product path, package inventory, one-command judge reproduction, persisted version summary, and explicit separation between sanitized fixture and provider evidence.
+
+### Verified
+
+- The first worker test run correctly rejected a hardcoded one-Source expectation because the seeded fixture normalizes four active Sources. The assertion now verifies correct singular/plural copy for any current count.
+- The second worker run correctly rejected a retired README phrase after the narrative rewrite. The contract now asserts the stronger current ownership sentence instead of preserving stale wording.
+- The third worker run passed all 120 tests. Worker typecheck passed.
+- Rebuilt and verified the real acceptance Output set. `DEVPOST.md` is 649 words, `README-NARRATIVE.md` is 290 words, and the 18-asset package remains `valid: true`, `stale: false`, and `tampered: false` with exactly the five honest fixture limitations.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages; `pnpm demo:e2e` passed the complete recorded Source-to-render seam. A final post-reset `pnpm submission:build`, `pnpm submission:verify`, and `pnpm submission:packet:verify` reproduced the valid untampered package, the 1280×720 thumbnail hash, all sixteen UI screenshots, and the unchanged four honest founder/final-package slots. `git diff --check` passed.
+- No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Decisions
+
+- The hand-authored Devpost draft remains the publication control surface, but the product-generated copy must independently clear the judge-story bar for the meta-demo claim to be honest.
+- Generated public copy may explain the product thesis and workflow, but every provider count, timing statement, and readiness claim must be computed from the packaged Workshop state.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder capture, founder-derived ready package, final public MP4, human film taste review, intended-audience deck review, `/feedback`, release, Devpost publication, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

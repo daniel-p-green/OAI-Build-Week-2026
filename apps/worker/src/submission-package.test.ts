@@ -81,8 +81,13 @@ describe("submission Output set", () => {
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "BUILD-TRACE.html", mimeType: "text/html", provenance: "source_trace" }));
     expect(built.outputSet.assets).toContainEqual(expect.objectContaining({ type: "evidence", relativePath: "BUILD-TRACE.json", mimeType: "application/json", provenance: "source_trace" }));
     expect(built.outputSet.assets).toHaveLength(18);
-    await expect(readFile(join(built.manifestPath, "..", "DEVPOST.md"), "utf8")).resolves.toContain("No live GPT-5.6 run is claimed");
-    await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("WorkshopLM owns the grounded text and Realtime voice Conversation");
+    const devpost = await readFile(join(built.manifestPath, "..", "DEVPOST.md"), "utf8");
+    expect(devpost).toContain("Every factual claim keeps its receipt.");
+    expect(devpost).toContain("No provider Map run is claimed by this package");
+    expect(devpost).toMatch(/across \d+ active Sources?/);
+    expect(devpost).toContain("pnpm judge:start");
+    expect(devpost).toContain("Package status: **partial**");
+    await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("WorkshopLM owns the professional's Conversation, Sources, Map, Brief, Style, Outputs, Storyboard, and exact Source trace");
     await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("Codex is the development and launch host, not the professional's chat surface");
     await expect(readFile(join(built.manifestPath, "..", "README-NARRATIVE.md"), "utf8")).resolves.toContain("ChatGPT Work parity is not claimed");
     await expect(readFile(join(built.manifestPath, "..", "STORYBOARD.md"), "utf8")).resolves.toContain("Sanitized fixture · chunk 01");
