@@ -8735,6 +8735,41 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 ---
 
+## 2026-07-16 13:41 CT — Image replacements preserve the last good visual and exact history
+
+**Area:** GPT Image 2 revision control / artifact integrity / progressive disclosure / responsive UX
+
+### Changed
+
+- Audited selective image replacement against the immutable Storyboard and Video contracts. The service incremented a panel version but reused the old path while pending, then overwrote the only state record when the replacement completed; the artifact route also hid the last generated image as soon as replacement was requested.
+- Added backward-compatible per-panel image history. Starting a replacement archives the generated version's prompt, revision request, evidence, path, SHA-256, and provider provenance exactly once before incrementing the panel.
+- Kept the last good image visible while replacement is pending. The canonical panel route continues to serve the existing bytes until a validated provider result advances it; version-specific `image-panel-N-vM` routes resolve current or archived versions independently.
+- Extended the existing `Replace image` sheet with one quiet `Version history` section using the locked official Card, ButtonLink, ListGroup, ListRow, and ListRowAction primitives. A professional can preview and open an earlier image without changing the active version or entering another navigation mode.
+- Replaced internal `Current` copy in the new surface with the clearer `Latest`. The browser copy audit now waits for the stable Sources rail so a fast production run cannot accidentally snapshot the loading shell.
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages. The worker suite passed all 120 tests and the web suite passed all 30 tests.
+- The replacement regression proves Version 1 is archived, the default route still returns Version 1 while Version 2 is pending, Version 2 becomes canonical only after recording validated bytes, and the exact Version 1 route remains available afterward.
+- Rebuilt the production browser artifact from current source, force-refreshed the three affected baselines, and ran the complete production-browser suite: all 30 cases passed in 1.3 minutes. The image case proves latest and earlier previews, exact historical URL, selective replacement, Source access, desktop and 390×844 layouts, and zero added navigation.
+- Visually inspected the 1200×800 historical preview and 390×844 latest-version sheet. The Image set remains dominant on desktop, the sheet is calm and scannable, and mobile retains a single-column editing flow without horizontal overflow. `desktop-image-history.png` hashes to `b2f346a4350418dff15e5747de5b55502d92cd6000c585728916b138f0bb9401`; `desktop-image-replacement.png` to `4ce94c5d48c2be4d15266e54450c7056b71e3236ebc1b6d0caabc55be23fd779`; `mobile-image-replacement.png` to `c7c52b2c023946fcf2c7e10659fda95dfb9761d6799e5d396f10a70247c52028`.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam. `pnpm submission:packet:verify` passed with Terra, six provider-backed GPT Image 2 panels, Cedar narration, sixteen current UI screens, eight ready film shots, two honest blocked shots, and four unchanged founder/final-package slots.
+- No provider request ran. The evidence ledger remains at 104 OpenAI HTTP operations; exact dollar debit is still not inferred.
+
+### Decisions
+
+- A pending replacement is a request, not a reason to remove usable work. The last validated image remains visible until the new bytes pass the provider-media gate.
+- Revision history belongs inside the contextual replacement sheet. It supports review and recovery without creating a tab, library, or separate image-management mode.
+- Image provenance must follow the same immutable path-and-hash standard as Storyboard and Video provenance; a retained filename without a user-visible version route is insufficient.
+- `PLAN-2026-07-13.md` was used only for enduring acceptance principles. Its pre-existing user modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-16 12:42 CT — Log sequence correction
 
 The 12:41 CT judge-film Sketch entry was appended after an earlier repeated Open-items footer rather than after the already-existing 12:34 CT entry. Its evidence and timestamp are correct; this note preserves the append-only record instead of moving or rewriting history.
@@ -9015,3 +9050,10 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 13:42 CT — Log-order correction
+
+- The complete `13:41 CT — Image replacements preserve the last good visual and exact history` milestone was appended using an ambiguous repeated anchor and therefore appears earlier in this append-only file than the 12:55, 13:10, and 13:20 entries that were already present.
+- No historical entry was moved or rewritten. Treat the entry's explicit 13:41 timestamp as authoritative and this correction as the chronological tail marker.

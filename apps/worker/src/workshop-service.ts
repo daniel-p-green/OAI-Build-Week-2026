@@ -81,8 +81,10 @@ export type ImageBatchPanel = {
   relativePath?: string;
   sha256?: string;
   provenance?: { model: "gpt-image-2"; size: string; quality: "low" | "medium" | "high"; referenceId: string; requestId?: string; generatedAt: string };
+  history?: ImagePanelVersion[];
   error?: string;
 };
+export type ImagePanelVersion = { version: number; prompt: string; revisionRequest?: string; evidence: WorkshopEvidenceReference[]; relativePath: string; sha256: string; provenance: NonNullable<ImageBatchPanel["provenance"]> };
 export type ImageCoherenceContract = { visualDnaVersion?: number; palette: { accent: string; ink: string; paper: string }; compositionRules: string[]; textureRules: string[]; imageRules: string[]; negativeRules: string[]; siblingPanelIds: string[] };
 export type WorkshopImageBatch = { id: string; graphRevision: number; briefVersion: number; styleVersion: number; referenceId: string; referencePath: string; referenceSha256: string; coherence: ImageCoherenceContract; panels: ImageBatchPanel[]; stale: boolean; createdAt: string };
 export type WorkshopNarrationPanel = { panelId: string; relativePath: string; sha256: string; model: "gpt-4o-mini-tts"; voice: "cedar" | "marin"; instructions: string; requestId?: string; generatedAt: string };
@@ -346,7 +348,19 @@ export function resolveWorkshopArtifact(id: string, root?: string, workshopId?: 
     if (!path.startsWith(`${resolve(dataRoot)}/`)) return undefined;
     return { path, contentType: "text/html; charset=utf-8" };
   }
-  const image = state.imageBatch?.panels.find((panel) => panel.id === id && panel.state === "generated" && panel.relativePath);
+  const historicalImage = id.match(/^(image-panel-\d+)-v(\d+)$/);
+  if (historicalImage) {
+    const panel = state.imageBatch?.panels.find((candidate) => candidate.id === historicalImage[1]);
+    const version = Number(historicalImage[2]);
+    const item = panel?.version === version && panel.relativePath
+      ? { relativePath: panel.relativePath }
+      : panel?.history?.find((candidate) => candidate.version === version);
+    if (!item?.relativePath) return undefined;
+    const path = resolve(dataRoot, item.relativePath);
+    if (!path.startsWith(`${resolve(dataRoot)}/`)) return undefined;
+    return { path, contentType: "image/png" };
+  }
+  const image = state.imageBatch?.panels.find((panel) => panel.id === id && panel.relativePath);
   if (image?.relativePath) {
     const path = resolve(dataRoot, image.relativePath);
     if (!path.startsWith(`${resolve(dataRoot)}/`)) return undefined;
@@ -1439,7 +1453,7 @@ export function createImageBatch(root?: string): WorkshopState {
   const panels = roles.map(([role, direction, keywords], index) => {
     const grounded = evidenceFor(index, keywords);
     const prompt = `Output role: ${role}. ${direction} Approved idea to communicate: ${grounded.idea}. Preserve the shared reference composition, palette, lighting, material treatment, folded-plane motif, and editorial restraint. This is panel ${index + 1} of one continuous six-panel art direction. Create a deck-ready 1:1 visual with no readable text, logos, watermarks, UI chrome, generic people-at-work scenes, device mockups, or stock-photo cliches.`;
-    return { id: panelIds[index]!, version: 1, prompt, evidence: grounded.evidence, state: "planned" as const, referenceId };
+    return { id: panelIds[index]!, version: 1, prompt, evidence: grounded.evidence, state: "planned" as const, referenceId, history: [] };
   });
   return write({ ...current, imageBatch: { id: `image-batch-v${(current.imageBatch ? Number(current.imageBatch.id.match(/\d+$/)?.[0]) + 1 : 1)}`, graphRevision, briefVersion: current.frame.version, styleVersion: current.style.version, referenceId, referencePath, referenceSha256: createHash("sha256").update(referenceBytes).digest("hex"), coherence, createdAt, stale: false, panels }, updatedAt: createdAt }, root);
 }
@@ -1451,7 +1465,10 @@ export function selectImagePanelForRegeneration(panelId: string, root?: string, 
   return write({ ...current, imageBatch: { ...current.imageBatch, panels: current.imageBatch.panels.map((panel) => {
     if (panel.id !== panelId) return panel;
     const basePrompt = panel.basePrompt ?? panel.prompt.replace(/ Professional revision request: .*$/s, "");
-    return { ...panel, basePrompt, prompt: request ? `${basePrompt} Professional revision request: ${request}` : basePrompt, revisionRequest: request, version: panel.version + 1, state: "selected_for_regeneration", error: undefined };
+    const history = panel.state === "generated" && panel.relativePath && panel.sha256 && panel.provenance && !(panel.history ?? []).some((item) => item.version === panel.version)
+      ? [...(panel.history ?? []), { version: panel.version, prompt: panel.prompt, revisionRequest: panel.revisionRequest, evidence: panel.evidence, relativePath: panel.relativePath, sha256: panel.sha256, provenance: panel.provenance }]
+      : panel.history ?? [];
+    return { ...panel, history, basePrompt, prompt: request ? `${basePrompt} Professional revision request: ${request}` : basePrompt, revisionRequest: request, version: panel.version + 1, state: "selected_for_regeneration", error: undefined };
   }) }, outputs: current.outputs.map((output) => output.imagePanels?.some((panel) => panel.id === panelId) ? { ...output, stale: true } : output), storyboard, narration: storyboardDependsOnPanel && current.narration ? { ...current.narration, stale: true } : current.narration, videos: storyboardDependsOnPanel ? staleVideos(current) : current.videos, storyboardApproved: storyboardDependsOnPanel ? false : current.storyboardApproved, videoState: storyboardDependsOnPanel ? "blocked" : current.videoState, updatedAt: new Date().toISOString() }, root);
 }
 export function markImagePanelFailed(panelId: string, error: string, root?: string): WorkshopState {

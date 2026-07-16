@@ -414,6 +414,9 @@ it("preserves the approved Storyboard and its exact image when a replacement is 
   expect(changed.storyboardApproved).toBe(false);
   expect(changed.storyboard).toMatchObject({ stale: true, approved: true });
   expect(changed.storyboard.panels[1]).toMatchObject({ stale: true, approved: false, imagePanelVersion: 1 });
+  expect(changed.imageBatch?.panels[1]?.history).toMatchObject([{ version: 1, relativePath: "generated/images/image-panel-2-v1.png" }]);
+  expect(resolveWorkshopArtifact("image-panel-2", root)?.path).toBe(join(root, "generated/images/image-panel-2-v1.png"));
+  expect(resolveWorkshopArtifact("image-panel-2-v1", root)?.path).toBe(join(root, "generated/images/image-panel-2-v1.png"));
   expect(() => applyWorkshopAction("approveStoryboard", root)).toThrow(/current approved panels/);
   const replacementPath = "generated/images/image-panel-2-v2.png"; const replacementBytes = Buffer.from("image-2-v2"); const replacementSha256 = createHash("sha256").update(replacementBytes).digest("hex");
   await writeFile(join(root, replacementPath), replacementBytes);
@@ -421,6 +424,8 @@ it("preserves the approved Storyboard and its exact image when a replacement is 
   expect(rebound.storyboardApproved).toBe(false);
   expect(rebound.storyboard).toMatchObject({ version: approvedVersion + 1, stale: false, approved: false });
   expect(rebound.storyboard.panels[1]).toMatchObject({ stale: false, approved: true, imagePanelVersion: 2, imageRelativePath: replacementPath, imageSha256: replacementSha256 });
+  expect(resolveWorkshopArtifact("image-panel-2", root)?.path).toBe(join(root, replacementPath));
+  expect(resolveWorkshopArtifact("image-panel-2-v1", root)?.path).toBe(join(root, "generated/images/image-panel-2-v1.png"));
   expect(rebound.storyboardHistory.find((item) => item.version === approvedVersion)).toMatchObject({ approved: true, panels: { 1: { imagePanelVersion: 1, imageRelativePath: "generated/images/image-panel-2-v1.png" } } });
   const historicalArtifact = resolveWorkshopArtifact(`storyboard-v${approvedVersion}-panel-2-image`, root);
   expect(historicalArtifact?.path).toBe(join(root, "generated/images/image-panel-2-v1.png"));

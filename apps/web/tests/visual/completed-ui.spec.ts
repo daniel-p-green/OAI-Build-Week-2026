@@ -805,9 +805,9 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
 test("Image set review exposes each visual job, exact source, and selective replacement", async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 800 });
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
-  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   const readyState = await (await page.request.get("/api/workshop")).json();
-  const panels = readyState.imageBatch.panels.map((panel: Record<string, unknown>) => ({ ...panel, state: "generated", relativePath: `generated/images/${panel.id}.png` }));
+  const panels = readyState.imageBatch.panels.map((panel: Record<string, unknown>, index: number) => ({ ...panel, version: index === 0 ? 2 : panel.version, state: "generated", relativePath: `generated/images/${panel.id}-v${index === 0 ? 2 : panel.version}.png`, sha256: "b".repeat(64), history: index === 0 ? [{ version: 1, prompt: panel.prompt, evidence: panel.evidence, relativePath: `generated/images/${panel.id}-v1.png`, sha256: "a".repeat(64) }] : [] }));
   let current = { ...readyState, imageBatch: { ...readyState.imageBatch, panels } };
   const posted: Array<Record<string, unknown>> = [];
   await page.route("**/api/workshop", async (route) => {
@@ -818,6 +818,7 @@ test("Image set review exposes each visual job, exact source, and selective repl
     return route.fulfill({ json: current });
   });
   await page.route("**/api/workshop/artifacts/image-panel-*", async (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><rect width="1000" height="1000" fill="#f4f2ec"/><path d="M90 810L450 120L710 810Z" fill="#0285ff"/><circle cx="760" cy="320" r="150" fill="#0d0d0d"/></svg>' }));
+  await page.route("**/api/workshop/artifacts/image-panel-1-v1", async (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><rect width="1000" height="1000" fill="#0d0d0d"/><circle cx="360" cy="500" r="250" fill="#0285ff"/><rect x="650" y="160" width="180" height="680" rx="90" fill="#ffffff"/></svg>' }));
   await page.goto("/");
   await openWorkshopView(page, "brief");
   await openWorkshopView(page, "outputs");
@@ -836,6 +837,13 @@ test("Image set review exposes each visual job, exact source, and selective repl
   await hero.getByRole("button", { name: "Request replacement" }).click();
   const replacementSheet = page.getByRole("dialog", { name: "Replace image" });
   await expect(replacementSheet.getByText("Keep the approved idea and Style.")).toBeVisible();
+  await expect(replacementSheet.getByText("Version 2 · Latest", { exact: true })).toBeVisible();
+  const imageHistory = replacementSheet.getByRole("region", { name: "Version history" });
+  await imageHistory.getByRole("button", { name: /Version 1 Earlier/ }).click();
+  await expect(replacementSheet.getByText("Version 1 · Earlier", { exact: true })).toBeVisible();
+  await expect(replacementSheet.locator(".replacement-image-preview img")).toHaveAttribute("src", "/api/workshop/artifacts/image-panel-1-v1");
+  await expectScreen(page, "desktop-image-history");
+  await imageHistory.getByRole("button", { name: /Version 2 Latest/ }).click();
   await expectScreen(page, "desktop-image-replacement");
   await page.setViewportSize({ width: 390, height: 844 });
   await expectScreen(page, "mobile-image-replacement");
@@ -1090,6 +1098,7 @@ test("every official control variant and interaction state matches the Figma con
 
 test("visible copy stays plain and stable", async ({ page }) => {
   await page.goto("/");
+  await expect(page.getByRole("complementary", { name: "Sources" })).toBeVisible();
   const labels = new Set<string>();
   for (const next of ["Map", "Brief", "Outputs", "Storyboard"]) {
     if (next === "Brief") await openWorkshopView(page, "brief");
