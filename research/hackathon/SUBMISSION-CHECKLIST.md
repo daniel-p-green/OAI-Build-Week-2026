@@ -2,8 +2,8 @@
 
 ## Project
 
-- [ ] Working project built with Codex and GPT-5.6
-- [ ] Category selected as **Work & Productivity**
+- [x] Working project built with Codex and GPT-5.6
+- [x] Category selected as **Work & Productivity**
 - [x] Product runs consistently on its intended platform
 - [ ] Live/testable experience matches the submitted description and video
 - [ ] Third-party SDKs, APIs, data, fonts, images, music, and integrations are licensed or authorized
@@ -11,7 +11,7 @@
 
 ## Devpost entry
 
-- [ ] Clear project description explaining features and functionality
+- [x] Clear project description explaining features and functionality
 - [x] Evidence-gated draft copy maps current claims to direct proof and bounded fallback wording
 - [ ] Submitter type selected: Individual, Team of Individuals, or Organization
 - [ ] Country of residence selected

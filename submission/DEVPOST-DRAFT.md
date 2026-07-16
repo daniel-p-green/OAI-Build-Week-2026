@@ -1,6 +1,6 @@
 # WorkshopLM — Submission Packet
 
-Working draft in submission-ready form. Every sentence maps to `submission/CLAIM-LEDGER.md`. Bracketed `[LIVE]` slots upgrade automatically once the authorized provider run and founder assets exist; each has fallback wording so the packet ships truthfully in either world. Final publication still requires the gate at the bottom.
+Working draft in submission-ready form. Every sentence maps to `submission/CLAIM-LEDGER.md`. The authorized GPT-5.6, GPT Image 2, Cedar, and Realtime results are now resolved from inspected evidence. Bracketed slots remain only where founder-derived final-package or publication evidence does not yet exist.
 
 ---
 
@@ -18,7 +18,7 @@ Work & Productivity
 
 ## Built with
 
-TypeScript, Node.js, Next.js, React, pnpm, Turborepo, SQLite (WAL + FTS5), Excalidraw, OpenAI Responses API (GPT-5.6 Sol/Terra/Luna), GPT Image 2, GPT-4o mini TTS, gpt-realtime, Codex (plugin, skills, MCP), HyperFrames, Playwright
+TypeScript, Node.js, Next.js, React, pnpm, Turborepo, SQLite (WAL + FTS5), Excalidraw, OpenAI Responses API (GPT-5.6 Sol/Terra/Luna), GPT Image 2, GPT-4o mini TTS with Cedar, gpt-realtime-2.1, Codex (plugin, skills, MCP), HyperFrames, Playwright
 
 ---
 
@@ -68,10 +68,9 @@ Codex is not a tool we used on this project. Codex is how this project happened.
 
 Two layers, both evidenced.
 
-**GPT-5.6 contributed through Codex.** The build used Codex on GPT-5.6 for implementation, orchestration, review, and verification. The dated commits, task history, and build log record the work; this is separate from the still-gated claim that WorkshopLM itself completed a paid GPT-5.6 API call.
+**GPT-5.6 contributed through Codex.** The build used Codex on GPT-5.6 for implementation, orchestration, review, and verification. The dated commits, task history, and build log record that work separately from the product's API provenance.
 
-`[LIVE: **GPT-5.6 runs the product.** In the verified live run, gpt-5.6-terra turned the grounded transcript and sources into the semantic Map on screen, with the request, response, and routing captured in the run's provenance record. Two nine-request benchmark passes measured Sol, Terra, and Luna on the product's real graph, brief, and triage operations. All variants cleared the deterministic quality bar; Terra became the grounded-Map default because it produced the valid structure in 2.8 seconds versus Sol's 6.8 seconds in the final comparable pass.]`
-`[FALLBACK: **GPT-5.6 in the runtime.** WorkshopLM implements an operation-level GPT-5.6 routing policy (Sol for quality-critical graph reasoning, Terra for structured synthesis, Luna for repeatable triage) behind a spend-gated adapter, with a benchmark harness ready to set defaults from measured quality, latency, and cost.]`
+**GPT-5.6 runs the product.** In the verified live run, `gpt-5.6-terra` turned the grounded transcript and sources into the semantic Map, with the request, response hash, and route captured in the run's provenance record. Two nine-request benchmark passes measured Sol, Terra, and Luna on the product's real graph, brief, and triage operations. All variants cleared the deterministic quality bar; Terra became the grounded-Map default because it produced the valid structure in 2.8 seconds versus Sol's 6.8 seconds in the final comparable pass.
 
 ### Under the hood
 
@@ -91,8 +90,7 @@ That runs the complete recorded seam (Sources → Map → Brief → Style → Ou
 
 ### Scope, honestly
 
-`[LIVE: The live run generated the GPT Image 2 set and provider narration shown; the Realtime capture path persisted an inspected live microphone turn. ChatGPT Work invocation is not claimed; the verified plugin surface is Codex desktop and CLI.]`
-`[FALLBACK: The recorded fixture uses a planned image set and disclosed placeholder-tone narration pending the authorized provider run; the Realtime capture boundary is implemented and tested but not yet live-verified. The verified plugin surface is Codex desktop and CLI, not ChatGPT Work.]`
+The verified provider run generated the six GPT Image 2 visuals and five Cedar Storyboard clips shown in the product Video. A controlled `gpt-realtime-2.1` WebRTC conversation searched and fetched exact Workshop Sources, persisted transcript and tool provenance, handled interruption, and completed one explicitly confirmed Brief approval. The no-credential fixture remains a separate deterministic inspection path with disclosed fallback narration. ChatGPT Work invocation is not claimed; the verified plugin surface is Codex desktop and CLI.
 Every public claim in this description is reconciled against the evidence ledger in the repository. Where the product knows less than certainty, it says so on screen too.
 
 ---
@@ -118,16 +116,16 @@ WorkshopLM is a local-first Codex plugin and browser workspace. You can score it
 
 The append-only build log (`log.md`), goal file (`GOAL.md`), and claim ledger (`submission/CLAIM-LEDGER.md`) document the autonomous build and bound every public claim to direct evidence.
 
-## Video narration spine (aligns with the 2:42 paper edit)
+## Video narration spine (aligns with the verified 2:20 rough cut)
 
-1. **Why (0:00–0:30):** the Tuesday problem; the promise: raw thinking to a deck you can defend.
-2. **How (0:30–1:30):** live seam: sample voice brainstorm, Sources, Map organizing `[LIVE: on gpt-5.6-terra, on screen]`, edit a card, Approve brief, Style, Create outputs.
-3. **What (1:30–2:25):** the deck with its receipt (click a claim, see the source sentence), storyboard edit, Approve storyboard, video renders, one Codex widget doorway moment.
-4. **Reveal (2:25–2:42):** `Show original`: this submission was made by WorkshopLM from the founder's raw brainstorm, and Codex on GPT-5.6 built WorkshopLM from a goal file. Disclosure line: what Codex built, where GPT-5.6 ran, AI voice disclosed.
+1. **Why (0:00–0:13):** raw thinking to a deck you can defend.
+2. **How (0:13–1:22):** Codex doorway, founder Source, Terra Map, exact evidence, Brief approval, and Style.
+3. **What (1:22–2:05):** provider-backed Outputs, editable Storyboard, second approval, and narrated local Video.
+4. **Reveal (2:05–2:20):** `Show original`, final traced package, Codex build record, and explicit AI-voice/runtime disclosure.
 
 ## Final publication gate (unchanged)
 
-1. Re-run `pnpm check`, the browser suite, `pnpm demo:e2e`, `pnpm submission:verify`; refresh the counts.
-2. Resolve every `[LIVE]`/`[FALLBACK]` pair from inspected artifacts; no bracket ships.
+1. Re-run `pnpm check`, the browser suite, `pnpm demo:e2e`, `pnpm submission:build`, `pnpm submission:verify`, and `pnpm submission:packet:verify`; refresh the counts.
+2. Resolve the remaining founder/final-package brackets from inspected artifacts; no bracket ships.
 3. Verify title, thumbnail, and project name carry no Google or NotebookLM marks.
 4. Record the Session ID, public YouTube URL, release tag, and logged-out link checks in `log.md`.

@@ -30,6 +30,7 @@
     "dogfood:intents:build": "tsx scripts/render-intent-profile-review.ts",
     "submission:build": "tsx scripts/submission-output-set.ts build",
     "submission:verify": "tsx scripts/submission-output-set.ts verify",
+    "submission:packet:verify": "node scripts/verify-submission-packet.mjs",
     "plugin:inspect": "pnpm --filter @workshoplm/plugin-mcp test",
     "spike:grounding": "pnpm --filter @workshoplm/spike-grounding run",
     "spike:images": "pnpm --filter @workshoplm/spike-images run",

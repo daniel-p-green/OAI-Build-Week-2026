@@ -7671,3 +7671,38 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - Founder capture, final thirteen-request Source-derived operator run, verified final package, final MP4, external send/revise review, eligible Session ID, and public submission links remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 05:11 CT — Submission packet catches up to the live product
+
+**Area:** Devpost copy / claim ledger / demo script / evidence gates
+
+### Changed
+
+- Reconciled the Devpost draft, public demo script, claim ledger, completion evidence audit, and submission checklist against the current provider evidence and refreshed 2:20 rough cut.
+- Promoted only directly proven runtime claims: the Terra grounded Map, six GPT Image 2 panels, five Cedar product-Video clips, ten Cedar editorial-film clips, grounded Realtime read/interruption/confirmed-write behavior, and the current Codex doorway.
+- Kept the evidence boundary explicit: the paid run uses the authorized sample Source, not the missing founder recording; the deterministic no-credential fixture remains a separate fallback path; ChatGPT Work remains unclaimed.
+- Removed the tracked `submission/DEVPOST-DRAFT 2.md` because it was a competing pre-spend source of truth that still said no provider run existed.
+- Retimed the demo script to the actual contiguous 0:00–2:20 film plan. The only film-content gates now named as `No` are founder capture and the founder-derived verified final Output set.
+- Added `pnpm submission:packet:verify`. It binds public copy to the Terra/Image 2/Cedar provider manifest, ten-clip editorial narration manifest, 2:20 H.264/AAC rough-cut manifest, eight-ready/two-blocked film plan, four remaining founder/final-package brackets, and the absence of known stale phrases or duplicate drafts.
+
+### Verified
+
+- The first full command chain correctly failed because `pnpm demo:e2e` resets the acceptance root and `submission:verify` was called before rebuilding its manifest. No verifier was weakened. The final publication instructions now require `submission:build` before `submission:verify`.
+- `pnpm submission:build` recreated the honest 18-asset `partial` fixture set; `pnpm submission:verify` then passed with `valid: true`, `stale: false`, and `tampered: false`.
+- `pnpm submission:packet:verify` passed with `gpt-5.6-terra`, six GPT Image 2 panels, five product narration clips, Cedar editorial voice, 140.021 seconds, eight ready shots, two blocked shots, and four unresolved founder/final-package slots.
+- `pnpm demo:film:verify` remained correctly in draft mode with only the founder recording/transcript, ready final-operator manifest, and final MP4 absent.
+- `pnpm check` passed all 13 packages with 115 worker and 30 web tests. `pnpm demo:e2e` passed the complete deterministic seam. `node --check scripts/verify-submission-packet.mjs` passed.
+
+### Decisions
+
+- The public packet must follow evidence, not preserve contingency prose after evidence exists. Verified provider behavior is now stated directly; only unresolved founder/final-publication claims retain brackets.
+- There is one Devpost source of truth. A duplicate stale draft is more dangerous than retaining historical prose in Git history.
+- Submission verification is a build→verify sequence after fixture reset. A missing manifest is not tampering and not success; it is an invalid command order that must fail visibly.
+- No provider request ran in this milestone. The evidence ledger remains 97 HTTP operations; exact dollar debit is unavailable and no exact spend is invented.
+
+### Open items
+
+- Founder capture, final thirteen-request Source-derived operator run, verified final package, final MP4, external send/revise review, eligible Session ID, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
