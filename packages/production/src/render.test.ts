@@ -15,6 +15,14 @@ describe("production renderers", () => {
     expect(fitLogoBox(0.5, 1.6, 0.68)).toEqual({ width: 0.34, height: 0.68 });
     expect(fitLogoBox(undefined, 1.6, 0.68)).toEqual({ width: 0.68, height: 0.68 });
   });
+  it("uses a portable sans-serif fallback for CSS-only generic font names", async () => {
+    const root = await mkdtemp(join(tmpdir(), "workshoplm-portable-font-"));
+    const genericBrief = { ...brief, style: { ...brief.style, fonts: ["SF Pro system stack", "ui-sans-serif"] } };
+    expect(renderDeck(genericBrief)).toContain("--heading:'Arial'");
+    const artifact = await writeRenderedArtifact(root, "portable", "deck", genericBrief);
+    expect((await readFile(join(root, artifact.editableRelativePath!))).byteLength).toBeGreaterThan(10_000);
+    await rm(root, { recursive: true, force: true });
+  });
   it("renders varied source-traceable layouts into deck and infographic HTML", () => {
     const deck = renderDeck(brief);
     expect(deck).toContain("A decision-ready presentation grounded in selected sources.");
@@ -32,6 +40,19 @@ describe("production renderers", () => {
     expect(infographic).toContain("Source-defensible brief");
     expect(infographic).toContain('class="infographic-grid"');
     expect(infographic.match(/<article class="block">/g)).toHaveLength(3);
+  });
+  it("places a reviewed generated visual on the cover with inspectable image provenance", async () => {
+    const visual = { data: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAEAQH/6X8XWQAAAABJRU5ErkJggg==", aspectRatio: 1, panelId: "image-panel-1", panelVersion: 2, sha256: "a".repeat(64) };
+    const mediaBrief = { ...brief, coverVisual: visual };
+    const deck = renderDeck(mediaBrief);
+    expect(deck).toContain('class="slide cover has-visual"');
+    expect(deck).toContain('data-image-panel="image-panel-1"');
+    expect(deck).toContain('data-image-version="2"');
+    expect(deck).toContain(`data-image-sha256="${"a".repeat(64)}"`);
+    const root = await mkdtemp(join(tmpdir(), "workshoplm-visual-deck-"));
+    const artifact = await writeRenderedArtifact(root, "visual", "deck", mediaBrief);
+    expect((await readFile(join(root, artifact.editableRelativePath!))).byteLength).toBeGreaterThan(10_000);
+    await rm(root, { recursive: true, force: true });
   });
   it("uses an intentional profile-aware cover summary instead of repeating slide one", () => {
     const withoutSummary = { ...brief, summary: undefined };

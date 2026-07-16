@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { deflateSync } from "node:zlib";
 import { appendGraphOperation, ConversationTurn, GraphOperation, parseGraphState, SemanticGraph, serializeGraphState, undoLatestGraphOperation, WorkshopToolCall, type ConversationTurn as DomainConversationTurn, type SemanticGraph as SemanticGraphType, type WorkshopToolCall as DomainWorkshopToolCall } from "@workshoplm/domain";
-import { writeRenderedArtifact } from "@workshoplm/production";
+import { writeRenderedArtifact, type RenderVisual } from "@workshoplm/production";
 import { storeArtifact } from "./artifacts/local-artifact-store.js";
 import { openLocalDatabase } from "./db/client.js";
 import { migrate } from "./db/migrate.js";
@@ -92,7 +92,7 @@ export type WorkshopAudioOverviewSection = { id: string; title: string; text: st
 export type WorkshopAudioOverview = { id: string; version: number; graphRevision: number; briefVersion: number; styleVersion: number; title: string; posture: "executive" | "overview" | "decision_review"; sections: WorkshopAudioOverviewSection[]; script: string; claimIds: string[]; status: "script_ready" | "audio_ready" | "failed"; disclosure: "AI-generated voice"; stale: boolean; audio?: { relativePath: string; sha256: string; byteCount: number; durationSeconds: number; model: "gpt-4o-mini-tts"; voice: "cedar" | "marin"; instructions: string; requestId?: string; generatedAt: string }; error?: string; createdAt: string; updatedAt: string };
 export type WorkshopAiRun = { id: string; operation: "grounded_graph"; model: "gpt-5.6-sol" | "gpt-5.6-terra" | "gpt-5.6-luna"; inputClaimIds: string[]; outputSha256: string; requestId?: string; createdAt: string };
 export type GroundedMapProposal = { nodes: { id: string; title: string; body: string; evidenceState: "grounded" | "derived"; evidenceClaimIds: string[]; x: number; y: number }[]; edges: WorkshopMapEdge[] };
-export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; editableRelativePath?: string; artifactPath: string; editableArtifactPath?: string; claimIds: string[]; stale: boolean; createdAt: string };
+export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; editableRelativePath?: string; artifactPath: string; editableArtifactPath?: string; claimIds: string[]; imageBatchId?: string; imagePanels?: Array<{ id: string; version: number; sha256: string }>; stale: boolean; createdAt: string };
 export type WorkshopBuildTraceRecord = { htmlPath: string; dataPath: string; htmlSha256: string; dataSha256: string; milestoneCount: number; commitCount: number; taskIds: string[] };
 export type WorkshopVideo = { id: string; version: number; storyboardVersion: number; styleVersion: number; visualDnaVersion?: number; imageBatchId?: string; relativePath: string; provenancePath: string; artifactPath: string; sha256: string; byteCount: number; claimIds: string[]; buildTrace: WorkshopBuildTraceRecord; stale: boolean; createdAt: string };
 export type RenderedVideoInput = Omit<WorkshopVideo, "id" | "version" | "stale" | "createdAt">;
@@ -1164,6 +1164,16 @@ async function embeddedLocalLogo(style: WorkshopStyle, root: string) {
   }
   return undefined;
 }
+async function generatedDeckCoverVisual(current: WorkshopState, root: string): Promise<RenderVisual | undefined> {
+  if (!current.imageBatch || current.imageBatch.stale) return undefined;
+  const panel = current.imageBatch.panels.find((candidate) => candidate.id === "image-panel-1" && candidate.state === "generated")
+    ?? current.imageBatch.panels.find((candidate) => candidate.state === "generated");
+  if (!panel?.relativePath || !panel.sha256) return undefined;
+  const bytes = await readFile(join(root, panel.relativePath));
+  if (createHash("sha256").update(bytes).digest("hex") !== panel.sha256) throw new Error("Presentation visual hash no longer matches the reviewed image.");
+  const dimensions = validateBrandAsset(bytes, "image/png");
+  return { data: `data:image/png;base64,${bytes.toString("base64")}`, aspectRatio: dimensions.width / dimensions.height, panelId: panel.id, panelVersion: panel.version, sha256: panel.sha256 };
+}
 export async function generateOutput(type: "deck" | "infographic", root?: string): Promise<WorkshopState> {
   const current = readWorkshopState(root);
   if (!current.briefApproved || !current.frame || current.frame.stale) throw new Error("Output generation requires an approved current brief.");
@@ -1176,18 +1186,21 @@ export async function generateOutput(type: "deck" | "infographic", root?: string
   }) : current.mapNodes.filter((node) => node.kind === "grounded").slice(0, 4).map((node, index, all) => ({ id: node.id, heading: outputHeading(prose(node.title)), body: outputBody(prose(node.body)), citations: [node.locator], layout: index === 0 ? "statement" as const : index === all.length - 1 ? "recommendation" as const : index % 2 ? "split" as const : "proof" as const }));
   const outputId = `${type}-v${current.outputs.filter((output) => output.type === type).length + 1}`;
   const logo = await embeddedLocalLogo(current.style, dataRoot);
+  const coverVisual = type === "deck" ? await generatedDeckCoverVisual(current, dataRoot) : undefined;
   const sourceCount = current.activeSourceIds.length;
   const summary = current.style.intentProfile === "board_deck"
     ? `Decision context and evidence grounded in ${sourceCount} selected ${sourceCount === 1 ? "source" : "sources"}.`
     : current.style.intentProfile === "internal_workshop"
       ? `A working plan grounded in ${sourceCount} selected ${sourceCount === 1 ? "source" : "sources"}.`
       : `A decision-ready brief grounded in ${sourceCount} selected ${sourceCount === 1 ? "source" : "sources"}.`;
-  const rendered = await writeRenderedArtifact(dataRoot, current.id === defaultWorkshopId ? outputId : `${current.id}/${outputId}`, type, { workshopTitle: current.title, summary, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper, fonts: current.style.licensedFonts, intent: current.style.intentProfile, name: current.style.name, logoData: logo?.data, logoAspectRatio: logo ? logo.width / logo.height : undefined }, blocks });
+  const rendered = await writeRenderedArtifact(dataRoot, current.id === defaultWorkshopId ? outputId : `${current.id}/${outputId}`, type, { workshopTitle: current.title, summary, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper, fonts: current.style.licensedFonts, intent: current.style.intentProfile, name: current.style.name, logoData: logo?.data, logoAspectRatio: logo ? logo.width / logo.height : undefined }, blocks, coverVisual });
   const stored = await storeArtifact(dataRoot, `${current.id}-${outputId}`, Buffer.from(await readFile(join(dataRoot, rendered.relativePath))), "text/html");
   const editableStored = rendered.editableRelativePath ? await storeArtifact(dataRoot, `${current.id}-${outputId}-editable`, Buffer.from(await readFile(join(dataRoot, rendered.editableRelativePath))), "application/vnd.openxmlformats-officedocument.presentationml.presentation") : undefined;
   const createdAt = new Date().toISOString();
   const outputRecovery = { ...current.outputRecovery }; delete outputRecovery[type];
-  return write({ ...current, outputRecovery, outputs: [...current.outputs, { id: outputId, type, relativePath: rendered.relativePath, editableRelativePath: rendered.editableRelativePath, artifactPath: stored.relativePath, editableArtifactPath: editableStored?.relativePath, claimIds: blocks.map((block) => block.id), stale: false, createdAt }], firstRenderedOutputAt: current.firstRenderedOutputAt ?? createdAt, updatedAt: createdAt }, root);
+  const priorOutputs = current.outputs.map((output) => output.type === type && !output.stale ? { ...output, stale: true } : output);
+  const imagePanels = coverVisual ? [{ id: coverVisual.panelId, version: coverVisual.panelVersion, sha256: coverVisual.sha256 }] : undefined;
+  return write({ ...current, outputRecovery, outputs: [...priorOutputs, { id: outputId, type, relativePath: rendered.relativePath, editableRelativePath: rendered.editableRelativePath, artifactPath: stored.relativePath, editableArtifactPath: editableStored?.relativePath, claimIds: blocks.map((block) => block.id), imageBatchId: coverVisual ? current.imageBatch?.id : undefined, imagePanels, stale: false, createdAt }], firstRenderedOutputAt: current.firstRenderedOutputAt ?? createdAt, updatedAt: createdAt }, root);
 }
 
 export function recordOutputFailure(type: "deck" | "infographic", root?: string): WorkshopState { const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); const previous = current.outputRecovery?.[type]; const label = type === "deck" ? "Presentation" : "Infographic"; return write({ ...current, outputRecovery: { ...current.outputRecovery, [type]: { message: `${label} could not be created. Your Brief and Style are safe.`, attempts: (previous?.attempts ?? 0) + 1, updatedAt } }, updatedAt }, root); }
@@ -1328,7 +1341,7 @@ export function selectImagePanelForRegeneration(panelId: string, root?: string, 
     if (panel.id !== panelId) return panel;
     const basePrompt = panel.basePrompt ?? panel.prompt.replace(/ Professional revision request: .*$/s, "");
     return { ...panel, basePrompt, prompt: request ? `${basePrompt} Professional revision request: ${request}` : basePrompt, revisionRequest: request, version: panel.version + 1, state: "selected_for_regeneration", error: undefined };
-  }) }, storyboard, narration: storyboardDependsOnPanel && current.narration ? { ...current.narration, stale: true } : current.narration, videos: storyboardDependsOnPanel ? staleVideos(current) : current.videos, storyboardApproved: storyboardDependsOnPanel ? false : current.storyboardApproved, videoState: storyboardDependsOnPanel ? "blocked" : current.videoState, updatedAt: new Date().toISOString() }, root);
+  }) }, outputs: current.outputs.map((output) => output.imagePanels?.some((panel) => panel.id === panelId) ? { ...output, stale: true } : output), storyboard, narration: storyboardDependsOnPanel && current.narration ? { ...current.narration, stale: true } : current.narration, videos: storyboardDependsOnPanel ? staleVideos(current) : current.videos, storyboardApproved: storyboardDependsOnPanel ? false : current.storyboardApproved, videoState: storyboardDependsOnPanel ? "blocked" : current.videoState, updatedAt: new Date().toISOString() }, root);
 }
 export function markImagePanelFailed(panelId: string, error: string, root?: string): WorkshopState {
   const current = readWorkshopState(root); if (!current.imageBatch || current.imageBatch.stale) throw new Error("A current image batch is required."); const message = error.trim(); if (!message) throw new Error("A failed image panel requires an error message."); const found = current.imageBatch.panels.some((panel) => panel.id === panelId); if (!found) throw new Error(`Image panel not found: ${panelId}.`);
@@ -1346,7 +1359,10 @@ export function recordGeneratedImagePanel(panelId: string, artifact: Pick<ImageB
   const storyboard = current.storyboard.panels.some((panel) => panel.imagePanelId === panelId)
     ? { ...current.storyboard, panels: storyboardPanels, stale: storyboardPanels.some((panel) => panel.stale) }
     : current.storyboard;
-  return write({ ...current, imageBatch: { ...current.imageBatch, panels: current.imageBatch.panels.map((panel) => panel.id === panelId ? { ...panel, ...artifact, state: "generated", error: undefined } : panel) }, storyboard, updatedAt: new Date().toISOString() }, root);
+  const panels = current.imageBatch.panels.map((panel) => panel.id === panelId ? { ...panel, ...artifact, state: "generated" as const, error: undefined } : panel);
+  const completed = panels.every((panel) => panel.state === "generated");
+  const outputs = completed ? current.outputs.map((output) => output.type === "deck" && !output.imageBatchId ? { ...output, stale: true } : output) : current.outputs;
+  return write({ ...current, imageBatch: { ...current.imageBatch, panels }, outputs, storyboard, updatedAt: new Date().toISOString() }, root);
 }
 export function recordNarration(narration: WorkshopNarration, root?: string): WorkshopState {
   const current = readWorkshopState(root);

@@ -235,7 +235,10 @@ async function main(): Promise<void> {
       const images = await generateOpenAiImageBatch(root, config!.media, config!.budget.fetch, imageSelection);
       if (images.status !== "passed") throw new Error(`Live image batch was partial; failed panels: ${images.failed.join(", ")}`);
     }
-    const imageReadyState = readWorkshopState(root);
+    let imageReadyState = readWorkshopState(root);
+    if (imageReadyState.imageBatch?.panels.every((panel) => panel.state === "generated") && !imageReadyState.outputs.some((output) => output.type === "deck" && !output.stale)) {
+      imageReadyState = await generateOutput("deck", root);
+    }
     if (!imageReadyState.storyboardApproved) applyWorkshopAction("approveStoryboard", root);
     failedStage = "narration";
     if (narrationSelection?.length || !retryFailed) {
