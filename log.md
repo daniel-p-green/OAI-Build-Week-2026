@@ -8662,3 +8662,37 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - The final founder Source, founder-derived ready package, public film, human taste review, intended-audience deck review, `/feedback`, release, Devpost publication, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 10:45 CT — Current workbench reaches the Cedar film again
+
+**Area:** Demo capture / success-notice UX / editorial film / judge evidence
+
+### Changed
+
+- Re-ran the canonical twelve-beat fixture recorder after the source-truth language pass so the film no longer depended on older `Verified` UI. The first attempt exposed a genuine product defect: the `Outputs created` success notice never expired and intercepted the next claim-level `Show source` action for the full 30-second browser timeout.
+- Added a four-second lifetime for status notices while keeping errors persistent and manually dismissible. The production browser contract now proves a success notice is initially readable, does not cover the primary PowerPoint action, and then leaves automatically.
+- Recaptured the complete Map → Source → edit → Brief → Style → Outputs → exact source → Storyboard edit → approval → local render → original reveal sequence. The new 51.84-second VP8 fixture has SHA-256 `dd4d16741171be56cbdd34372d4f6485a28cedb28a04c6947100918256c6b3fd`, twelve bounded beats, and the expected final gates: Brief approved, Storyboard approved, Video rendered, one Source, two rendered text Outputs, six planned fixture images, and five Storyboard panels.
+- Rebuilt the 2:20 editorial rough cut from the current capture while reusing the existing ten hash-bound OpenAI Cedar clips. The refreshed H.264/AAC film hashes to `273498a8d6de86975e9e22529d8026a9a7d3c1fba0d3e55a3654c309f218b666`; the contact sheet hashes to `c658fbb610009b65f1be557d342c503e367bec597abdf4214b97c819d607f7e0`.
+- Reconciled GOAL, demo-script, evidence-audit, film-plan, capture, and rough-cut manifests to the new duration and hashes. Founder capture and final meta-reveal remain the only blocked film shots.
+
+### Verified
+
+- Visually inspected the new twelve-beat capture contact sheet and ten-shot rough-cut contact sheet. `Sourced claim`, `Sources behind this brief`, current Style, current Outputs, the exact Source sheet, both approvals, provider-backed imagery, and the original reveal are legible and free of retired tabs or terminology.
+- `pnpm demo:film:verify` passed the 140-second draft with ten shots, 302 narration words, eight ready shots, two honestly blocked shots, and exactly four missing founder/final-package evidence items.
+- FFprobe confirmed 1280×720 H.264 video, 48 kHz AAC audio, and 140.021333 seconds. `blackdetect` found no black interval. `freezedetect=n=0.0001:d=3` found only the intentional 3.03-second tail on the founder placeholder. Audio remains -22.9 LUFS integrated, 4.4 LU range, -2.9 dBFS true peak, with only 1.805- and 1.799-second quiet transitions at the 1.8-second diagnostic threshold.
+- `pnpm --filter @workshoplm/web test:visual` passed all 29 production-browser cases in one run, including the new expiring-notice contract. `pnpm check` passed all thirteen packages with 120 worker tests, and `pnpm demo:e2e` passed the complete recorded Source-to-render seam.
+- `pnpm submission:packet:verify` passed with the refreshed Cedar rough cut, current Terra/Image 2 evidence, current sixteen-screen gallery, eight ready/two blocked shots, and four unresolved founder/final-package slots.
+- No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Decisions
+
+- Success feedback must be readable but transient. A notice that blocks the next action is not calm confirmation; it is accidental navigation.
+- The judge film must be regenerated when visible product language changes materially, even when the underlying workflow and narration have not changed.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

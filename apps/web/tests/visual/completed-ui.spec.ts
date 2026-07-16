@@ -1258,6 +1258,7 @@ test("fresh Outputs keep the primary source trace clear and reveal the exact cla
   expect(noticeBox).not.toBeNull();
   expect(downloadBox).not.toBeNull();
   expect(noticeBox!.y + noticeBox!.height <= downloadBox!.y || downloadBox!.y + downloadBox!.height <= noticeBox!.y).toBeTruthy();
+  await expect(notice).toBeHidden({ timeout: 6_000 });
 
   const deck = readyState.outputs.filter((output: { type: string }) => output.type === "deck").at(-1);
   const claim = readyState.claims.find((item: { id: string }) => item.id === deck.claimIds[0]);

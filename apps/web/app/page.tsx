@@ -189,6 +189,12 @@ export default function WorkshopPage() {
     return () => { stopped = true; window.clearInterval(timer); };
   }, [state?.videoState]);
   useEffect(() => {
+    if (notice?.tone !== "status") return;
+    const currentNotice = notice;
+    const timer = window.setTimeout(() => setNotice((current) => current === currentNotice ? null : current), 4_000);
+    return () => window.clearTimeout(timer);
+  }, [notice]);
+  useEffect(() => {
     if (state?.onboarding.styleAnalysis?.status !== "reviewing") return;
     let stopped = false;
     const timer = window.setInterval(() => {
