@@ -992,6 +992,24 @@ test("visible copy stays plain and stable", async ({ page }) => {
   expect(`${[...labels].sort().join("\n")}\n`).toMatchSnapshot("visible-labels.txt");
 });
 
+test("voice Sources keep provider transport language out of the professional surface", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });
+  const readyState = await (await page.request.get("/api/workshop")).json();
+  const voiceSource = { ...readyState.sourceItems[0], title: "Voice capture-only fallback transcript 2026-07-16T05:48:00Z", origin: "gpt-realtime-2.1 capture-only fallback", locator: "gpt-realtime-2.1 capture-only fallback · chunk 01" };
+  const state = { ...readyState, sourceItems: [voiceSource, ...readyState.sourceItems.slice(1)] };
+  await page.route("**/api/workshop", async (route) => route.request().method() === "GET" ? route.fulfill({ json: state }) : route.continue());
+  await page.goto("/");
+  await page.getByRole("button", { name: "3 sources" }).click();
+  const sources = page.getByRole("dialog", { name: "Sources" });
+  await expect(sources.getByText("Voice brainstorm", { exact: true }).first()).toBeVisible();
+  await expect(sources).toContainText("Voice · 5 claims");
+  await expect(sources).toContainText("Voice brainstorm · chunk 01");
+  await expect(sources).not.toContainText("gpt-realtime-2.1");
+  await expect(sources).not.toContainText("capture-only fallback");
+});
+
 test("queued local video work refreshes into the finished next action", async ({ page }) => {
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), stdio: "pipe" });

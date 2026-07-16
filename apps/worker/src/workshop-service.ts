@@ -131,7 +131,7 @@ const defaultState = (id = defaultWorkshopId, title = defaultWorkshopTitle, seed
   { id: "promise", title: "The product promise", body: "Turn raw thinking into finished work without losing the trail back to source material.", kind: "grounded", locator: "Meeting · 12:41", sourceId: "source-raw", x: 11, y: 12, width: 24, height: 18 },
   { id: "proof", title: "Judge proof", body: "Show one continuous capture → map → brief → storyboard → rendered video seam.", kind: "grounded", locator: "Build notes · §2", sourceId: "source-brief", x: 48, y: 36, width: 24, height: 18 },
   { id: "visual", title: "Visual behavior", body: "Evidence first becomes an editable production system, not a static report.", kind: "creative", locator: "Design · Map", sourceId: "source-design", x: 39, y: 58, width: 24, height: 18 },
-  { id: "risk", title: "Voice capture fallback", body: "Use a capture-only control when durable native voice linkage is not proven.", kind: "derived", locator: "Goal · capture", x: 74, y: 58, width: 24, height: 18 },
+  { id: "risk", title: "Voice stays available", body: "Keep spoken thinking in the same grounded Workshop even when the host cannot retain the turn.", kind: "derived", locator: "Goal · capture", x: 74, y: 58, width: 24, height: 18 },
 ] : [], updatedAt: new Date().toISOString() });
 const repositoryDataRoot = () => resolve(process.env.WORKSHOPLM_DATA_ROOT ?? join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", ".workshoplm"));
 export const workshopDataRoot = repositoryDataRoot;

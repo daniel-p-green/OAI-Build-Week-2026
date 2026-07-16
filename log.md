@@ -7593,3 +7593,48 @@ The 03:51 CT deterministic final-film milestone was inserted after an earlier ma
 - The final founder Source should exercise this directed replacement only if one generated panel fails the send-it bar; do not spend a request merely to demonstrate the control.
 - Founder capture, final operator package, final MP4, intended-audience review, eligible Session ID, and public submission links remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 04:41 CT — Voice-language milestone passes final acceptance
+
+- The production-browser suite passed 29/29 without snapshot updates, including the new raw-provider Source disclosure boundary and the restored exact evidence locator.
+- `pnpm check` passed all 13 packages with 115 worker tests and 30 web tests. `pnpm demo:e2e` passed the full recorded Capture → Shape → Deliver seam, and `git diff --check` passed excluding the preserved unrelated `PLAN-2026-07-13.md` modification.
+- No provider request ran; the evidence ledger remains 97 HTTP operations.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 04:38 CT — Voice provenance gets a professional-language boundary
+
+**Area:** Sources / Map language / Grounding integrity
+
+### Changed
+
+- Capture-only provider Sources now appear as `Voice brainstorm` with origin `Voice`; founder-file Sources appear as `Founder brainstorm` with origin `Recording`.
+- The seeded Map card `Voice capture fallback` became `Voice stays available`, with plain copy about preserving spoken thinking when the host cannot retain the turn.
+- Source navigation uses the friendly title and locator. The focused Source evidence sheet deliberately retains the exact underlying locator while showing the friendly Source title and origin.
+
+### Verified
+
+- A new 390×844 production-browser case injects the real raw shape `gpt-realtime-2.1 capture-only fallback` and proves the Sources sheet contains `Voice brainstorm`, `Voice`, and a friendly chunk locator without exposing the model or fallback phrase.
+- The first run caught an overreach: simplifying the evidence sheet locator broke the existing exact-locator assertion. The implementation now restores that exact value only in the evidence view, preserving the product's trust contract.
+- Worker tests passed 115/115 and web typecheck passed. The updated 29-case production-browser suite passed with the intentional Map/layer snapshots refreshed; `mobile-map.png` was visually inspected and accepted at 390×844.
+
+### Decisions
+
+- Provider transport is implementation detail in navigation, not in evidence. The product can be calm without making provenance vague.
+- Exact locators remain authoritative in `Show source`; friendly locator labels are only an orientation aid elsewhere.
+- No provider request ran. The evidence ledger remains 97 HTTP operations.
+
+### Open items
+
+- Re-run the strict visual suite without snapshot updates, then run the full repository and recorded seam before shipping this milestone.
+- Founder capture, final operator package, final MP4, intended-audience review, eligible Session ID, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 04:42 CT — Voice-language verification placement correction
+
+The 04:41 CT verification entry was inserted before the 04:38 implementation entry because an earlier matching end marker was selected. No history was rewritten. This physical-end correction records the current state: the strict production-browser suite passed 29/29 without updates, `pnpm check` passed all 13 packages with 115 worker and 30 web tests, `pnpm demo:e2e` passed, and `git diff --check` passed outside the preserved stale plan. The milestone is ready to ship; founder capture and the final submission artifacts remain open.

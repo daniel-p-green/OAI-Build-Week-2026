@@ -91,7 +91,10 @@ const outputType = (type: "deck" | "infographic") => type === "deck" ? "Presenta
 const sourceDisplayTitle = (source: SourceItem) => source.origin.includes("capture-only fallback")
   ? "Voice brainstorm"
   : source.origin === "Founder-provided recording" ? "Founder brainstorm" : source.title;
-const claimDisplayLocator = (claim: { sourceId: string; locator: string }, state: PersistedWorkshop | null) => {
+const sourceDisplayOrigin = (source: SourceItem) => source.origin.includes("capture-only fallback")
+  ? "Voice"
+  : source.origin === "Founder-provided recording" ? "Recording" : source.origin;
+const claimDisplayLocator = (claim: { sourceId: string; locator: string }, state: Pick<PersistedWorkshop, "sourceItems"> | null) => {
   const source = state?.sourceItems.find((candidate) => candidate.id === claim.sourceId);
   const position = claim.locator.split(" · ").at(-1);
   return [source ? sourceDisplayTitle(source) : "Source", position].filter(Boolean).join(" · ");
@@ -982,11 +985,11 @@ function HowItWorksSheet({ onClose }: { onClose: () => void }) {
 
 function SourcesSheet({ sources, activeIds, selected, pending, busy, onClose, onSelect, onToggle, onApplyScope, onCancelScope, onAdd, onShowMap }: { sources: SourceItem[]; activeIds: string[]; selected: SourceItem | null; pending: PendingSourceScope | null; busy: boolean; onClose: () => void; onSelect: (source: SourceItem) => void; onToggle: (id: string) => void; onApplyScope: () => void; onCancelScope: () => void; onAdd: () => void; onShowMap: (source: SourceItem) => void }) {
   const active = selected ?? sources[0];
-  return <SideSheet title="Sources" onClose={onClose}><div className="sheet-heading"><p>{activeIds.length} of {sources.length} selected</p><Button variant="secondary" onClick={onAdd}><PlusIcon /> Add source</Button></div>{pending && <SourceScopeImpact pending={pending} busy={busy} onApply={onApplyScope} onCancel={onCancelScope} />}<ListGroup>{sources.map((source) => <ListRow className={active?.id === source.id ? "source-row selected" : "source-row"} key={source.id}><Checkbox aria-label={`Use ${source.title}`} checked={activeIds.includes(source.id)} onChange={() => onToggle(source.id)} /><ListRowAction onClick={() => onSelect(source)}><FileIcon label={source.type} /><span><strong>{source.title}</strong><small>{source.origin} · {source.claimCount} claims</small></span></ListRowAction></ListRow>)}</ListGroup>{active && <Card className="source-preview"><strong>{active.title}</strong><p>“{active.excerpt}”</p><small>{active.locator}</small><Button variant="secondary" size="small" onClick={() => onShowMap(active)}>Show on map</Button></Card>}</SideSheet>;
+  return <SideSheet title="Sources" onClose={onClose}><div className="sheet-heading"><p>{activeIds.length} of {sources.length} selected</p><Button variant="secondary" onClick={onAdd}><PlusIcon /> Add source</Button></div>{pending && <SourceScopeImpact pending={pending} busy={busy} onApply={onApplyScope} onCancel={onCancelScope} />}<ListGroup>{sources.map((source) => <ListRow className={active?.id === source.id ? "source-row selected" : "source-row"} key={source.id}><Checkbox aria-label={`Use ${sourceDisplayTitle(source)}`} checked={activeIds.includes(source.id)} onChange={() => onToggle(source.id)} /><ListRowAction onClick={() => onSelect(source)}><FileIcon label={source.type} /><span><strong>{sourceDisplayTitle(source)}</strong><small>{sourceDisplayOrigin(source)} · {source.claimCount} claims</small></span></ListRowAction></ListRow>)}</ListGroup>{active && <Card className="source-preview"><strong>{sourceDisplayTitle(active)}</strong><p>“{active.excerpt}”</p><small>{claimDisplayLocator({ sourceId: active.id, locator: active.locator }, { sourceItems: sources })}</small><Button variant="secondary" size="small" onClick={() => onShowMap(active)}>Show on map</Button></Card>}</SideSheet>;
 }
 
 function EvidenceSheet({ source, evidence, onClose, onShowMap }: { source: SourceItem; evidence: EvidenceSelection | null; onClose: () => void; onShowMap: () => void }) {
-  return <SideSheet title="Source" onClose={onClose}><blockquote className="evidence-quote">“{evidence?.excerpt ?? source.excerpt}”</blockquote><p className="source-locator">{evidence?.locator ?? source.locator}</p><dl className="evidence-meta"><dt>Source</dt><dd>{source.title}</dd><dt>Origin</dt><dd>{source.origin}</dd></dl><Button onClick={onShowMap}>Show on map</Button></SideSheet>;
+  return <SideSheet title="Source" onClose={onClose}><blockquote className="evidence-quote">“{evidence?.excerpt ?? source.excerpt}”</blockquote><p className="source-locator">{evidence?.locator ?? source.locator}</p><dl className="evidence-meta"><dt>Source</dt><dd>{sourceDisplayTitle(source)}</dd><dt>Origin</dt><dd>{sourceDisplayOrigin(source)}</dd></dl><Button onClick={onShowMap}>Show on map</Button></SideSheet>;
 }
 
 function AddSourceSheet({ onClose, onPost }: { onClose: () => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null> }) {
