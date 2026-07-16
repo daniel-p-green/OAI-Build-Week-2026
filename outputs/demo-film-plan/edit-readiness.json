@@ -26,12 +26,12 @@
     "evidence-and-control",
     "brief-approval",
     "style",
-    "storyboard-approval"
+    "outputs",
+    "storyboard-approval",
+    "render-and-trace"
   ],
   "blockedShots": [
     "capture-and-shape",
-    "outputs",
-    "render-and-trace",
     "meta-reveal"
   ],
   "missingEvidence": [
@@ -47,46 +47,6 @@
       "shotId": "capture-and-shape",
       "label": "Founder-brainstorm transcript used by the recorded Workshop",
       "path": "outputs/demo-film-inputs/founder-brainstorm.txt",
-      "exists": false,
-      "satisfied": false,
-      "issue": "Evidence file is missing or empty."
-    },
-    {
-      "shotId": "capture-and-shape",
-      "label": "Inspected Realtime microphone-turn evidence",
-      "path": "artifacts/live/realtime-turn.json",
-      "exists": false,
-      "satisfied": false,
-      "issue": "Evidence file is missing or empty."
-    },
-    {
-      "shotId": "capture-and-shape",
-      "label": "Sanitized GPT-5.6 live-run evidence",
-      "path": "artifacts/live/provider-run.json",
-      "exists": false,
-      "satisfied": false,
-      "issue": "Evidence file is missing or empty."
-    },
-    {
-      "shotId": "outputs",
-      "label": "Inspected six-image GPT Image 2 gallery capture",
-      "path": "outputs/demo-film-inputs/provider-image-gallery.mov",
-      "exists": false,
-      "satisfied": false,
-      "issue": "Evidence file is missing or empty."
-    },
-    {
-      "shotId": "outputs",
-      "label": "Sanitized live-provider run evidence",
-      "path": "artifacts/live/provider-run.json",
-      "exists": false,
-      "satisfied": false,
-      "issue": "Evidence file is missing or empty."
-    },
-    {
-      "shotId": "render-and-trace",
-      "label": "Audibly inspected provider-narrated render",
-      "path": "outputs/demo-film-inputs/provider-narrated-video.mp4",
       "exists": false,
       "satisfied": false,
       "issue": "Evidence file is missing or empty."

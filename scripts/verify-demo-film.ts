@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
-type RequiredEvidence = { label: string; path: string; validator?: "ready-submission-manifest" };
+type RequiredEvidence = { label: string; path: string; validator?: "ready-submission-manifest" | "provider-run" | "realtime-turn" | "video-media" | "av-media" };
 type FilmShot = {
   id: string;
   title: string;
@@ -61,6 +61,47 @@ async function inspectEvidence(item: RequiredEvidence): Promise<{ exists: boolea
       if (!Array.isArray(manifest.limitations) || manifest.limitations.length > 0) return { exists: true, satisfied: false, issue: "Submission manifest still records limitations." };
     } catch {
       return { exists: true, satisfied: false, issue: "Submission manifest is not valid JSON." };
+    }
+  }
+  if (item.validator === "provider-run") {
+    try {
+      const run = JSON.parse(await readFile(resolve(repository, item.path), "utf8")) as {
+        sourceMode?: string;
+        founderSource?: boolean;
+        groundedMap?: { model?: string; requestId?: string };
+        imageBatch?: { model?: string; panelCount?: number; panels?: Array<{ provider?: { model?: string; requestId?: string } }> };
+        narration?: { model?: string; voice?: string; panelCount?: number; panels?: Array<{ requestId?: string }> };
+        video?: { copiedFilmInput?: { relativePath?: string; sha256?: string } };
+        limitations?: unknown[];
+      };
+      if (run.sourceMode !== "authorized-sample" || run.founderSource !== false) return { exists: true, satisfied: false, issue: "Provider evidence does not preserve the authorized-sample boundary." };
+      if (run.groundedMap?.model !== "gpt-5.6-terra" || !run.groundedMap.requestId) return { exists: true, satisfied: false, issue: "Provider evidence lacks the live Terra Map request." };
+      if (run.imageBatch?.model !== "gpt-image-2" || run.imageBatch.panelCount !== 6 || run.imageBatch.panels?.length !== 6 || run.imageBatch.panels.some((panel) => panel.provider?.model !== "gpt-image-2" || !panel.provider.requestId)) return { exists: true, satisfied: false, issue: "Provider evidence lacks six complete GPT Image 2 results." };
+      if (run.narration?.model !== "gpt-4o-mini-tts" || run.narration.voice !== "cedar" || run.narration.panelCount !== 5 || run.narration.panels?.length !== 5 || run.narration.panels.some((panel) => !panel.requestId)) return { exists: true, satisfied: false, issue: "Provider evidence lacks five complete Cedar narration results." };
+      const copied = run.video?.copiedFilmInput;
+      if (!copied?.relativePath || !copied.sha256) return { exists: true, satisfied: false, issue: "Provider evidence lacks the copied narrated-Video hash." };
+      const actualHash = createHash("sha256").update(await readFile(resolve(repository, copied.relativePath))).digest("hex");
+      if (actualHash !== copied.sha256) return { exists: true, satisfied: false, issue: "The narrated film input no longer matches provider evidence." };
+      if (!Array.isArray(run.limitations) || run.limitations.length === 0) return { exists: true, satisfied: false, issue: "Authorized-sample provider evidence must retain its founder-Source limitation." };
+    } catch {
+      return { exists: true, satisfied: false, issue: "Provider-run evidence is invalid or references missing media." };
+    }
+  }
+  if (item.validator === "realtime-turn") {
+    try {
+      const turn = JSON.parse(await readFile(resolve(repository, item.path), "utf8")) as { transport?: string; model?: string; transcriptionModel?: string; captureMode?: string; founderRecording?: boolean; successfulToolCallCount?: number; limitation?: string };
+      if (turn.transport !== "webrtc" || turn.model !== "gpt-realtime-2.1" || turn.transcriptionModel !== "gpt-realtime-whisper" || turn.captureMode !== "controlled-synthetic-microphone-audio" || turn.founderRecording !== false || !turn.successfulToolCallCount || !turn.limitation) return { exists: true, satisfied: false, issue: "Realtime evidence does not preserve its verified transport and non-founder boundary." };
+    } catch {
+      return { exists: true, satisfied: false, issue: "Realtime-turn evidence is not valid JSON." };
+    }
+  }
+  if (item.validator === "video-media" || item.validator === "av-media") {
+    try {
+      const probe = JSON.parse(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-show_entries", "stream=codec_type", "-of", "json", resolve(repository, item.path)], { encoding: "utf8" })) as { format?: { duration?: string }; streams?: Array<{ codec_type?: string }> };
+      if (Number(probe.format?.duration ?? 0) <= 0 || !probe.streams?.some((stream) => stream.codec_type === "video")) return { exists: true, satisfied: false, issue: "Evidence media has no playable video stream." };
+      if (item.validator === "av-media" && !probe.streams.some((stream) => stream.codec_type === "audio")) return { exists: true, satisfied: false, issue: "Narrated evidence media has no audio stream." };
+    } catch {
+      return { exists: true, satisfied: false, issue: "Evidence media could not be inspected." };
     }
   }
   return { exists: true, satisfied: true };

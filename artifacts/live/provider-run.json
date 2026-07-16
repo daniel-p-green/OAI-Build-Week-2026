@@ -1,0 +1,200 @@
+{
+  "schemaVersion": 1,
+  "verifiedAt": "2026-07-16T08:01:44.520Z",
+  "workshopId": "workshop-build-week",
+  "sourceMode": "authorized-sample",
+  "founderSource": false,
+  "groundedMap": {
+    "model": "gpt-5.6-terra",
+    "requestId": "req_11ee10453c1e45cd8067e578171f82d6",
+    "outputSha256": "c48770c3f88d31ccfefe3e92e87f2bb047c1196b8c27c6a3c03105504aca1363",
+    "createdAt": "2026-07-16T05:48:13.981Z"
+  },
+  "imageBatch": {
+    "id": "image-batch-v1",
+    "model": "gpt-image-2",
+    "panelCount": 6,
+    "panels": [
+      {
+        "id": "image-panel-1",
+        "relativePath": "generated/images/image-panel-1-v1.png",
+        "sha256": "c1caf61668ec6c1b364b938827cdac475a6115f122010afcabcd5c4fd4e7070a",
+        "byteCount": 954452,
+        "provider": {
+          "model": "gpt-image-2",
+          "quality": "medium",
+          "size": "1024x1024",
+          "referenceId": "style-v1-dna-v1",
+          "requestId": "req_9871472e235e43f9a750164ee28f82ff",
+          "generatedAt": "2026-07-16T05:49:03.542Z"
+        }
+      },
+      {
+        "id": "image-panel-2",
+        "relativePath": "generated/images/image-panel-2-v1.png",
+        "sha256": "a626243f34c3ea799436c31c509bd5e7fc65651cdf49e334e131fde135f24c26",
+        "byteCount": 1084919,
+        "provider": {
+          "model": "gpt-image-2",
+          "quality": "medium",
+          "size": "1024x1024",
+          "referenceId": "style-v1-dna-v1",
+          "requestId": "req_7e6e17eab22c434e9c27e5632d025de0",
+          "generatedAt": "2026-07-16T05:49:55.553Z"
+        }
+      },
+      {
+        "id": "image-panel-3",
+        "relativePath": "generated/images/image-panel-3-v1.png",
+        "sha256": "efcc4d8acc3a423546509bd974e05416613814e7bd98b2f14bba8c10f6111149",
+        "byteCount": 963855,
+        "provider": {
+          "model": "gpt-image-2",
+          "quality": "medium",
+          "size": "1024x1024",
+          "referenceId": "style-v1-dna-v1",
+          "requestId": "req_e060735f823b4b66bae27ad447e8c2e6",
+          "generatedAt": "2026-07-16T05:50:49.022Z"
+        }
+      },
+      {
+        "id": "image-panel-4",
+        "relativePath": "generated/images/image-panel-4-v1.png",
+        "sha256": "4b4110ebcc6ee890ba2ae0048b8e24255e2e7a1b92b9b09af9d7589bb983a89b",
+        "byteCount": 1239664,
+        "provider": {
+          "model": "gpt-image-2",
+          "quality": "medium",
+          "size": "1024x1024",
+          "referenceId": "style-v1-dna-v1",
+          "requestId": "req_92a7e62c99364a37aa13e13889373172",
+          "generatedAt": "2026-07-16T05:51:39.786Z"
+        }
+      },
+      {
+        "id": "image-panel-5",
+        "relativePath": "generated/images/image-panel-5-v1.png",
+        "sha256": "282770aaf1dc1cadb44f5dd4ef50436db168b377702e4d187293b04f66bddca6",
+        "byteCount": 894147,
+        "provider": {
+          "model": "gpt-image-2",
+          "quality": "medium",
+          "size": "1024x1024",
+          "referenceId": "style-v1-dna-v1",
+          "requestId": "req_d69a9876874c45a09ddf001112b4f38f",
+          "generatedAt": "2026-07-16T05:52:38.164Z"
+        }
+      },
+      {
+        "id": "image-panel-6",
+        "relativePath": "generated/images/image-panel-6-v1.png",
+        "sha256": "6864e2bead0101f99d0371a614e9f536c3e3cb8669a3f0a19c40422056885b62",
+        "byteCount": 1120492,
+        "provider": {
+          "model": "gpt-image-2",
+          "quality": "medium",
+          "size": "1024x1024",
+          "referenceId": "style-v1-dna-v1",
+          "requestId": "req_6b7836e2a1e4482eb15e90145543f79b",
+          "generatedAt": "2026-07-16T05:54:07.465Z"
+        }
+      }
+    ]
+  },
+  "narration": {
+    "model": "gpt-4o-mini-tts",
+    "voice": "cedar",
+    "disclosure": "AI-generated voice",
+    "panelCount": 5,
+    "panels": [
+      {
+        "panelId": "storyboard-v2-panel-1",
+        "relativePath": "generated/narration/storyboard-v2/panel-1.wav",
+        "sha256": "6b52db3b1005b7f551c9b0601a91d902ddd2418626f3423a23b341c22bda0ce6",
+        "byteCount": 228044,
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_f64566f3799b4e20b57a19376e256f8b",
+        "generatedAt": "2026-07-16T05:57:34.245Z"
+      },
+      {
+        "panelId": "storyboard-v2-panel-2",
+        "relativePath": "generated/narration/storyboard-v2/panel-2.wav",
+        "sha256": "6d0d3c680953d3dba3b5563f027a4b12174544475f19a70438280ada697ea346",
+        "byteCount": 208844,
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_ff9aa08c49084d5dac26da25bd450cdc",
+        "generatedAt": "2026-07-16T05:57:34.292Z"
+      },
+      {
+        "panelId": "storyboard-v2-panel-3",
+        "relativePath": "generated/narration/storyboard-v2/panel-3.wav",
+        "sha256": "e25cab951d3f2e24c59e75655160fe1f11ca07048cfe8782c85acd05ffc2a80b",
+        "byteCount": 216044,
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_b2ae15819bf045f0b49d957c52337aae",
+        "generatedAt": "2026-07-16T05:57:34.524Z"
+      },
+      {
+        "panelId": "storyboard-v2-panel-4",
+        "relativePath": "generated/narration/storyboard-v2/panel-4.wav",
+        "sha256": "242aeea83bb1a648ec21065d0039787493da7fec78ce75ea000a43c93a518211",
+        "byteCount": 196844,
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_100424d06eb743ec9c144c02c09fc15b",
+        "generatedAt": "2026-07-16T05:57:34.613Z"
+      },
+      {
+        "panelId": "storyboard-v2-panel-5",
+        "relativePath": "generated/narration/storyboard-v2/panel-5.wav",
+        "sha256": "0ee2f05d743e1ce15492359919592195ebcc4e9fc92a30aacc117b418736befa",
+        "byteCount": 180044,
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar",
+        "requestId": "req_60a8e5565a964cd9b3376298fcefa6be",
+        "generatedAt": "2026-07-16T05:57:34.138Z"
+      }
+    ]
+  },
+  "video": {
+    "id": "video-v2",
+    "version": 2,
+    "relativePath": "generated/videos/workshoplm-demo-v2.mp4",
+    "sha256": "c2c7d29423c60cdd22a99a54fb591fb44697c79291bab2fec97f8616c8c356e2",
+    "byteCount": 1250904,
+    "copiedFilmInput": {
+      "relativePath": "outputs/demo-film-inputs/provider-narrated-video.mp4",
+      "sha256": "c2c7d29423c60cdd22a99a54fb591fb44697c79291bab2fec97f8616c8c356e2",
+      "byteCount": 1250904
+    },
+    "durationSeconds": 25.002667,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video"
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      }
+    ]
+  },
+  "filmInputs": {
+    "imageGallery": {
+      "relativePath": "outputs/demo-film-inputs/provider-image-gallery.mov",
+      "sha256": "c4a42738426da86d353e1557d3fe6949320c24f53de6779e74598b60c996673e",
+      "byteCount": 80370
+    },
+    "narratedVideo": {
+      "relativePath": "outputs/demo-film-inputs/provider-narrated-video.mp4",
+      "sha256": "c2c7d29423c60cdd22a99a54fb591fb44697c79291bab2fec97f8616c8c356e2",
+      "byteCount": 1250904
+    }
+  },
+  "limitations": [
+    "The run uses the explicitly authorized sample Source and must be replaced by the founder recording before the final meta-demo is claimed."
+  ]
+}

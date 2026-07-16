@@ -55,11 +55,13 @@
         },
         {
           "label": "Inspected Realtime microphone-turn evidence",
-          "path": "artifacts/live/realtime-turn.json"
+          "path": "artifacts/live/realtime-turn.json",
+          "validator": "realtime-turn"
         },
         {
           "label": "Sanitized GPT-5.6 live-run evidence",
-          "path": "artifacts/live/provider-run.json"
+          "path": "artifacts/live/provider-run.json",
+          "validator": "provider-run"
         }
       ]
     },
@@ -101,18 +103,20 @@
       "title": "A deck you can defend",
       "startSeconds": 88,
       "endSeconds": 107,
-      "state": "blocked",
+      "state": "ready",
       "captureBeats": ["create-outputs"],
       "narration": "The hero output is a branded deck I can edit and defend. Every factual claim keeps exact evidence, while the infographic and coherent GPT Image 2 set support the same story and visual system.",
       "requiredMoments": ["provider-image-set"],
       "requiredEvidence": [
         {
           "label": "Inspected six-image GPT Image 2 gallery capture",
-          "path": "outputs/demo-film-inputs/provider-image-gallery.mov"
+          "path": "outputs/demo-film-inputs/provider-image-gallery.mov",
+          "validator": "video-media"
         },
         {
           "label": "Sanitized live-provider run evidence",
-          "path": "artifacts/live/provider-run.json"
+          "path": "artifacts/live/provider-run.json",
+          "validator": "provider-run"
         }
       ]
     },
@@ -132,14 +136,15 @@
       "title": "Approved work renders locally",
       "startSeconds": 125,
       "endSeconds": 143,
-      "state": "blocked",
+      "state": "ready",
       "captureBeats": ["video-render", "output-evidence"],
       "narration": "The local HyperFrames worker accepts only that approved current Storyboard, synchronizes the OpenAI narration, and renders the Video. Show source still follows a finished claim back through the Brief and Map to evidence.",
       "requiredMoments": ["provider-narration"],
       "requiredEvidence": [
         {
           "label": "Audibly inspected provider-narrated render",
-          "path": "outputs/demo-film-inputs/provider-narrated-video.mp4"
+          "path": "outputs/demo-film-inputs/provider-narrated-video.mp4",
+          "validator": "av-media"
         }
       ]
     },

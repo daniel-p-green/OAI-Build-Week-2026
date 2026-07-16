@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "editorial-rough-cut",
   "disclosure": "Truthful fixture rough cut with a local macOS guide voice. This is not provider narration, final host footage, or the public submission video.",
-  "builtAt": "2026-07-15T23:16:28.621Z",
+  "builtAt": "2026-07-16T08:03:09.336Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "voice": {
@@ -13,7 +13,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-rough-cut.mp4",
-    "sha256": "2d4d1f64636ab5a3a656f9e7d7de02064b769b8b69be50dda6206f19e881f13d",
+    "sha256": "4175979e5bcf18254433dedd20544ba28d1f271b0577c729ae38f7cb61b41bfa",
     "durationSeconds": 162.021333,
     "streams": [
       {
@@ -31,7 +31,7 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "a6ea1c7b707a231bfef21d2c79a3a66b596b16acf5468a6bcf165e7d8ef7e64d"
+    "sha256": "7a9ace29482521952da513143cba625eb3491890ab27ee287dcd5f1563830aa2"
   },
   "reviewFrames": [
     {
@@ -60,7 +60,7 @@
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "7e5ec3e785843570084020ea3d56a363fb5581a8449658c63e46fb7b892ea81b"
+      "sha256": "8c66fb952013e0f3080be8337c517cc099c16ce9471e7d813da7a7d94160ac57"
     },
     {
       "relativePath": "review/08.jpg",
@@ -68,7 +68,7 @@
     },
     {
       "relativePath": "review/09.jpg",
-      "sha256": "d1acd4674a7dbffae389c0d412cf710320c7a823f315d29cf7ee50f5ddaa7efa"
+      "sha256": "9c5894a4b84e503b60dee681f1b8c17c55560ca6fa834d9b09dac4fd525f24f7"
     },
     {
       "relativePath": "review/10.jpg",
@@ -143,14 +143,12 @@
     },
     {
       "id": "outputs",
-      "state": "blocked",
+      "state": "ready",
       "durationSeconds": 19,
       "guideVoiceRate": 120,
-      "sourceBeats": [
-        "create-outputs"
-      ],
-      "sourceStartSeconds": 12.651,
-      "sourceEndSeconds": 15.269
+      "sourceBeats": [],
+      "externalVideo": "outputs/demo-film-inputs/provider-image-gallery.mov",
+      "sourceDurationSeconds": 6
     },
     {
       "id": "storyboard-approval",
@@ -166,15 +164,12 @@
     },
     {
       "id": "render-and-trace",
-      "state": "blocked",
+      "state": "ready",
       "durationSeconds": 18,
       "guideVoiceRate": 121,
-      "sourceBeats": [
-        "video-render",
-        "output-evidence"
-      ],
-      "sourceStartSeconds": 21.02,
-      "sourceEndSeconds": 17.129
+      "sourceBeats": [],
+      "externalVideo": "outputs/demo-film-inputs/provider-narrated-video.mp4",
+      "sourceDurationSeconds": 25.002667
     },
     {
       "id": "meta-reveal",
@@ -189,7 +184,7 @@
     }
   ],
   "limitations": [
-    "4 shots remain visibly marked FINAL EVIDENCE PENDING.",
+    "2 shots remain visibly marked FINAL EVIDENCE PENDING.",
     "The walkthrough uses the sanitized deterministic fixture and planned image panels.",
     "The guide voice is local macOS speech synthesis, not OpenAI narration.",
     "Founder brainstorm, Realtime, GPT-5.6, GPT Image 2, provider narration, final Output set, and public-export evidence remain gated elsewhere."

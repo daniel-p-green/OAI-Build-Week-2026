@@ -2720,6 +2720,41 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-16 03:05 CT — Provider-backed film inputs and two-blocker rough cut verified
+
+**Area:** Meta-demo / Evidence integrity / Film assembly
+
+### Changed
+
+- Added `pnpm demo:film:prepare-live`, a deterministic bridge from the current live-operator Workshop to privacy-safe film evidence. It validates the persisted Terra Map, all six GPT Image 2 panel hashes and requests, all five Cedar narration hashes and requests, and the current Video hash and streams before emitting anything.
+- Produced `artifacts/live/provider-run.json` with the exact authorized-sample boundary, model/request provenance, hashes, media metadata, and explicit founder-Source limitation. Produced `artifacts/live/realtime-turn.json` from the inspected grounded WebRTC proof with an explicit controlled-synthetic-audio and non-founder disclosure.
+- Copied the exact current provider-narrated HyperFrames Video into `outputs/demo-film-inputs/provider-narrated-video.mp4` and generated a six-second 1920×1080 film shot from the visually inspected live Outputs/gallery screen.
+- Strengthened the film verifier so the provider-run JSON, Realtime evidence, gallery video, and narrated Video must satisfy their semantic and media contracts. Existence alone no longer clears those shots.
+- Marked only the now-evidenced Outputs and render-and-trace shots ready; founder capture and final meta-reveal remain explicitly blocked. Rebuilt the full 2:42 editorial rough cut with the real provider-backed beats.
+
+### Verified
+
+- The preparation command verified Terra request `req_11ee10453c1e45cd8067e578171f82d6`, six distinct GPT Image 2 results, five current `gpt-4o-mini-tts` Cedar clips, and current Video Version 2.
+- The copied Video remains byte-identical at SHA-256 `c2c7d29423c60cdd22a99a54fb591fb44697c79291bab2fec97f8616c8c356e2`; `ffprobe` reports H.264 video, AAC audio, and 25.002667 seconds.
+- The gallery film input is H.264 1920×1080, six seconds, 80,370 bytes, and SHA-256 `c4a42738426da86d353e1557d3fe6949320c24f53de6779e74598b60c996673e`. Midpoint frame inspection shows the professional presentation, the complete six-panel coherent image set, the quiet Create summary, and approved Storyboard/Video state without overflow.
+- `pnpm demo:film:verify` now reports eight ready shots, two blocked shots, and five remaining evidence gaps including the final export. The provider image and narration shots pass the new semantic/hash/media validators.
+- `pnpm demo:film:rough` produced a 162.021333-second H.264/AAC editorial MP4 with SHA-256 `4175979e5bcf18254433dedd20544ba28d1f271b0577c729ae38f7cb61b41bfa`. Contact-sheet inspection confirms the live Outputs shot and provider Video appear in the intended beats.
+
+### Decisions
+
+- Reuse the already-inspected provider run instead of spending again for film assembly. The final founder Source will legitimately require selective regeneration; the sample run remains valuable technical evidence but cannot be misrepresented as the final meta-demo.
+- Controlled Realtime audio proves transport and product behavior; it is preserved as technical evidence with a clear limitation while the separate founder recording remains the authentic capture requirement.
+- A film readiness flag changes only after the evidence file and its semantic validator pass. Static `blocked` labels are not carried forward after the underlying provider evidence is actually complete.
+
+### Open items
+
+- Record the founder brainstorm and transcript in the Codex in-app browser, replace the sample Source, and rebuild only the provider outputs that must truthfully derive from it.
+- Produce a non-partial final submission Output set, final edited MP4, and primary eligible Session ID record before changing the meta-reveal to ready.
+- External professional deck review and public link verification remain open. No new provider request or paid call ran in this milestone; the evidence ledger remains at 87 operations.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-16 02:15 CT — Grounded Realtime voice and simplified visual contract verified
 
 **Area:** Live OpenAI / Realtime voice / Grounding / Interruption / Visual acceptance
@@ -7316,3 +7351,11 @@ The 02:15 CT grounded Realtime voice and simplified visual-contract milestone wa
 - Obtain one intended-audience `Send` or blocking `Revise` response on the external deck. `/feedback` remains intentionally deferred.
 - The evidence ledger now totals 87 provider HTTP operations. Exact dollar debit is not exposed by the response artifacts; the recorded mix remains safely below the authorized $50 ceiling, but no unsupported exact spend is claimed.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 03:06 CT — Film milestone placement correction
+
+The 03:05 CT provider-backed film-input and two-blocker rough-cut milestone was inserted after an earlier matching `Codex Session ID` marker instead of the physical end of this append-only file. Its evidence and decisions are unchanged. This note restores the chronological boundary without rewriting history. The 03:05 milestone supersedes the earlier film-readiness count: the current verifier has eight ready shots, two blocked shots, and five missing or unsatisfied final-evidence items.
+
+The final acceptance sequence also proved that `pnpm demo:e2e` intentionally resets `.workshoplm/acceptance` and removes any prior submission manifest. A standalone `pnpm submission:verify` immediately after that reset failed with the expected missing-manifest error; `pnpm submission:build && pnpm submission:verify` then passed, followed by the semantic film verifier. The required order is reset/acceptance → submission build → submission verify, not verification against pre-reset state.
