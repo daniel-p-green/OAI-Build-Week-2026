@@ -8214,3 +8214,38 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - The professional-own-material, external `Send`/`Revise`, founder capture, final package, final MP4, eligible Session ID, and public submission gates remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 08:50 CT — Public clean-clone path is truthful and executable
+
+**Area:** Judge access / release verification / local HyperFrames
+
+### Changed
+
+- Reconciled the public README to the current product and evidence floor. WorkshopLM now correctly owns the focused Conversation inside the Codex in-app browser; Codex desktop/CLI remains the verified plugin host, and ChatGPT Work remains unclaimed.
+- Replaced stale pre-provider language with the inspected `gpt-5.6-terra`, six-panel GPT Image 2, Cedar narration, grounded Realtime, and local HyperFrames proof while preserving the strict boundary between the deterministic fixture, authorized sample run, and still-open founder-derived final package.
+- Added the required thirteen-request ceiling to the documented paid command and linked the exact provider, image-review, Video-review, Realtime, and claim-ledger artifacts.
+- A first clean clone exposed that `demo:render` targeted `.workshoplm/` while the verified fixture and server use `.workshoplm/acceptance`; its unconditional approval calls staled the already-approved Storyboard, its HyperFrames inspection command was deprecated, and its returned failed job did not make the process fail. `demo:thumbnail` used the same wrong root.
+- Pointed render and thumbnail generation at the acceptance root by default with an explicit `WORKSHOPLM_DATA_ROOT` override, made render setup idempotent, made failed/idle worker outcomes exit nonzero, replaced deprecated `hyperframes inspect` with `hyperframes check`, and pinned HyperFrames `0.7.60` in the lockfile.
+
+### Verified
+
+- Warm-checkout repair verification passed `pnpm check`, `pnpm demo:reset`, `pnpm demo:e2e`, `pnpm demo:render`, and `pnpm demo:thumbnail`. The second immutable fixture Video was a 2,109,433-byte MP4 with SHA-256 `6e6206288b89724f1a32a044b22e07d85f1ebf4ecf2b114d617f25c69ffe6fc3`; the 165,976-byte thumbnail hash was `d748a1efbfecff0390ed84fd3a8f241eeb180246d10584d5c4d0b315cbe9d586`.
+- Pushed public commit `4cd938d9c8fb6598a0836884ebbd90045ceccce2`, then cloned it into a new temporary directory. `pnpm install --frozen-lockfile` installed the exact lockfile including HyperFrames `0.7.60`.
+- The clean clone passed lint, typecheck, and tests across all thirteen packages, including 118 worker tests, 30 web tests, and 19 production tests.
+- The clean clone passed the recorded Capture → Map → Brief → Style → Outputs → Storyboard → Video acceptance seam, then independently produced Video Version 2 and the same hash-bound thumbnail through the public README commands.
+- `pnpm demo:serve` started the clean clone. Port 3000 was already occupied, so Next selected 3001; `GET /api/workshop` and `GET /` both returned HTTP 200. The API reported `WorkshopLM Build Week`, `briefApproved: true`, `videoState: rendered`, and two rendered document Outputs.
+- README local-link validation found ten local links and zero missing targets. `pnpm plugin:inspect` passed all seven plugin tests before the public correction was committed.
+- `git diff --check` passed. The stale user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from both commits.
+
+### Decisions
+
+- Judge-access verification follows the public repository and documented commands, not a warm checkout. A clean-clone failure is a product defect even when the internal acceptance seam is green.
+- HyperFrames is now a pinned local dependency so the judge path cannot silently float to an incompatible CLI. The renderer still runs locally and requires no HyperFrames API or account.
+- No provider request ran during this milestone; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Open items
+
+- The professional-own-material, external `Send`/`Revise`, founder capture, final ready package, public under-three-minute Video, eligible `/feedback` Session ID, release tag, Devpost fields, and final logged-out link checks remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
