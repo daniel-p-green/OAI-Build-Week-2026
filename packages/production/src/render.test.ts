@@ -72,6 +72,13 @@ describe("production renderers", () => {
     expect(deck).toContain("<strong>40+</strong><span>countries</span>");
     expect(deck).toContain("<strong>400+</strong><span>organizers</span>");
   });
+  it("turns qualitative proof items into editable commitment cards", () => {
+    const deck = renderDeck({ ...brief, blocks: [{ id: "trust", heading: "Trust begins at registration", body: "Set the operating standard before inviting the public.", items: ["Conduct applies to every participant", "Privacy covers registration data and media use"], citations: ["conduct policy", "privacy policy"], layout: "proof" }] });
+    expect(deck).toContain('class="slide proof has-items"');
+    expect(deck).toContain('<div class="proof-item">Conduct applies to every participant</div>');
+    expect(deck).toContain('<div class="proof-item">Privacy covers registration data and media use</div>');
+    expect(deck).not.toContain("SOURCE-BACKED");
+  });
   it("renders execution plans and decision lists as distinct professional layouts", () => {
     const deck = renderDeck({ ...brief, blocks: [
       { id: "plan", heading: "A four-week launch sequence", body: "Derived recommendation; confirm timing with the team.", items: ["Confirm owners", "Secure venue", "Open registration", "Host and review"], citations: ["approved brief"], layout: "plan" },

@@ -61,7 +61,11 @@
     {
       "id": "claim-aic-conduct-privacy",
       "heading": "Trust begins at registration",
-      "body": "The Code of Conduct covers attendees, speakers, sponsors, and volunteers. The current privacy policy governs event registration data and media use.",
+      "body": "Two published policies set the operating baseline for the first event.",
+      "items": [
+        "Conduct applies to attendees, speakers, sponsors, and volunteers",
+        "Privacy rules cover registration data and media use"
+      ],
       "citations": [
         "https://www.aicollective.com/files/Code%20of%20Conduct.pdf · Purpose, Scope, Expected Behavior",
         "https://www.aicollective.com/files/Data%20Privacy%20and%20Use%20Policy%20~%20The%20AI%20Collective.pdf · Introduction and Scope"

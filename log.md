@@ -7061,3 +7061,41 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Share `workshoplm-ai-collective-cold-review.zip` with one intended-audience professional and ingest the returned `Send` or first blocking `Revise` as the next product decision.
 - Provider-backed Map, Realtime, Images, narration, founder recording, final public Video and links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 00:16 CT — Qualitative evidence becomes decision content
+
+**Area:** Product wedge / Deck renderer / External dogfood / Send-it quality
+
+### Changed
+
+- Re-audited every unchecked `GOAL.md` item. Provider-backed media and speech require explicit spend, professional-use gates require real people, and founder footage/session evidence cannot be manufactured; the highest-value zero-spend work remained the hero deck itself.
+- Full-sequence inspection found the trust slide spending roughly a third of the canvas on a dark card that repeated `AI Collective · Conduct and Privacy policies` instead of communicating what a professional must do.
+- Extended qualitative proof blocks with explicit items into numbered commitment cards in responsive HTML and editable PowerPoint. Numeric proof continues to use the existing metric composition, and proof without structured items retains its source-backed fallback.
+- Reframed the trust slide around one synthesis sentence plus two source-backed operating standards: conduct coverage and privacy coverage. This removed duplicated body copy and made the evidence actionable at a glance.
+- Rebuilt the external PDF, editable PowerPoint, contact sheet, review packet, and all three Intent-profile evidence sets from the current renderer.
+
+### Verified
+
+- `pnpm --filter @workshoplm/production test` passed 15 renderer tests, including the new qualitative-commitment regression.
+- Full-resolution inspection of `preview-07.png` confirmed balanced hierarchy, two readable commitment cards, a quiet visible policy source, and no overflow or duplicated copy.
+- Full-resolution page-seven inspection of the Board presentation and Team workshop variants confirmed the same commitments remain balanced under their distinct Intent-profile framing.
+- `unzip -t` passed the editable PowerPoint; `pdfinfo` reported nine 16:9 pages; page-seven text extraction recovered the synthesis, both commitments, policy source, and page number.
+- The rebuilt deterministic cold-review ZIP has SHA-256 `c80996ab36a2f51db5df135c89c1274791a5da2cbf2fc6d03b8ac3a951e8dd10` and contains the current PDF, editable PowerPoint, contact sheet, feedback page, fallback, and manifest.
+- `pnpm check` passed all 13 packages, including 15 production, 106 worker, 27 web, 16 domain, and seven plugin tests.
+- `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. The 18-asset set remains honestly `partial` with its five named provider gaps.
+- `pnpm demo:film:verify` passed the 162-second draft gate with six ready shots, four evidence-blocked shots, and no final-video claim.
+- No external message was sent and no provider request or paid call ran.
+
+### Decisions
+
+- A source label is provenance, not visual evidence. When a grounded claim contains distinct operating commitments, the slide should communicate those commitments and keep provenance quiet.
+- Structured qualitative evidence belongs in the shared renderer so the improvement applies across Company Styles and Intent Profiles, not only to one dogfood file.
+- This improves the candidate without substituting internal judgment for the required external `Send`/`Revise` response.
+
+### Open items
+
+- Send the refreshed cold-review ZIP to one intended-audience professional and ingest the returned `Send` or first blocking `Revise`.
+- Provider-backed Map, Realtime, Images, narration, founder recording, final public Video and links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
