@@ -7560,3 +7560,36 @@ The 03:51 CT deterministic final-film milestone was inserted after an earlier ma
 
 - Founder capture, the final thirteen-request Source-derived operator run, verified final package, final MP4, external send/revise review, eligible Session ID, and public submission links remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 04:31 CT — Image replacement becomes a directed professional revision
+
+**Area:** Output editability / GPT Image 2 / Storyboard control
+
+### Changed
+
+- Replaced the blind one-click image retry with a focused `Replace image` sheet built from the locked official Apps in ChatGPT primitives.
+- The professional sees the current grounded image and describes one change in at most 400 characters. WorkshopLM retains the original base prompt, approved idea, Style, Visual DNA, evidence edge, and reference image while appending only the current revision request.
+- A second revision replaces the prior request rather than stacking contradictory instructions. The current image stays visible while the selected panel is pending, and the requested change is visible in the Image set.
+- Existing dependency behavior remains intact: only the selected image version advances, the bound Storyboard panel becomes stale, Storyboard approval is revoked, and Video remains blocked until the replacement is generated and reviewed.
+
+### Verified
+
+- The real provider-backed `.workshoplm/live-operator` Image set was copied to an isolated data root and inspected in the Codex in-app browser. The desktop sheet was calm, focused, and preserved the authorized GPT Image 2 preview before and after submission.
+- Production-browser snapshots at 1200×800 and 390×844 prove the focused sheet fits without horizontal overflow: `desktop-image-replacement.png` and `mobile-image-replacement.png`.
+- Adapter coverage proves the exact revision text reaches only the selected `/v1/images/edits` request and records Version 2 without weakening the six-panel coherence contract.
+- Worker tests passed 115/115, including bounded revision, non-stacking prompt, selected-request transport, preserved image, and Storyboard invalidation coverage.
+- The strict production-browser suite passed all 28 cases after the two intentional new snapshots, then passed again without updates. `pnpm check` passed all 13 packages, and `pnpm demo:e2e` passed the complete recorded seam.
+
+### Decisions
+
+- Professionals need to direct the last 10 percent, but they should not have to edit model prompts. The product accepts the desired visual change and preserves the grounded production contract automatically.
+- A pending replacement must not erase the current work. The prior image remains reviewable until valid replacement bytes are recorded.
+- No provider request ran in this milestone. The evidence ledger remains 97 HTTP operations; exact dollar debit is unavailable and no exact spend is invented.
+
+### Open items
+
+- The final founder Source should exercise this directed replacement only if one generated panel fails the send-it bar; do not spend a request merely to demonstrate the control.
+- Founder capture, final operator package, final MP4, intended-audience review, eligible Session ID, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

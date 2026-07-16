@@ -72,7 +72,9 @@ export type WorkshopStoryboard = { version: number; panels: StoryboardPanel[]; s
 export type ImageBatchPanel = {
   id: string;
   version: number;
+  basePrompt?: string;
   prompt: string;
+  revisionRequest?: string;
   evidence: WorkshopEvidenceReference[];
   state: "planned" | "selected_for_regeneration" | "generated" | "failed";
   referenceId: string;
@@ -1317,10 +1319,16 @@ export function createImageBatch(root?: string): WorkshopState {
   });
   return write({ ...current, imageBatch: { id: `image-batch-v${(current.imageBatch ? Number(current.imageBatch.id.match(/\d+$/)?.[0]) + 1 : 1)}`, graphRevision, briefVersion: current.frame.version, styleVersion: current.style.version, referenceId, referencePath, referenceSha256: createHash("sha256").update(referenceBytes).digest("hex"), coherence, createdAt, stale: false, panels }, updatedAt: createdAt }, root);
 }
-export function selectImagePanelForRegeneration(panelId: string, root?: string): WorkshopState {
+export function selectImagePanelForRegeneration(panelId: string, root?: string, revisionRequest?: string): WorkshopState {
   const current = readWorkshopState(root); if (!current.imageBatch || current.imageBatch.stale) throw new Error("A current image batch is required."); const found = current.imageBatch.panels.some((panel) => panel.id === panelId); if (!found) throw new Error(`Image panel not found: ${panelId}.`);
+  const request = revisionRequest?.trim();
+  if (request && request.length > 400) throw new Error("Describe the image change in 400 characters or fewer.");
   const storyboardDependsOnPanel = current.storyboard.panels.some((panel) => panel.imagePanelId === panelId); const storyboard = storyboardDependsOnPanel ? { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => panel.imagePanelId === panelId ? { ...panel, stale: true, approved: false } : panel) } : current.storyboard;
-  return write({ ...current, imageBatch: { ...current.imageBatch, panels: current.imageBatch.panels.map((panel) => panel.id === panelId ? { ...panel, version: panel.version + 1, state: "selected_for_regeneration", error: undefined } : panel) }, storyboard, narration: storyboardDependsOnPanel && current.narration ? { ...current.narration, stale: true } : current.narration, videos: storyboardDependsOnPanel ? staleVideos(current) : current.videos, storyboardApproved: storyboardDependsOnPanel ? false : current.storyboardApproved, videoState: storyboardDependsOnPanel ? "blocked" : current.videoState, updatedAt: new Date().toISOString() }, root);
+  return write({ ...current, imageBatch: { ...current.imageBatch, panels: current.imageBatch.panels.map((panel) => {
+    if (panel.id !== panelId) return panel;
+    const basePrompt = panel.basePrompt ?? panel.prompt.replace(/ Professional revision request: .*$/s, "");
+    return { ...panel, basePrompt, prompt: request ? `${basePrompt} Professional revision request: ${request}` : basePrompt, revisionRequest: request, version: panel.version + 1, state: "selected_for_regeneration", error: undefined };
+  }) }, storyboard, narration: storyboardDependsOnPanel && current.narration ? { ...current.narration, stale: true } : current.narration, videos: storyboardDependsOnPanel ? staleVideos(current) : current.videos, storyboardApproved: storyboardDependsOnPanel ? false : current.storyboardApproved, videoState: storyboardDependsOnPanel ? "blocked" : current.videoState, updatedAt: new Date().toISOString() }, root);
 }
 export function markImagePanelFailed(panelId: string, error: string, root?: string): WorkshopState {
   const current = readWorkshopState(root); if (!current.imageBatch || current.imageBatch.stale) throw new Error("A current image batch is required."); const message = error.trim(); if (!message) throw new Error("A failed image panel requires an error message."); const found = current.imageBatch.panels.some((panel) => panel.id === panelId); if (!found) throw new Error(`Image panel not found: ${panelId}.`);

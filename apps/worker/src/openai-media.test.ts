@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { defaultOpenAiMediaConfig, generateOpenAiAudioOverview, generateOpenAiImageBatch, generateOpenAiNarration, maxTtsInputCharacters, planOpenAiMediaRetry, validateImageBatchCoherence, validateNarrationReadiness, type OpenAiMediaConfig } from "./openai-media.js";
-import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDna, generateAssetPlan, generateAudioOverview, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, resolveWorkshopArtifact, updateStoryboardPanel } from "./workshop-service.js";
+import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDna, generateAssetPlan, generateAudioOverview, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, resolveWorkshopArtifact, selectImagePanelForRegeneration, updateStoryboardPanel } from "./workshop-service.js";
 
 const roots: string[] = [];
 const config: OpenAiMediaConfig = { apiKey: "test-key", ...defaultOpenAiMediaConfig, imageSize: "512x512" };
@@ -65,6 +65,21 @@ describe("OpenAI media adapters", () => {
     expect(state.imageBatch?.panels.every((panel) => panel.state === "generated" && panel.evidence.length > 0 && panel.provenance?.model === "gpt-image-2" && panel.provenance.referenceId === state.imageBatch?.referenceId && panel.sha256?.length === 64)).toBe(true);
     await expect(readFile(join(root, state.imageBatch!.panels[0]!.relativePath!))).resolves.toEqual(fixturePng);
     expect(resolveWorkshopArtifact("image-panel-1", root)).toMatchObject({ contentType: "image/png", path: expect.stringContaining("image-panel-1-v1.png") });
+  });
+
+  it("sends one professional revision request through the selected GPT Image 2 panel only", async () => {
+    const root = await readyRoot();
+    const panelId = readWorkshopState(root).imageBatch!.panels[0]!.id;
+    selectImagePanelForRegeneration(panelId, root, "Use fewer objects and leave more headline space.");
+    const fixturePng = await readFile(join(root, readWorkshopState(root).imageBatch!.referencePath));
+    let requestPrompt = "";
+    const fetchImpl: typeof fetch = async (_input, init) => {
+      requestPrompt = String((init?.body as FormData).get("prompt"));
+      return new Response(JSON.stringify({ data: [{ b64_json: fixturePng.toString("base64") }] }), { status: 200, headers: { "content-type": "application/json" } });
+    };
+    await expect(generateOpenAiImageBatch(root, config, fetchImpl, [panelId])).resolves.toEqual({ status: "passed", completed: [panelId], failed: [] });
+    expect(requestPrompt).toContain("Professional revision request: Use fewer objects and leave more headline space.");
+    expect(readWorkshopState(root).imageBatch!.panels[0]).toMatchObject({ state: "generated", version: 2, revisionRequest: "Use fewer objects and leave more headline space.", relativePath: expect.stringContaining("image-panel-1-v2.png") });
   });
 
   it("rejects malformed or wrong-sized image bytes before recording a generated panel", async () => {

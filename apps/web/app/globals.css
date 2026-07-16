@@ -198,6 +198,10 @@ button { -webkit-tap-highlight-color: transparent; }
 .source-preview p { margin: 0; font-size: 16px; line-height: 26px; letter-spacing: -.4px; }
 .source-preview small { color: #8f8f8f; }
 .source-preview .oai-button { justify-self: start; }
+.replacement-image-preview { display: grid; grid-template-columns: 112px minmax(0,1fr); align-items: center; gap: 14px; margin: 0 0 18px; padding: 12px; }
+.replacement-image-preview img { width: 112px; aspect-ratio: 1; object-fit: cover; border-radius: 12px; }
+.replacement-image-preview div { min-width: 0; display: grid; gap: 4px; }
+.replacement-image-preview small { display: -webkit-box; overflow: hidden; color: #5d5d5d; font-size: 12px; line-height: 18px; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .evidence-quote { margin: 20px 0 12px; font-size: 18px; line-height: 28px; letter-spacing: -.35px; }
 .evidence-meta { display: grid; grid-template-columns: 72px 1fr; gap: 10px; margin: 24px 0; font-size: 14px; line-height: 20px; }
 .evidence-meta dt { color: #8f8f8f; }

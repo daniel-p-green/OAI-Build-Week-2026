@@ -9,7 +9,7 @@ import { handleWorkshopProviderToolEvent, type WorkshopProviderToolEvent } from 
 
 export const runtime = "nodejs";
 type Action = "createWorkshop" | "selectWorkshop" | "updateOnboarding" | "dismissOrientation" | "beginWebsiteStyleAnalysis" | "approveBrief" | "analyzeWebsiteStyle" | "lockManualStyle" | "lockWebsiteStyle" | "applyStyleLibrary" | "createSketch" | "approveSketch" | "createVisualDna" | "approveVisualDna" | "approveStoryboard" | "renderVideo" | "cancelVideoRender" | "ingestSource" | "captureFallbackTranscript" | "sendConversationMessage" | "executeTool" | "handleProviderToolEvent" | "ingestUrl" | "ingestPdfFile" | "extractCandidates" | "setActiveSourceScope" | "mapOperation" | "syncMapCanvas" | "undoMapOperation" | "generateAssetPlan" | "generateOutput" | "generateAudioOverview" | "updateAudioOverview" | "generateAudioOverviewAudio" | "generateStoryboard" | "createImageBatch" | "regenerateImagePanel" | "updateStoryboardPanel";
-type RequestBody = { action?: Action; workshopId?: string; styleLibraryId?: string; title?: string; source?: SourceIngestion; text?: string; capture?: RealtimeCaptureEvidence; toolCall?: ExecuteWorkshopToolInput; providerEvent?: WorkshopProviderToolEvent; url?: string; filePath?: string; permission?: "private" | "sanitized" | "shareable"; sourceIds?: string[]; panelId?: string; audioOverviewId?: string; audioSections?: Array<{ id: string; text: string }>; operation?: unknown; canvasNodes?: CanvasNodePatch[]; outputType?: "deck" | "infographic"; manualStyle?: ManualStyleInput; intentProfile?: ManualStyleInput["intentProfile"]; onboardingStep?: WorkshopOnboarding["step"]; outcome?: WorkshopOutcome; orientation?: "map" | "outputs"; panel?: { id: string; title: string; narration: string; durationSeconds: number } };
+type RequestBody = { action?: Action; workshopId?: string; styleLibraryId?: string; title?: string; source?: SourceIngestion; text?: string; capture?: RealtimeCaptureEvidence; toolCall?: ExecuteWorkshopToolInput; providerEvent?: WorkshopProviderToolEvent; url?: string; filePath?: string; permission?: "private" | "sanitized" | "shareable"; sourceIds?: string[]; panelId?: string; revisionRequest?: string; audioOverviewId?: string; audioSections?: Array<{ id: string; text: string }>; operation?: unknown; canvasNodes?: CanvasNodePatch[]; outputType?: "deck" | "infographic"; manualStyle?: ManualStyleInput; intentProfile?: ManualStyleInput["intentProfile"]; onboardingStep?: WorkshopOnboarding["step"]; outcome?: WorkshopOutcome; orientation?: "map" | "outputs"; panel?: { id: string; title: string; narration: string; durationSeconds: number } };
 
 export async function GET(request: NextRequest) { const view = request.nextUrl.searchParams.get("view"); return NextResponse.json(view === "collection" ? { workshops: listWorkshopSummaries() } : view === "styles" ? { styles: listStyleLibrary() } : readWorkshopState()); }
 
@@ -76,7 +76,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(readWorkshopState());
     }
     if (body.action === "createImageBatch") return NextResponse.json(createImageBatch());
-    if (body.action === "regenerateImagePanel") { if (!body.panelId) return NextResponse.json({ error: "panelId is required" }, { status: 400 }); return NextResponse.json(selectImagePanelForRegeneration(body.panelId)); }
+    if (body.action === "regenerateImagePanel") {
+      if (!body.panelId) return NextResponse.json({ error: "panelId is required" }, { status: 400 });
+      if (body.revisionRequest !== undefined && typeof body.revisionRequest !== "string") return NextResponse.json({ error: "revisionRequest must be text" }, { status: 400 });
+      return NextResponse.json(selectImagePanelForRegeneration(body.panelId, undefined, body.revisionRequest));
+    }
     if (body.action === "updateStoryboardPanel") { if (!body.panel) return NextResponse.json({ error: "panel is required" }, { status: 400 }); const { id, ...panel } = body.panel; return NextResponse.json(updateStoryboardPanel(id, panel)); }
     return NextResponse.json(applyWorkshopAction(body.action));
   } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Workshop action failed" }, { status: 409 }); }

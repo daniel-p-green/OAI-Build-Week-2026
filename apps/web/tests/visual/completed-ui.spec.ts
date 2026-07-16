@@ -606,7 +606,10 @@ test("empty, loading, partial, error, and needs-update states stay calm and acti
     await expectScreen(page, `${viewport.name}-state-partial`);
     await page.getByRole("button", { name: "Review image", exact: true }).click();
     await page.getByRole("region", { name: "Hero concept" }).getByRole("button", { name: "Request replacement" }).click();
-    await expect(page.getByRole("status")).toContainText("Replacement requested");
+    const replacementSheet = page.getByRole("dialog", { name: "Replace image" });
+    await replacementSheet.getByRole("textbox", { name: "What should change?" }).fill("Use fewer objects and leave more headline space.");
+    await replacementSheet.getByRole("button", { name: "Create replacement" }).click();
+    await expect(page.getByRole("status")).toContainText("Creating one replacement");
     expect(postedActions).toContain("regenerateImagePanel");
     await page.unroute("**/api/workshop");
 
@@ -704,7 +707,7 @@ test("Image set review exposes each visual job, exact source, and selective repl
     if (route.request().method() === "GET") return route.fulfill({ json: current });
     const body = route.request().postDataJSON() as Record<string, unknown>;
     posted.push(body);
-    if (body.action === "regenerateImagePanel") current = { ...current, storyboardApproved: false, imageBatch: { ...current.imageBatch, panels: current.imageBatch.panels.map((panel: Record<string, unknown>) => panel.id === body.panelId ? { ...panel, version: Number(panel.version) + 1, state: "selected_for_regeneration" } : panel) } };
+    if (body.action === "regenerateImagePanel") current = { ...current, storyboardApproved: false, imageBatch: { ...current.imageBatch, panels: current.imageBatch.panels.map((panel: Record<string, unknown>) => panel.id === body.panelId ? { ...panel, version: Number(panel.version) + 1, state: "selected_for_regeneration", revisionRequest: body.revisionRequest } : panel) } };
     return route.fulfill({ json: current });
   });
   await page.route("**/api/workshop/artifacts/image-panel-*", async (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="1000"><rect width="1000" height="1000" fill="#f4f2ec"/><path d="M90 810L450 120L710 810Z" fill="#0285ff"/><circle cx="760" cy="320" r="150" fill="#0d0d0d"/></svg>' }));
@@ -724,9 +727,19 @@ test("Image set review exposes each visual job, exact source, and selective repl
   await closeDialog(page, "Source");
 
   await hero.getByRole("button", { name: "Request replacement" }).click();
-  await expect.poll(() => posted.at(-1)).toMatchObject({ action: "regenerateImagePanel", panelId: panels[0].id });
+  const replacementSheet = page.getByRole("dialog", { name: "Replace image" });
+  await expect(replacementSheet.getByText("Keep the approved idea and Style.")).toBeVisible();
+  await expectScreen(page, "desktop-image-replacement");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expectScreen(page, "mobile-image-replacement");
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await replacementSheet.getByRole("textbox", { name: "What should change?" }).fill("Use fewer objects and leave more headline space.");
+  await replacementSheet.getByRole("button", { name: "Create replacement" }).click();
+  await expect.poll(() => posted.at(-1)).toMatchObject({ action: "regenerateImagePanel", panelId: panels[0].id, revisionRequest: "Use fewer objects and leave more headline space." });
   await expect(hero.getByText("Replacement requested", { exact: true })).toBeVisible();
-  await expect(page.getByText("Replacement requested. Review the new image in Storyboard before approving Video.")).toBeVisible();
+  await expect(hero.locator("img")).toBeVisible();
+  await expect(hero).toContainText("Change requested: Use fewer objects and leave more headline space.");
+  await expect(page.getByText("Creating one replacement. Review it in Storyboard before approving Video.")).toBeVisible();
 });
 
 test("finished Video reveals the original brainstorm without adding navigation", async ({ page }) => {
