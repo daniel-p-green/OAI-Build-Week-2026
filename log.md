@@ -9171,3 +9171,31 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Founder recording and transcript, founder-derived ready Output set, final compositor run, founder/target-audience film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - The existing Codex doorway footage proves the correct in-app-browser surface but foregrounds the Workshop more than the host conversation. If the founder recording permits, the final capture should make the one plugin invocation visually unmistakable without exposing private task content.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 14:42 CT — The real Codex doorway becomes unmistakable without fake host UI
+
+**Area:** Judge film / host boundary / editorial clarity / evidence integrity
+
+### Changed
+
+- Added one compact clean-film cue over the existing privacy-safe Codex in-app-browser footage: `CODEX → WORKSHOPLM` and `Conversation opens the visual workbench`. It identifies the real transition that the underlying capture already proves without drawing a simulated chat, inventing a host control, adding another shot, or exposing private task content.
+- Recorded `editorialCue: codex-to-workshoplm` on the exact doorway shot and made the sample-film verifier reject a clean cut that omits it. Sample and final modes share the cue; the diagnostic rough cut remains unchanged.
+
+### Verified
+
+- Rebuilt and visually inspected full-resolution doorway review frame `outputs/demo-film-sample/review/02.jpg`. The cue is immediately legible against the browser chrome, remains subordinate to the product, and does not collide with the existing bottom proof caption. Its SHA-256 is `260b77f5aa5be547b68d47b5b5e0d5025f5900bec61038d241105c3a8654a5cb`.
+- `pnpm demo:film:verify-sample` passed with the required doorway cue, ten shots, ten hash-verified review frames, two retained final-evidence blocks, verified Cedar narration, and the same acceptance trace. The rebuilt 140.021333-second movie hashes to `e9247846803d3cbaa2d508a1a5b6da55a91e81a2dc7653e9045b28004a545aee`; this supersedes the pre-cue sample-film hash recorded in the prior append-only milestone.
+- Repeated black, freeze-over-3.5-second, and silence-over-2.5-second detection found no events. No OpenAI request ran; the evidence ledger remains at 104 provider HTTP operations.
+
+### Decisions
+
+- An editorial label can clarify what truthful footage shows; it may not substitute for missing footage or fabricate product chrome. The cue therefore names only the already-proven relationship between the Codex host and the visual Workshop.
+- The founder recording no longer needs to solve doorway comprehension. It remains responsible only for the honest founder brainstorm, transcript, and founder-derived final package.
+- `PLAN-2026-07-13.md` remained advisory only for enduring acceptance principles. Its pre-existing user modification was untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, founder/target-audience film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

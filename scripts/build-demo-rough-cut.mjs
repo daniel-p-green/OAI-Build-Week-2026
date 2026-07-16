@@ -94,7 +94,11 @@ function overlaySvg(shot, index) {
   if (cleanEditorialStyle) {
     if (shot.id === "meta-reveal") return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"/>`;
     const lines = captionLines(shot.caption ?? shot.narration, 74);
+    const doorwayCue = shot.id === "codex-doorway" ? `<rect x="28" y="24" width="306" height="62" rx="16" fill="#ffffff" fill-opacity="0.96" stroke="#dededb"/>
+  <text x="50" y="50" font-family="Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="1.1" fill="#6b6b6b">CODEX → WORKSHOPLM</text>
+  <text x="50" y="72" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0d0d0d">Conversation opens the visual workbench</text>` : "";
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  ${doorwayCue}
   <rect x="22" y="606" width="1236" height="96" rx="18" fill="#ffffff" fill-opacity="0.94"/>
   <text x="48" y="632" font-family="Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="1.2" fill="#6b6b6b">${String(index + 1).padStart(2, "0")} · ${escapeXml(shot.title.toUpperCase())}</text>
   <text x="48" y="661" font-family="Arial, sans-serif" font-size="19" font-weight="600" fill="#0d0d0d">${escapeXml(lines[0] || "")}</text>
@@ -278,6 +282,7 @@ async function main() {
     }
 
     shotRecords.at(-1).motion = { type: "editorial-push-in", maxScale: editorialPushInMaxScale, ratePerFrame: editorialPushInRatePerFrame };
+    if (cleanEditorialStyle && shot.id === "codex-doorway") shotRecords.at(-1).editorialCue = "codex-to-workshoplm";
 
     const audioDuration = Number(probe(audioPath).format?.duration || 0);
     const targetSpeechDuration = Math.max(1, duration - 0.55);

@@ -28,6 +28,8 @@ async function main() {
   assert(manifest.voice?.provider === "OpenAI" && manifest.voice?.model === "gpt-4o-mini-tts" && manifest.voice?.name === "cedar" && manifest.voice?.finalProviderNarration === true, "The sample film is not bound to the verified Cedar narration set.");
   assert(manifest.shots?.length === 10, "The sample film must contain all ten planned shots.");
   assert(manifest.shots.filter((shot) => shot.state === "blocked").length === 2, "The sample film must retain the two final-evidence blocks.");
+  const doorway = manifest.shots.find((shot) => shot.id === "codex-doorway");
+  assert(doorway?.editorialCue === "codex-to-workshoplm", "The clean film must make the real Codex-to-Workshop doorway visually explicit.");
   const metaReveal = manifest.shots.find((shot) => shot.id === "meta-reveal");
   assert(metaReveal?.generatedMetaReveal === true && metaReveal.state === "blocked", "The sample meta-reveal must be generated without pretending to be final.");
 
