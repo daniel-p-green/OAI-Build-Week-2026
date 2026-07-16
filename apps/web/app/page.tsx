@@ -79,6 +79,7 @@ type PersistedWorkshop = {
   assetPlan?: { version: number; stale: boolean; evidenceClaimIds: string[] };
   storyboard: { version: number; stale: boolean; panels: { id: string; title: string; narration: string; durationSeconds: number; claimIds: string[]; evidence: { claimId?: string; sourceId: string; chunkId?: string; locator: string }[]; imagePanelId?: string; imagePanelVersion?: number; approved: boolean; stale: boolean }[] };
   imageBatch?: { id: string; graphRevision: number; briefVersion: number; styleVersion: number; referenceId: string; stale: boolean; panels: { id: string; version: number; prompt: string; evidence: { claimId?: string; sourceId: string; chunkId?: string; locator: string }[]; state: "planned" | "selected_for_regeneration" | "generated" | "failed"; relativePath?: string }[] };
+  audioOverviews: { id: string; version: number; graphRevision: number; briefVersion: number; styleVersion: number; title: string; posture: "executive" | "overview" | "decision_review"; sections: { id: string; title: string; text: string; evidence: { claimId?: string; sourceId: string; chunkId?: string; locator: string }[]; edited: boolean }[]; script: string; claimIds: string[]; status: "script_ready" | "audio_ready" | "failed"; disclosure: "AI-generated voice"; stale: boolean; audio?: { relativePath: string; sha256: string; byteCount: number; durationSeconds: number; model: "gpt-4o-mini-tts"; voice: "marin"; instructions: string; requestId?: string; generatedAt: string }; error?: string; createdAt: string; updatedAt: string }[];
   outputs: { id: string; type: "deck" | "infographic"; stale: boolean; artifactPath: string; editableRelativePath?: string; claimIds?: string[]; createdAt: string }[];
   videos: { id: string; version: number; storyboardVersion: number; styleVersion: number; relativePath: string; provenancePath: string; artifactPath: string; claimIds: string[]; buildTrace?: { htmlPath: string; dataPath: string; htmlSha256: string; dataSha256: string; milestoneCount: number; commitCount: number; taskIds: string[] }; stale: boolean; createdAt: string }[];
 };
@@ -92,11 +93,12 @@ function outputSetStatus(state: PersistedWorkshop | null) {
   const latest = (type: "deck" | "infographic") => [...state.outputs].reverse().find((output) => output.type === type);
   const deck = latest("deck");
   const infographic = latest("infographic");
-  const generationStarted = Boolean(state.outputs.length || state.assetPlan || state.imageBatch);
+  const generationStarted = Boolean(state.outputs.length || state.audioOverviews.length || state.assetPlan || state.imageBatch);
   const currentVideo = [...(state.videos ?? [])].sort((left, right) => right.version - left.version)[0];
+  const audioOverview = [...(state.audioOverviews ?? [])].reverse().find((item) => !item.stale);
   const failedImages = Boolean(state.imageBatch?.panels.some((panel) => panel.state === "failed"));
   const failedOutputs = Boolean(state.outputRecovery && Object.keys(state.outputRecovery).length);
-  const incomplete = Boolean(generationStarted && (!deck || !infographic || !state.imageBatch || !state.storyboard.panels.length)) || failedImages || failedOutputs;
+  const incomplete = Boolean(generationStarted && (!deck || !infographic || !audioOverview || !state.imageBatch || !state.storyboard.panels.length)) || failedImages || failedOutputs || audioOverview?.status === "failed";
   const replacementIds = new Set(state.imageBatch?.panels.filter((panel) => panel.state === "selected_for_regeneration").map((panel) => panel.id) ?? []);
   const replacementOnlyStoryboardStale = replacementIds.size > 0
     && state.storyboard.stale
@@ -106,6 +108,7 @@ function outputSetStatus(state: PersistedWorkshop | null) {
     || infographic?.stale
     || state.assetPlan?.stale
     || state.imageBatch?.stale
+    || state.audioOverviews.at(-1)?.stale
     || (state.storyboard.stale && !replacementOnlyStoryboardStale)
     || currentVideo?.stale
   );
@@ -136,6 +139,7 @@ function affectedWorkForSourceScope(state: PersistedWorkshop | null) {
   if (state.outputs.some((output) => output.type === "deck")) affected.push("Presentation");
   if (state.outputs.some((output) => output.type === "infographic")) affected.push("Infographic");
   if (state.imageBatch) affected.push("Image set");
+  if (state.audioOverviews.length) affected.push("Audio Overview");
   if (state.storyboard.panels.length) affected.push("Storyboard");
   if (state.videos.length) affected.push("Video");
   return affected;
@@ -380,6 +384,7 @@ export default function WorkshopPage() {
     const run = async (body: Record<string, unknown>) => { const next = await post(body); complete = Boolean(next) && complete; return next; };
     if (state?.outputRecovery?.deck || !state?.outputs.some((output) => output.type === "deck" && !output.stale)) await run({ action: "generateOutput", outputType: "deck" });
     if (state?.outputRecovery?.infographic || !state?.outputs.some((output) => output.type === "infographic" && !output.stale)) await run({ action: "generateOutput", outputType: "infographic" });
+    if (!state?.audioOverviews.some((overview) => !overview.stale)) await run({ action: "generateAudioOverview" });
     await run({ action: "generateAssetPlan" });
     if (!state?.imageBatch || state.imageBatch.stale || state.imageBatch.panels.some((panel) => panel.state === "failed" || panel.state === "selected_for_regeneration")) await run({ action: "createImageBatch" });
     await run({ action: "generateStoryboard" });
@@ -415,7 +420,7 @@ export default function WorkshopPage() {
   const visibleSourceCount = view === "output" && selectedOutput
     ? outputSourceCount(selectedOutput, state)
     : sourceCount;
-  const currentTitle = view === "output" ? (selectedOutput ? outputTitle(selectedOutput.type) : selectedOutputId === "images" ? "Image set" : "Demo video") : VIEW_TITLES[view];
+  const currentTitle = view === "output" ? (selectedOutput ? outputTitle(selectedOutput.type) : selectedOutputId?.startsWith("audio-overview-") ? "Audio Overview" : selectedOutputId === "images" ? "Image set" : "Demo video") : VIEW_TITLES[view];
   const backTarget: ObjectView | null = view === "conversation" || view === "map" ? null : view === "brief" ? "map" : view === "outputs" ? "brief" : "outputs";
   const workflowAction = !state?.mapNodes.length
     ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => openSheet("add-source")}>Add source</Button>
@@ -468,7 +473,7 @@ export default function WorkshopPage() {
           {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
           {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
           {loadState === "ready" && view === "storyboard" && <StoryboardView storyboard={state?.storyboard} imageBatch={state?.imageBatch} approved={Boolean(state?.storyboardApproved)} panel={selectedPanel} busy={busy} onSelect={setSelectedPanelId} onPost={post} onShowSource={showSource} />}
-          {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} busy={busy} onShowSource={showSource} onShowOriginal={() => openSheet("original")} onRequestReplacement={async (panelId) => { const next = await post({ action: "regenerateImagePanel", panelId }); if (next) setNotice({ message: "Replacement requested. Review the new image in Storyboard before approving Video.", tone: "status" }); }} />}
+          {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} busy={busy} onPost={post} onOpenOutput={openOutput} onShowSource={showSource} onShowOriginal={() => openSheet("original")} onRequestReplacement={async (panelId) => { const next = await post({ action: "regenerateImagePanel", panelId }); if (next) setNotice({ message: "Replacement requested. Review the new image in Storyboard before approving Video.", tone: "status" }); }} />}
         </section>
         {loadState === "ready" && <ProductionRail open={rightRailOpen} state={state} view={view} action={workflowAction} onCollapse={() => setRightRailOpen((current) => !current)} onOpenView={openView} onOpenOutput={openOutput} onOpenStyle={() => openSheet("style")} />}
       </Workbench>
@@ -669,6 +674,7 @@ function OutputsView({ state, onOpenOutput, onOpenStoryboard, onDismissOrientati
     ? right.createdAt.localeCompare(left.createdAt)
     : left.type === "deck" ? -1 : 1);
   const videos = [...(state?.videos ?? [])].sort((left, right) => right.version - left.version);
+  const audioOverviews = [...(state?.audioOverviews ?? [])].sort((left, right) => right.version - left.version);
   const generatedImages = state?.imageBatch?.panels.filter((panel) => panel.state === "generated").length ?? 0;
   const failedImages = state?.imageBatch?.panels.filter((panel) => panel.state === "failed").length ?? 0;
   const ready = Boolean(state?.briefApproved && state.style && !state.style.stale);
@@ -680,7 +686,7 @@ function OutputsView({ state, onOpenOutput, onOpenStoryboard, onDismissOrientati
     <h1 className="visually-hidden">Outputs</h1>
     {!ready ? <StateMessage state="empty" title="Choose a Style">Your Brief is ready. Add a Style to create Outputs.</StateMessage> : <>
       {!state?.onboarding.outputsOrientationDismissed && heroDeckId && <Card className="outputs-orientation"><div><strong>Your presentation is ready.</strong><p>Show source traces a claim back to its material. The Storyboard is your second and final approval before Video.</p></div><div className="button-row"><Button variant="secondary" size="small" onClick={() => onOpenOutput(heroDeckId)}>Open presentation</Button><Button variant="secondary" size="small" onClick={onDismissOrientation}>Got it</Button></div></Card>}
-      {(state?.outputs.length ?? 0) === 0 && !state?.imageBatch && <StateMessage state="empty" title="Create your first Outputs">Turn this Brief into a presentation, infographic, image set, and Storyboard.</StateMessage>}
+      {(state?.outputs.length ?? 0) === 0 && !state?.imageBatch && !state?.audioOverviews.length && <StateMessage state="empty" title="Create your first Outputs">Turn this Brief into a presentation, infographic, Audio Overview, image set, and Storyboard.</StateMessage>}
       {partial && !needsUpdate && <StateMessage state="partial" title="Some Outputs are ready">Review what is finished, then update Outputs to complete the set.</StateMessage>}
       {needsUpdate && <StateMessage state="needs-update" title="Outputs need an update">Your Sources, Brief, or Style changed. Update Outputs before sharing them.</StateMessage>}
       <section className="output-grid">{outputs.map((output) => {
@@ -691,6 +697,7 @@ function OutputsView({ state, onOpenOutput, onOpenStoryboard, onDismissOrientati
         const isHero = output.id === heroDeckId;
         return <EntityCardAction className={`output-card ${isHero ? "output-card--hero" : ""} ${output.stale ? "needs-update" : ""}`} data-output-role={isHero ? "hero" : "supporting"} key={output.id} aria-label={`Open ${name}`} onClick={() => onOpenOutput(output.id)}><div className="artifact-preview" data-domain-ui="artifact-preview"><iframe title={`${name} preview`} sandbox="allow-same-origin" src={`/api/workshop/artifacts/${output.id}`} /></div><div className="output-card-body"><h2>{outputTitle(output.type)}</h2><div className="output-meta"><span>{outputType(output.type)} · Version {version}</span><Status tone={output.stale ? "waiting" : "current"}>{output.stale ? "Needs update" : "Up to date"}</Status><span>{sources} {sources === 1 ? "source" : "sources"}</span></div></div></EntityCardAction>;
       })}
+      {audioOverviews.map((overview) => <EntityCardAction className={`output-card ${overview.stale ? "needs-update" : ""}`} key={overview.id} aria-label={`Open Audio Overview, version ${overview.version}`} onClick={() => onOpenOutput(overview.id)}><div className="artifact-preview audio-overview-preview" data-domain-ui="artifact-preview"><div className="audio-wave" aria-hidden="true">{[26, 54, 38, 72, 44, 64, 32, 58, 40, 68, 30, 50].map((height, index) => <i key={index} style={{ height: `${height}%` }} />)}</div><span>{overview.audio ? `${Math.round(overview.audio.durationSeconds)} sec` : `${overview.script.split(/\s+/).filter(Boolean).length} words`}</span></div><div className="output-card-body"><h2>Audio Overview</h2><div className="output-meta"><span>Audio · Version {overview.version}</span><Status tone={!overview.stale && overview.status !== "failed" ? "current" : "waiting"}>{overview.stale ? "Needs update" : overview.status === "failed" ? "Couldn't create" : overview.status === "audio_ready" ? "Up to date" : "Ready for review"}</Status><span>{overview.claimIds.length} sourced points</span></div></div></EntityCardAction>)}
       {state?.imageBatch && <EntityCardAction className={`output-card ${state.imageBatch.stale ? "needs-update" : ""}`} aria-label="Open Image set" onClick={() => onOpenOutput("images")}><div className="artifact-preview image-contact-sheet" data-domain-ui="artifact-preview">{state.imageBatch.panels.map((panel, index) => <div className={`image-tile ${panel.state === "generated" ? "generated" : ""}`} data-domain-ui="image-tile" key={panel.id} style={{ "--tile": index } as CSSProperties}>{panel.state === "generated" && <img alt="" src={`/api/workshop/artifacts/${panel.id}`} />}<span>{String(index + 1).padStart(2, "0")}</span></div>)}</div><div className="output-card-body"><h2>Image set</h2><div className="output-meta"><span>{state.imageBatch.panels.length} images</span><Status tone={state.imageBatch.stale || failedImages ? "waiting" : generatedImages === state.imageBatch.panels.length ? "current" : "waiting"}>{state.imageBatch.stale ? "Needs update" : failedImages ? "Incomplete" : generatedImages === state.imageBatch.panels.length ? "Up to date" : "Planned"}</Status><span>{state?.activeSourceIds.length ?? 0} sources</span></div></div></EntityCardAction>}
       {(state?.storyboard.panels.length ?? 0) > 0 && <EntityCardAction className={`output-card ${state?.storyboard.stale ? "needs-update" : ""}`} aria-label="Open Storyboard" onClick={onOpenStoryboard}><div className="artifact-preview storyboard-card-preview" data-domain-ui="artifact-preview">{state?.storyboard.panels.slice(0, 6).map((panel, index) => { const image = boundImage(panel, state?.imageBatch); return <div className={`storyboard-card-frame ${image ? "has-image" : ""}`} key={panel.id} style={{ "--panel": index } as CSSProperties}>{image && <img alt="" src={`/api/workshop/artifacts/${image.id}`} />}<span>{String(index + 1).padStart(2, "0")}</span><strong>{panel.title}</strong></div>; })}</div><div className="output-card-body"><h2>Storyboard</h2><div className="output-meta"><span>{state?.storyboard.panels.length ?? 0} panels</span><Status tone={state?.storyboard.stale ? "waiting" : "current"}>{state?.storyboard.stale ? "Needs update" : state?.storyboardApproved ? "Approved" : "Ready for review"}</Status><span>{state?.activeSourceIds.length ?? 0} sources</span></div></div></EntityCardAction>}
       {videos.map((video) => <EntityCardAction className={`output-card ${video.stale ? "needs-update" : ""}`} key={video.id} aria-label={`Open Demo video, version ${video.version}`} onClick={() => onOpenOutput(video.id)}><div className="artifact-preview" data-domain-ui="artifact-preview"><video muted src={`/api/workshop/artifacts/${video.id}`} /></div><div className="output-card-body"><h2>Demo video</h2><div className="output-meta"><span>Video · Version {video.version}</span><Status tone={video.stale ? "waiting" : "current"}>{video.stale ? "Needs update" : "Up to date"}</Status><span>{state?.activeSourceIds.length ?? 0} sources · Storyboard {video.storyboardVersion}</span></div></div></EntityCardAction>)}</section>
@@ -704,12 +711,29 @@ function imagePanelCopy(prompt: string, index: number) {
   return { role, idea };
 }
 
-function FocusedOutputView({ state, outputId, busy, onShowSource, onShowOriginal, onRequestReplacement }: { state: PersistedWorkshop | null; outputId: string; busy: boolean; onShowSource: (target?: EvidenceTarget) => void; onShowOriginal: () => void; onRequestReplacement: (panelId: string) => Promise<void> }) {
+function AudioOverviewView({ overview, busy, onPost, onOpenOutput, onShowSource }: { overview: PersistedWorkshop["audioOverviews"][number]; busy: boolean; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onOpenOutput: (id: string) => void; onShowSource: (target?: EvidenceTarget) => void }) {
+  const [sections, setSections] = useState(() => Object.fromEntries(overview.sections.map((section) => [section.id, section.text])));
+  useEffect(() => { setSections(Object.fromEntries(overview.sections.map((section) => [section.id, section.text]))); }, [overview]);
+  const dirty = overview.sections.some((section) => sections[section.id]?.trim() !== section.text);
+  const words = overview.script.split(/\s+/).filter(Boolean).length;
+  const save = async () => {
+    const next = await onPost({ action: "updateAudioOverview", audioOverviewId: overview.id, audioSections: overview.sections.map((section) => ({ id: section.id, text: sections[section.id]?.trim() ?? "" })) });
+    const current = next?.audioOverviews.at(-1); if (current) onOpenOutput(current.id);
+  };
+  return <article className="focused-output audio-overview-view"><div className="focused-output-heading"><div className="focused-output-context"><h1>Audio Overview</h1><p>Audio · Version {overview.version} · {words} words · {overview.claimIds.length} sourced points</p><Status tone={overview.stale || overview.status === "failed" ? "waiting" : "current"}>{overview.stale ? "Needs update" : overview.status === "failed" ? "Couldn't create" : overview.status === "audio_ready" ? "Audio ready" : "Ready for review"}</Status></div><div className="button-row">{dirty && <Button size="small" disabled={busy || overview.sections.some((section) => !sections[section.id]?.trim())} onClick={() => { void save(); }}>Save script</Button>}{!overview.stale && overview.status !== "audio_ready" && <Button variant="secondary" size="small" disabled={busy || dirty} onClick={() => { void onPost({ action: "generateAudioOverviewAudio" }); }}>{overview.status === "failed" ? "Try audio again" : "Create audio"}</Button>}{overview.audio && <ButtonLink variant="secondary" size="small" href={`/api/workshop/artifacts/${overview.id}`}>Download audio</ButtonLink>}</div></div>
+    {overview.audio ? <Card className="audio-player"><audio controls src={`/api/workshop/artifacts/${overview.id}`} /><div><strong>{Math.round(overview.audio.durationSeconds)} seconds</strong><small>{overview.audio.model} · {overview.audio.voice} · {overview.disclosure}</small></div></Card> : <StateMessage state={overview.status === "failed" ? "error" : "empty"} title={overview.status === "failed" ? "Audio needs another try" : "Review the script first"}>{overview.error ?? "Edit any section, check its source, then create the AI-voiced briefing."}</StateMessage>}
+    <section className="audio-script" aria-label="Audio Overview script">{overview.sections.map((section) => { const evidence = section.evidence[0]; return <Card className="audio-script-section" key={section.id}><div className="audio-script-heading"><div><small>{section.title}</small>{section.edited && <Status tone="waiting">Edited</Status>}</div><Button variant="secondary" size="small" onClick={() => onShowSource({ sourceId: evidence?.sourceId, claimId: evidence?.claimId, locator: evidence?.locator })}>Show source</Button></div><TextArea label={`${section.title} script`} value={sections[section.id] ?? ""} maxLength={1800} onChange={(event) => setSections((current) => ({ ...current, [section.id]: event.target.value }))} /></Card>; })}</section>
+    <p className="audio-disclosure">Voice disclosure: {overview.disclosure}. Script edits remain visible and source-linked before speech generation.</p>
+  </article>;
+}
+
+function FocusedOutputView({ state, outputId, busy, onPost, onOpenOutput, onShowSource, onShowOriginal, onRequestReplacement }: { state: PersistedWorkshop | null; outputId: string; busy: boolean; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onOpenOutput: (id: string) => void; onShowSource: (target?: EvidenceTarget) => void; onShowOriginal: () => void; onRequestReplacement: (panelId: string) => Promise<void> }) {
   const output = state?.outputs.find((item) => item.id === outputId);
+  const audioOverview = state?.audioOverviews.find((item) => item.id === outputId);
   const isVideo = outputId === "video" || outputId.startsWith("video-v");
   const video = isVideo ? (outputId === "video" ? state?.videos?.find((item) => !item.stale) : state?.videos?.find((item) => item.id === outputId)) : undefined;
   const isImages = outputId === "images";
-  const title = output ? outputTitle(output.type) : isImages ? "Image set" : "Demo video";
+  const title = output ? outputTitle(output.type) : audioOverview ? "Audio Overview" : isImages ? "Image set" : "Demo video";
   const sourceCount = output ? outputSourceCount(output, state) : state?.activeSourceIds.length ?? 0;
   const detail = output
     ? `${outputType(output.type)} · Version ${outputVersion(output, state?.outputs ?? [])} · ${sourceCount} ${sourceCount === 1 ? "source" : "sources"}`
@@ -717,6 +741,7 @@ function FocusedOutputView({ state, outputId, busy, onShowSource, onShowOriginal
   const artifactClaims = claimsForArtifact(output?.claimIds ?? video?.claimIds ?? [], state?.claims ?? []);
   const outputClaim = artifactClaims[0];
   const href = `/api/workshop/artifacts/${outputId}`;
+  if (audioOverview) return <AudioOverviewView overview={audioOverview} busy={busy} onPost={onPost} onOpenOutput={onOpenOutput} onShowSource={onShowSource} />;
   if (!output && (!isVideo || !video) && !isImages) return <div className="state-surface"><StateMessage state="error" title="Couldn't open Output">Return to Outputs and try opening it again.</StateMessage></div>;
   if (isImages) return <article className="focused-output"><div className="focused-output-heading"><div className="focused-output-context"><h1>{title}</h1><p>{detail} · One shared Style</p>{state?.imageBatch?.stale && <Status tone="waiting">Needs update</Status>}</div></div><div className="focused-image-grid" data-domain-ui="image-review-grid">{state?.imageBatch?.panels.map((panel, index) => {
     const { role, idea } = imagePanelCopy(panel.prompt, index);
@@ -741,6 +766,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   const deliverables = [
     { title: "Presentation", detail: `${state?.outputs.filter((output) => output.type === "deck").length ?? 0} version${state?.outputs.filter((output) => output.type === "deck").length === 1 ? "" : "s"}` },
     { title: "Infographic", detail: `${state?.outputs.filter((output) => output.type === "infographic").length ?? 0} version${state?.outputs.filter((output) => output.type === "infographic").length === 1 ? "" : "s"}` },
+    { title: "Audio Overview", detail: state?.audioOverviews.at(-1)?.audio ? `Version ${state.audioOverviews.at(-1)!.version} ready` : state?.audioOverviews.length ? "Script ready" : "Not created yet" },
     { title: "Image set", detail: `${state?.imageBatch?.panels.length ?? 0} ${state?.imageBatch?.panels.every((panel) => panel.state === "generated") ? "ready" : "planned"} images` },
     { title: "Storyboard", detail: `${state?.storyboard.panels.length ?? 0} editable panels` },
     { title: "Demo video", detail: currentVideo ? `Version ${currentVideo.version} ready` : state?.videos?.length ? `${state.videos.length} saved · Needs update` : "Not created yet" },
@@ -749,7 +775,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   return <SideSheet title="Original brainstorm" className="original-reveal" onClose={onClose}>
     <p className="sheet-intro">The finished submission started with this.</p>
     <Card className="original-transcript"><small>Before · {sourceKind}</small><blockquote>“{original}”</blockquote>{sourceLocator && <p className="source-locator">{sourceLocator}</p>}</Card>
-    <div className="original-result"><small>After</small><h3>Became five connected Outputs</h3>{elapsedSeconds !== null && <p>{elapsedSeconds} seconds from first transcript to first rendered Output</p>}</div>
+    <div className="original-result"><small>After</small><h3>Became six connected Outputs</h3>{elapsedSeconds !== null && <p>{elapsedSeconds} seconds from first transcript to first rendered Output</p>}</div>
     <ListGroup>{deliverables.map((item) => <ListRow className="original-output-row" key={item.title}><FileIcon /><span><strong>{item.title}</strong><small>{item.detail}</small></span></ListRow>)}</ListGroup>
     {currentVideo?.buildTrace && <ButtonLink variant="secondary" href={`/api/workshop/artifacts/build-trace-v${currentVideo.version}`} target="_blank" rel="noreferrer">How this was built</ButtonLink>}
   </SideSheet>;
@@ -865,13 +891,14 @@ function ProductionRail({ open, state, view, action, onCollapse, onOpenView, onO
   const latest = (type: "deck" | "infographic") => [...(state?.outputs ?? [])].reverse().find((output) => output.type === type);
   const deck = latest("deck");
   const infographic = latest("infographic");
+  const audioOverview = [...(state?.audioOverviews ?? [])].reverse().find((overview) => !overview.stale) ?? [...(state?.audioOverviews ?? [])].reverse()[0];
   const currentVideo = [...(state?.videos ?? [])].reverse().find((video) => !video.stale) ?? [...(state?.videos ?? [])].reverse()[0];
   const generatedImages = state?.imageBatch?.panels.filter((panel) => panel.state === "generated").length ?? 0;
   const failedImageCount = state?.imageBatch?.panels.filter((panel) => panel.state === "failed").length ?? 0;
   const pendingImageCount = state?.imageBatch?.panels.filter((panel) => panel.state === "planned" || panel.state === "selected_for_regeneration").length ?? 0;
   const briefReady = Boolean(state?.briefApproved && !state.frame?.stale);
   const styleReady = Boolean(state?.style && !state.style.stale);
-  const hasOutputs = Boolean(deck || infographic || state?.imageBatch || state?.storyboard.panels.length || currentVideo);
+  const hasOutputs = Boolean(deck || infographic || audioOverview || state?.imageBatch || state?.storyboard.panels.length || currentVideo);
   const deliverStatus = !briefReady ? "Blocked by Brief" : !styleReady ? "Choose Style" : hasOutputs ? outputSetStatus(state).actionRequired ? "Needs update" : "In progress" : "Ready";
 
   return <WorkbenchRail side="right" className="production-rail" aria-label="Production" data-collapsed={!open || undefined}>
@@ -888,6 +915,7 @@ function ProductionRail({ open, state, view, action, onCollapse, onOpenView, onO
       <ProductionItem title="Style" detail={styleReady ? state?.style?.name ?? "Company Style" : "Company and intent"} status={state?.style?.stale ? "Needs update" : styleReady ? "Ready" : "Not selected"} tone={styleReady ? "current" : "waiting"} onClick={onOpenStyle} />
       <ProductionItem title="Presentation" detail={state?.outputRecovery?.deck?.message ?? (deck ? `Version ${outputVersion(deck, state?.outputs ?? [])}` : "Editable PowerPoint")} status={state?.outputRecovery?.deck ? "Couldn't create" : deck?.stale ? "Needs update" : deck ? "Up to date" : "Planned"} tone={deck && !deck.stale && !state?.outputRecovery?.deck ? "current" : "waiting"} onClick={deck ? () => onOpenOutput(deck.id) : undefined} />
       <ProductionItem title="Infographic" detail={state?.outputRecovery?.infographic?.message ?? "One-page visual"} status={state?.outputRecovery?.infographic ? "Couldn't create" : infographic?.stale ? "Needs update" : infographic ? "Up to date" : "Planned"} tone={infographic && !infographic.stale && !state?.outputRecovery?.infographic ? "current" : "waiting"} onClick={infographic ? () => onOpenOutput(infographic.id) : undefined} />
+      <ProductionItem title="Audio Overview" detail={audioOverview?.audio ? `${Math.round(audioOverview.audio.durationSeconds)} sec · AI voice` : audioOverview ? `${audioOverview.script.split(/\s+/).filter(Boolean).length} words` : "Grounded spoken briefing"} status={audioOverview?.stale ? "Needs update" : audioOverview?.status === "failed" ? "Couldn't create" : audioOverview?.status === "audio_ready" ? "Up to date" : audioOverview ? "Ready for review" : "Planned"} tone={audioOverview && !audioOverview.stale && audioOverview.status !== "failed" ? "current" : "waiting"} onClick={audioOverview ? () => onOpenOutput(audioOverview.id) : undefined} />
       <ProductionItem title="Image set" detail={state?.imageBatch ? failedImageCount ? `${failedImageCount} ${failedImageCount === 1 ? "image needs" : "images need"} attention` : pendingImageCount ? `${generatedImages} of ${state.imageBatch.panels.length} ready` : `${generatedImages} images ready` : "Six coherent visuals"} status={state?.imageBatch?.stale ? "Needs update" : failedImageCount ? "Partly ready" : state?.imageBatch && generatedImages === state.imageBatch.panels.length ? "Up to date" : state?.imageBatch ? "In progress" : "Planned"} tone={state?.imageBatch && !state.imageBatch.stale && !failedImageCount && generatedImages === state.imageBatch.panels.length ? "current" : "waiting"} onClick={state?.imageBatch ? () => onOpenOutput("images") : undefined} ariaLabel={failedImageCount ? "Review images that need attention" : "View Image set"} />
       <ProductionItem title="Storyboard" detail={state?.storyboard.panels.length ? `${state.storyboard.panels.length} editable panels` : "Review before Video"} status={state?.storyboard.stale ? "Needs update" : state?.storyboardApproved ? "Approved" : state?.storyboard.panels.length ? "Needs review" : "Planned"} tone={state?.storyboardApproved && !state.storyboard.stale ? "current" : "waiting"} onClick={state?.storyboard.panels.length ? () => onOpenView("storyboard") : undefined} ariaLabel="View storyboard" />
       <ProductionItem title="Video" detail={currentVideo ? `Version ${currentVideo.version}` : state?.videoState === "failed" || state?.videoState === "cancelled" ? state.videoRecovery?.message ?? "Your approved Storyboard is safe." : "From approved Storyboard"} status={currentVideo?.stale ? "Needs update" : currentVideo ? "Up to date" : state?.videoState === "queued" ? "Waiting" : state?.videoState === "rendering" ? "Creating" : state?.videoState === "failed" ? "Couldn't create" : state?.videoState === "cancelled" ? "Cancelled" : "Planned"} tone={currentVideo && !currentVideo.stale ? "current" : "waiting"} onClick={currentVideo ? () => onOpenOutput(currentVideo.id) : undefined} />

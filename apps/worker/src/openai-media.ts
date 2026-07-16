@@ -4,6 +4,8 @@ import { join } from "node:path";
 import {
   markImagePanelFailed,
   readWorkshopState,
+  recordAudioOverviewAudio,
+  recordAudioOverviewFailure,
   recordGeneratedImagePanel,
   recordNarration,
   recordNarrationProgress,
@@ -311,4 +313,37 @@ export async function generateOpenAiNarration(
   if (narration.stale) recordNarrationProgress(narration, root);
   else recordNarration(narration, root);
   return { status: failures.length ? "partial" : "passed", completed: completed.map((panel) => panel.panelId), failed: failures.map((failure) => failure.panelId) };
+}
+
+export async function generateOpenAiAudioOverview(
+  root: string,
+  config: OpenAiMediaConfig,
+  fetchImpl: Fetch = fetch,
+): Promise<{ id: string; durationSeconds: number; sha256: string }> {
+  requireApiKey(config);
+  const state = readWorkshopState(root);
+  const overview = [...state.audioOverviews].reverse().find((item) => !item.stale);
+  if (!overview) throw new Error("A current Audio Overview script is required.");
+  if (!overview.script.trim() || overview.script.length > maxTtsInputCharacters) throw new Error(`Audio Overview script must be between 1 and ${maxTtsInputCharacters} characters.`);
+  if (!overview.claimIds.length || overview.sections.some((section) => !section.evidence.length)) throw new Error("Audio Overview requires grounded source evidence for every section.");
+  try {
+    const response = await fetchImpl("https://api.openai.com/v1/audio/speech", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${config.apiKey}`, "content-type": "application/json" },
+      body: JSON.stringify({ model: config.ttsModel, voice: config.voice, input: overview.script, instructions: config.voiceInstructions, response_format: "wav" }),
+    });
+    if (!response.ok) throw await responseError("Speech API", response);
+    const bytes = Buffer.from(await response.arrayBuffer());
+    if (!bytes.length) throw new Error("Speech API returned an empty audio file.");
+    const durationSeconds = wavDurationSeconds(bytes);
+    const relativePath = workshopGeneratedPath(state.id, "audio-overviews", `${overview.id}.wav`);
+    await mkdir(join(root, workshopGeneratedPath(state.id, "audio-overviews")), { recursive: true });
+    await writeFile(join(root, relativePath), bytes);
+    const digest = sha256(bytes);
+    recordAudioOverviewAudio(overview.id, { relativePath, sha256: digest, byteCount: bytes.length, durationSeconds, model: config.ttsModel, voice: config.voice, instructions: config.voiceInstructions, requestId: response.headers.get("x-request-id") ?? undefined, generatedAt: new Date().toISOString() }, root);
+    return { id: overview.id, durationSeconds, sha256: digest };
+  } catch (error) {
+    recordAudioOverviewFailure(overview.id, root);
+    throw error;
+  }
 }

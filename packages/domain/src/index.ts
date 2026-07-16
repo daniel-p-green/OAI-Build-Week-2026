@@ -29,7 +29,7 @@ export const EvidenceState = z.enum(["verified", "derived", "creative", "unverif
 export type EvidenceState = z.infer<typeof EvidenceState>;
 export const StaleState = z.enum(["current", "stale"]);
 export type StaleState = z.infer<typeof StaleState>;
-export const OutputType = z.enum(["map", "sketch", "deck", "infographic", "images", "storyboard", "video"]);
+export const OutputType = z.enum(["map", "sketch", "deck", "infographic", "audio_overview", "images", "storyboard", "video"]);
 export type OutputType = z.infer<typeof OutputType>;
 export const PermissionState = z.enum(["private", "sanitized", "shareable"]);
 

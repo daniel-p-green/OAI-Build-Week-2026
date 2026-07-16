@@ -2718,6 +2718,8 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
+---
+
 ## 2026-07-15 18:18 CT — Real Codex doorway replaces the rough-cut placeholder
 
 **Area:** Host proof / Meta-demo / Privacy-safe capture
@@ -6739,4 +6741,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Provider-backed text, speech, image, and narration proof remains required; this increment proves recovery behavior with deterministic local controls, not live provider reliability.
 - The external deck cold `Send`/`Revise` judgment, founder recording, final public Video and links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 22:49 CT — Audio Overview becomes grounded, editable work
+
+**Area:** Production Outputs / Speech / Source trace / Versioning
+
+### Changed
+
+- Added Audio Overview as a first-class domain and shared tool Output. An approved current Brief and Style now create a structured three-part professional briefing whose executive summary, evidence review, and decision review each retain exact claim, Source, chunk, and locator edges.
+- Added immutable script editing: saving a reviewed change creates `audio-overview-vN`, marks the prior version stale, retains its source edges, and keeps the script under the Speech API input ceiling. Source-scope, Map, provider-graph, source-ingestion, and Style changes now honestly stale dependent Audio Overviews.
+- Added the focused Production experience using the locked Apps in ChatGPT primitives: gallery and Production-rail status, editable sections, `Show source`, `Save script`, `Create audio`, local playback, `Download audio`, duration/source coverage, and explicit AI-voice disclosure.
+- Added a spend-gated `gpt-4o-mini-tts` adapter that sends the reviewed script with `marin`, validates a structurally real WAV, stores the bytes locally, and records duration, byte count, SHA-256, model, voice, instructions, request ID, and generation time. Provider failure keeps the reviewed script and presents a recoverable state.
+- Extended the local plugin/Responses/Realtime tool contract and trace lookup so Audio Overview creation and Output-to-claim-to-source inspection use the same canonical surface as other Outputs.
+- Added the current grounded Audio Overview script to the recorded-fixture acceptance path without representing the deterministic script as provider audio.
+
+### Verified
+
+- In an isolated seeded Workshop in the real Codex in-app browser, the visible happy path approved the Brief, selected Style, created Outputs, and showed an Audio Overview gallery card with three sourced points. Opening it exposed all three editable sections; `Show source` revealed the exact excerpt, Source, origin, and locator.
+- Editing the executive section and choosing `Save script` produced visible Version 2 while preserving three source edges and labeling the changed section `Edited`. With live media disabled, `Create audio` failed closed with `Live OpenAI media is not enabled for this Workshop`; no request or spend occurred.
+- A deterministic one-second local WAV fixture proved the exact playback and download path. The focused view showed Version 2, one audio element, one download link, duration, `gpt-4o-mini-tts`, `marin`, and AI-generated-voice disclosure. The artifact route returned HTTP 200. Desktop screenshots are checked in at `artifacts/ui/audio-overview-gallery.png` and `artifacts/ui/audio-overview-playback.png`.
+- At a 390px browser viewport the document width remained exactly 390px with no horizontal overflow; the browser console contained zero errors. The local fixture screenshot itself was discarded because the browser capture surface returned an unhelpfully short frame; responsive proof is the measured live DOM boundary, not that discarded image.
+- Added source-edge, versioning, staleness, provider-request, WAV-validation, failure-recovery, canonical-tool, and official-copy regressions. `pnpm check` passed all 13 packages, including 105 worker, 25 web, 16 domain, and seven plugin tests.
+- `pnpm demo:e2e` passed with one current three-section grounded Audio Overview. `pnpm submission:build` and `pnpm submission:verify` passed with 17 valid, current, untampered assets and the same honest `partial` provider limitations. `pnpm demo:film:verify` passed its draft truth gate at 162 seconds; six shots are ready and four remain evidence-blocked. `git diff --check` passed.
+
+### Decisions
+
+- Audio Overview is a Production deliverable, not a recording of the live voice assistant. It therefore requires its own grounded, editable script, immutable versions, provenance, and disclosure.
+- Style Intent selects the initial professional posture; the first implementation remains one coherent briefing with three functional sections rather than a decorative two-host podcast simulation.
+- Local fixture audio may prove playback and download plumbing but cannot close the live Speech API requirement or appear as provider evidence.
+
+### Open items
+
+- One explicitly authorized `gpt-4o-mini-tts` generation must still be audibly inspected before the Audio Overview goal item can close.
+- Provider-backed GPT-5.6, Realtime, GPT Image 2, and Video narration proof; the external deck cold `Send`/`Revise` judgment; founder recording; final public Video and links; and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.

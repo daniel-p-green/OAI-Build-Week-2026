@@ -4,6 +4,7 @@ import {
   applyWorkshopAction,
   createImageBatch,
   generateAssetPlan,
+  generateAudioOverview,
   generateOutput,
   generateStoryboard,
   readWorkshopState,
@@ -35,10 +36,11 @@ function traceFor(state: WorkshopState, artifactId: string): Record<string, unkn
   const output = state.outputs.find((candidate) => candidate.id === artifactId);
   const video = state.videos.find((candidate) => candidate.id === artifactId);
   const image = state.imageBatch?.panels.find((candidate) => candidate.id === artifactId);
-  if (!output && !video && !image) return undefined;
-  const claimIds = output?.claimIds ?? video?.claimIds ?? image?.evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []) ?? [];
+  const audioOverview = state.audioOverviews.find((candidate) => candidate.id === artifactId);
+  if (!output && !video && !image && !audioOverview) return undefined;
+  const claimIds = output?.claimIds ?? video?.claimIds ?? audioOverview?.claimIds ?? image?.evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []) ?? [];
   const evidence = state.claims.filter((claim) => claimIds.includes(claim.id)).map((claim) => ({ claimId: claim.id, sourceId: claim.sourceId, chunkId: claim.chunkId, locator: claim.locator, text: claim.text }));
-  return { artifactId, workshopId: state.id, stale: output?.stale ?? video?.stale ?? state.imageBatch?.stale ?? false, claimIds, evidence, buildTrace: video?.buildTrace };
+  return { artifactId, workshopId: state.id, stale: output?.stale ?? video?.stale ?? audioOverview?.stale ?? state.imageBatch?.stale ?? false, claimIds, evidence, buildTrace: video?.buildTrace };
 }
 function toolDefinition(name: WorkshopToolName): WorkshopToolDefinition {
   const definition = workshopToolRegistry.find((candidate) => candidate.name === name);
@@ -84,11 +86,13 @@ async function runTool(name: WorkshopToolName, input: Record<string, unknown>, r
     if (!state.briefApproved || !state.frame || state.frame.stale) throw new Error("Output creation blocked: approve the current Map as the Brief first.");
     const outputType = input.outputType as string; let next: WorkshopState;
     if (outputType === "deck" || outputType === "infographic") next = await generateOutput(outputType, root);
+    else if (outputType === "audio_overview") next = generateAudioOverview(root);
     else if (outputType === "images") next = createImageBatch(root);
     else if (outputType === "storyboard") { if (!state.assetPlan || state.assetPlan.stale) generateAssetPlan(root); next = generateStoryboard(root); }
     else if (outputType === "video") next = applyWorkshopAction("renderVideo", root);
     else throw new Error(`Unsupported Output type: ${outputType}.`);
-    return { state: next, summary: outputType === "video" ? "Video render queued." : `Created ${outputType}.`, data: { outputType, ...stateSummary(next) } };
+    const outputId = outputType === "audio_overview" ? next.audioOverviews.at(-1)?.id : undefined;
+    return { state: next, summary: outputType === "video" ? "Video render queued." : `Created ${outputType}.`, data: { outputType, ...(outputId ? { outputId } : {}), ...stateSummary(next) } };
   }
   if (name === "workshop_approve_storyboard") {
     const current = versionsFor(state).storyboardVersion; const requested = input.storyboardVersion as string;

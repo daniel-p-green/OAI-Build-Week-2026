@@ -2,8 +2,8 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, maxTtsInputCharacters, planOpenAiMediaRetry, validateImageBatchCoherence, validateNarrationReadiness, type OpenAiMediaConfig } from "./openai-media.js";
-import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDna, generateAssetPlan, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, resolveWorkshopArtifact, updateStoryboardPanel } from "./workshop-service.js";
+import { defaultOpenAiMediaConfig, generateOpenAiAudioOverview, generateOpenAiImageBatch, generateOpenAiNarration, maxTtsInputCharacters, planOpenAiMediaRetry, validateImageBatchCoherence, validateNarrationReadiness, type OpenAiMediaConfig } from "./openai-media.js";
+import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDna, generateAssetPlan, generateAudioOverview, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, resolveWorkshopArtifact, updateStoryboardPanel } from "./workshop-service.js";
 
 const roots: string[] = [];
 const config: OpenAiMediaConfig = { apiKey: "test-key", ...defaultOpenAiMediaConfig, imageSize: "512x512" };
@@ -222,5 +222,30 @@ describe("OpenAI media adapters", () => {
     expect(finalState.narration?.panels).toHaveLength(5);
     for (const [panelId, hash] of preservedHashes) expect(finalState.narration?.panels.find((panel) => panel.panelId === panelId)?.sha256).toBe(hash);
     expect(planOpenAiMediaRetry(finalState)).toEqual({ imagePanelIds: expect.any(Array), narrationPanelIds: [], plannedRequests: 6 });
+  });
+  it("persists a grounded Audio Overview WAV with exact Speech API provenance", async () => {
+    const root = await readyRoot();
+    const scripted = generateAudioOverview(root).audioOverviews.at(-1)!;
+    const requests: Array<{ url: string; body: Record<string, unknown> }> = [];
+    const fetchImpl: typeof fetch = async (input, init) => {
+      requests.push({ url: String(input), body: JSON.parse(String(init?.body)) as Record<string, unknown> });
+      return new Response(responseBody(testWav(2, 7)), { status: 200, headers: { "content-type": "audio/wav", "x-request-id": "speech-audio-overview-1" } });
+    };
+    const result = await generateOpenAiAudioOverview(root, config, fetchImpl);
+    expect(result).toMatchObject({ id: scripted.id, durationSeconds: 2, sha256: expect.stringMatching(/^[a-f0-9]{64}$/) });
+    expect(requests).toEqual([{ url: "https://api.openai.com/v1/audio/speech", body: { model: "gpt-4o-mini-tts", voice: "marin", input: scripted.script, instructions: defaultOpenAiMediaConfig.voiceInstructions, response_format: "wav" } }]);
+    const overview = readWorkshopState(root).audioOverviews.at(-1)!;
+    expect(overview).toMatchObject({ status: "audio_ready", stale: false, disclosure: "AI-generated voice", audio: { durationSeconds: 2, byteCount: expect.any(Number), model: "gpt-4o-mini-tts", voice: "marin", requestId: "speech-audio-overview-1", sha256: result.sha256 } });
+    const artifact = resolveWorkshopArtifact(overview.id, root);
+    expect(artifact).toMatchObject({ contentType: "audio/wav", fileName: `${overview.id}.wav` });
+    expect((await readFile(artifact!.path)).length).toBe(overview.audio!.byteCount);
+  });
+  it("keeps a reviewed Audio Overview script recoverable after malformed provider audio", async () => {
+    const root = await readyRoot(); generateAudioOverview(root);
+    const fetchImpl: typeof fetch = async () => new Response(Buffer.from("not-wav"), { status: 200, headers: { "content-type": "audio/wav" } });
+    await expect(generateOpenAiAudioOverview(root, config, fetchImpl)).rejects.toThrow(/invalid WAV/);
+    const failed = readWorkshopState(root).audioOverviews.at(-1)!;
+    expect(failed).toMatchObject({ status: "failed", stale: false, error: "Audio could not be created. Your reviewed script is safe." });
+    expect(failed).not.toHaveProperty("audio");
   });
 });

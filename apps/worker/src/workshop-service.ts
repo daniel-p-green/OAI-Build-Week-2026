@@ -86,6 +86,8 @@ export type WorkshopImageBatch = { id: string; graphRevision: number; briefVersi
 export type WorkshopNarrationPanel = { panelId: string; relativePath: string; sha256: string; model: "gpt-4o-mini-tts"; voice: "marin"; instructions: string; requestId?: string; generatedAt: string };
 export type WorkshopNarrationFailure = { panelId: string; error: string; failedAt: string };
 export type WorkshopNarration = { storyboardVersion: number; disclosure: "AI-generated voice"; panels: WorkshopNarrationPanel[]; failures?: WorkshopNarrationFailure[]; stale: boolean; createdAt: string };
+export type WorkshopAudioOverviewSection = { id: string; title: string; text: string; evidence: WorkshopEvidenceReference[]; edited: boolean };
+export type WorkshopAudioOverview = { id: string; version: number; graphRevision: number; briefVersion: number; styleVersion: number; title: string; posture: "executive" | "overview" | "decision_review"; sections: WorkshopAudioOverviewSection[]; script: string; claimIds: string[]; status: "script_ready" | "audio_ready" | "failed"; disclosure: "AI-generated voice"; stale: boolean; audio?: { relativePath: string; sha256: string; byteCount: number; durationSeconds: number; model: "gpt-4o-mini-tts"; voice: "marin"; instructions: string; requestId?: string; generatedAt: string }; error?: string; createdAt: string; updatedAt: string };
 export type WorkshopAiRun = { id: string; operation: "grounded_graph"; model: "gpt-5.6-sol" | "gpt-5.6-terra" | "gpt-5.6-luna"; inputClaimIds: string[]; outputSha256: string; requestId?: string; createdAt: string };
 export type GroundedMapProposal = { nodes: { id: string; title: string; body: string; evidenceState: "grounded" | "derived"; evidenceClaimIds: string[]; x: number; y: number }[]; edges: WorkshopMapEdge[] };
 export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; editableRelativePath?: string; artifactPath: string; editableArtifactPath?: string; claimIds: string[]; stale: boolean; createdAt: string };
@@ -94,7 +96,7 @@ export type WorkshopVideo = { id: string; version: number; storyboardVersion: nu
 export type RenderedVideoInput = Omit<WorkshopVideo, "id" | "version" | "stale" | "createdAt">;
 export type WorkshopVideoRecovery = { outcome: "failed" | "cancelled"; message: string; attempts: number; updatedAt: string };
 export type WorkshopOutputRecovery = { message: string; attempts: number; updatedAt: string };
-export type WorkshopState = { id: string; title: string; onboarding: WorkshopOnboarding; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered" | "failed" | "cancelled"; videoRecovery?: WorkshopVideoRecovery; outputRecovery?: Partial<Record<"deck" | "infographic", WorkshopOutputRecovery>>; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; conversationTurns: WorkshopConversationTurn[]; toolCalls: WorkshopToolInvocation[]; conversationContinuation?: WorkshopConversationContinuation; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
+export type WorkshopState = { id: string; title: string; onboarding: WorkshopOnboarding; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered" | "failed" | "cancelled"; videoRecovery?: WorkshopVideoRecovery; outputRecovery?: Partial<Record<"deck" | "infographic", WorkshopOutputRecovery>>; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; conversationTurns: WorkshopConversationTurn[]; toolCalls: WorkshopToolInvocation[]; conversationContinuation?: WorkshopConversationContinuation; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; audioOverviews: WorkshopAudioOverview[]; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
 export type WorkshopSummary = { id: string; title: string; sources: number; outputs: number; updatedAt: string; active: boolean };
 export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string; permission?: WorkshopSource["permission"] };
 const execFile = promisify(execFileCallback);
@@ -123,13 +125,14 @@ const defaultState = (id = defaultWorkshopId, title = defaultWorkshopTitle, seed
   { id: "edge-promise-proof", from: "promise", to: "proof", kind: "supports" },
   { id: "edge-proof-visual", from: "proof", to: "visual", kind: "depends_on" },
   { id: "edge-proof-risk", from: "proof", to: "risk", kind: "depends_on" },
-] : [], storyboard: seeded ? { version: 1, stale: false, panels: [{ id: "panel-1", title: "Raw thought", narration: "Start with the messy original thinking.", durationSeconds: 3, claimIds: [], evidence: [{ sourceId: "source-raw", locator: "ChatGPT task · 12:41 · chunk 04" }], approved: true, stale: false }, { id: "panel-2", title: "Cited Map", narration: "Show the editable Map and evidence locators.", durationSeconds: 5, claimIds: [], evidence: [{ sourceId: "source-brief", locator: "Build notes · §2" }], approved: true, stale: false }, { id: "panel-3", title: "Finished work", narration: "End with traceable production output.", durationSeconds: 4, claimIds: [], evidence: [{ sourceId: "source-design", locator: "Design · Map" }], approved: true, stale: false }] } : emptyStoryboard(), aiRuns: [], outputs: [], videos: [], mapNodes: seeded ? [
+] : [], storyboard: seeded ? { version: 1, stale: false, panels: [{ id: "panel-1", title: "Raw thought", narration: "Start with the messy original thinking.", durationSeconds: 3, claimIds: [], evidence: [{ sourceId: "source-raw", locator: "ChatGPT task · 12:41 · chunk 04" }], approved: true, stale: false }, { id: "panel-2", title: "Cited Map", narration: "Show the editable Map and evidence locators.", durationSeconds: 5, claimIds: [], evidence: [{ sourceId: "source-brief", locator: "Build notes · §2" }], approved: true, stale: false }, { id: "panel-3", title: "Finished work", narration: "End with traceable production output.", durationSeconds: 4, claimIds: [], evidence: [{ sourceId: "source-design", locator: "Design · Map" }], approved: true, stale: false }] } : emptyStoryboard(), audioOverviews: [], aiRuns: [], outputs: [], videos: [], mapNodes: seeded ? [
   { id: "promise", title: "The product promise", body: "Turn raw thinking into finished work without losing the trail back to source material.", kind: "grounded", locator: "Meeting · 12:41", sourceId: "source-raw", x: 11, y: 12, width: 24, height: 18 },
   { id: "proof", title: "Judge proof", body: "Show one continuous capture → map → brief → storyboard → rendered video seam.", kind: "grounded", locator: "Build notes · §2", sourceId: "source-brief", x: 48, y: 36, width: 24, height: 18 },
   { id: "visual", title: "Visual behavior", body: "Evidence first becomes an editable production system, not a static report.", kind: "creative", locator: "Design · Map", sourceId: "source-design", x: 39, y: 58, width: 24, height: 18 },
   { id: "risk", title: "Voice capture fallback", body: "Use a capture-only control when durable native voice linkage is not proven.", kind: "derived", locator: "Goal · capture", x: 74, y: 58, width: 24, height: 18 },
 ] : [], updatedAt: new Date().toISOString() });
 const repositoryDataRoot = () => resolve(process.env.WORKSHOPLM_DATA_ROOT ?? join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", ".workshoplm"));
+export const workshopDataRoot = repositoryDataRoot;
 function dbFor(root = repositoryDataRoot()) { const db = openLocalDatabase(join(root, "data", "workshoplm.sqlite")); migrate(db); return db; }
 function normalizeStoryboard(storyboard: WorkshopStoryboard | undefined, fallback: WorkshopStoryboard): WorkshopStoryboard {
   const value = storyboard ?? fallback;
@@ -299,12 +302,12 @@ export function readWorkshopState(root?: string, requestedWorkshopId?: string): 
     const state = JSON.parse(row.state_json) as Partial<WorkshopState>;
     const fallback = defaultState(workshopId, state.title ?? (workshopId === defaultWorkshopId ? defaultWorkshopTitle : "Untitled Workshop"), workshopId === defaultWorkshopId && Boolean(state.sourceItems?.length));
     if (state.sourceItems && state.mapNodes && state.sourceChunks && state.claims) {
-      const normalized = withSeedEvidence({ ...fallback, ...state, id: workshopId, onboarding: state.onboarding ?? fallback.onboarding, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], conversationTurns: state.conversationTurns ?? [], toolCalls: state.toolCalls?.map((call) => WorkshopToolCall.parse(call)) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), style: state.style ? normalizeStyleMetadata({ ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" }) : undefined, storyboard: normalizeStoryboard(state.storyboard, fallback.storyboard), aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
+      const normalized = withSeedEvidence({ ...fallback, ...state, id: workshopId, onboarding: state.onboarding ?? fallback.onboarding, sourceItems: state.sourceItems.map((source) => ({ ...source, permission: source.permission ?? "sanitized" })), activeSourceIds: state.activeSourceIds ?? state.sourceItems.map((source) => source.id), transcriptSegments: state.transcriptSegments?.map((segment) => ({ ...segment, transport: segment.transport ?? "fixture" })) ?? [], conversationTurns: state.conversationTurns ?? [], toolCalls: state.toolCalls?.map((call) => WorkshopToolCall.parse(call)) ?? [], candidates: state.candidates ?? [], mapEdges: state.mapEdges ?? [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), style: state.style ? normalizeStyleMetadata({ ...state.style, logos: state.style.logos ?? [], licensedFonts: state.style.licensedFonts ?? [], references: state.style.references ?? [], negativeRules: state.style.negativeRules ?? [], intentProfile: state.style.intentProfile ?? "client_facing_pitch" }) : undefined, storyboard: normalizeStoryboard(state.storyboard, fallback.storyboard), audioOverviews: state.audioOverviews ?? [], aiRuns: state.aiRuns ?? [], outputs: state.outputs ?? [], videos: state.videos ?? [] } as WorkshopState);
       if (normalized.sourceChunks !== state.sourceChunks) return write(normalized, root);
       ensureEvidenceIndex(db, normalized);
       return normalized;
     }
-    if (state.sourceItems && state.mapNodes) return write(withSeedEvidence({ ...fallback, ...state, id: workshopId, activeSourceIds: state.sourceItems.map((source) => source.id), transcriptSegments: [], conversationTurns: [], toolCalls: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), storyboard: fallback.storyboard, aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [] } as WorkshopState), root);
+    if (state.sourceItems && state.mapNodes) return write(withSeedEvidence({ ...fallback, ...state, id: workshopId, activeSourceIds: state.sourceItems.map((source) => source.id), transcriptSegments: [], conversationTurns: [], toolCalls: [], sourceChunks: [], claims: [], candidates: [], mapEdges: [], mapNodes: state.mapNodes.map((node) => ({ ...node, width: node.width ?? 24, height: node.height ?? 18 })), storyboard: fallback.storyboard, audioOverviews: state.audioOverviews ?? [], aiRuns: state.aiRuns ?? [], outputs: [], videos: state.videos ?? [] } as WorkshopState), root);
     return write({ ...fallback, ...state, id: workshopId } as WorkshopState, root);
   }
   throw new Error(`Workshop not found: ${workshopId}.`);
@@ -334,6 +337,12 @@ export function resolveWorkshopArtifact(id: string, root?: string, workshopId?: 
     const path = resolve(dataRoot, image.relativePath);
     if (!path.startsWith(`${resolve(dataRoot)}/`)) return undefined;
     return { path, contentType: "image/png" };
+  }
+  const audioOverview = state.audioOverviews.find((item) => item.id === id && item.audio?.relativePath);
+  if (audioOverview?.audio) {
+    const path = resolve(dataRoot, audioOverview.audio.relativePath);
+    if (!path.startsWith(`${resolve(dataRoot)}/`)) return undefined;
+    return { path, contentType: "audio/wav", fileName: `${audioOverview.id}.wav` };
   }
   const output = state.outputs.find((item) => item.id === id);
   if (!output) return undefined;
@@ -366,6 +375,7 @@ function ensureEvidenceIndex(db: ReturnType<typeof dbFor>, state: WorkshopState)
 }
 function write(next: WorkshopState, root?: string) { const db = dbFor(root); const result = db.prepare("UPDATE workshop_state SET state_json=?, updated_at=? WHERE workshop_id=?").run(JSON.stringify(next), next.updatedAt, next.id); if (!result.changes) throw new Error(`Workshop not found: ${next.id}.`); db.prepare("UPDATE workshop SET title=? WHERE id=?").run(next.title, next.id); syncEvidenceIndex(db, next); return next; }
 function staleVideos(state: WorkshopState): WorkshopVideo[] { return state.videos.map((video) => video.stale ? video : { ...video, stale: true }); }
+function staleAudioOverviews(state: WorkshopState): WorkshopAudioOverview[] { return state.audioOverviews.map((overview) => overview.stale ? overview : { ...overview, stale: true }); }
 function activeClaimsFor(state: WorkshopState) { return state.claims.filter((claim) => state.activeSourceIds.includes(claim.sourceId)); }
 export function assertStoryboardGrounding(state: WorkshopState): void {
   for (const panel of state.storyboard.panels) {
@@ -386,7 +396,7 @@ export function assertStoryboardGrounding(state: WorkshopState): void {
     }
   }
 }
-function invalidateForSourceScope(state: WorkshopState, updatedAt: string): WorkshopState { return { ...state, frame: state.frame ? { ...state.frame, stale: true } : undefined, sketch: state.sketch ? { ...state.sketch, stale: true, approved: false } : undefined, assetPlan: state.assetPlan ? { ...state.assetPlan, stale: true } : undefined, imageBatch: state.imageBatch ? { ...state.imageBatch, stale: true } : undefined, narration: state.narration ? { ...state.narration, stale: true } : undefined, storyboard: { ...state.storyboard, stale: true, panels: state.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, outputs: state.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(state), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt }; }
+function invalidateForSourceScope(state: WorkshopState, updatedAt: string): WorkshopState { return { ...state, frame: state.frame ? { ...state.frame, stale: true } : undefined, sketch: state.sketch ? { ...state.sketch, stale: true, approved: false } : undefined, assetPlan: state.assetPlan ? { ...state.assetPlan, stale: true } : undefined, imageBatch: state.imageBatch ? { ...state.imageBatch, stale: true } : undefined, narration: state.narration ? { ...state.narration, stale: true } : undefined, storyboard: { ...state.storyboard, stale: true, panels: state.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, audioOverviews: staleAudioOverviews(state), outputs: state.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(state), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt }; }
 export function setActiveSourceScope(sourceIds: string[], root?: string): WorkshopState {
   const current = readWorkshopState(root); const unique = [...new Set(sourceIds)];
   if (!unique.length) throw new Error("Keep at least one source active for grounding.");
@@ -425,11 +435,11 @@ function frameFor(state: WorkshopState, approvedAt: string, root?: string): Work
 export function applyMapOperation(operation: unknown, root?: string): WorkshopState {
   const current = readWorkshopState(root); const snapshot = graphFor(current); const parsed = GraphOperation.parse(operation);
   const applied = appendGraphOperation(snapshot.graph, snapshot.history, parsed, { id: `operation-${Date.now()}`, actor: "user", createdAt: new Date().toISOString() });
-  return write({ ...current, graphState: serializeGraphState(applied.graph, applied.history), mapNodes: mapNodesFor(applied.graph, current.mapNodes), mapEdges: mapEdgesFor(applied.graph), frame: current.frame ? { ...current.frame, stale: true } : undefined, sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
+  return write({ ...current, graphState: serializeGraphState(applied.graph, applied.history), mapNodes: mapNodesFor(applied.graph, current.mapNodes), mapEdges: mapEdgesFor(applied.graph), frame: current.frame ? { ...current.frame, stale: true } : undefined, sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, audioOverviews: staleAudioOverviews(current), outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
 export function undoMapOperation(root?: string): WorkshopState {
   const current = readWorkshopState(root); const snapshot = graphFor(current); const undone = undoLatestGraphOperation(snapshot.graph, snapshot.history);
-  return write({ ...current, graphState: serializeGraphState(undone.graph, undone.history), mapNodes: mapNodesFor(undone.graph, current.mapNodes), mapEdges: mapEdgesFor(undone.graph), frame: current.frame ? { ...current.frame, stale: true } : undefined, sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
+  return write({ ...current, graphState: serializeGraphState(undone.graph, undone.history), mapNodes: mapNodesFor(undone.graph, current.mapNodes), mapEdges: mapEdgesFor(undone.graph), frame: current.frame ? { ...current.frame, stale: true } : undefined, sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, audioOverviews: staleAudioOverviews(current), outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
 export function syncMapCanvas(rawPatches: CanvasNodePatch[], root?: string): WorkshopState {
   const current = readWorkshopState(root); const snapshot = graphFor(current); let graph = snapshot.graph; let history = snapshot.history; let changed = false;
@@ -441,7 +451,7 @@ export function syncMapCanvas(rawPatches: CanvasNodePatch[], root?: string): Wor
     const applied = appendGraphOperation(graph, history, GraphOperation.parse({ type: "update_node", nodeId: node.id, patch: { label: patch.title, metadata: { ...node.metadata, x: patch.x, y: patch.y, width: patch.width, height: patch.height } } }), { id: `operation-canvas-${Date.now()}-${patch.id}`, actor: "user", createdAt: new Date().toISOString() }); graph = applied.graph; history = applied.history; changed = true;
   }
   if (!changed) return current;
-  return write({ ...current, graphState: serializeGraphState(graph, history), mapNodes: mapNodesFor(graph, current.mapNodes), mapEdges: mapEdgesFor(graph), frame: current.frame ? { ...current.frame, stale: true } : undefined, sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
+  return write({ ...current, graphState: serializeGraphState(graph, history), mapNodes: mapNodesFor(graph, current.mapNodes), mapEdges: mapEdgesFor(graph), frame: current.frame ? { ...current.frame, stale: true } : undefined, sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, audioOverviews: staleAudioOverviews(current), outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
 export function applyGroundedMapProposal(proposal: GroundedMapProposal, run: Omit<WorkshopAiRun, "id" | "operation" | "inputClaimIds" | "createdAt">, root?: string): WorkshopState {
   const current = readWorkshopState(root);
@@ -478,7 +488,7 @@ export function applyGroundedMapProposal(proposal: GroundedMapProposal, run: Omi
     graph = applied.graph; history = applied.history;
   }
   const aiRun: WorkshopAiRun = { id: `ai-run-grounded-graph-${Date.now()}`, operation: "grounded_graph", model: run.model, inputClaimIds: [...new Set(proposal.nodes.flatMap((node) => node.evidenceClaimIds))], outputSha256: run.outputSha256, requestId: run.requestId, createdAt };
-  return write({ ...current, graphState: serializeGraphState(graph, history), mapNodes: mapNodesFor(graph, []), mapEdges: mapEdgesFor(graph), aiRuns: [...current.aiRuns, aiRun], frame: current.frame ? { ...current.frame, stale: true } : undefined, sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: createdAt }, root);
+  return write({ ...current, graphState: serializeGraphState(graph, history), mapNodes: mapNodesFor(graph, []), mapEdges: mapEdgesFor(graph), aiRuns: [...current.aiRuns, aiRun], frame: current.frame ? { ...current.frame, stale: true } : undefined, sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, audioOverviews: staleAudioOverviews(current), outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: createdAt }, root);
 }
 function normalizeSourceText(text: string) { return text.replace(/[\u200B-\u200D\uFEFF]/g, "").replace(/\r\n?/g, "\n").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim(); }
 function decodeHtmlText(text: string) {
@@ -672,6 +682,7 @@ export async function ingestSource(input: SourceIngestion, root?: string): Promi
     imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined,
     narration: current.narration ? { ...current.narration, stale: true } : undefined,
     storyboard: current.storyboard.panels.length ? { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) } : current.storyboard,
+    audioOverviews: staleAudioOverviews(current),
     outputs: current.outputs.map((output) => ({ ...output, stale: true })),
     videos: staleVideos(current),
     briefApproved: false,
@@ -873,7 +884,7 @@ function materializeDesignArtifact(style: WorkshopStyle, workshopId: string, roo
   mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, tokensPath), `${JSON.stringify(tokens, null, 2)}\n`, "utf8");
   return { version: style.version, styleVersion: style.version, markdownPath, tokensPath, stale: false, createdAt: style.lockedAt };
 }
-function staleStyleDependents(current: WorkshopState) { return { visualDna: current.visualDna ? { ...current.visualDna, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), storyboardApproved: false, videoState: "blocked" as const }; }
+function staleStyleDependents(current: WorkshopState) { return { visualDna: current.visualDna ? { ...current.visualDna, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, audioOverviews: staleAudioOverviews(current), outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), storyboardApproved: false, videoState: "blocked" as const }; }
 export function lockManualStyle(input: ManualStyleInput = {}, root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
   const accent = color(input.accent, "#1668E3"); const ink = color(input.ink, "#171816"); const paper = color(input.paper, "#F4F2EC"); assertReadablePalette(ink, paper);
@@ -1065,6 +1076,56 @@ export async function generateOutput(type: "deck" | "infographic", root?: string
 }
 
 export function recordOutputFailure(type: "deck" | "infographic", root?: string): WorkshopState { const current = readWorkshopState(root); const updatedAt = new Date().toISOString(); const previous = current.outputRecovery?.[type]; const label = type === "deck" ? "Presentation" : "Infographic"; return write({ ...current, outputRecovery: { ...current.outputRecovery, [type]: { message: `${label} could not be created. Your Brief and Style are safe.`, attempts: (previous?.attempts ?? 0) + 1, updatedAt } }, updatedAt }, root); }
+
+function audioOverviewPosture(state: WorkshopState): WorkshopAudioOverview["posture"] {
+  return state.style?.intentProfile === "board_deck" ? "decision_review" : state.style?.intentProfile === "internal_workshop" ? "overview" : "executive";
+}
+function audioEvidence(claim: WorkshopClaim): WorkshopEvidenceReference { return { claimId: claim.id, sourceId: claim.sourceId, chunkId: claim.chunkId, locator: claim.locator }; }
+function buildAudioOverviewScript(title: string, sections: WorkshopAudioOverviewSection[]) { return [`Briefing: ${title}.`, ...sections.map((section) => section.text.trim())].join("\n\n"); }
+export function generateAudioOverview(root?: string): WorkshopState {
+  const current = readWorkshopState(root);
+  if (!current.briefApproved || !current.frame || current.frame.stale) throw new Error("Audio Overview requires an approved current Brief.");
+  if (!current.style || current.style.stale) throw new Error("Audio Overview requires a current Style and intent.");
+  const claims = activeClaimsFor(current).slice(0, 3);
+  if (!claims.length) throw new Error("Audio Overview requires at least one grounded claim.");
+  const claimAt = (index: number) => claims[index % claims.length]!;
+  const definitions = [
+    ["Executive summary", `The central finding is this: ${prose(claimAt(0).text)}`],
+    ["What the evidence shows", `The evidence adds an important point: ${prose(claimAt(1).text)}`],
+    ["Decision review", `The practical decision is how to act on this: ${prose(claimAt(2).text)}`],
+  ] as const;
+  const sections = definitions.map(([title, text], index): WorkshopAudioOverviewSection => ({ id: `audio-section-${index + 1}`, title, text, evidence: [audioEvidence(claimAt(index))], edited: false }));
+  const version = current.audioOverviews.reduce((highest, item) => Math.max(highest, item.version), 0) + 1;
+  const createdAt = new Date().toISOString();
+  const overview: WorkshopAudioOverview = { id: `audio-overview-v${version}`, version, graphRevision: graphFor(current).graph.revision, briefVersion: current.frame.version, styleVersion: current.style.version, title: `${current.title} briefing`, posture: audioOverviewPosture(current), sections, script: buildAudioOverviewScript(current.title, sections), claimIds: [...new Set(sections.flatMap((section) => section.evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : [])))], status: "script_ready", disclosure: "AI-generated voice", stale: false, createdAt, updatedAt: createdAt };
+  return write({ ...current, audioOverviews: [...staleAudioOverviews(current), overview], updatedAt: createdAt }, root);
+}
+export function updateAudioOverview(id: string, edits: Array<{ id: string; text: string }>, root?: string): WorkshopState {
+  const current = readWorkshopState(root); const overview = current.audioOverviews.find((item) => item.id === id);
+  if (!overview || overview.stale) throw new Error("A current Audio Overview script is required.");
+  if (edits.length !== overview.sections.length || new Set(edits.map((edit) => edit.id)).size !== edits.length) throw new Error("Audio Overview edits must include every section exactly once.");
+  const textById = new Map(edits.map((edit) => [edit.id, edit.text.trim()]));
+  if (overview.sections.some((section) => !textById.get(section.id))) throw new Error("Every Audio Overview section requires text.");
+  const sections = overview.sections.map((section) => ({ ...section, text: textById.get(section.id)!, edited: textById.get(section.id)! !== section.text }));
+  const script = buildAudioOverviewScript(current.title, sections);
+  if (script.length > 4096) throw new Error("Audio Overview script exceeds the 4,096-character speech limit.");
+  const version = current.audioOverviews.reduce((highest, item) => Math.max(highest, item.version), 0) + 1; const updatedAt = new Date().toISOString();
+  const next: WorkshopAudioOverview = { ...overview, id: `audio-overview-v${version}`, version, sections, script, status: "script_ready", audio: undefined, error: undefined, stale: false, createdAt: updatedAt, updatedAt };
+  return write({ ...current, audioOverviews: [...staleAudioOverviews(current), next], updatedAt }, root);
+}
+export function recordAudioOverviewAudio(id: string, audio: NonNullable<WorkshopAudioOverview["audio"]>, root?: string): WorkshopState {
+  const current = readWorkshopState(root); const overview = current.audioOverviews.find((item) => item.id === id);
+  if (!overview || overview.stale) throw new Error("A current Audio Overview script is required.");
+  if (!audio.relativePath || !/^[a-f0-9]{64}$/.test(audio.sha256) || audio.byteCount <= 0 || audio.durationSeconds <= 0) throw new Error("Audio Overview provenance is incomplete.");
+  const updatedAt = new Date().toISOString();
+  return write({ ...current, audioOverviews: current.audioOverviews.map((item) => item.id === id ? { ...item, audio, status: "audio_ready", error: undefined, updatedAt } : item), firstRenderedOutputAt: current.firstRenderedOutputAt ?? updatedAt, updatedAt }, root);
+}
+export function recordAudioOverviewFailure(id: string, root?: string): WorkshopState {
+  const current = readWorkshopState(root); const overview = current.audioOverviews.find((item) => item.id === id);
+  if (!overview || overview.stale) throw new Error("A current Audio Overview script is required.");
+  const updatedAt = new Date().toISOString();
+  return write({ ...current, audioOverviews: current.audioOverviews.map((item) => item.id === id ? { ...item, status: "failed", error: "Audio could not be created. Your reviewed script is safe.", updatedAt } : item), updatedAt }, root);
+}
 
 function crc32(bytes: Uint8Array): number {
   let crc = 0xffffffff;

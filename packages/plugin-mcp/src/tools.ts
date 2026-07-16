@@ -7,7 +7,7 @@ import type { WorkshopToolDefinition, WorkshopToolName } from "@workshoplm/domai
 export type ToolDefinition = WorkshopToolDefinition;
 export type WorkshopChunk = { id: string; sourceId: string; text: string; locator: string; ordinal: number };
 export type WorkshopClaim = { id: string; sourceId: string; chunkId: string; text: string; evidenceState: "verified" | "derived" | "creative" | "unverified"; locator: string };
-export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; sourceChunks?: WorkshopChunk[]; claims?: WorkshopClaim[]; graphState?: string; frame?: { stale: boolean; version: number }; style?: { stale: boolean; version: number }; assetPlan?: { stale: boolean; version: number }; storyboard?: { stale: boolean; version: number; panels?: Array<{ claimIds?: string[] }> }; outputs?: Array<{ id: string; claimIds: string[]; stale: boolean }>; videos?: Array<{ id: string; claimIds: string[]; stale: boolean; buildTrace?: { htmlPath: string; dataPath: string } }>; imageBatch?: { id: string; stale: boolean; panels: Array<{ id: string; state: string }> }; updatedAt: string };
+export type WorkshopState = { id: string; title: string; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; sourceChunks?: WorkshopChunk[]; claims?: WorkshopClaim[]; graphState?: string; frame?: { stale: boolean; version: number }; style?: { stale: boolean; version: number }; assetPlan?: { stale: boolean; version: number }; storyboard?: { stale: boolean; version: number; panels?: Array<{ claimIds?: string[] }> }; outputs?: Array<{ id: string; claimIds: string[]; stale: boolean }>; audioOverviews?: Array<{ id: string; claimIds: string[]; stale: boolean }>; videos?: Array<{ id: string; claimIds: string[]; stale: boolean; buildTrace?: { htmlPath: string; dataPath: string } }>; imageBatch?: { id: string; stale: boolean; panels: Array<{ id: string; state: string; evidence?: Array<{ claimId?: string }> }> }; updatedAt: string };
 export type ToolResult = { text: string; data?: Record<string, unknown>; isError?: boolean };
 
 const workshopToolRegistry = JSON.parse(readFileSync(new URL("../../domain/workshop-tools.json", import.meta.url), "utf8")) as WorkshopToolDefinition[];
@@ -172,11 +172,12 @@ export function executeTool(name: string, arguments_: Record<string, unknown> = 
       const output = state.outputs?.find((candidate) => candidate.id === artifactId);
       const video = state.videos?.find((candidate) => candidate.id === artifactId);
       const image = state.imageBatch?.panels.find((candidate) => candidate.id === artifactId);
-      const claimIds = output?.claimIds ?? video?.claimIds ?? [];
-      if (!output && !video && !image) continue;
+      const audioOverview = state.audioOverviews?.find((candidate) => candidate.id === artifactId);
+      const claimIds = output?.claimIds ?? video?.claimIds ?? audioOverview?.claimIds ?? image?.evidence?.flatMap((reference) => reference.claimId ? [reference.claimId] : []) ?? [];
+      if (!output && !video && !image && !audioOverview) continue;
       const claims = (state.claims ?? []).filter((claim) => claimIds.includes(claim.id));
       const evidence = claims.map((claim) => ({ claimId: claim.id, sourceId: claim.sourceId, chunkId: claim.chunkId, locator: claim.locator, text: claim.text }));
-      return { text: `Found source trace for ${artifactId}.`, data: { trace: { artifactId, workshopId: state.id, stale: output?.stale ?? video?.stale ?? state.imageBatch?.stale ?? false, claimIds, evidence, buildTrace: video?.buildTrace } } };
+      return { text: `Found source trace for ${artifactId}.`, data: { trace: { artifactId, workshopId: state.id, stale: output?.stale ?? video?.stale ?? audioOverview?.stale ?? state.imageBatch?.stale ?? false, claimIds, evidence, buildTrace: video?.buildTrace } } };
     }
     return { isError: true, text: `Artifact trace not found: ${artifactId}.` };
   }
@@ -225,6 +226,7 @@ export function executeTool(name: string, arguments_: Record<string, unknown> = 
       if (!state.briefApproved) return { isError: true, text: "Output creation blocked: approve the current Map as a brief first." };
       const outputType = arguments_.outputType;
       if (outputType === "deck" || outputType === "infographic") return actionResult(serviceAction({ action: "generateOutput", workshopId, outputType }), `Created ${outputType}.`, { outputType });
+      if (outputType === "audio_overview") return actionResult(serviceAction({ action: "generateAudioOverview", workshopId }), "Created grounded Audio Overview script.", { outputType });
       if (outputType === "images") return actionResult(serviceAction({ action: "createImageBatch", workshopId }), "Created coherent image plan.", { outputType });
       if (outputType === "storyboard") {
         if (!state.assetPlan || state.assetPlan.stale) { const plan = serviceAction({ action: "generateAssetPlan", workshopId }); if (isToolError(plan)) return plan; }
@@ -234,7 +236,7 @@ export function executeTool(name: string, arguments_: Record<string, unknown> = 
         if (!state.storyboardApproved || state.storyboard?.stale) return { isError: true, text: "Video creation blocked: approve the current Storyboard first." };
         return actionResult(serviceAction({ action: "renderVideo", workshopId }), "Video render queued from the approved current Storyboard.", { outputType });
       }
-      return { isError: true, text: "Output type must be deck, infographic, images, storyboard, or video." };
+      return { isError: true, text: "Output type must be deck, infographic, audio_overview, images, storyboard, or video." };
     }
     return { isError: true, text: `Unknown WorkshopLM tool: ${name}.` };
   } finally { database?.close(); }

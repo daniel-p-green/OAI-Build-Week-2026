@@ -3,7 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
 import { executeWorkshopTool } from "./workshop-tools.js";
-import { ingestSource, readWorkshopState } from "./workshop-service.js";
+import { applyWorkshopAction, ingestSource, lockManualStyle, readWorkshopState } from "./workshop-service.js";
 
 const roots: string[] = [];
 async function groundedRoot() {
@@ -70,5 +70,15 @@ describe("shared Workshop tool executor", () => {
     expect(failed.result).toMatchObject({ isError: true, summary: expect.stringMatching(/query must be a string/) });
     expect(replayed).toMatchObject({ replayed: true, call: { id: failed.call.id } });
     expect(readWorkshopState(root).toolCalls).toHaveLength(1);
+  });
+
+  it("creates a first-class grounded Audio Overview through the shared tool surface", async () => {
+    const root = await groundedRoot(); const state = readWorkshopState(root);
+    applyWorkshopAction("approveBrief", root); lockManualStyle({ intentProfile: "client_facing_pitch" }, root);
+    const created = await executeWorkshopTool({ name: "workshop_create_output", arguments: { workshopId: state.id, outputType: "audio_overview" }, channel: "responses", explicitUserIntent: true, provider: { callId: "audio-overview-1" } }, root);
+    expect(created.result).toMatchObject({ isError: false, data: { outputType: "audio_overview", outputId: "audio-overview-v1" } });
+    expect(created.state.audioOverviews[0]).toMatchObject({ status: "script_ready", stale: false });
+    expect(created.state.audioOverviews[0]!.sections).toHaveLength(3);
+    expect(created.state.audioOverviews[0]!.sections[0]!.evidence[0]).toMatchObject({ claimId: expect.stringMatching(/^claim-/), sourceId: expect.stringMatching(/^source-/), chunkId: expect.stringMatching(/^chunk-/) });
   });
 });
