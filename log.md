@@ -6122,3 +6122,33 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Record and inspect one provider-backed Realtime turn, rerun the zero-spend preflight, and obtain explicit spend authorization before the exact twelve-request live run.
 - Provider-backed Map, six-image gallery, narration, founder brainstorm, cold professional `Send`/`Revise`, final public Video, and `/feedback` Session ID remain open under `GOAL.md`.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 19:22 CT — Reviewed brand marks keep their shape in editable work
+
+**Area:** Deliver / Presentation quality / Style fidelity
+
+### Changed
+
+- Audited the complete saved-Style path into the grounded presentation and found that HTML preserved selected-logo proportions with `object-fit`, while editable PowerPoint forced every logo into one fixed 0.56×0.68-inch rectangle. A wide wordmark would therefore be visibly distorted in the professional handoff even though its reviewed bytes and hash were correct.
+- Added an aspect-preserving fit contract for wide, square, and tall marks. The worker now carries the validated selected asset dimensions into the renderer; PowerPoint centers the mark inside bounded cover and infographic regions without changing its proportions, and the infographic label moves beside the actual fitted width.
+- Corrected the reproducible external-use deck rebuild to detect SVG content instead of trusting its misleading `.png` filename, carry the SVG viewBox ratio, and emit the correct data URI. Refreshed the editable PowerPoint, PDF, HTML, cover frame, contact sheet, and evidence hashes.
+
+### Verified
+
+- Added direct fit tests for 4:1, 1:2, and unspecified logo ratios. `pnpm check` passed all 13 packages with nine production tests, 19 web tests, and 85 worker tests.
+- Inspected the refreshed five-slide contact sheet at full resolution. The selected AI Collective mark, typographic hierarchy, sparse editorial slide, metrics, citations, and recommendation remain visually intact with no observed overflow.
+- `unzip -t` found no PowerPoint archive error. Its first-slide XML contains a real SVG image with `noChangeAspect` and a 515472×621792 EMU frame, preserving the selected source mark's 700×844.38 viewBox ratio. LibreOffice produced five 16:9 pages, and `pdftotext -layout` retained the title, claims, metrics, recommendation, and visible source labels.
+- `pnpm demo:e2e` passed all six gates. `pnpm submission:build` and `pnpm submission:verify` validated the truthful 17-asset `partial` set; `pnpm demo:film:verify` retained six ready shots and four explicitly evidence-blocked shots; the four recorded external-deck hashes match the evidence record; `git diff --check` passed.
+
+### Decisions
+
+- A reviewed logo is not faithfully implemented if only its bytes survive; its proportions are part of the approved Style contract and must survive the editable PowerPoint handoff.
+- This is deterministic send-it improvement, not external approval. The cold professional `Send`/`Revise` gate remains open.
+
+### Open items
+
+- Obtain the intended audience's cold `Send`/`Revise` decision on the refreshed external-use deck.
+- Provider-backed Map, image set, Realtime turn, narration, founder brainstorm, final public Video, and `/feedback` Session ID remain open under `GOAL.md`.
+- Codex Session ID: unavailable on this surface; not inferred.

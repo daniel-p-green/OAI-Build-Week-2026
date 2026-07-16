@@ -9,16 +9,27 @@ type DeckInput = Omit<RenderBrief, "style"> & {
   style: RenderBrief["style"] & { logoPath?: string };
 };
 
+function logoPayload(bytes: Buffer, path: string) {
+  const source = bytes.toString("utf8");
+  const svg = /^\s*(?:<\?xml[^>]*>\s*)?<svg\b/i.test(source);
+  const viewBox = svg ? source.match(/\bviewBox=["']\s*[-\d.]+\s+[-\d.]+\s+([\d.]+)\s+([\d.]+)\s*["']/i) : undefined;
+  const width = Number(viewBox?.[1]);
+  const height = Number(viewBox?.[2]);
+  const contentType = svg ? "image/svg+xml" : path.toLowerCase().endsWith(".jpg") || path.toLowerCase().endsWith(".jpeg") ? "image/jpeg" : "image/png";
+  return {
+    data: `data:${contentType};base64,${bytes.toString("base64")}`,
+    aspectRatio: width > 0 && height > 0 ? width / height : undefined,
+  };
+}
+
 async function main() {
   const root = resolve(process.cwd());
   const outputDir = join(root, "outputs", "dogfood-ai-collective-chapter-brief");
   const inputPath = join(outputDir, "deck-input.json");
   const input = JSON.parse(await readFile(inputPath, "utf8")) as DeckInput;
   const { logoPath, ...style } = input.style;
-  const logoData = logoPath
-    ? `data:image/png;base64,${(await readFile(join(outputDir, logoPath))).toString("base64")}`
-    : undefined;
-  const brief: RenderBrief = { ...input, style: { ...style, logoData } };
+  const logo = logoPath ? logoPayload(await readFile(join(outputDir, logoPath)), logoPath) : undefined;
+  const brief: RenderBrief = { ...input, style: { ...style, logoData: logo?.data, logoAspectRatio: logo?.aspectRatio } };
 
   const stem = "chapter-launch-brief";
   const htmlPath = join(outputDir, `${stem}.html`);

@@ -933,14 +933,14 @@ async function embeddedLocalLogo(style: WorkshopStyle, root: string) {
     const path = resolve(root, asset.localPath); const bytes = await readFile(path);
     if (createHash("sha256").update(bytes).digest("hex") !== asset.sha256) throw new Error("Selected brand asset hash no longer matches the reviewed local copy.");
     const dimensions = validateBrandAsset(bytes, asset.contentType); if (dimensions.width !== asset.width || dimensions.height !== asset.height) throw new Error("Selected brand asset dimensions no longer match the reviewed local copy.");
-    return `data:${asset.contentType};base64,${bytes.toString("base64")}`;
+    return { data: `data:${asset.contentType};base64,${bytes.toString("base64")}`, width: dimensions.width, height: dimensions.height };
   }
   const contentTypes: Record<string, string> = { ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".svg": "image/svg+xml", ".webp": "image/webp" };
   for (const logo of style.logos) {
     if (/^https?:\/\//i.test(logo)) continue;
     const path = isAbsolute(logo) ? logo : resolve(root, logo); const contentType = contentTypes[extname(path).toLowerCase()];
     if (!contentType) continue;
-    try { const bytes = await readFile(path); if (bytes.length > 2_000_000) continue; return `data:${contentType};base64,${bytes.toString("base64")}`; } catch { continue; }
+    try { const bytes = await readFile(path); if (bytes.length > 2_000_000) continue; const dimensions = validateBrandAsset(bytes, contentType as WorkshopBrandAsset["contentType"]); return { data: `data:${contentType};base64,${bytes.toString("base64")}`, width: dimensions.width, height: dimensions.height }; } catch { continue; }
   }
   return undefined;
 }
@@ -955,8 +955,8 @@ export async function generateOutput(type: "deck" | "infographic", root?: string
     return { id: claim.id, heading, body: outputBody(body), citations: [claim.locator], citationLabel: citationLabel(current, claim.sourceId, claim.locator), layout: role };
   }) : current.mapNodes.filter((node) => node.kind === "grounded").slice(0, 4).map((node, index, all) => ({ id: node.id, heading: outputHeading(prose(node.title)), body: outputBody(prose(node.body)), citations: [node.locator], layout: index === 0 ? "statement" as const : index === all.length - 1 ? "recommendation" as const : index % 2 ? "split" as const : "proof" as const }));
   const outputId = `${type}-v${current.outputs.filter((output) => output.type === type).length + 1}`;
-  const logoData = await embeddedLocalLogo(current.style, dataRoot);
-  const rendered = await writeRenderedArtifact(dataRoot, current.id === defaultWorkshopId ? outputId : `${current.id}/${outputId}`, type, { workshopTitle: current.title, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper, fonts: current.style.licensedFonts, intent: current.style.intentProfile, name: current.style.name, logoData }, blocks });
+  const logo = await embeddedLocalLogo(current.style, dataRoot);
+  const rendered = await writeRenderedArtifact(dataRoot, current.id === defaultWorkshopId ? outputId : `${current.id}/${outputId}`, type, { workshopTitle: current.title, version: "Approved Brief", style: { accent: current.style.accent, ink: current.style.ink, paper: current.style.paper, fonts: current.style.licensedFonts, intent: current.style.intentProfile, name: current.style.name, logoData: logo?.data, logoAspectRatio: logo ? logo.width / logo.height : undefined }, blocks });
   const stored = await storeArtifact(dataRoot, `${current.id}-${outputId}`, Buffer.from(await readFile(join(dataRoot, rendered.relativePath))), "text/html");
   const editableStored = rendered.editableRelativePath ? await storeArtifact(dataRoot, `${current.id}-${outputId}-editable`, Buffer.from(await readFile(join(dataRoot, rendered.editableRelativePath))), "application/vnd.openxmlformats-officedocument.presentationml.presentation") : undefined;
   const createdAt = new Date().toISOString();

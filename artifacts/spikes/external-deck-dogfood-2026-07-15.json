@@ -60,16 +60,16 @@
   "outputs": {
     "inputManifest": "outputs/dogfood-ai-collective-chapter-brief/deck-input.json",
     "rebuildCommand": "pnpm dogfood:deck:build",
-    "htmlSha256": "c79c0384c950cc0967362c3ef723836a5b3e0807bd668b7a128bfa3412666eea",
-    "pptxSha256": "a19559b272466d06d5c9adfde263db55e6209c227f5f9c52d892a39f29c235a6",
-    "pdfSha256": "f2db9b649baaa79a87867d45140e94a7d69491509bb2953594504a2be3ca0a06",
-    "contactSheetSha256": "b92a19efcbf4fe70c76e652e70fd32eea78c50b07de5332aae3e27da4d7cfe4c",
+    "htmlSha256": "9e0c34ac108a7c8337c955d8bb869a4790b39b5c79a8519dbce4abb99bf48ed2",
+    "pptxSha256": "5e9f0f4e3471037dc0f3e57ba32a66aa8578bddb1a7739ce1b7103dfef2be9a7",
+    "pdfSha256": "7c1308e171f7c2d40539ccc20709f719adb36d26d809cdeb5b67f2cfe189ea03",
+    "contactSheetSha256": "08696d9a84b3944473ab568c549b2724dd5fc918be09a4c23767a03331c93ce2",
     "slides": 5,
     "pageSize": "16:9",
     "pptxArchive": "passed",
     "libreOfficeRoundTrip": "passed",
     "visualInspection": "passed-no-observed-overflow-raw-implementation-labels-or-empty-body-furniture",
-    "latestRevision": "2026-07-15 18:41 CT: sparse source-backed claims use an intentional dark editorial composition instead of an underfilled pale split template; cover and dark-slide footers remain visible and exact source notes remain embedded"
+    "latestRevision": "2026-07-15 19:21 CT: selected-logo dimensions now preserve the reviewed mark's aspect ratio in editable PowerPoint; the rebuild identifies the SVG from content despite its misleading .png filename; the five-slide composition, visible citations, and exact source notes remain intact"
   },
   "boundary": "This is the first privacy-safe candidate intended for a real professional audience. It is ready for cold review but has not received an external send-or-revise judgment and is not externally approved."
 }

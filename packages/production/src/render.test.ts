@@ -2,7 +2,7 @@ import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { renderDeck, renderInfographic, writeRenderedArtifact } from "./render.js";
+import { fitLogoBox, renderDeck, renderInfographic, writeRenderedArtifact } from "./render.js";
 
 const brief = { workshopTitle: "WorkshopLM", version: "brief-v1", style: { accent: "#1668E3", ink: "#171816", paper: "#F4F2EC", fonts: ["Arial", "Arial"], intent: "client_facing_pitch" as const, name: "WorkshopLM", logoData: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAEAQH/6X8XWQAAAABJRU5ErkJggg==" }, blocks: [
   { id: "claim-1", heading: "A traced claim", body: "Evidence remains inspectable.", citations: ["meeting · 12:41"] },
@@ -10,6 +10,11 @@ const brief = { workshopTitle: "WorkshopLM", version: "brief-v1", style: { accen
   { id: "claim-3", heading: "The recommendation", body: "Move from understanding to finished work.", citations: ["strategy · recommendation"] },
 ] };
 describe("production renderers", () => {
+  it("fits wide and tall brand marks without changing their proportions", () => {
+    expect(fitLogoBox(4, 1.6, 0.68)).toEqual({ width: 1.6, height: 0.4 });
+    expect(fitLogoBox(0.5, 1.6, 0.68)).toEqual({ width: 0.34, height: 0.68 });
+    expect(fitLogoBox(undefined, 1.6, 0.68)).toEqual({ width: 0.68, height: 0.68 });
+  });
   it("renders varied source-traceable layouts into deck and infographic HTML", () => {
     const deck = renderDeck(brief);
     expect(deck).toContain("meeting · 12:41");

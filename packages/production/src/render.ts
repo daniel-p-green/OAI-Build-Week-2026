@@ -31,6 +31,7 @@ export type RenderBrief = {
     intent?: "client_facing_pitch" | "board_deck" | "internal_workshop";
     name?: string;
     logoData?: string;
+    logoAspectRatio?: number;
   };
   blocks: readonly RenderBlock[];
 };
@@ -52,6 +53,11 @@ const colorContrast = (left: string, right: string) => { const values = [colorLu
 const accentForeground = (brief: RenderBrief) => [brief.style.paper, brief.style.ink, "#FFFFFF", "#000000"].sort((left, right) => colorContrast(right, brief.style.accent) - colorContrast(left, brief.style.accent))[0]!;
 const headingFont = (brief: RenderBrief) => brief.style.fonts?.[0] || "Arial";
 const bodyFont = (brief: RenderBrief) => brief.style.fonts?.[1] || brief.style.fonts?.[0] || "Arial";
+export function fitLogoBox(aspectRatio: number | undefined, maxWidth: number, maxHeight: number) {
+  const ratio = aspectRatio && Number.isFinite(aspectRatio) && aspectRatio > 0 ? aspectRatio : 1;
+  if (ratio >= maxWidth / maxHeight) return { width: maxWidth, height: maxWidth / ratio };
+  return { width: maxHeight * ratio, height: maxHeight };
+}
 const deckLabel = (brief: RenderBrief) => `${brief.style.name ?? "Workshop"} · ${brief.style.intent === "board_deck" ? "Leadership brief" : brief.style.intent === "internal_workshop" ? "Team workshop" : "Client presentation"}`;
 const deckSummary = (brief: RenderBrief) => brief.blocks[0]?.body || brief.blocks[0]?.heading || "A grounded brief with every factual claim connected to its source.";
 const slideLayout = (block: RenderBlock, index: number, count: number): SlideLayout => block.layout ?? (index === 0 ? "statement" : index === count - 1 ? "recommendation" : index % 2 ? "split" : "proof");
@@ -121,7 +127,10 @@ export async function writeEditableDeck(path: string, brief: RenderBrief): Promi
 
   const cover = pptx.addSlide(); cover.background = { color: ink };
   cover.addShape(pptx.ShapeType.ellipse, { x: 9.8, y: -2.1, w: 5.5, h: 5.5, fill: { color: accent }, line: { color: accent } });
-  if (brief.style.logoData) cover.addImage({ data: brief.style.logoData, x: 0.75, y: 0.62, w: 0.56, h: 0.68 });
+  if (brief.style.logoData) {
+    const logo = fitLogoBox(brief.style.logoAspectRatio, 1.6, 0.68);
+    cover.addImage({ data: brief.style.logoData, x: 0.75, y: 0.62 + (0.68 - logo.height) / 2, w: logo.width, h: logo.height });
+  }
   cover.addText(deckLabel(brief).toUpperCase(), { x: 0.75, y: 4.75, w: 7.6, h: 0.25, fontFace: bodyFont(brief), fontSize: 9, bold: true, color: paper, charSpacing: 1.6, margin: 0 });
   cover.addText(brief.workshopTitle, { x: 0.72, y: 5.12, w: 10.7, h: 1.15, fontFace: headingFont(brief), fontSize: 42, bold: false, color: paper, margin: 0, breakLine: false, fit: "shrink" });
   cover.addText(deckSummary(brief), { x: 0.75, y: 6.38, w: 7.8, h: 0.42, fontFace: bodyFont(brief), fontSize: 12, color: paper, transparency: 22, margin: 0, fit: "shrink" });
@@ -189,8 +198,9 @@ export async function writeEditableInfographic(path: string, brief: RenderBrief)
   const paper = pptxColor(brief.style.paper); const ink = pptxColor(brief.style.ink); const accent = pptxColor(brief.style.accent);
   const slide = pptx.addSlide(); slide.background = { color: paper };
   slide.addShape(pptx.ShapeType.rect, { x: 0, y: 0, w: 0.22, h: 7.5, fill: { color: accent }, line: { color: accent } });
-  if (brief.style.logoData) slide.addImage({ data: brief.style.logoData, x: 0.68, y: 0.48, w: 0.5, h: 0.6 });
-  slide.addText("SOURCE-DEFENSIBLE BRIEF", { x: 1.35, y: 0.58, w: 4.8, h: 0.2, fontFace: bodyFont(brief), fontSize: 8, bold: true, color: accent, charSpacing: 1.4, margin: 0 });
+  const logo = brief.style.logoData ? fitLogoBox(brief.style.logoAspectRatio, 1.3, 0.5) : undefined;
+  if (brief.style.logoData && logo) slide.addImage({ data: brief.style.logoData, x: 0.68, y: 0.48 + (0.5 - logo.height) / 2, w: logo.width, h: logo.height });
+  slide.addText("SOURCE-DEFENSIBLE BRIEF", { x: logo ? 0.68 + logo.width + 0.2 : 0.68, y: 0.58, w: logo ? 4.8 - logo.width : 4.8, h: 0.2, fontFace: bodyFont(brief), fontSize: 8, bold: true, color: accent, charSpacing: 1.4, margin: 0 });
   slide.addText(brief.workshopTitle, { x: 0.68, y: 1.05, w: 11.8, h: 0.76, fontFace: headingFont(brief), fontSize: 30, color: ink, margin: 0, breakLine: false, fit: "shrink" });
   const blocks = brief.blocks.slice(0, 4); const cardWidth = 5.58; const cardHeight = 1.82;
   blocks.forEach((block, index) => {
