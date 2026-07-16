@@ -83,11 +83,11 @@ export type ImageBatchPanel = {
 };
 export type ImageCoherenceContract = { visualDnaVersion?: number; palette: { accent: string; ink: string; paper: string }; compositionRules: string[]; textureRules: string[]; imageRules: string[]; negativeRules: string[]; siblingPanelIds: string[] };
 export type WorkshopImageBatch = { id: string; graphRevision: number; briefVersion: number; styleVersion: number; referenceId: string; referencePath: string; referenceSha256: string; coherence: ImageCoherenceContract; panels: ImageBatchPanel[]; stale: boolean; createdAt: string };
-export type WorkshopNarrationPanel = { panelId: string; relativePath: string; sha256: string; model: "gpt-4o-mini-tts"; voice: "marin"; instructions: string; requestId?: string; generatedAt: string };
+export type WorkshopNarrationPanel = { panelId: string; relativePath: string; sha256: string; model: "gpt-4o-mini-tts"; voice: "cedar" | "marin"; instructions: string; requestId?: string; generatedAt: string };
 export type WorkshopNarrationFailure = { panelId: string; error: string; failedAt: string };
 export type WorkshopNarration = { storyboardVersion: number; disclosure: "AI-generated voice"; panels: WorkshopNarrationPanel[]; failures?: WorkshopNarrationFailure[]; stale: boolean; createdAt: string };
 export type WorkshopAudioOverviewSection = { id: string; title: string; text: string; evidence: WorkshopEvidenceReference[]; edited: boolean };
-export type WorkshopAudioOverview = { id: string; version: number; graphRevision: number; briefVersion: number; styleVersion: number; title: string; posture: "executive" | "overview" | "decision_review"; sections: WorkshopAudioOverviewSection[]; script: string; claimIds: string[]; status: "script_ready" | "audio_ready" | "failed"; disclosure: "AI-generated voice"; stale: boolean; audio?: { relativePath: string; sha256: string; byteCount: number; durationSeconds: number; model: "gpt-4o-mini-tts"; voice: "marin"; instructions: string; requestId?: string; generatedAt: string }; error?: string; createdAt: string; updatedAt: string };
+export type WorkshopAudioOverview = { id: string; version: number; graphRevision: number; briefVersion: number; styleVersion: number; title: string; posture: "executive" | "overview" | "decision_review"; sections: WorkshopAudioOverviewSection[]; script: string; claimIds: string[]; status: "script_ready" | "audio_ready" | "failed"; disclosure: "AI-generated voice"; stale: boolean; audio?: { relativePath: string; sha256: string; byteCount: number; durationSeconds: number; model: "gpt-4o-mini-tts"; voice: "cedar" | "marin"; instructions: string; requestId?: string; generatedAt: string }; error?: string; createdAt: string; updatedAt: string };
 export type WorkshopAiRun = { id: string; operation: "grounded_graph"; model: "gpt-5.6-sol" | "gpt-5.6-terra" | "gpt-5.6-luna"; inputClaimIds: string[]; outputSha256: string; requestId?: string; createdAt: string };
 export type GroundedMapProposal = { nodes: { id: string; title: string; body: string; evidenceState: "grounded" | "derived"; evidenceClaimIds: string[]; x: number; y: number }[]; edges: WorkshopMapEdge[] };
 export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; editableRelativePath?: string; artifactPath: string; editableArtifactPath?: string; claimIds: string[]; stale: boolean; createdAt: string };
@@ -441,16 +441,79 @@ export function undoMapOperation(root?: string): WorkshopState {
   return write({ ...current, graphState: serializeGraphState(undone.graph, undone.history), mapNodes: mapNodesFor(undone.graph, current.mapNodes), mapEdges: mapEdgesFor(undone.graph), frame: current.frame ? { ...current.frame, stale: true } : undefined, sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, audioOverviews: staleAudioOverviews(current), outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
 export function syncMapCanvas(rawPatches: CanvasNodePatch[], root?: string): WorkshopState {
-  const current = readWorkshopState(root); const snapshot = graphFor(current); let graph = snapshot.graph; let history = snapshot.history; let changed = false;
+  const current = readWorkshopState(root); const snapshot = graphFor(current); let graph = snapshot.graph; let history = snapshot.history; let changed = false; let contentChanged = false;
   for (const rawPatch of rawPatches) {
-    const patch = { id: rawPatch.id.replace(/^node-/, ""), title: rawPatch.title.trim(), x: Math.round(rawPatch.x * 10) / 10, y: Math.round(rawPatch.y * 10) / 10, width: Math.round(rawPatch.width * 10) / 10, height: Math.round(rawPatch.height * 10) / 10 };
+    const patch = { id: rawPatch.id.replace(/^node-/, ""), title: rawPatch.title.replace(/\s+/g, " ").trim(), x: Math.round(rawPatch.x * 10) / 10, y: Math.round(rawPatch.y * 10) / 10, width: Math.round(rawPatch.width * 10) / 10, height: Math.round(rawPatch.height * 10) / 10 };
     if (!patch.id || !patch.title || !Number.isFinite(patch.x) || !Number.isFinite(patch.y) || !Number.isFinite(patch.width) || !Number.isFinite(patch.height) || patch.width < 8 || patch.height < 8) continue;
     const node = graph.nodes.find((item) => item.id === `node-${patch.id}`); if (!node || node.locked) continue;
     const previous = node.metadata as { x?: unknown; y?: unknown; width?: unknown; height?: unknown }; if (node.label === patch.title && previous.x === patch.x && previous.y === patch.y && previous.width === patch.width && previous.height === patch.height) continue;
+    if (node.label !== patch.title) contentChanged = true;
     const applied = appendGraphOperation(graph, history, GraphOperation.parse({ type: "update_node", nodeId: node.id, patch: { label: patch.title, metadata: { ...node.metadata, x: patch.x, y: patch.y, width: patch.width, height: patch.height } } }), { id: `operation-canvas-${Date.now()}-${patch.id}`, actor: "user", createdAt: new Date().toISOString() }); graph = applied.graph; history = applied.history; changed = true;
   }
   if (!changed) return current;
+  if (!contentChanged) return write({ ...current, graphState: serializeGraphState(graph, history), mapNodes: mapNodesFor(graph, current.mapNodes), mapEdges: mapEdgesFor(graph), updatedAt: new Date().toISOString() }, root);
   return write({ ...current, graphState: serializeGraphState(graph, history), mapNodes: mapNodesFor(graph, current.mapNodes), mapEdges: mapEdgesFor(graph), frame: current.frame ? { ...current.frame, stale: true } : undefined, sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, audioOverviews: staleAudioOverviews(current), outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
+}
+
+export function repairBenignCanvasNormalization(root?: string): WorkshopState {
+  const current = readWorkshopState(root);
+  const snapshot = graphFor(current);
+  const records = [...snapshot.history.records];
+  const benign = [] as typeof records;
+  const normalized = (value: unknown) => typeof value === "string" ? value.replace(/\s+/g, " ").trim() : "";
+  for (let index = records.length - 1; index >= 0; index -= 1) {
+    const record = records[index];
+    const operation = record.operation;
+    const inverse = record.inverse[0];
+    if (!record.id.startsWith("operation-canvas-") || operation.type !== "update_node" || inverse?.type !== "update_node") break;
+    const operationMetadata = operation.patch.metadata;
+    const inverseMetadata = inverse.patch.metadata;
+    if (normalized(operation.patch.label) !== normalized(inverse.patch.label) || JSON.stringify(operationMetadata) !== JSON.stringify(inverseMetadata)) break;
+    benign.unshift(record);
+  }
+  if (!benign.length) return current;
+  const graph = structuredClone(snapshot.graph);
+  for (const record of [...benign].reverse()) {
+    const inverse = record.inverse[0];
+    if (inverse?.type !== "update_node") continue;
+    const index = graph.nodes.findIndex((node) => node.id === inverse.nodeId);
+    if (index >= 0) graph.nodes[index] = { ...graph.nodes[index], ...inverse.patch };
+  }
+  graph.revision -= benign.length;
+  const history = { ...snapshot.history, records: records.slice(0, -benign.length) };
+  const dependenciesMatch = Boolean(
+    current.frame
+    && current.assetPlan
+    && current.imageBatch
+    && current.narration
+    && current.assetPlan.graphRevision === graph.revision
+    && current.imageBatch.graphRevision === graph.revision
+    && current.assetPlan.briefVersion === current.frame.version
+    && current.assetPlan.styleVersion === current.style?.version
+    && current.storyboard.panels.length > 0
+    && current.narration.storyboardVersion === current.storyboard.version
+    && current.storyboard.panels.every((panel) => {
+      const image = current.imageBatch?.panels.find((candidate) => candidate.id === panel.imagePanelId);
+      return image?.version === panel.imagePanelVersion && image?.state === "generated";
+    })
+    && current.videos.every((video) => video.storyboardVersion === current.storyboard.version && video.styleVersion === current.style?.version && video.imageBatchId === current.imageBatch?.id),
+  );
+  if (!dependenciesMatch) throw new Error("Canvas normalization recovery refused because the finished-work dependencies no longer match.");
+  return write({
+    ...current,
+    graphState: serializeGraphState(graph, history),
+    mapNodes: mapNodesFor(graph, current.mapNodes),
+    frame: current.frame ? { ...current.frame, stale: false } : undefined,
+    assetPlan: current.assetPlan ? { ...current.assetPlan, stale: false } : undefined,
+    storyboard: { ...current.storyboard, stale: false, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: false, approved: true })) },
+    narration: current.narration ? { ...current.narration, stale: false } : undefined,
+    outputs: current.outputs.map((output) => ({ ...output, stale: false })),
+    videos: current.videos.map((video) => ({ ...video, stale: false })),
+    briefApproved: true,
+    storyboardApproved: true,
+    videoState: current.videos.length ? "rendered" : current.videoState,
+    updatedAt: new Date().toISOString(),
+  }, root);
 }
 export function applyGroundedMapProposal(proposal: GroundedMapProposal, run: Omit<WorkshopAiRun, "id" | "operation" | "inputClaimIds" | "createdAt">, root?: string): WorkshopState {
   const current = readWorkshopState(root);
@@ -463,6 +526,7 @@ export function applyGroundedMapProposal(proposal: GroundedMapProposal, run: Omi
     if (!/^[a-z0-9][a-z0-9-]{0,63}$/.test(node.id) || proposalIds.has(node.id)) throw new Error(`Invalid or duplicate Map node ID: ${node.id}.`);
     if (!node.title.trim() || !node.body.trim() || !Number.isFinite(node.x) || !Number.isFinite(node.y) || node.x < 0 || node.x > 100 || node.y < 0 || node.y > 100) throw new Error(`Map node ${node.id} has invalid content or position.`);
     if (node.evidenceState === "grounded" && !node.evidenceClaimIds.length) throw new Error(`Grounded Map node ${node.id} requires evidence.`);
+    if (new Set(node.evidenceClaimIds).size !== node.evidenceClaimIds.length) throw new Error(`Map node ${node.id} contains duplicate evidence claims.`);
     if (node.evidenceClaimIds.some((claimId) => !claimById.has(claimId))) throw new Error(`Map node ${node.id} cites a claim outside the active source scope.`);
     proposalIds.add(node.id);
   }
@@ -876,10 +940,31 @@ function cleanStyleList(values: string[] | undefined) { return [...new Set((valu
 function color(value: string | undefined, fallback: string) { const candidate = (value ?? fallback).trim().toUpperCase(); if (!/^#[0-9A-F]{6}$/.test(candidate)) throw new Error("Style colors must use exact six-digit hex values."); return candidate; }
 function assertReadablePalette(ink: string, paper: string) { if (contrastRatio(ink, paper) < 4.5) throw new Error("Text and Background need at least 4.5:1 contrast for readable Outputs."); }
 function intentProfile(value: WorkshopStyle["intentProfile"] | undefined) { const profile = value ?? "client_facing_pitch"; if (!["client_facing_pitch", "board_deck", "internal_workshop"].includes(profile)) throw new Error("Invalid intent profile."); return profile; }
+export function designDirectivesForStyle(style: WorkshopStyle) {
+  const profiles = {
+    client_facing_pitch: {
+      layout: ["Use a decisive opening, generous whitespace, and one primary idea per frame.", "Keep proof visible but subordinate to the recommendation."],
+      imageTreatment: ["Use object-led editorial imagery with restrained depth and a consistent focal motif.", "Reserve clean negative space for deterministic titles."],
+      motion: ["Use calm editorial reveals and short crossfades.", "Avoid decorative motion that competes with the narration."],
+    },
+    board_deck: {
+      layout: ["Use compact executive hierarchy, aligned evidence, and stable comparison grids.", "Prioritize legibility and decision context over spectacle."],
+      imageTreatment: ["Favor diagrams, proof structures, and restrained section art.", "Avoid metaphor when a direct evidence visual is clearer."],
+      motion: ["Use minimal fades and direct cuts.", "Keep charts and evidence stationary long enough to inspect."],
+    },
+    internal_workshop: {
+      layout: ["Use facilitation-first clusters, writable space, and highly scannable action groups.", "Keep one clear prompt or decision per frame."],
+      imageTreatment: ["Favor approachable diagrammatic forms and workshop artifacts.", "Keep visual texture light enough for annotation."],
+      motion: ["Use quick spatial reveals that preserve orientation.", "Avoid cinematic transitions that slow active work."],
+    },
+  } as const;
+  return profiles[style.intentProfile];
+}
 function materializeDesignArtifact(style: WorkshopStyle, workshopId: string, root?: string): WorkshopDesignArtifact {
   const dataRoot = root ?? repositoryDataRoot(); const markdownPath = workshopGeneratedPath(workshopId, `DESIGN-v${style.version}.md`); const tokensPath = workshopGeneratedPath(workshopId, `DESIGN-v${style.version}.tokens.json`); const generated = join(dataRoot, dirname(markdownPath));
-  const markdown = `# DESIGN.md\n\n## Foundation\n- Name: ${style.name}\n- Workshop version: ${style.version}\n- Company Style revision: ${style.libraryRevision ?? 1}\n- Source: ${style.source}\n- Intent profile: ${style.intentProfile}\n\n## Palette\n- Accent: ${style.paletteRoles.accent.value} (${style.paletteRoles.accent.source})\n- Text: ${style.paletteRoles.text.value} (${style.paletteRoles.text.source})\n- Background: ${style.paletteRoles.background.value} (${style.paletteRoles.background.source})\n\n## Typography\n- Heading: ${style.typographyRoles.heading.family} (${style.typographyRoles.heading.availability})\n- Body: ${style.typographyRoles.body.family} (${style.typographyRoles.body.availability})\n\n## Licensed inputs\n${style.licensedFonts.length ? style.licensedFonts.map((font) => `- Confirmed font: ${font}`).join("\n") : "- Confirmed fonts: none; renderers use system fallbacks"}\n${style.brandAssets.length ? style.brandAssets.map((asset) => `- Brand asset: ${asset.localPath} (${asset.width}×${asset.height}, sha256:${asset.sha256})`).join("\n") : "- Brand assets: none selected"}\n\n## References\n${style.references.length ? style.references.map((reference) => `- ${reference}`).join("\n") : "- No external visual references recorded"}\n\n## Negative rules\n${style.negativeRules.length ? style.negativeRules.map((rule) => `- ${rule}`).join("\n") : "- No negative rules recorded"}\n\n## Provenance\n- Locked: ${style.lockedAt}\n${style.referenceUrl ? `- Website reference: ${style.referenceUrl}\n` : ""}`;
-  const tokens = { schemaVersion: 3, styleVersion: style.version, libraryFamilyId: style.libraryFamilyId, libraryRevision: style.libraryRevision ?? 1, source: style.source, name: style.name, palette: { accent: style.accent, ink: style.ink, paper: style.paper }, paletteRoles: style.paletteRoles, typographyRoles: style.typographyRoles, brandAssets: style.brandAssets, logos: style.logos, licensedFonts: style.licensedFonts, references: style.references, negativeRules: style.negativeRules, intentProfile: style.intentProfile, referenceUrl: style.referenceUrl, lockedAt: style.lockedAt };
+  const directives = designDirectivesForStyle(style);
+  const markdown = `# DESIGN.md\n\n## Foundation\n- Name: ${style.name}\n- Workshop version: ${style.version}\n- Company Style revision: ${style.libraryRevision ?? 1}\n- Source: ${style.source}\n- Intent profile: ${style.intentProfile}\n\n## Palette\n- Accent: ${style.paletteRoles.accent.value} (${style.paletteRoles.accent.source})\n- Text: ${style.paletteRoles.text.value} (${style.paletteRoles.text.source})\n- Background: ${style.paletteRoles.background.value} (${style.paletteRoles.background.source})\n\n## Typography\n- Heading: ${style.typographyRoles.heading.family} (${style.typographyRoles.heading.availability})\n- Body: ${style.typographyRoles.body.family} (${style.typographyRoles.body.availability})\n\n## Layout\n${directives.layout.map((rule) => `- ${rule}`).join("\n")}\n\n## Image treatment\n${directives.imageTreatment.map((rule) => `- ${rule}`).join("\n")}\n\n## Motion\n${directives.motion.map((rule) => `- ${rule}`).join("\n")}\n\n## Licensed inputs\n${style.licensedFonts.length ? style.licensedFonts.map((font) => `- Confirmed font: ${font}`).join("\n") : "- Confirmed fonts: none; renderers use system fallbacks"}\n${style.brandAssets.length ? style.brandAssets.map((asset) => `- Brand asset: ${asset.localPath} (${asset.width}×${asset.height}, sha256:${asset.sha256})`).join("\n") : "- Brand assets: none selected"}\n\n## References\n${style.references.length ? style.references.map((reference) => `- ${reference}`).join("\n") : "- No external visual references recorded"}\n\n## Negative rules\n${style.negativeRules.length ? style.negativeRules.map((rule) => `- ${rule}`).join("\n") : "- No negative rules recorded"}\n\n## Provenance\n- Locked: ${style.lockedAt}\n${style.referenceUrl ? `- Website reference: ${style.referenceUrl}\n` : ""}`;
+  const tokens = { schemaVersion: 4, styleVersion: style.version, libraryFamilyId: style.libraryFamilyId, libraryRevision: style.libraryRevision ?? 1, source: style.source, name: style.name, palette: { accent: style.accent, ink: style.ink, paper: style.paper }, paletteRoles: style.paletteRoles, typographyRoles: style.typographyRoles, layoutRules: directives.layout, imageTreatmentRules: directives.imageTreatment, motionRules: directives.motion, brandAssets: style.brandAssets, logos: style.logos, licensedFonts: style.licensedFonts, references: style.references, negativeRules: style.negativeRules, intentProfile: style.intentProfile, referenceUrl: style.referenceUrl, lockedAt: style.lockedAt };
   mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, tokensPath), `${JSON.stringify(tokens, null, 2)}\n`, "utf8");
   return { version: style.version, styleVersion: style.version, markdownPath, tokensPath, stale: false, createdAt: style.lockedAt };
 }
@@ -920,11 +1005,11 @@ export function generateAssetPlan(root?: string): WorkshopState {
   const createdAt = new Date().toISOString();
   const version = (current.assetPlan?.version ?? 0) + 1;
   const definitions = [
-    ["deck", "Presentation", "A clear presentation built from the approved Brief."],
-    ["infographic", "Infographic", "A one-page visual that connects evidence to the recommendation."],
-    ["images", "Image set", "Six consistent images in the selected Style."],
-    ["storyboard", "Storyboard", "A reviewable sequence from raw idea to finished work."],
-    ["video", "Demo video", "The final narrated video after Storyboard approval."],
+    ["deck", "Presentation", "The approved Brief becomes a polished presentation you can defend."],
+    ["infographic", "Infographic", "The same evidence becomes a one-page visual for faster decisions."],
+    ["images", "Image set", "Six on-brand images share one coherent visual language."],
+    ["storyboard", "Storyboard", "Review and edit every frame before committing to video."],
+    ["video", "Demo video", "Then create the approved story with Cedar narration."],
   ] as const;
   const items: WorkshopAssetPlan["items"] = definitions.map(([outputType, title, prompt], index) => {
     const evidence = proof.length ? [proof[index % proof.length]!] : [];
@@ -938,7 +1023,9 @@ export function generateStoryboard(root?: string): WorkshopState {
   const panels = current.assetPlan.items.map((item, index) => {
     const image = current.imageBatch && !current.imageBatch.stale ? current.imageBatch.panels[index % current.imageBatch.panels.length] : undefined;
     const evidence = item.evidence ?? [];
-    return { id: `storyboard-v${current.storyboard.version + 1}-panel-${index + 1}`, title: item.title, narration: `${item.prompt} Evidence: ${item.locator}.`, durationSeconds: item.outputType === "video" ? 6 : 4, claimIds: evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []), evidence, imagePanelId: image?.id, imagePanelVersion: image?.version, approved: true, stale: false };
+    const narration = prose(item.prompt);
+    const durationSeconds = Math.max(4, Math.ceil(narration.split(/\s+/).filter(Boolean).length / 2.5) + 1);
+    return { id: `storyboard-v${current.storyboard.version + 1}-panel-${index + 1}`, title: item.title, narration, durationSeconds, claimIds: evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []), evidence, imagePanelId: image?.id, imagePanelVersion: image?.version, approved: true, stale: false };
   });
   return write({ ...current, storyboard: { version: current.storyboard.version + 1, panels, stale: false }, narration: current.narration ? { ...current.narration, stale: true } : undefined, videos: staleVideos(current), storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }

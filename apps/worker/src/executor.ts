@@ -8,13 +8,16 @@ import { writeWorkshopBuildTrace } from "./build-trace.js";
 import { openLocalDatabase } from "./db/client.js";
 import { migrate } from "./db/migrate.js";
 import { finishJob, leaseNext } from "./queue.js";
-import { assertStoryboardGrounding, readWorkshopState, recordRenderedVideo, recordVideoFailure, setVideoState, workshopGeneratedPath, type StoryboardPanel, type WorkshopState } from "./workshop-service.js";
+import { assertStoryboardGrounding, designDirectivesForStyle, readWorkshopState, recordRenderedVideo, recordVideoFailure, setVideoState, workshopGeneratedPath, type StoryboardPanel, type WorkshopState } from "./workshop-service.js";
 
 const execFile = promisify(rawExecFile);
 export type ExecuteResult = { jobId?: string; state: "idle" | "succeeded" | "failed"; artifact?: StoredArtifact; error?: string };
 type RunCommand = (command: string, args: string[]) => Promise<unknown>;
 const defaultRun: RunCommand = async (command, args) => { await execFile(command, args, { cwd: resolve(process.cwd()), maxBuffer: 5_000_000 }); };
 const escapeHtml = (value: string) => value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+const videoFontStack = (value: string) => /system stack/i.test(value) || /^(system-ui|-apple-system|blinkmacsystemfont)$/i.test(value.trim())
+  ? "system-ui,-apple-system,BlinkMacSystemFont,sans-serif"
+  : `"${escapeHtml(value)}",system-ui,sans-serif`;
 function currentNarrationForPanel(state: WorkshopState, panel: StoryboardPanel) {
   if (!state.narration || state.narration.stale || state.narration.storyboardVersion !== state.storyboard.version) return undefined;
   return state.narration.panels.find((candidate) => candidate.panelId === panel.id);
@@ -41,6 +44,7 @@ export type WorkshopVideoProvenance = {
   styleVersion?: number;
   visualDnaVersion?: number;
   imageBatchId?: string;
+  design: { styleVersion: number; markdownPath: string; tokensPath: string };
   video: StoredArtifact & { relativePath: string };
   panels: Array<{
     panelId: string;
@@ -55,6 +59,7 @@ export type WorkshopVideoProvenance = {
 };
 export function buildWorkshopVideoProvenance(state: WorkshopState, video: StoredArtifact): WorkshopVideoProvenance {
   if (!state.storyboardApproved || state.storyboard.stale || state.storyboard.panels.some((panel) => panel.stale || !panel.approved)) throw new Error("Video provenance requires an approved current storyboard.");
+  if (!state.style || !state.designArtifact || state.designArtifact.stale || state.designArtifact.styleVersion !== state.style.version) throw new Error("Video provenance requires the current DESIGN.md.");
   assertStoryboardGrounding(state);
   let startSeconds = 0;
   const panels = state.storyboard.panels.map((panel) => {
@@ -79,15 +84,22 @@ export function buildWorkshopVideoProvenance(state: WorkshopState, video: Stored
     startSeconds += panel.durationSeconds;
     return value;
   });
-  return { schemaVersion: 1, workshopId: state.id, storyboardVersion: state.storyboard.version, styleVersion: state.style?.version, visualDnaVersion: state.visualDna?.version, imageBatchId: state.imageBatch?.id, video, panels };
+  return { schemaVersion: 1, workshopId: state.id, storyboardVersion: state.storyboard.version, styleVersion: state.style.version, visualDnaVersion: state.visualDna?.version, imageBatchId: state.imageBatch?.id, design: { styleVersion: state.designArtifact.styleVersion, markdownPath: state.designArtifact.markdownPath, tokensPath: state.designArtifact.tokensPath }, video, panels };
 }
 export function buildWorkshopVideoHtml(state: WorkshopState): string {
   if (!state.storyboardApproved || state.storyboard.stale || state.storyboard.panels.some((panel) => panel.stale || !panel.approved)) throw new Error("Video render requires an approved current storyboard.");
+  if (!state.style || !state.designArtifact || state.designArtifact.stale || state.designArtifact.styleVersion !== state.style.version) throw new Error("Video render requires the current DESIGN.md.");
+  const style = state.style;
+  const directives = designDirectivesForStyle(style);
+  const headingFont = videoFontStack(style.typographyRoles.heading.family);
+  const bodyFont = videoFontStack(style.typographyRoles.body.family);
+  const avoidGradients = style.negativeRules.some((rule) => /no gradients?|avoid gradients?/i.test(rule));
   const duration = state.storyboard.panels.reduce((total, panel) => total + panel.durationSeconds, 0);
-  const disclosure = hasCurrentNarration(state) ? "Audio: AI-generated voice · OpenAI gpt-4o-mini-tts" : "Audio: deterministic local placeholder tone";
+  const disclosure = hasCurrentNarration(state) ? "AI-generated voice · OpenAI" : "deterministic local placeholder tone";
   let start = 0;
-  const scenes = state.storyboard.panels.map((panel, index) => { const image = currentImageForPanel(state, panel); const scene = `<section id="panel-${index + 1}" class="clip panel panel-${index % 3}${image ? " with-image" : ""}" data-start="${start}" data-duration="${panel.durationSeconds}" data-track-index="1">${image ? `<img class="scene-image" src="panel-${index + 1}.png" alt="">` : ""}<div class="scene-shade"></div><div class="eyebrow">WORKSHOPLM · APPROVED STORYBOARD V${state.storyboard.version}</div><h1>${escapeHtml(panel.title)}</h1><p>${escapeHtml(panel.narration)}</p><div class="disclosure">${disclosure}</div></section><audio id="panel-${index + 1}-audio" class="clip" src="panel-${index + 1}.wav" data-start="${start}" data-duration="${panel.durationSeconds}" data-track-index="2" data-volume="0.12"></audio>`; start += panel.durationSeconds; return scene; }).join("");
-  return `<!doctype html><html><head><meta charset="utf-8"><style>*{box-sizing:border-box}html,body,main{margin:0;width:1920px;height:1080px;overflow:hidden;background:${state.style?.ink ?? "#171816"};color:${state.style?.paper ?? "#F4F2EC"};font-family:Arial,sans-serif}.panel{position:absolute;inset:0;padding:120px 160px;display:flex;flex-direction:column;justify-content:center;background:radial-gradient(circle at 80% 10%,${state.style?.accent ?? "#1668E3"} 0%,transparent 32%),${state.style?.ink ?? "#171816"}}.panel-1{background-position:20% 80%}.panel-2{background-position:80% 80%}.scene-image,.scene-shade{position:absolute;inset:0;width:100%;height:100%}.scene-image{object-fit:cover}.scene-shade{background:linear-gradient(90deg,${state.style?.ink ?? "#171816"}ee 0%,${state.style?.ink ?? "#171816"}aa 48%,${state.style?.ink ?? "#171816"}22 100%)}.panel:not(.with-image) .scene-shade{display:none}.panel>*:not(.scene-image):not(.scene-shade){position:relative}.eyebrow{font-size:25px;letter-spacing:.12em;color:${state.style?.accent ?? "#1668E3"};font-weight:700}h1{font-size:78px;max-width:1400px;margin:36px 0}p{font-size:34px;line-height:1.35;max-width:1320px}.disclosure{position:absolute!important;right:160px;bottom:110px;border:1px solid #ffffff88;border-radius:99px;padding:14px 20px;font-size:22px}</style></head><body><main data-composition-id="workshoplm-storyboard-v${state.storyboard.version}" data-no-timeline data-start="0" data-duration="${duration}" data-width="1920" data-height="1080" data-fps="30">${scenes}</main></body></html>`;
+  const scenes = state.storyboard.panels.map((panel, index) => { const image = currentImageForPanel(state, panel); const scene = `<section id="panel-${index + 1}" class="clip panel panel-${index % 3}${image ? " with-image" : ""}" data-start="${start}" data-duration="${panel.durationSeconds}" data-track-index="1">${image ? `<img class="scene-image" src="panel-${index + 1}.png" alt="">` : ""}<div class="copy"><div class="eyebrow">WORKSHOPLM · SOURCE-GROUNDED</div><h1>${escapeHtml(panel.title)}</h1><p>${escapeHtml(panel.narration)}</p></div><div class="panel-number">${String(index + 1).padStart(2, "0")} / ${String(state.storyboard.panels.length).padStart(2, "0")}</div><div class="disclosure">${disclosure}</div></section><audio id="panel-${index + 1}-audio" class="clip" src="panel-${index + 1}.wav" data-start="${start}" data-duration="${panel.durationSeconds}" data-track-index="2" data-volume="0.92"></audio>`; start += panel.durationSeconds; return scene; }).join("");
+  const background = avoidGradients ? style.ink : `radial-gradient(circle at 80% 10%,${style.accent} 0%,transparent 32%),${style.ink}`;
+  return `<!doctype html><html><head><meta charset="utf-8"><style>*{box-sizing:border-box}html,body,main{margin:0;width:1920px;height:1080px;overflow:hidden;background:${style.ink};color:${style.paper};font-family:${bodyFont}}.panel{position:absolute;inset:0;padding:104px 124px;display:flex;align-items:center;background:${background}}.scene-image{position:absolute;top:0;right:0;width:56%;height:100%;object-fit:cover}.panel-1 .scene-image{right:auto;left:0}.copy{position:relative;z-index:1;width:40%;display:flex;flex-direction:column;justify-content:center}.panel-1 .copy{margin-left:auto}.eyebrow{font-size:20px;letter-spacing:.14em;color:${style.accent};font-weight:700}h1{font-family:${headingFont};font-size:76px;line-height:1.02;margin:32px 0 28px;letter-spacing:-.03em}p{margin:0;font-size:30px;line-height:1.4;color:${style.paper}d8}.profile-board_deck h1{font-size:68px}.profile-internal_workshop h1{font-size:72px}.panel-number{position:absolute;top:54px;right:64px;font-size:17px;letter-spacing:.12em;color:${style.paper}a6}.panel-1 .panel-number{right:auto;left:64px}.disclosure{position:absolute;left:124px;bottom:56px;font-size:16px;letter-spacing:.02em;color:${style.paper}a6}.panel-1 .disclosure{right:124px;left:auto}</style></head><body><main class="profile-${style.intentProfile}" data-composition-id="workshoplm-storyboard-v${state.storyboard.version}" data-design-version="${state.designArtifact.version}" data-storyboard-label="APPROVED STORYBOARD V${state.storyboard.version}" data-audio-model="${hasCurrentNarration(state) ? "AI-generated voice · OpenAI gpt-4o-mini-tts" : "deterministic local placeholder tone"}" data-layout-rules="${escapeHtml(directives.layout.join(" | "))}" data-motion-rules="${escapeHtml(directives.motion.join(" | "))}" data-no-timeline data-start="0" data-duration="${duration}" data-width="1920" data-height="1080" data-fps="30">${scenes}</main></body></html>`;
 }
 export async function executeOne(root: string, run: RunCommand = defaultRun) : Promise<ExecuteResult> {
   const db = openLocalDatabase(join(root, "data", "workshoplm.sqlite")); migrate(db);
@@ -96,6 +108,9 @@ export async function executeOne(root: string, run: RunCommand = defaultRun) : P
   try {
     setVideoState("rendering", root, job.workshopId);
     const state = readWorkshopState(root, job.workshopId); const staging = join(root, workshopGeneratedPath(state.id, `storyboard-v${state.storyboard.version}-render`)); await mkdir(staging, { recursive: true }); await writeFile(join(staging, "index.html"), buildWorkshopVideoHtml(state));
+    if (!state.designArtifact) throw new Error("Video render requires the current DESIGN.md.");
+    await copyFile(join(root, state.designArtifact.markdownPath), join(staging, "DESIGN.md"));
+    await copyFile(join(root, state.designArtifact.tokensPath), join(staging, "design.tokens.json"));
     for (const [index, panel] of state.storyboard.panels.entries()) {
       const image = currentImageForPanel(state, panel); if (!image?.relativePath) continue;
       const source = resolve(root, image.relativePath); if (!source.startsWith(`${resolve(root)}/`)) throw new Error("Storyboard image escaped the Workshop data root.");
@@ -119,10 +134,14 @@ export async function executeOne(root: string, run: RunCommand = defaultRun) : P
     } else {
       for (const [index, panel] of state.storyboard.panels.entries()) await run("ffmpeg", ["-y", "-f", "lavfi", "-i", `sine=frequency=${440 + index * 83}:sample_rate=48000:duration=${panel.durationSeconds}`, "-ac", "1", join(staging, `panel-${index + 1}.wav`)]);
     }
+    if (run === defaultRun) {
+      await run("npx", ["hyperframes", "lint", staging, "--json"]);
+      await run("npx", ["hyperframes", "inspect", staging, "--json", "--at-transitions"]);
+    }
     const nextVersion = state.videos.reduce((highest, video) => Math.max(highest, video.version), 0) + 1;
     const versionName = `workshoplm-demo-v${nextVersion}`;
     const videoDirectory = join(root, workshopGeneratedPath(state.id, "videos")); await mkdir(videoDirectory, { recursive: true });
-    const output = join(videoDirectory, `${versionName}.mp4`); await run("npx", ["hyperframes", "render", staging, "--output", output, "--workers", "1", "--quality", "draft"]); await stat(output);
+    const output = join(videoDirectory, `${versionName}.mp4`); await run("npx", ["hyperframes", "render", staging, "--output", output, "--workers", "1", "--quality", "standard"]); await stat(output);
     const artifact = await storeArtifact(root, `${state.id}-${versionName}`, await readFile(output), "video/mp4");
     const provenancePath = join(videoDirectory, `${versionName}.provenance.json`);
     await writeFile(provenancePath, `${JSON.stringify(buildWorkshopVideoProvenance(state, artifact), null, 2)}\n`);

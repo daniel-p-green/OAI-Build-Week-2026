@@ -20,7 +20,7 @@ export type OpenAiMediaConfig = {
   imageQuality: "low" | "medium" | "high";
   imageSize: string;
   ttsModel: "gpt-4o-mini-tts";
-  voice: "marin";
+  voice: "cedar";
   voiceInstructions: string;
 };
 
@@ -29,7 +29,7 @@ export const defaultOpenAiMediaConfig: Omit<OpenAiMediaConfig, "apiKey"> = {
   imageQuality: "medium",
   imageSize: "1024x1024",
   ttsModel: "gpt-4o-mini-tts",
-  voice: "marin",
+  voice: "cedar",
   voiceInstructions: "Speak with calm authority at a brisk presentation pace. Preserve source names and technical terms exactly.",
 };
 
@@ -144,6 +144,10 @@ function wavDurationSeconds(bytes: Buffer): number {
     const id = bytes.toString("ascii", offset, offset + 4);
     const size = bytes.readUInt32LE(offset + 4);
     const start = offset + 8;
+    if (id === "data" && size === 0xffffffff) {
+      dataBytes = bytes.length - start;
+      break;
+    }
     if (start + size > bytes.length) throw new Error("Speech API returned a truncated WAV file.");
     if (id === "fmt " && size >= 16) byteRate = bytes.readUInt32LE(start + 8);
     if (id === "data") dataBytes = size;

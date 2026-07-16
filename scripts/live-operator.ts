@@ -11,6 +11,7 @@ import {
   captureFallbackTranscript,
   createImageBatch,
   createVisualDna,
+  dismissWorkshopOrientation,
   extractWorkshopCandidates,
   generateAssetPlan,
   generateOutput,
@@ -18,11 +19,13 @@ import {
   ingestSource,
   lockManualStyle,
   readWorkshopState,
+  updateWorkshopOnboarding,
 } from "../apps/worker/src/workshop-service.ts";
 
 const executeLive = process.argv.includes("--execute");
 const retryFailed = process.argv.includes("--retry-failed");
 const resetPaidState = process.argv.includes("--reset-paid-state");
+const allowSampleTranscript = process.argv.includes("--allow-sample-transcript");
 const root = resolve(process.cwd(), ".workshoplm", "live-operator");
 const liveOperatorPaidRequestCount = 12;
 const runArtifactPath = resolve(process.cwd(), ".workshoplm", "live-operator-run.json");
@@ -57,9 +60,9 @@ function liveConfig(requiredRequests: number): { media: OpenAiMediaConfig; budge
   };
 }
 
-async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: ProviderRequestBudget }, onRootReady?: () => Promise<void>, preserveVoice = true): Promise<void> {
+async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: ProviderRequestBudget }, onRootReady?: () => Promise<void>, preserveVoice = true, allowSample = false): Promise<void> {
   const preservedCaptures = preserveVoice && await operatorStateExists() ? verifiedRealtimeCaptures(readWorkshopState(root)) : [];
-  if (config && !preservedCaptures.length) throw new Error('Refusing paid provider calls without a verified Realtime voice turn. Run the preflight, open its viewCommand, use "Record voice" and "Add transcript", then rerun the live command.');
+  if (config && !preservedCaptures.length && !allowSample) throw new Error('Refusing paid provider calls without a verified Realtime voice turn. Run the preflight, open its viewCommand, use "Record voice" and "Add transcript", or rerun with --allow-sample-transcript only after explicit sample-script authorization.');
   await rm(root, { recursive: true, force: true });
   await mkdir(root, { recursive: true });
   await onRootReady?.();
@@ -77,15 +80,20 @@ async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: Prov
     permission: "sanitized",
     text: "Professional teams start with unstructured voice or meeting notes. The approved Map becomes the brief. Brand rules govern the deck, infographic, image batch, storyboard, and narrated video. Only an approved current storyboard may render.",
   }, root);
+  updateWorkshopOnboarding({ outcome: "client_facing_pitch", step: "complete" }, root);
+  dismissWorkshopOrientation("map", root);
+  dismissWorkshopOrientation("outputs", root);
   extractWorkshopCandidates(root);
-  if (config) await generateGroundedMapWithGpt56(root, { apiKey: config.media.apiKey, model: "gpt-5.6-sol", reasoningEffort: "medium" }, config.budget.fetch);
+  if (config) await generateGroundedMapWithGpt56(root, { apiKey: config.media.apiKey, model: "gpt-5.6-terra", reasoningEffort: "medium" }, config.budget.fetch);
   applyWorkshopAction("approveBrief", root);
   lockManualStyle({
     name: "WorkshopLM official demo",
     accent: "#0285FF",
     ink: "#0D0D0D",
     paper: "#FFFFFF",
-    licensedFonts: ["SF Pro system stack"],
+    headingFont: "system-ui",
+    bodyFont: "system-ui",
+    fontsConfirmed: false,
     references: ["OpenAI editorial restraint", "clear evidence hierarchy", "generous white space"],
     negativeRules: ["no stock-photo cliches", "no readable text inside generated images", "no gradients"],
     intentProfile: "client_facing_pitch",
@@ -117,6 +125,12 @@ async function main(): Promise<void> {
     } else if (stateExists && protectsPaidOperatorState(priorRun) && !resetPaidState) {
       throw new Error("Refusing to replace reusable paid live-operator state. Use --retry-failed to continue it, or --reset-paid-state only when intentionally discarding those artifacts.");
     }
+    const repairedNarrationTiming = Boolean(retryFailed && existingState?.narration?.failures?.length && existingState.narration.failures.every((failure) => /longer than its approved/.test(failure.error)));
+    if (repairedNarrationTiming) {
+      generateAssetPlan(root);
+      generateStoryboard(root);
+      applyWorkshopAction("approveStoryboard", root);
+    }
     const prior = retryFailed ? readWorkshopState(root) : undefined;
     const retryPlan = prior ? planOpenAiMediaRetry(prior) : undefined;
     const requiredRequests = retryPlan?.plannedRequests ?? liveOperatorPaidRequestCount;
@@ -124,11 +138,11 @@ async function main(): Promise<void> {
     startedAt = new Date().toISOString();
     const mode = retryFailed ? (executeLive ? "live-retry" : "retry-preflight") : (executeLive ? "live" : "preflight");
     const startRun = async () => {
-      await writeRunArtifact({ mode, status: "running", startedAt, root, plannedPaidRequests: requiredRequests, requestCeiling: config?.budget.maxRequests ?? null, paidRequests: { used: 0, ceiling: config?.budget.maxRequests ?? 0 } });
+      await writeRunArtifact({ mode, status: "running", startedAt, root, plannedPaidRequests: requiredRequests, requestCeiling: config?.budget.maxRequests ?? null, recovery: repairedNarrationTiming ? "regenerated-concise-storyboard-narration" : null, paidRequests: { used: 0, ceiling: config?.budget.maxRequests ?? 0 } });
       runStarted = true;
     };
     failedStage = "grounded-map-and-preparation";
-    if (!retryFailed) await prepareWorkshop(config, executeLive ? startRun : undefined, !resetPaidState);
+    if (!retryFailed) await prepareWorkshop(config, executeLive ? startRun : undefined, !resetPaidState, allowSampleTranscript);
     else if (executeLive) await startRun();
     const prepared = readWorkshopState(root);
     const imageReadiness = await validateImageBatchCoherence(root, prepared);
@@ -148,6 +162,8 @@ async function main(): Promise<void> {
       requestCeiling: config?.budget.maxRequests ?? null,
       providerVoiceReady: providerVoiceTurns > 0,
       providerVoiceTurns,
+      sampleTranscriptAuthorized: allowSampleTranscript && providerVoiceTurns === 0,
+      captureEvidence: providerVoiceTurns > 0 ? "provider-verified-realtime" : "authorized-sample-script",
       approvals: { brief: prepared.briefApproved, storyboard: prepared.storyboardApproved },
       sources: prepared.sourceItems.filter((source) => source.origin === "Sanitized operator fixture" || source.origin.includes("capture-only fallback")).map((source) => ({ title: source.title, permission: source.permission })),
       outputs: prepared.outputs.map((output) => ({ type: output.type, relativePath: output.relativePath, claims: output.claimIds.length })),
@@ -160,14 +176,14 @@ async function main(): Promise<void> {
         "Each panel communicates its grounded idea without readable text, invented quantities, logos, or UI chrome.",
         "Hero, systems diagram, evidence chain, decision visual, storyboard sequence, and section art are visibly distinct jobs.",
       ],
-      nextCommand: !retryFailed && providerVoiceTurns === 0
+      nextCommand: !retryFailed && providerVoiceTurns === 0 && !allowSampleTranscript
         ? null
         : retryFailed
         ? (requiredRequests > 0
             ? `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${requiredRequests} OPENAI_API_KEY=... pnpm demo:live -- --execute --retry-failed`
             : "pnpm demo:live -- --execute --retry-failed")
-        : `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${liveOperatorPaidRequestCount} OPENAI_API_KEY=... pnpm demo:live -- --execute`,
-      nextAction: !retryFailed && providerVoiceTurns === 0 ? 'Open the viewCommand, choose "Add source", record a Realtime voice turn, add its transcript, then rerun this preflight.' : "Run nextCommand after explicit spend authorization.",
+        : `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${liveOperatorPaidRequestCount} OPENAI_API_KEY=... pnpm demo:live -- --execute${allowSampleTranscript && providerVoiceTurns === 0 ? " --allow-sample-transcript" : ""}`,
+      nextAction: !retryFailed && providerVoiceTurns === 0 && !allowSampleTranscript ? 'Open the viewCommand, choose "Add source", record a Realtime voice turn, add its transcript, or rerun with --allow-sample-transcript after explicit sample-script authorization.' : "Run nextCommand after explicit spend authorization.",
       viewCommand: 'WORKSHOPLM_DATA_ROOT="$PWD/.workshoplm/live-operator" pnpm dev',
     };
     await writeFile(resolve(root, "live-operator-plan.json"), `${JSON.stringify(plan, null, 2)}\n`);

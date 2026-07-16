@@ -14,6 +14,13 @@ function testWav(durationSeconds = 1, marker = 0): Buffer {
   return bytes;
 }
 
+function streamingWav(durationSeconds = 1, marker = 0): Buffer {
+  const bytes = testWav(durationSeconds, marker);
+  bytes.writeUInt32LE(0xffffffff, 4);
+  bytes.writeUInt32LE(0xffffffff, 40);
+  return bytes;
+}
+
 const responseBody = (bytes: Buffer): ArrayBuffer => Uint8Array.from(bytes).buffer;
 
 async function readyRoot(): Promise<string> {
@@ -146,13 +153,23 @@ describe("OpenAI media adapters", () => {
 
     await expect(generateOpenAiNarration(root, config, fetchImpl)).resolves.toMatchObject({ status: "passed", failed: [] });
     expect(calls).toHaveLength(5);
-    expect(calls.every((body) => body.model === "gpt-4o-mini-tts" && body.voice === "marin" && body.response_format === "wav")).toBe(true);
+    expect(calls.every((body) => body.model === "gpt-4o-mini-tts" && body.voice === "cedar" && body.response_format === "wav")).toBe(true);
     const narration = readWorkshopState(root).narration;
     expect(narration).toMatchObject({ storyboardVersion: 2, disclosure: "AI-generated voice", stale: false });
     expect(narration?.panels).toHaveLength(5);
     const storedWav = await readFile(join(root, narration!.panels[0]!.relativePath));
     expect(storedWav.toString("ascii", 0, 4)).toBe("RIFF");
     expect(storedWav.toString("ascii", 8, 12)).toBe("WAVE");
+  });
+
+  it("accepts the Speech API streaming WAV sentinel and derives duration from received audio bytes", async () => {
+    const root = await readyRoot();
+    const panel = readWorkshopState(root).storyboard.panels[0]!;
+    const fetchImpl: typeof fetch = async () => new Response(responseBody(streamingWav(1, 4)), { status: 200, headers: { "content-type": "audio/wav", "x-request-id": "speech-streaming-1" } });
+    await expect(generateOpenAiNarration(root, config, fetchImpl, [panel.id])).resolves.toEqual({ status: "passed", completed: [panel.id], failed: [] });
+    const stored = readWorkshopState(root).narration!.panels[0]!;
+    expect(stored).toMatchObject({ panelId: panel.id, requestId: "speech-streaming-1", voice: "cedar" });
+    expect((await readFile(join(root, stored.relativePath))).readUInt32LE(40)).toBe(0xffffffff);
   });
 
   it("rejects malformed speech bytes before they become approved narration", async () => {
@@ -233,9 +250,9 @@ describe("OpenAI media adapters", () => {
     };
     const result = await generateOpenAiAudioOverview(root, config, fetchImpl);
     expect(result).toMatchObject({ id: scripted.id, durationSeconds: 2, sha256: expect.stringMatching(/^[a-f0-9]{64}$/) });
-    expect(requests).toEqual([{ url: "https://api.openai.com/v1/audio/speech", body: { model: "gpt-4o-mini-tts", voice: "marin", input: scripted.script, instructions: defaultOpenAiMediaConfig.voiceInstructions, response_format: "wav" } }]);
+    expect(requests).toEqual([{ url: "https://api.openai.com/v1/audio/speech", body: { model: "gpt-4o-mini-tts", voice: "cedar", input: scripted.script, instructions: defaultOpenAiMediaConfig.voiceInstructions, response_format: "wav" } }]);
     const overview = readWorkshopState(root).audioOverviews.at(-1)!;
-    expect(overview).toMatchObject({ status: "audio_ready", stale: false, disclosure: "AI-generated voice", audio: { durationSeconds: 2, byteCount: expect.any(Number), model: "gpt-4o-mini-tts", voice: "marin", requestId: "speech-audio-overview-1", sha256: result.sha256 } });
+    expect(overview).toMatchObject({ status: "audio_ready", stale: false, disclosure: "AI-generated voice", audio: { durationSeconds: 2, byteCount: expect.any(Number), model: "gpt-4o-mini-tts", voice: "cedar", requestId: "speech-audio-overview-1", sha256: result.sha256 } });
     const artifact = resolveWorkshopArtifact(overview.id, root);
     expect(artifact).toMatchObject({ contentType: "audio/wav", fileName: `${overview.id}.wav` });
     expect((await readFile(artifact!.path)).length).toBe(overview.audio!.byteCount);

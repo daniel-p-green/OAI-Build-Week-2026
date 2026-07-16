@@ -83,13 +83,14 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(page).toContain('<ObjectSwitcher className="mobile-object-switcher" aria-label="Workshop objects"');
     expect(page).toContain('<ConversationSurface className="conversation-view" aria-label="WorkshopLM Conversation"');
     expect(page).toContain('className="next-action" aria-label="Next action"');
-    expect(page).toContain('className="stage-progress" aria-label="Workshop progress"');
-    expect(appCss).toContain("grid-template-columns: 220px minmax(0, 1fr) 252px");
+    expect(page).toContain('<ProductionItem title="Outputs"');
+    expect(page).not.toContain('className="stage-progress"');
+    expect(appCss).toContain("grid-template-columns: 216px minmax(0, 1fr) 220px");
     expect(appCss).toContain(".mobile-sources-trigger, .mobile-workflow-action { display: none; }");
   });
 
   it("lets the canvas reclaim rail space without hiding source-scope consequences", () => {
-    for (const label of ["Collapse Sources", "Expand Sources", "Collapse Production", "Expand Production"]) expect(page).toContain(label);
+    for (const label of ["Collapse Sources", "Expand Sources", "Collapse Create", "Expand Create"]) expect(page).toContain(label);
     expect(page).toContain('aria-label="Source change impact"');
     expect(page).toContain('pending.affected.join(", ")');
     expect(page).toContain("will need an update. Your Style stays the same.");
@@ -100,10 +101,10 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(appCss).toContain("grid-template-columns: 48px minmax(0, 1fr) 48px");
   });
 
-  it("keeps partial and failed production recovery inside the existing rail", () => {
-    for (const copy of ["Partly ready", "image needs", "images need", "Couldn't create", "Cancelled", "Try video again", "Cancel video", "Try outputs again", "Creating replacement…", "Your approved Storyboard is safe.", "Some Outputs need attention. Your finished work is still available."]) expect(page).toContain(copy);
+  it("keeps partial and failed production recovery inside the focused workflow", () => {
+    for (const copy of ["Some Outputs are ready", "Incomplete", "Couldn't create", "Cancelled", "Try video again", "Cancel video", "Try outputs again", "Creating replacement…", "Your approved Storyboard is safe.", "Some Outputs need attention. Your finished work is still available."]) expect(page).toContain(copy);
     expect(page).toContain('action: "cancelVideoRender"');
-    expect(page).toContain('ariaLabel={failedImageCount ? "Review images that need attention" : "View Image set"}');
+    expect(page).toContain('onClick={() => onOpenOutput("images")}');
     expect(page).not.toContain("Job queue");
   });
 

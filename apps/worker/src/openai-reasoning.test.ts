@@ -51,4 +51,18 @@ describe("GPT-5.6 grounded Map adapter", () => {
     await expect(generateGroundedMapWithGpt56(root, { apiKey: "test-key", model: "gpt-5.6-terra", reasoningEffort: "medium" }, fetchImpl)).rejects.toThrow(/outside the active source scope/);
     expect(readWorkshopState(root).aiRuns).toEqual([]);
   });
+
+  it("keeps evidence uniqueness in the domain validator without an unsupported response-schema keyword", async () => {
+    const root = await rootWithEvidence();
+    const claims = readWorkshopState(root).claims;
+    const invalid = { nodes: [
+      { id: "one", title: "One", body: "One", evidenceState: "grounded", evidenceClaimIds: [claims[0]!.id, claims[0]!.id], x: 20, y: 20 },
+      { id: "two", title: "Two", body: "Two", evidenceState: "derived", evidenceClaimIds: [], x: 70, y: 70 },
+    ], edges: [] };
+    const fetchImpl: typeof fetch = async (_input, init) => {
+      expect(JSON.stringify(JSON.parse(String(init?.body)))).not.toContain("uniqueItems");
+      return new Response(JSON.stringify({ output_text: JSON.stringify(invalid) }), { status: 200, headers: { "content-type": "application/json" } });
+    };
+    await expect(generateGroundedMapWithGpt56(root, { apiKey: "test-key", model: "gpt-5.6-terra", reasoningEffort: "medium" }, fetchImpl)).rejects.toThrow(/duplicate evidence claims/);
+  });
 });

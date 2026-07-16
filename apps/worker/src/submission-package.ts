@@ -104,10 +104,10 @@ export function submissionLimitations(state: WorkshopState): string[] {
   const imageCount = state.imageBatch?.panels.length ?? 0;
   if (!imageCount || generatedImages !== imageCount) limitations.push(`The image set contains ${generatedImages} of ${imageCount} provider-generated GPT Image 2 panels.`);
   const narrationIds = state.narration?.panels.map((panel) => panel.panelId) ?? [];
-  const providerNarration = Boolean(state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version && narrationIds.length === state.storyboard.panels.length && new Set(narrationIds).size === narrationIds.length && state.storyboard.panels.every((panel) => narrationIds.includes(panel.id)) && state.narration.panels.every((panel) => panel.model === "gpt-4o-mini-tts" && panel.voice === "marin" && Boolean(panel.relativePath) && /^[a-f0-9]{64}$/.test(panel.sha256)));
+  const providerNarration = Boolean(state.narration && !state.narration.stale && state.narration.storyboardVersion === state.storyboard.version && narrationIds.length === state.storyboard.panels.length && new Set(narrationIds).size === narrationIds.length && state.storyboard.panels.every((panel) => narrationIds.includes(panel.id)) && state.narration.panels.every((panel) => panel.model === "gpt-4o-mini-tts" && panel.voice === "cedar" && Boolean(panel.relativePath) && /^[a-f0-9]{64}$/.test(panel.sha256)));
   if (!providerNarration) limitations.push("The video uses deterministic placeholder tones; provider-generated narration is not present.");
   const audioOverview = currentAudioOverview(state);
-  const providerAudioOverview = Boolean(audioOverview?.status === "audio_ready" && audioOverview.audio?.model === "gpt-4o-mini-tts" && audioOverview.audio.voice === "marin" && audioOverview.audio.durationSeconds > 0 && audioOverview.audio.byteCount > 0 && /^[a-f0-9]{64}$/.test(audioOverview.audio.sha256));
+  const providerAudioOverview = Boolean(audioOverview?.status === "audio_ready" && audioOverview.audio?.model === "gpt-4o-mini-tts" && audioOverview.audio.voice === "cedar" && audioOverview.audio.durationSeconds > 0 && audioOverview.audio.byteCount > 0 && /^[a-f0-9]{64}$/.test(audioOverview.audio.sha256));
   if (!providerAudioOverview) limitations.push("The Audio Overview includes a grounded reviewed script, but no provider-generated speech file is present.");
   return limitations;
 }

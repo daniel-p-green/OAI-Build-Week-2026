@@ -70,7 +70,7 @@ Two layers, both evidenced.
 
 **GPT-5.6 contributed through Codex.** The build used Codex on GPT-5.6 for implementation, orchestration, review, and verification. The dated commits, task history, and build log record the work; this is separate from the still-gated claim that WorkshopLM itself completed a paid GPT-5.6 API call.
 
-`[LIVE: **GPT-5.6 runs the product.** In the recorded live run, gpt-5.6-sol turned the grounded transcript and sources into the semantic Map on screen, with the request, response, and routing captured in the run's provenance record. A nine-request benchmark measured Sol, Terra, and Luna on the product's real graph, brief, and triage operations and set the operation-level routing defaults: Sol for quality-critical graph reasoning, Terra for structured synthesis, Luna for repeatable triage.]`
+`[LIVE: **GPT-5.6 runs the product.** In the verified live run, gpt-5.6-terra turned the grounded transcript and sources into the semantic Map on screen, with the request, response, and routing captured in the run's provenance record. Two nine-request benchmark passes measured Sol, Terra, and Luna on the product's real graph, brief, and triage operations. All variants cleared the deterministic quality bar; Terra became the grounded-Map default because it produced the valid structure in 2.8 seconds versus Sol's 6.8 seconds in the final comparable pass.]`
 `[FALLBACK: **GPT-5.6 in the runtime.** WorkshopLM implements an operation-level GPT-5.6 routing policy (Sol for quality-critical graph reasoning, Terra for structured synthesis, Luna for repeatable triage) behind a spend-gated adapter, with a benchmark harness ready to set defaults from measured quality, latency, and cost.]`
 
 ### Under the hood
@@ -121,7 +121,7 @@ The append-only build log (`log.md`), goal file (`GOAL.md`), and claim ledger (`
 ## Video narration spine (aligns with the 2:42 paper edit)
 
 1. **Why (0:00–0:30):** the Tuesday problem; the promise: raw thinking to a deck you can defend.
-2. **How (0:30–1:30):** live seam: talk, sources, Map organizing `[LIVE: on gpt-5.6-sol, on screen]`, edit a card, Approve brief, Style from a real website, Create outputs.
+2. **How (0:30–1:30):** live seam: sample voice brainstorm, Sources, Map organizing `[LIVE: on gpt-5.6-terra, on screen]`, edit a card, Approve brief, Style, Create outputs.
 3. **What (1:30–2:25):** the deck with its receipt (click a claim, see the source sentence), storyboard edit, Approve storyboard, video renders, one Codex widget doorway moment.
 4. **Reveal (2:25–2:42):** `Show original`: this submission was made by WorkshopLM from the founder's raw brainstorm, and Codex on GPT-5.6 built WorkshopLM from a goal file. Disclosure line: what Codex built, where GPT-5.6 ran, AI voice disclosed.
 

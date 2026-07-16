@@ -5,7 +5,7 @@ export const gpt56Models = Object.freeze({
 });
 
 export const operationProfiles = Object.freeze({
-  grounded_graph: { defaultModel: gpt56Models.frontier, candidates: [gpt56Models.frontier, gpt56Models.balanced], reasoningEffort: "medium", rationale: "quality-critical evidence synthesis and typed graph proposals" },
+  grounded_graph: { defaultModel: gpt56Models.balanced, candidates: [gpt56Models.balanced, gpt56Models.frontier], reasoningEffort: "medium", rationale: "benchmark-selected evidence synthesis: Terra matched Sol's deterministic quality with materially lower latency and token use" },
   executable_brief: { defaultModel: gpt56Models.balanced, candidates: [gpt56Models.balanced, gpt56Models.frontier], reasoningEffort: "medium", rationale: "structured synthesis with a quality escalation path" },
   storyboard_structure: { defaultModel: gpt56Models.balanced, candidates: [gpt56Models.balanced, gpt56Models.frontier], reasoningEffort: "low", rationale: "creative structure with bounded schema output" },
   claim_triage: { defaultModel: gpt56Models.efficient, candidates: [gpt56Models.efficient, gpt56Models.balanced], reasoningEffort: "none", rationale: "repeatable high-volume classification with escalation on uncertainty" },

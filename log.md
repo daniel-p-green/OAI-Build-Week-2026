@@ -2720,6 +2720,52 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-16 01:33 CT — Live OpenAI seam and decisive product-quality pass
+
+**Area:** Live providers / Grounded Map / GPT Image 2 / Cedar narration / HyperFrames / UI simplification / Visual QA
+
+### Changed
+
+- Ran two complete nine-request Sol/Terra/Luna benchmark passes against the real WorkshopLM routing tasks. All deterministic checks passed; the final comparable graph result selected `gpt-5.6-terra` as the grounded-Map default (2.815 seconds, 379 output tokens) over Sol (6.815 seconds, 424 output tokens).
+- Completed the authorized sample-script live seam: one provider-grounded Terra Map, six coherent medium square GPT Image 2 panels, five current Cedar narration clips, approved Storyboard, and a deterministic local HyperFrames Video.
+- Repaired two real provider seams rather than hiding them: strict Responses JSON schema compatibility and streaming WAV files with an unknown-length data sentinel. Rewrote overlong panel narration and derived scene timing from the approved spoken copy.
+- Made `DESIGN.md` executable across production: intent-specific layout, image, and motion directives now flow into tokens, deck/infographic composition, GPT Image 2 prompts, Excalidraw palette treatment, HyperFrames staging, lint, inspection, and rendering.
+- Replaced the crowded desktop workbench with contextual disclosure. Sources now show Chat plus compact source rows; the inline excerpt moved to the existing Source sheet. The right rail is only Brief, Style, Outputs, Storyboard, and Video. Completed work presents `View video` as the single next action. Outputs and focused artifacts automatically reclaim rail space.
+- Replaced the timestamp-heavy live source label with `Voice brainstorm` in the visible product.
+- Fixed an Excalidraw regression where its automatic text wrapping was written back as a user content edit and invalidated every finished artifact. The recovery removed only three whitespace-equivalent canvas operations, restored graph revision 24, and reactivated the exact approved Brief, Storyboard, Cedar narration, Outputs, and Video without a provider retry.
+- Changed Map persistence so spatial movement and resizing remain editable but do not invalidate content-derived work. Direct label edits still stale the Brief and downstream work. Arranged the live seven-idea Map into a collision-free narrative grid and rendered connectors behind cards.
+- Re-rendered local Video Version 2 with no provider calls: alternating 44/56 copy-and-art layouts, full-strength Cedar audio (`0.92`), quiet AI-voice disclosure, source-grounded eyebrow, scene counts, and the exact approved GPT Image 2 panel versions.
+- Added a repeatable local UI review capture for desktop 1440×900 and compact 390×844 Map, Outputs, and Storyboard states.
+
+### Verified
+
+- Live Terra request ID: `req_11ee10453c1e45cd8067e578171f82d6`. Provider request and output hashes for the six images and five final Cedar clips remain in `.workshoplm/live-operator-run.json` and local Workshop state.
+- OpenAI request accounting for this session: 42 attempts total — 18 benchmark, two schema-rejected Map attempts, one successful Terra Map, six successful GPT Image 2 panels, and 15 Cedar narration attempts across WAV validation and timing repair. Exact dollar debit was not returned by the provider responses; the request mix remained safely below the authorized $50 ceiling. No provider request was made for UI repair, Map recovery, or Video Version 2.
+- `artifacts/live-review/gpt-image-2-contact-sheet.png` visually confirms six distinct professional jobs with one palette, folded-paper motif, lighting system, and no readable text, people, devices, logos, or stock-workplace scenes. No image regeneration was accepted as necessary.
+- `artifacts/live-review/hyperframes-video-v2-contact-sheet.png` visually confirms five coherent scenes with readable hierarchy and materially stronger art direction than Version 1.
+- Video Version 2: H.264 1920×1080 plus AAC audio, 25.002667 seconds, 1,250,904 bytes, SHA-256 `c2c7d29423c60cdd22a99a54fb591fb44697c79291bab2fec97f8616c8c356e2`.
+- HyperFrames lint, transition inspection, and render completed through the normal local worker path before the immutable Version 2 artifact was recorded.
+- `artifacts/ui-review/desktop-map.png`, `desktop-outputs.png`, `desktop-storyboard.png`, and their compact counterparts were generated from the real live Workshop. Full-resolution inspection confirmed no horizontal overflow, one obvious action, readable sources, collision-free Map cards, loaded artifact previews, and focused Storyboard editing.
+- Web typecheck passed; 28 web tests passed. Worker typecheck passed; 109 worker tests passed, including spatial-only Map currency and semantic-edit invalidation. The live state remained Brief approved, Storyboard approved, Video rendered, two current deterministic document Outputs, six current provider images, and five current provider narration clips.
+
+### Decisions
+
+- Terra is the grounded-Map default because every candidate passed the quality gate and Terra was materially faster in the comparable live graph run. Sol remains the frontier candidate for quality-critical reasoning; Luna remains the fast candidate for repeatable bounded work.
+- Audio Overview is optional in a finished Output set. Its absence no longer makes an otherwise complete deck/image/storyboard/video package falsely read `Needs update`; its own live provider proof remains a separate open item.
+- Layout is presentation state, not claim content. Moving a grounded idea must not revoke professional approvals; renaming or changing its meaning must.
+- Generated images should be visibly art-directed assets, not dark wallpaper. The renderer now reserves a deliberate image field and a separate copy field while preserving the current Style and negative rule against gradients.
+- The user-facing demo truth remains `authorized sample voice brainstorm`, not provider-backed Realtime. No microphone, interruption, or live spoken write loop is claimed from this run.
+
+### Open items
+
+- Live-verify the Realtime microphone conversation, interruption, one read, one confirmed write, and durable provider event evidence.
+- Generate and inspect one standalone provider-backed Audio Overview if it materially improves the final film.
+- Capture the founder's real brainstorm, assemble the public under-three-minute meta-demo from the now-current live product, and complete external review, public links, submission fields, and `/feedback`.
+- Exact account-side dollar debit is not visible in the API response artifacts; retain request-count evidence and the authorized $50 ceiling rather than inventing a precise spend figure.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-15 18:18 CT — Real Codex doorway replaces the rough-cut placeholder
 
 **Area:** Host proof / Meta-demo / Privacy-safe capture
@@ -7136,4 +7182,47 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Send the current ZIP to one intended-audience professional and ingest the returned response. No external review evidence exists yet.
 - Provider-backed Map, Realtime, Images, narration, founder recording, final public Video and links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 01:34 CT — Log placement correction
+
+The new 01:33 CT live-provider and product-quality milestone was inserted after an earlier matching `Codex Session ID` marker instead of the physical end of this append-only file. It appears before three older 00:08–00:23 CT entries, but its timestamp and evidence are correct. This later note restores the chronological boundary without rewriting prior log content. The 01:33 entry supersedes the older open-item statement above for provider-backed Map, Images, and narration; Realtime, founder recording, public submission media/links, external review, and `/feedback` remain open.
+
+---
+
+## 2026-07-16 01:37 CT — Overnight live seam and workbench milestone verified
+
+**Area:** Acceptance / Live media / HyperFrames / UI simplification
+
+### Changed
+
+- Completed the live authorized sample path with a Terra grounded Map, six GPT Image 2 panels, five Cedar narration clips, and an immutable HyperFrames Video Version 2.
+- Replaced the persistent stage dashboard with a contextual five-item Create summary and one next action; collapsed surrounding context for focused Outputs while keeping Sources and Production directly recoverable.
+- Made Excalidraw geometry edits non-destructive, repaired whitespace-only canvas normalization without regeneration, and arranged the live Map into a collision-free narrative grid.
+- Reworked the video from dark image wallpaper into a quiet editorial image/copy split with readable hierarchy, AI-voice disclosure, and audible Cedar narration.
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and tests for all 13 packages: 109 worker tests, 28 web tests, and every remaining package suite passed.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam through rendered Video.
+- `hyperframes lint` passed with zero errors and one non-blocking timeline-density warning; `hyperframes inspect --at-transitions` passed nine samples with zero issues.
+- Video Version 2 is H.264 1920×1080 with AAC audio, 25.002667 seconds, 1,250,904 bytes, and SHA-256 `c2c7d29423c60cdd22a99a54fb591fb44697c79291bab2fec97f8616c8c356e2`.
+- Real live-product review captures exist at desktop and 390×844 widths for Map, Outputs, and Storyboard. The targeted capture completed without horizontal overflow. The broader seeded visual-suite invocation still has a data-root setup defect and is not claimed as passing.
+- `pnpm submission:build` and `pnpm submission:verify` passed integrity checks for the separate deterministic acceptance set. That set remains honestly `partial`; its five fixture limitations do not describe the provider-backed live-operator data root.
+
+### Decisions
+
+- Terra remains the grounded-Map default based on the completed comparable benchmark; no additional paid calls are needed for UI or renderer work.
+- Map position and size are presentation state, not semantic source changes. Only content edits invalidate approved work.
+- A standalone Audio Overview is not required for the finished-state Create summary because Cedar narration already supports the approved Storyboard and Video; the Audio Overview capability remains available and honestly open for live provider proof.
+- `PLAN-2026-07-13.md` is treated only as enduring architecture and acceptance guidance. Its current unrelated working-tree edit was preserved and is not part of this milestone.
+
+### Open items
+
+- Live-verify the Realtime microphone conversation, interruption, and visible tool-result loop; record the founder brainstorm through that path.
+- Replace the sample Source in the final meta-demo, record the under-three-minute public film, and complete public links.
+- Obtain one external professional deck review. `/feedback` remains intentionally deferred.
+- Exact OpenAI dollar debit is not exposed by the response artifacts. This session made 42 attempts and stayed within the authorized $50 operating ceiling based on the recorded request envelope.
 - Codex Session ID: unavailable on this surface; not inferred.

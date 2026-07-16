@@ -27,6 +27,7 @@ export type ExcalidrawMapNode = {
 
 type Source = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; claimCount: number };
 type MapEdge = { id: string; from: string; to: string; kind: string; label?: string };
+type MapStyle = { accent: string; ink: string; paper: string };
 type SceneElement = MapSceneElement & {
   id: string;
   type: string;
@@ -46,8 +47,12 @@ const sourceShapeId = (sourceId: string) => `map-source-${sourceId}`;
 const toSceneX = (value: number) => NODE_OFFSET_X + value * NODE_SCALE_X;
 const toSceneY = (value: number) => value * (SCENE_HEIGHT / 100);
 const toSceneWidth = (value: number) => value * (SCENE_WIDTH / 100);
+const sourceTitle = (source: Source) => source.title.startsWith("Voice capture-only fallback transcript") ? "Voice brainstorm" : source.title;
 
-function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: MapEdge[]) {
+function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: MapEdge[], style?: MapStyle) {
+  const accent = style?.accent ?? "#0285ff";
+  const ink = style?.ink ?? "#171816";
+  const paper = style?.paper ?? "#ffffff";
   const activeSourceIds = new Set(sources.map((source) => source.id));
   const nodeIds = new Set(nodes.map((node) => node.id));
   const sourceGeometry = new Map(sources.map((source, index) => [source.id, { x: 24, y: 70 + index * 180, width: 174, height: 108 }]));
@@ -58,10 +63,10 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
       type: "rectangle" as const,
       id: sourceShapeId(source.id),
       ...geometry,
-      label: { text: `${source.type}  ${source.title}\n${source.claimCount} claims`, fontSize: 12, fontFamily: 2 as const, textAlign: "left" as const },
+      label: { text: `${source.type}  ${sourceTitle(source)}\n${source.claimCount} ${source.claimCount === 1 ? "claim" : "claims"}`, fontSize: 12, fontFamily: 2 as const, textAlign: "left" as const },
       customData: { sourceId: source.id },
-      backgroundColor: "#f3f3f3",
-      strokeColor: "#b4b4b4",
+      backgroundColor: paper,
+      strokeColor: `${ink}40`,
       strokeWidth: 1,
       fillStyle: "solid" as const,
       roughness: 0,
@@ -77,8 +82,8 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     height: toSceneY(node.height),
     label: { text: node.title, fontSize: 17, fontFamily: 2 as const, textAlign: "left" as const, verticalAlign: "middle" as const },
     customData: { nodeId: node.id },
-    backgroundColor: node.kind === "grounded" ? "#e8f7ee" : node.kind === "derived" ? "#fff1e8" : "#eaf3ff",
-    strokeColor: node.kind === "grounded" ? "#008635" : node.kind === "derived" ? "#e25507" : "#0285ff",
+    backgroundColor: node.kind === "grounded" ? "#eef8f1" : node.kind === "derived" ? "#f3f3f3" : `${accent}12`,
+    strokeColor: node.kind === "grounded" ? "#008635" : node.kind === "derived" ? `${ink}9a` : accent,
     strokeWidth: 1.5,
     fillStyle: "solid" as const,
     roughness: 0,
@@ -102,7 +107,7 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
       height: end.y + end.height / 2 - y,
       start: { id: sourceShapeId(sourceId) },
       end: { id: shapeId(node.id) },
-      strokeColor: "#b4b4b4",
+      strokeColor: `${ink}40`,
       strokeWidth: 1.2,
       roughness: 0,
       endArrowhead: "arrow" as const,
@@ -125,8 +130,7 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
       height: end.y + end.height / 2 - y,
       start: { id: shapeId(edge.from) },
       end: { id: shapeId(edge.to) },
-      label: edge.label ? { text: edge.label, fontSize: 12, fontFamily: 2 as const } : undefined,
-      strokeColor: edge.kind === "contradicts" ? "#e02e2a" : "#8f8f8f",
+      strokeColor: edge.kind === "contradicts" ? "#e02e2a" : `${ink}88`,
       strokeWidth: 1.5,
       roughness: 0,
       endArrowhead: "arrow" as const,
@@ -134,13 +138,14 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     }];
   });
 
-  return [...sourceShapes, ...nodeShapes, ...sourceLinks, ...graphLinks];
+  return [...sourceLinks, ...graphLinks, ...sourceShapes, ...nodeShapes];
 }
 
-export function ExcalidrawMap({ nodes, sources, edges, selectedNodeId, onSelectNode, onShowSource, onSync }: {
+export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, onSelectNode, onShowSource, onSync }: {
   nodes: ExcalidrawMapNode[];
   sources: Source[];
   edges: MapEdge[];
+  style?: MapStyle;
   selectedNodeId?: string;
   onSelectNode: (id: string) => void;
   onShowSource: (id: string) => void;
@@ -152,12 +157,12 @@ export function ExcalidrawMap({ nodes, sources, edges, selectedNodeId, onSelectN
   const baseline = useRef<Map<string, SceneNodeBaseline> | null>(null);
   const lastSent = useRef("");
   const lastSelection = useRef("");
-  const skeleton = useMemo(() => sceneSkeleton(nodes, sources, edges), [nodes, sources, edges]);
+  const skeleton = useMemo(() => sceneSkeleton(nodes, sources, edges, style), [nodes, sources, edges, style?.accent, style?.ink, style?.paper]);
   const sceneKey = nodes.map((node) => `${node.id}:${node.title}:${node.x}:${node.y}:${node.width}:${node.height}`).join("|");
   const initialData = useMemo(() => async () => {
     const { convertToExcalidrawElements } = await import("@excalidraw/excalidraw");
-    return { elements: convertToExcalidrawElements(skeleton, { regenerateIds: false }), appState: { viewBackgroundColor: "#ffffff", selectedElementIds: selectedNodeId ? { [shapeId(selectedNodeId)]: true } : {} } };
-  }, [skeleton, selectedNodeId]);
+    return { elements: convertToExcalidrawElements(skeleton, { regenerateIds: false }), appState: { viewBackgroundColor: style?.paper ?? "#ffffff", selectedElementIds: selectedNodeId ? { [shapeId(selectedNodeId)]: true } : {} } };
+  }, [skeleton, selectedNodeId, style?.paper]);
 
   useEffect(() => () => {
     if (timeout.current) clearTimeout(timeout.current);

@@ -27,7 +27,7 @@ export function realtimeSessionConfig(mode: RealtimeMode = "capture") {
           transcription: { model: TRANSCRIPTION_MODEL, language: "en", prompt: "A professional product brainstorm for WorkshopLM." },
           turn_detection: { type: "server_vad", create_response: conversation, interrupt_response: conversation, prefix_padding_ms: 300, silence_duration_ms: 700 },
         },
-        ...(conversation ? { output: { voice: "marin" } } : {}),
+        ...(conversation ? { output: { voice: "cedar" } } : {}),
       },
     },
   } as const;

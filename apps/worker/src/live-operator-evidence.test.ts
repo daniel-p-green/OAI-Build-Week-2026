@@ -48,7 +48,7 @@ describe("live operator evidence", () => {
     recordNarrationProgress({
       storyboardVersion: prepared.storyboard.version,
       disclosure: "AI-generated voice",
-      panels: [{ panelId: narrationPanel.id, relativePath: "generated/narration/panel-1.wav", sha256: "b".repeat(64), model: "gpt-4o-mini-tts", voice: "marin", instructions: "Clear narration", requestId: "speech-request-1", generatedAt: new Date().toISOString() }],
+      panels: [{ panelId: narrationPanel.id, relativePath: "generated/narration/panel-1.wav", sha256: "b".repeat(64), model: "gpt-4o-mini-tts", voice: "cedar", instructions: "Clear narration", requestId: "speech-request-1", generatedAt: new Date().toISOString() }],
       failures: [{ panelId: prepared.storyboard.panels[1]!.id, error: "Speech API returned HTTP 503", failedAt: new Date().toISOString() }],
       stale: true,
       createdAt: new Date().toISOString(),

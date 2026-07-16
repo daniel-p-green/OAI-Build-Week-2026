@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { gpt56Models, operationProfiles, selectModel } from "./model-policy.mjs";
 import { requireBenchmarkRequestCeiling, routingBenchmarkCases, scoreBenchmarkOutput } from "./benchmark.mjs";
 
-assert.equal(selectModel("grounded_graph"), gpt56Models.frontier);
+assert.equal(selectModel("grounded_graph"), gpt56Models.balanced);
 assert.equal(selectModel("claim_triage"), gpt56Models.efficient);
 assert.equal(selectModel("executable_brief", { benchmarkWinner: gpt56Models.frontier }), gpt56Models.frontier);
 assert.equal(selectModel("source_normalization", { benchmarkWinner: gpt56Models.frontier }), gpt56Models.efficient);

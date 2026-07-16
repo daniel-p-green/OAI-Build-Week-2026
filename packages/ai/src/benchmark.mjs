@@ -3,7 +3,7 @@ export const routingBenchmarkCases = Object.freeze([
     id: "grounded-graph",
     operation: "grounded_graph",
     reasoningEffort: "medium",
-    maxOutputTokens: 260,
+    maxOutputTokens: 600,
     expectedTerms: ["source-a", "source-b", "node"],
     prompt: "From these evidence records, propose a compact semantic graph. source-a: buyers need a concise board deck with source citations. source-b: the visual system must use #1155AA and reject stock-photo aesthetics. Return JSON only with keys node, edge, and evidence. evidence must name both source-a and source-b.",
   },

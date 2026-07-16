@@ -28,7 +28,7 @@ describe("Realtime client-secret boundary", () => {
     const secret = await createRealtimeClientSecret({ apiKey: "server-secret", liveEnabled: true, mode: "conversation" }, fetchImpl);
     const sent = JSON.parse(String(fetchImpl.mock.calls[0]![1]?.body)) as { session: ReturnType<typeof realtimeSessionConfig>["session"] };
     expect(secret.mode).toBe("conversation");
-    expect(sent.session).toMatchObject({ output_modalities: ["audio"], tool_choice: "auto", audio: { input: { turn_detection: { create_response: true, interrupt_response: true } }, output: { voice: "marin" } } });
+    expect(sent.session).toMatchObject({ output_modalities: ["audio"], tool_choice: "auto", audio: { input: { turn_detection: { create_response: true, interrupt_response: true } }, output: { voice: "cedar" } } });
     expect(sent.session.tools).toEqual(openAiWorkshopTools("realtime"));
   });
 

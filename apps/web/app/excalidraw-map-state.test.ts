@@ -25,4 +25,15 @@ describe("Excalidraw Map persistence", () => {
     const renamed = normalizedScene.map((element) => element.id === "label-one" ? { ...element, text: "Revised" } : element);
     expect(patchesFromScene([node], renamed, baseline)).toEqual([{ ...node, title: "Revised" }]);
   });
+
+  it("ignores Excalidraw line wrapping in a fitted label", () => {
+    const baseline = baselineFromScene([node], normalizedScene)!;
+    const wrapped = normalizedScene.map((element) => element.id === "label-one" ? { ...element, text: "Orig\ninal" } : element);
+    expect(patchesFromScene([node], wrapped, baseline)).toEqual([{ ...node, title: "Orig inal" }]);
+
+    const phraseNode = { ...node, title: "Continuous Capture → Shape → Deliver path" };
+    const phraseScene = normalizedScene.map((element) => element.id === "label-one" ? { ...element, text: "Continuous Capture → Shape\n→ Deliver path" } : element);
+    const phraseBaseline = baselineFromScene([phraseNode], phraseScene)!;
+    expect(patchesFromScene([phraseNode], phraseScene, phraseBaseline)).toEqual([]);
+  });
 });
