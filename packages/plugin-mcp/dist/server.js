@@ -6,7 +6,7 @@ export function handleRequest(request) {
     if (request.method === "initialize")
         return { protocolVersion: "2025-03-26", serverInfo: { name: "workshoplm", version: "0.1.3" }, capabilities: { tools: {} } };
     if (request.method === "tools/list")
-        return { tools: toolDefinitions };
+        return { tools: toolDefinitions.map(({ name, description, inputSchema, annotations }) => ({ name, description, inputSchema, annotations })) };
     if (request.method === "tools/call") {
         const result = executeTool(request.params?.name ?? "", request.params?.arguments);
         return { content: [{ type: "text", text: result.text }], structuredContent: result.data, isError: Boolean(result.isError) };

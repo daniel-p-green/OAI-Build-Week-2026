@@ -1,20 +1,5 @@
-export type ToolKind = "read" | "write";
-export type ToolAnnotations = {
-    readOnlyHint: boolean;
-    destructiveHint: boolean;
-    openWorldHint: boolean;
-};
-export type ToolDefinition = {
-    name: string;
-    kind: ToolKind;
-    description: string;
-    inputSchema: {
-        type: "object";
-        properties: Record<string, unknown>;
-        required?: string[];
-    };
-    annotations: ToolAnnotations;
-};
+import type { WorkshopToolDefinition } from "@workshoplm/domain";
+export type ToolDefinition = WorkshopToolDefinition;
 export type WorkshopChunk = {
     id: string;
     sourceId: string;

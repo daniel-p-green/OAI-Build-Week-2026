@@ -29,6 +29,9 @@ importers:
       '@excalidraw/excalidraw':
         specifier: ^0.18.1
         version: 0.18.1(@types/react-dom@19.2.3(@types/react@19.2.17))(@types/react@19.2.17)(react-dom@19.2.7(react@19.2.7))(react@19.2.7)
+      '@workshoplm/domain':
+        specifier: workspace:*
+        version: link:../../packages/domain
       '@workshoplm/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -76,7 +79,11 @@ importers:
 
   packages/host: {}
 
-  packages/plugin-mcp: {}
+  packages/plugin-mcp:
+    dependencies:
+      '@workshoplm/domain':
+        specifier: workspace:*
+        version: link:../domain
 
   packages/production:
     dependencies:

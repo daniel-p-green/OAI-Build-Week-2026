@@ -87,6 +87,8 @@ describe("WorkshopLM stdio MCP server", () => {
     await service.close();
     expect(results[0]!.result.serverInfo.name).toBe("workshoplm");
     expect(results[1]!.result.tools.map((tool: { name: string }) => tool.name)).toContain("workshop_render_video");
+    expect(results[1]!.result.tools[0]).not.toHaveProperty("channels");
+    expect(results[1]!.result.tools[0]).not.toHaveProperty("effects");
     expect(results[2]!.result.structuredContent.workshops[0].title).toBe("Sanitized Build Week");
     expect(results[3]!.result.structuredContent.url).toBe(service.url);
     expect(results[4]!.result.structuredContent.results[0]).toMatchObject({ id: "chunk-evidence-1", claims: [{ id: "claim-evidence-1", evidenceState: "verified" }], score: expect.any(Number) });
@@ -97,7 +99,7 @@ describe("WorkshopLM stdio MCP server", () => {
   it("returns explicit gate errors and persists valid mutation outcomes", async () => {
     const root = await fixture();
     const service = await localWorkshopService(root);
-    const call = (id: number, name: string) => ({ jsonrpc: "2.0", id, method: "tools/call", params: { name, arguments: { workshopId: "workshop-build-week", mapVersion: "map-v1", storyboardVersion: "storyboard-v1" } } });
+    const call = (id: number, name: "workshop_approve_brief" | "workshop_approve_storyboard" | "workshop_render_video") => ({ jsonrpc: "2.0", id, method: "tools/call", params: { name, arguments: name === "workshop_approve_brief" ? { workshopId: "workshop-build-week", mapVersion: "map-v1" } : { workshopId: "workshop-build-week", storyboardVersion: "storyboard-v1" } } });
     const brief = { ...call(2, "workshop_approve_brief"), params: { name: "workshop_approve_brief", arguments: { workshopId: "workshop-build-week", mapVersion: "map-r0" } } };
     const staleBrief = { ...call(5, "workshop_approve_brief"), params: { name: "workshop_approve_brief", arguments: { workshopId: "workshop-build-week", mapVersion: "map-r99" } } };
     const results = await request(root, [call(1, "workshop_approve_storyboard"), staleBrief, brief, call(3, "workshop_approve_storyboard"), call(4, "workshop_render_video")], service.url);

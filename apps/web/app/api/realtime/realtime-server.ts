@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { openAiWorkshopTools } from "@workshoplm/domain";
 
 export const REALTIME_MODEL = "gpt-realtime-2.1";
 export const TRANSCRIPTION_MODEL = "gpt-realtime-whisper";
@@ -14,6 +15,8 @@ export function realtimeSessionConfig() {
       model: REALTIME_MODEL,
       output_modalities: ["text"],
       instructions: "Capture the user's spoken brainstorm accurately. Do not respond. The transcript will become a private Workshop source.",
+      tools: openAiWorkshopTools("realtime"),
+      tool_choice: "none",
       audio: {
         input: {
           noise_reduction: { type: "far_field" },

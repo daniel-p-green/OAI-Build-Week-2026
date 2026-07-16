@@ -1,4 +1,5 @@
 import { z } from "zod";
+import rawWorkshopToolRegistry from "../workshop-tools.json" with { type: "json" };
 
 /** Canonical, opaque IDs. IDs are branded at compile time and validated at every boundary. */
 const id = <T extends string>(kind: T) => z.string().min(1, `${kind} must not be empty`).brand<T>();
@@ -76,6 +77,21 @@ export const ConversationEvidence = z.object({
   snippet: z.string().min(1),
   snippetHash: z.string().min(1),
 }).strict();
+export const WorkshopToolName = z.enum([
+  "workshop_list",
+  "workshop_create",
+  "workshop_open",
+  "workshop_add_source",
+  "search",
+  "fetch",
+  "workshop_get_trace",
+  "workshop_set_source_scope",
+  "workshop_approve_brief",
+  "workshop_create_output",
+  "workshop_approve_storyboard",
+  "workshop_render_video",
+]);
+export type WorkshopToolName = z.infer<typeof WorkshopToolName>;
 export const ConversationTurn = z.object({
   id: z.string().min(1),
   workshopId: WorkshopId,
@@ -85,9 +101,64 @@ export const ConversationTurn = z.object({
   createdAt: z.string().datetime(),
   evidence: z.array(ConversationEvidence),
   sourceId: SourceId.optional(),
-  operation: z.object({ name: z.enum(["source_search", "voice_capture"]), status: z.literal("completed") }).strict().optional(),
+  operation: z.object({ name: z.union([WorkshopToolName, z.literal("source_search"), z.literal("voice_capture")]), status: z.literal("completed") }).strict().optional(),
 }).strict();
 export type ConversationTurn = z.infer<typeof ConversationTurn>;
+
+export type WorkshopToolKind = "read" | "write";
+export type WorkshopToolChannel = "plugin" | "responses" | "realtime";
+export type WorkshopToolAnnotations = { readOnlyHint: boolean; destructiveHint: boolean; openWorldHint: boolean };
+export type WorkshopToolInputSchema = { type: "object"; properties: Record<string, unknown>; required?: string[]; additionalProperties: false };
+export type WorkshopToolDefinition = {
+  name: WorkshopToolName;
+  kind: WorkshopToolKind;
+  description: string;
+  inputSchema: WorkshopToolInputSchema;
+  annotations: WorkshopToolAnnotations;
+  channels: readonly WorkshopToolChannel[];
+  requiresExplicitUserIntent: boolean;
+  effects: readonly ("none" | "creates_workshop" | "selects_workshop" | "adds_source" | "changes_source_scope" | "approves_brief" | "creates_output" | "approves_storyboard" | "queues_video")[];
+};
+const WorkshopToolDefinitionContract = z.object({
+  name: WorkshopToolName,
+  kind: z.enum(["read", "write"]),
+  description: z.string().min(1),
+  inputSchema: z.object({ type: z.literal("object"), properties: z.record(z.string(), z.unknown()), required: z.array(z.string()).optional(), additionalProperties: z.literal(false) }).strict(),
+  annotations: z.object({ readOnlyHint: z.boolean(), destructiveHint: z.literal(false), openWorldHint: z.literal(false) }).strict(),
+  channels: z.array(z.enum(["plugin", "responses", "realtime"])).min(1),
+  requiresExplicitUserIntent: z.boolean(),
+  effects: z.array(z.enum(["none", "creates_workshop", "selects_workshop", "adds_source", "changes_source_scope", "approves_brief", "creates_output", "approves_storyboard", "queues_video"])).min(1),
+}).strict().superRefine((tool, context) => {
+  for (const required of tool.inputSchema.required ?? []) if (!(required in tool.inputSchema.properties)) context.addIssue({ code: z.ZodIssueCode.custom, message: `${tool.name} requires an undefined property: ${required}` });
+  if (tool.kind === "read" && !tool.annotations.readOnlyHint) context.addIssue({ code: z.ZodIssueCode.custom, message: `${tool.name} must advertise readOnlyHint` });
+  if (tool.kind === "write" && (tool.annotations.readOnlyHint || !tool.requiresExplicitUserIntent)) context.addIssue({ code: z.ZodIssueCode.custom, message: `${tool.name} writes require explicit user intent` });
+});
+
+/**
+ * The one canonical tool surface for MCP, Responses, and Realtime adapters.
+ * Adapters may expose only tools allowed for their channel; they may not alter
+ * names, parameters, approval intent, privacy assumptions, or effects.
+ */
+export const workshopToolRegistry = z.array(WorkshopToolDefinitionContract).parse(rawWorkshopToolRegistry) as WorkshopToolDefinition[];
+
+export function workshopToolsFor(channel: WorkshopToolChannel): WorkshopToolDefinition[] {
+  return workshopToolRegistry.filter((tool) => tool.channels.includes(channel)).map((tool) => ({ ...tool, channels: [...tool.channels], effects: [...tool.effects] }));
+}
+
+export function openAiWorkshopTools(channel: "responses" | "realtime") {
+  return workshopToolsFor(channel).map((tool) => ({ type: "function" as const, name: tool.name, description: tool.description, parameters: tool.inputSchema }));
+}
+
+export function parseWorkshopToolInput(name: WorkshopToolName, input: unknown): Record<string, unknown> {
+  const tool = workshopToolRegistry.find((candidate) => candidate.name === name);
+  if (!tool) throw new Error(`Unknown Workshop tool: ${name}`);
+  const value = z.record(z.string(), z.unknown()).parse(input);
+  const allowed = new Set(Object.keys(tool.inputSchema.properties));
+  const extra = Object.keys(value).find((key) => !allowed.has(key));
+  if (extra) throw new Error(`${name} does not accept ${extra}`);
+  for (const required of tool.inputSchema.required ?? []) if (!(required in value)) throw new Error(`${name} requires ${required}`);
+  return value;
+}
 
 export const Source = z.object({
   id: SourceId,

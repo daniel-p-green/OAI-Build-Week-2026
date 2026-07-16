@@ -6389,3 +6389,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Complete the contextual evidence/affected-work disclosure and collapsible rails.
 - Dogfood an external professional deck and obtain the cold `Send`/`Revise` decision before expanding output breadth.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 20:49 CT — Text, voice, and plugin tools share one strict contract
+
+**Area:** Conversation / Realtime / Plugin / Domain contract
+
+### Changed
+
+- Added `packages/domain/workshop-tools.json` as the single validated registry for MCP, Responses, and Realtime: twelve total local tools and the same eight conversational tools for both OpenAI adapters.
+- Recorded each tool's strict JSON schema, read/write class, supported channels, explicit-user-intent requirement, and visible effect. All writes remain local, non-destructive, and confirmation-bound; source-scope changes continue through the existing downstream invalidation path.
+- Replaced the MCP server's duplicated definitions with the canonical registry and added `workshop_set_source_scope`. The protocol now publishes only MCP fields rather than leaking internal channel/effect metadata, and the compiled plugin loads the checked-in JSON without a runtime TypeScript-package dependency.
+- Changed new grounded Conversation replies from the legacy `source_search` label to the canonical `search` operation. Existing persisted legacy turns remain readable.
+- Added the same official function-tool schemas to the Realtime client-secret session. Capture-only mode deliberately retains text-only output, disabled automatic responses, and `tool_choice: none`; this does not claim live voice tool execution.
+
+### Verified
+
+- Confirmed the current official Realtime API accepts session function tools with `type`, `name`, `description`, JSON Schema `parameters`, and `tool_choice`; no provider request was made.
+- `pnpm check` passed all 13 packages with 15 domain tests, seven plugin tests, 20 web tests, and 86 worker tests. Contract tests prove text/voice schema parity, strict extra-property rejection, required version inputs, and explicit intent on every write.
+- The compiled stdio plugin loaded twelve tools directly from the canonical JSON and exposed `workshop_set_source_scope` without a runtime domain import. Its end-to-end server tests passed grounded reads, version-gated writes, and protocol projection.
+- `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. The deterministic seam remains green; the 17-asset submission remains truthfully `partial` for the four recorded provider-media limitations.
+
+### Decisions
+
+- Schema parity precedes provider execution. Responses and Realtime may not invent adapter-specific tool names, parameters, approval behavior, privacy behavior, or mutation effects.
+- Tool descriptions are not authorization. Every write requires explicit user intent, and capture-only Realtime receives tools with execution disabled until the server executor, visible-effect UI, result persistence, and interruption behavior are implemented.
+- No paid provider call ran in this increment.
+
+### Open items
+
+- Implement one server-side executor for Responses and Realtime function calls, including strict input validation, source-scope enforcement, exact-version gates, durable calls/results/provider IDs, and visible write effects.
+- Upgrade text Conversation to Responses streaming and voice to speech-to-speech Realtime; then live-verify one safe read, one visible write, interruption, and durable provider provenance after explicit request authorization.
+- Complete contextual affected-work disclosure and collapsible rails; obtain the external deck's cold `Send`/`Revise` decision.
+- Founder brainstorm, provider media, final public Video, public links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

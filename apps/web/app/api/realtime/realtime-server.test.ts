@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { openAiWorkshopTools } from "@workshoplm/domain";
 import { REALTIME_CLIENT_SECRET_URL, createRealtimeClientSecret, realtimeSessionConfig } from "./realtime-server";
 
 describe("Realtime client-secret boundary", () => {
@@ -18,6 +19,8 @@ describe("Realtime client-secret boundary", () => {
     expect(JSON.parse(String(init?.body))).toEqual(realtimeSessionConfig());
     expect(JSON.stringify(secret)).not.toContain("server-secret");
     expect(realtimeSessionConfig().session.audio.input.turn_detection).toMatchObject({ create_response: false, interrupt_response: false });
+    expect(realtimeSessionConfig().session.tools).toEqual(openAiWorkshopTools("realtime"));
+    expect(realtimeSessionConfig().session.tool_choice).toBe("none");
   });
 
   it("rejects incomplete provider responses", async () => {

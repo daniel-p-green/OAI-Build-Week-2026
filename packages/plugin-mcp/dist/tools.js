@@ -2,27 +2,30 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { DatabaseSync } from "node:sqlite";
 import { basename, dirname, extname, join, resolve } from "node:path";
-const object = (properties, required = []) => ({ type: "object", properties, ...(required.length ? { required } : {}) });
-const readOnly = { readOnlyHint: true, destructiveHint: false, openWorldHint: false };
-const localWrite = { readOnlyHint: false, destructiveHint: false, openWorldHint: false };
+const workshopToolRegistry = JSON.parse(readFileSync(new URL("../../domain/workshop-tools.json", import.meta.url), "utf8"));
+function workshopToolsForPlugin() { return workshopToolRegistry.filter((tool) => tool.channels.includes("plugin")); }
+function parseWorkshopToolInput(name, input) {
+    if (!input || typeof input !== "object" || Array.isArray(input))
+        throw new Error(`${name} requires an object input`);
+    const tool = workshopToolRegistry.find((candidate) => candidate.name === name);
+    if (!tool)
+        throw new Error(`Unknown Workshop tool: ${name}`);
+    const value = input;
+    const allowed = new Set(Object.keys(tool.inputSchema.properties));
+    const extra = Object.keys(value).find((key) => !allowed.has(key));
+    if (extra)
+        throw new Error(`${name} does not accept ${extra}`);
+    for (const required of tool.inputSchema.required ?? [])
+        if (!(required in value))
+            throw new Error(`${name} requires ${required}`);
+    return value;
+}
 const schema = `CREATE TABLE IF NOT EXISTS workshop (id TEXT PRIMARY KEY, title TEXT NOT NULL, created_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS app_setting (key TEXT PRIMARY KEY, value TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS job (id TEXT PRIMARY KEY, workshop_id TEXT NOT NULL, kind TEXT NOT NULL, input_key TEXT NOT NULL UNIQUE, state TEXT NOT NULL, lease_until TEXT, attempts INTEGER NOT NULL DEFAULT 0, payload_json TEXT NOT NULL, created_at TEXT NOT NULL, updated_at TEXT NOT NULL);
 CREATE TABLE IF NOT EXISTS workshop_state (workshop_id TEXT PRIMARY KEY, state_json TEXT NOT NULL, updated_at TEXT NOT NULL);
 CREATE VIRTUAL TABLE IF NOT EXISTS evidence_fts USING fts5(workshop_id UNINDEXED, source_id UNINDEXED, chunk_id UNINDEXED, locator UNINDEXED, chunk_text, claim_text, tokenize='unicode61');`;
-export const toolDefinitions = [
-    { name: "workshop_list", kind: "read", description: "Use this when you need to list local Workshop summaries without changing them.", inputSchema: object({}), annotations: readOnly },
-    { name: "workshop_create", kind: "write", description: "Use this when the user asks to create a local Workshop.", inputSchema: object({ title: { type: "string" } }, ["title"]), annotations: localWrite },
-    { name: "workshop_open", kind: "read", description: "Use this when you need the local URL and current status for one Workshop.", inputSchema: object({ workshopId: { type: "string" } }, ["workshopId"]), annotations: readOnly },
-    { name: "workshop_add_source", kind: "write", description: "Use this when the user asks to import a sanctioned local file or URL into a Workshop.", inputSchema: object({ workshopId: { type: "string" }, source: { type: "string" } }, ["workshopId", "source"]), annotations: localWrite },
-    { name: "search", kind: "read", description: "Use this when you need to search normalized local source evidence in the open Workshop without changing it.", inputSchema: object({ query: { type: "string" }, workshopId: { type: "string" } }, ["query"]), annotations: readOnly },
-    { name: "fetch", kind: "read", description: "Use this when you need to retrieve one exact normalized evidence chunk and its linked claims from the open Workshop.", inputSchema: object({ sourceId: { type: "string" }, chunkId: { type: "string" }, workshopId: { type: "string" } }, ["sourceId", "chunkId"]), annotations: readOnly },
-    { name: "workshop_get_trace", kind: "read", description: "Use this when you need to inspect an artifact-to-claim-to-source trace in the open Workshop without changing it.", inputSchema: object({ artifactId: { type: "string" }, workshopId: { type: "string" } }, ["artifactId"]), annotations: readOnly },
-    { name: "workshop_approve_brief", kind: "write", description: "Use this only when the user asks to approve the current eligible Map as the Brief.", inputSchema: object({ workshopId: { type: "string" }, mapVersion: { type: "string" } }, ["workshopId", "mapVersion"]), annotations: localWrite },
-    { name: "workshop_create_output", kind: "write", description: "Use this when the user asks to create one typed Output from approved current state.", inputSchema: object({ workshopId: { type: "string" }, outputType: { enum: ["deck", "infographic", "images", "storyboard", "video"] } }, ["workshopId", "outputType"]), annotations: localWrite },
-    { name: "workshop_approve_storyboard", kind: "write", description: "Use this only when the user asks to approve the current Storyboard version.", inputSchema: object({ workshopId: { type: "string" }, storyboardVersion: { type: "string" } }, ["workshopId", "storyboardVersion"]), annotations: localWrite },
-    { name: "workshop_render_video", kind: "write", description: "Use this when the user asks to render Video from an approved current Storyboard.", inputSchema: object({ workshopId: { type: "string" }, storyboardVersion: { type: "string" } }, ["workshopId", "storyboardVersion"]), annotations: localWrite },
-];
+export const toolDefinitions = workshopToolsForPlugin();
 export function mutationGate(tool, state) {
     if (tool === "workshop_approve_brief" && !state.mapCurrent)
         return "Map approval blocked: the requested Map version is stale or ineligible.";
@@ -160,6 +163,15 @@ export function fetchEvidence(sourceId, chunkId, workshopId) {
     return null;
 }
 export function executeTool(name, arguments_ = {}) {
+    const definition = toolDefinitions.find((tool) => tool.name === name);
+    if (!definition)
+        return { isError: true, text: `Unknown Workshop tool: ${name}.` };
+    try {
+        arguments_ = parseWorkshopToolInput(definition.name, arguments_);
+    }
+    catch (error) {
+        return { isError: true, text: error instanceof Error ? error.message : "Invalid Workshop tool input." };
+    }
     if (name === "workshop_list") {
         const workshops = listWorkshops();
         return { text: workshops.length ? `Found ${workshops.length} local Workshop${workshops.length === 1 ? "" : "s"}.` : "No local Workshops found.", data: { workshops: workshops.map((workshop) => ({ ...workshop, ...versionsFor(workshop) })) } };
@@ -230,6 +242,12 @@ export function executeTool(name, arguments_ = {}) {
                 return actionResult(serviceAction({ action: "ingestPdfFile", workshopId, filePath: path, permission: "private" }), `Imported and grounded ${basename(path)}.`);
             const text = readFileSync(path, "utf8");
             return actionResult(serviceAction({ action: "ingestSource", workshopId, source: { title: basename(path), origin: `Local file · ${basename(path)}`, type: "TXT", text, permission: "private" } }), `Imported and grounded ${basename(path)}.`);
+        }
+        if (name === "workshop_set_source_scope") {
+            const sourceIds = Array.isArray(arguments_.sourceIds) ? arguments_.sourceIds.filter((value) => typeof value === "string") : [];
+            if (!sourceIds.length)
+                return { isError: true, text: "Source scope requires at least one Source ID." };
+            return actionResult(serviceAction({ action: "setActiveSourceScope", workshopId, sourceIds }), `Updated the active source scope to ${sourceIds.length} Source${sourceIds.length === 1 ? "" : "s"}.`);
         }
         if (name === "workshop_approve_brief") {
             const requested = typeof arguments_.mapVersion === "string" ? arguments_.mapVersion : "";

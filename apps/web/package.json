@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@excalidraw/excalidraw": "^0.18.1",
+    "@workshoplm/domain": "workspace:*",
     "@workshoplm/ui": "workspace:*",
     "next": "^15.3.0",
     "react": "^19.1.0",

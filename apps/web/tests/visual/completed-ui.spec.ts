@@ -141,7 +141,7 @@ test("grounded Conversation preserves source scope, citations, and responsive wo
   const source = ready.sourceItems.find((item: { id: string }) => item.id === claim.sourceId);
   const conversation = { ...ready, conversationTurns: [
     { id: "turn-user-review", role: "user", text: "What should lead the presentation?", input: "text", createdAt: "2026-07-15T20:20:00.000Z", evidence: [] },
-    { id: "turn-assistant-review", role: "assistant", text: `Your selected Sources support this: ${claim.text}.`, input: "system", createdAt: "2026-07-15T20:20:00.000Z", evidence: [{ claimId: claim.id, sourceId: claim.sourceId, chunkId: claim.chunkId, locator: claim.locator }], operation: { name: "source_search", status: "completed" } },
+    { id: "turn-assistant-review", role: "assistant", text: `Your selected Sources support this: ${claim.text}.`, input: "system", createdAt: "2026-07-15T20:20:00.000Z", evidence: [{ claimId: claim.id, sourceId: claim.sourceId, chunkId: claim.chunkId, locator: claim.locator }], operation: { name: "search", status: "completed" } },
   ] };
   await page.route("**/api/workshop", async (route) => route.request().method() === "GET" ? route.fulfill({ json: conversation }) : route.fulfill({ json: conversation }));
 

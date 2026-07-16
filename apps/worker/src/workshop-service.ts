@@ -540,7 +540,7 @@ export function searchWorkshopSources(query: string, root?: string): WorkshopChu
   const chunks = new Map(state.sourceChunks.map((chunk) => [`${chunk.sourceId}\u0000${chunk.id}`, chunk]));
   return rows.flatMap((row) => { const chunk = chunks.get(`${row.source_id}\u0000${row.chunk_id}`); return chunk ? [chunk] : []; });
 }
-type GroundedConversationReply = { text: string; evidence: Array<{ claimId?: string; sourceId: string; chunkId: string; locator: string; snippet: string; snippetHash: string }>; operation: { name: "source_search"; status: "completed" } };
+type GroundedConversationReply = { text: string; evidence: Array<{ claimId?: string; sourceId: string; chunkId: string; locator: string; snippet: string; snippetHash: string }>; operation: { name: "search"; status: "completed" } };
 function groundedConversationReply(state: WorkshopState, query: string, root?: string): GroundedConversationReply {
   const active = new Set(state.activeSourceIds);
   const ranked = searchWorkshopSources(query, root).filter((chunk) => active.has(chunk.sourceId));
@@ -549,11 +549,11 @@ function groundedConversationReply(state: WorkshopState, query: string, root?: s
     const claim = state.claims.find((candidate) => candidate.sourceId === chunk.sourceId && candidate.chunkId === chunk.id);
     return { claimId: claim?.id, sourceId: chunk.sourceId, chunkId: chunk.id, locator: chunk.locator, snippet: chunk.text, snippetHash: createHash("sha256").update(chunk.text).digest("hex") };
   });
-  if (!chunks.length) return { text: "Add or select a Source first. I’ll answer from that material and keep every factual point linked to its evidence.", evidence: [], operation: { name: "source_search", status: "completed" } };
+  if (!chunks.length) return { text: "Add or select a Source first. I’ll answer from that material and keep every factual point linked to its evidence.", evidence: [], operation: { name: "search", status: "completed" } };
   const points = chunks.flatMap((chunk) => state.claims.filter((claim) => claim.sourceId === chunk.sourceId && claim.chunkId === chunk.id).slice(0, 1)).map((claim) => prose(claim.text)).filter(Boolean);
   const fallbackPoints = chunks.map((chunk) => prose(chunk.text.split(/[.!?]+/)[0] ?? chunk.text)).filter(Boolean);
   const supported = (points.length ? points : fallbackPoints).slice(0, 3).map((point) => /[.!?]$/.test(point) ? point : `${point}.`).join(" ");
-  return { text: `Your selected Sources support this: ${supported}`, evidence, operation: { name: "source_search", status: "completed" } };
+  return { text: `Your selected Sources support this: ${supported}`, evidence, operation: { name: "search", status: "completed" } };
 }
 export function sendConversationMessage(text: string, root?: string): WorkshopState {
   const normalized = normalizeSourceText(text);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ArtifactJson, Claim, ConversationTurn, DomainError, GraphOperation, SemanticGraph, StoryboardPanel, SubmissionOutputSet, appendGraphOperation, applyGraphOperation, applyStalePropagation, assertCommandEligible, assertEligible, collectStaleDependents, deriveGates, parseGraphState, serializeGraphState, undoGraphOperation, undoLatestGraphOperation } from "./index.js";
+import { ArtifactJson, Claim, ConversationTurn, DomainError, GraphOperation, SemanticGraph, StoryboardPanel, SubmissionOutputSet, appendGraphOperation, applyGraphOperation, applyStalePropagation, assertCommandEligible, assertEligible, collectStaleDependents, deriveGates, openAiWorkshopTools, parseGraphState, parseWorkshopToolInput, serializeGraphState, undoGraphOperation, undoLatestGraphOperation, workshopToolRegistry, workshopToolsFor } from "./index.js";
 
 const now = "2026-07-13T12:00:00.000Z";
 const ids = { workshopId: "workshop-1", graphId: "graph-1", nodeA: "node-a", nodeB: "node-b", edge: "edge-1", claim: "claim-1", source: "source-1", chunk: "chunk-1", artifact: "artifact-1" };
@@ -8,9 +8,19 @@ const graph = () => SemanticGraph.parse({ id: ids.graphId, workshopId: ids.works
 describe("domain contracts", () => {
   it("rejects a verified claim without evidence", () => expect(() => Claim.parse({ id: ids.claim, workshopId: ids.workshopId, text: "value", evidenceState: "verified", evidence: [], provenance: "user", createdAt: now })).toThrow(/require evidence/));
   it("validates durable grounded Conversation turns", () => {
-    const turn = ConversationTurn.parse({ id: "turn-1", workshopId: ids.workshopId, role: "assistant", input: "system", text: "Grounded answer", createdAt: now, evidence: [{ sourceId: ids.source, chunkId: ids.chunk, claimId: ids.claim, locator: "Fixture · chunk 01", snippet: "proof", snippetHash: "hash" }], operation: { name: "source_search", status: "completed" } });
+    const turn = ConversationTurn.parse({ id: "turn-1", workshopId: ids.workshopId, role: "assistant", input: "system", text: "Grounded answer", createdAt: now, evidence: [{ sourceId: ids.source, chunkId: ids.chunk, claimId: ids.claim, locator: "Fixture · chunk 01", snippet: "proof", snippetHash: "hash" }], operation: { name: "search", status: "completed" } });
     expect(turn.evidence[0]).toMatchObject({ sourceId: ids.source, chunkId: ids.chunk });
     expect(() => ConversationTurn.parse({ ...turn, operation: { name: "publish", status: "completed" } })).toThrow();
+  });
+  it("publishes one strict Workshop tool contract across text, voice, and plugin adapters", () => {
+    expect(new Set(workshopToolRegistry.map((tool) => tool.name)).size).toBe(workshopToolRegistry.length);
+    expect(workshopToolsFor("responses").map((tool) => tool.name)).toEqual(workshopToolsFor("realtime").map((tool) => tool.name));
+    expect(workshopToolsFor("plugin").map((tool) => tool.name)).toEqual(expect.arrayContaining(["workshop_list", "search", "workshop_render_video"]));
+    expect(openAiWorkshopTools("realtime").find((tool) => tool.name === "search")).toMatchObject({ type: "function", parameters: { additionalProperties: false, required: ["query"] } });
+    expect(workshopToolsFor("responses").filter((tool) => tool.kind === "write").every((tool) => tool.requiresExplicitUserIntent)).toBe(true);
+    expect(parseWorkshopToolInput("search", { query: "source proof" })).toEqual({ query: "source proof" });
+    expect(() => parseWorkshopToolInput("search", { query: "source proof", publish: true })).toThrow(/does not accept publish/);
+    expect(() => parseWorkshopToolInput("workshop_approve_brief", { workshopId: ids.workshopId })).toThrow(/requires mapVersion/);
   });
   it("applies graph operations and undoes an AI mutation", () => {
     const result = applyGraphOperation(graph(), GraphOperation.parse({ type: "add_node", node: { id: ids.nodeB, kind: "idea", label: "Narrative", evidenceState: "derived" } }));

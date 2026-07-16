@@ -126,7 +126,7 @@ it("persists a grounded Conversation without turning a question into a Source", 
   expect(state.sources).toBe(before.sources);
   expect(state.conversationTurns).toHaveLength(2);
   expect(state.conversationTurns[0]).toMatchObject({ role: "user", input: "text", text: "What supports the editable production system?", evidence: [] });
-  expect(state.conversationTurns[1]).toMatchObject({ role: "assistant", input: "system", operation: { name: "source_search", status: "completed" } });
+  expect(state.conversationTurns[1]).toMatchObject({ role: "assistant", input: "system", operation: { name: "search", status: "completed" } });
   expect(state.conversationTurns[1]?.evidence[0]).toMatchObject({ sourceId: "source-design", chunkId: "chunk-seed-design", locator: "Design · Map" });
   expect(state.conversationTurns[1]?.text).toContain("Evidence becomes an editable production system");
   expect(() => sendConversationMessage("   ", root)).toThrow(/message first/);
