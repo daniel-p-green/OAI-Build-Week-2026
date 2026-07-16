@@ -125,34 +125,34 @@ async function main(): Promise<void> {
       approveVisualDna(dataRoot);
     }, 1800);
 
-    await page.getByRole("button", { name: "View outputs" }).click();
+    await page.getByRole("button", { name: "View created work" }).click();
     await beat("create-outputs", "Create the traced Output set", async () => {
-      await page.getByRole("button", { name: "Create outputs" }).click();
+      await page.getByRole("button", { name: "Create work" }).click();
       await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
       await expect(page.getByRole("heading", { name: "Image set" })).toBeVisible();
       await seedJudgeProviderImages(dataRoot);
       await generateOutput("deck", dataRoot);
       await page.reload();
-      await page.getByRole("button", { name: "View outputs" }).click();
+      await page.getByRole("button", { name: "View created work" }).click();
       await expect(page.locator('img[src*="image-panel-"]').first()).toBeVisible();
     }, 2600);
 
-    await beat("output-evidence", "Follow Slides back to their source", async () => {
+    await beat("output-evidence", "Follow the Presentation back to its Source", async () => {
       await page.getByRole("button", { name: /^Open Sketch/ }).click();
       await expect(page.getByRole("heading", { name: "Sketch", exact: true })).toBeVisible();
       await page.waitForTimeout(900);
-      await page.getByRole("button", { name: "Back to Outputs" }).click();
-      await page.getByRole("button", { name: /^Open Slides/ }).click();
+      await page.getByRole("button", { name: "Back to Created work" }).click();
+      await page.getByRole("button", { name: /^Open Presentation/ }).click();
       await page.getByRole("button", { name: /^Show source for / }).first().click();
       await expect(page.getByRole("dialog", { name: "Source" })).toBeVisible();
     }, 1800);
     await page.getByRole("button", { name: "Close Source" }).click();
-    await page.getByRole("button", { name: "Back to Outputs" }).click();
+    await page.getByRole("button", { name: "Back to Created work" }).click();
 
     await beat("storyboard-edit", "Edit the Storyboard before rendering", async () => {
       await page.getByRole("button", { name: "Review storyboard", exact: true }).click();
       const title = page.getByRole("textbox", { name: "Panel title" });
-      await title.fill("Slides proof");
+      await title.fill("Presentation proof");
       await page.getByRole("button", { name: "Save" }).click();
       await expect(page.getByRole("button", { name: "Save" })).toHaveCount(0);
     }, 2000);
@@ -170,11 +170,11 @@ async function main(): Promise<void> {
       await expect(page.getByRole("button", { name: "View video" })).toBeVisible({ timeout: 5000 });
     }, 2200);
 
-    await beat("original-reveal", "Reveal the original thought beside the finished work", async () => {
+    await beat("original-reveal", "Reveal the original thought beside the created work", async () => {
       await page.getByRole("button", { name: "View video" }).click();
       await expect(page.locator(".focused-output-preview video")).toBeVisible();
       await page.getByRole("button", { name: "Show original" }).click();
-      await expect(page.getByRole("dialog", { name: "Original brainstorm" })).toContainText("Became finished work");
+      await expect(page.getByRole("dialog", { name: "Original brainstorm" })).toContainText("Became professional knowledge work");
     }, 3000);
 
     const finalState = readWorkshopState(dataRoot);

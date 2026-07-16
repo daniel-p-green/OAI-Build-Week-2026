@@ -15,15 +15,15 @@ const gallery = [
   ["05-source-evidence.png", "apps/web/tests/visual/__screenshots__/desktop-evidence.png", "Inspect the exact supporting Source"],
   ["06-approved-brief.png", "apps/web/tests/visual/__screenshots__/desktop-brief.png", "Review the approved executable Brief"],
   ["07-company-style.png", "apps/web/tests/visual/__screenshots__/desktop-style.png", "Apply one reviewable visual system"],
-  ["08-current-outputs.png", "artifacts/ui-review/outputs-latest-only-desktop-2026-07-16.png", "Review the current provider-backed deliverables"],
+  ["08-current-outputs.png", "artifacts/ui-review/outputs-latest-only-desktop-2026-07-16.png", "Review the current provider-backed created work"],
   ["09-presentation.png", "apps/web/tests/visual/__screenshots__/desktop-output-viewer.png", "Open the hero presentation and its source trail"],
   ["10-sketch.png", "apps/web/tests/visual/__screenshots__/desktop-sketch-viewer.png", "Open the source-traced hand-drawn Sketch"],
   ["11-replace-image.png", "apps/web/tests/visual/__screenshots__/desktop-image-replacement.png", "Direct one image replacement without prompt editing"],
   ["12-storyboard.png", "apps/web/tests/visual/__screenshots__/desktop-storyboard.png", "Edit and approve the Storyboard"],
   ["13-narrated-video.png", "apps/web/tests/visual/__screenshots__/desktop-video-viewer.png", "Review the locally rendered Video"],
-  ["14-original-reveal.png", "apps/web/tests/visual/__screenshots__/desktop-original-reveal.png", "Trace finished work back to the original thought"],
+  ["14-original-reveal.png", "apps/web/tests/visual/__screenshots__/desktop-original-reveal.png", "Trace created work back to the original thought"],
   ["15-mobile-map.png", "apps/web/tests/visual/__screenshots__/mobile-map.png", "Review the Map on mobile"],
-  ["16-mobile-outputs.png", "apps/web/tests/visual/__screenshots__/mobile-outputs.png", "Review current Outputs on mobile"],
+  ["16-mobile-outputs.png", "apps/web/tests/visual/__screenshots__/mobile-outputs.png", "Review current created work on mobile"],
 ];
 
 const existing = await readdir(outputRoot);

@@ -2720,6 +2720,45 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-16 18:42 CT — Current created-work proof is visually current and vocabulary-coherent
+
+**Area:** Product UI / visual proof / professional language / release verification
+
+### Changed
+
+- Audited the current Presentation, Infographic, image set, Audio Overview, Storyboard, Video, and sixteen-screen workbench proof rather than relying on the stale gallery. The prior gallery still taught the retired `Slides` / `Deliver` framing and mixed `Outputs` with `Created work`.
+- Unified the active workbench around `professional knowledge work`, `Created work`, `Presentation`, `Infographic`, `Audio Overview`, `Sketch`, `Storyboard`, and `Video`. Persisted `deck` and `outputs` identifiers remain internal compatibility details.
+- Updated onboarding, success notices, focused-object navigation, partial and `Needs update` states, the original-brainstorm reveal, automated capture labels, and the current UI gallery. The user now clicks `Created work` and arrives at a `Created work` destination instead of an `Outputs` breadcrumb.
+- Fixed a real compact Video interaction defect: opening and closing `Original brainstorm` could restore a small stale scroll offset and clip the focused Video heading. The trigger now establishes the intended top position before the sheet records focus and scroll state.
+- Rebuilt the sixteen-screen desktop/compact/mobile gallery and shareable ZIP from current strict production-route screenshots. The gallery truthfully identifies six checked-in hash-bound GPT Image 2 files and one hash-bound Cedar Audio Overview as provider-backed replay evidence, not fresh calls or founder-derived proof.
+- Rebuilt the deterministic submission packet, local HyperFrames sample-film manifest, and judge thumbnail after their hash-bound dependencies changed. The rendered 2:20 sample film bytes remained unchanged.
+
+### Verified
+
+- The complete browser suite passed `31/31` across desktop, compact, mobile, keyboard/focus behavior, reduced motion, 200% logical zoom, source tracing, revision states, Storyboard/Video flows, and the official Apps in ChatGPT primitive contract.
+- `pnpm --filter @workshoplm/web test` passed `30/30`; `pnpm check` passed all thirteen packages, including 121 worker, 30 web, and 19 production tests plus the remaining package suites.
+- `pnpm demo:e2e` passed the complete recorded Source/voice → Map → Brief → Style → created work → approved Storyboard → rendered Video seam with six image panels and hash-bound Cedar audio.
+- `pnpm submission:build` and escalated `pnpm submission:verify` produced a valid, current, untampered acceptance manifest. The first sandboxed verify attempt failed only because `tsx` could not open its local IPC socket; the same verifier passed outside that restriction.
+- `pnpm demo:film:sample` passed local HyperFrames `0.7.60` lint, check, and render. `pnpm demo:film:verify-sample` confirms 140.010667 seconds, H264/AAC, Cedar narration, no spatial transforms, and video SHA-256 `0e673d3256947444bc7e2530785a3be4662c366adea68db8a78b21b093dec476`.
+- `pnpm submission:packet:verify` passed after rebuilding the trace-bound film manifest and thumbnail. It reports eight ready shots, two intentionally blocked founder-evidence shots, six provider-backed images, five provider narration clips, and four unresolved founder slots.
+- `outputs/workshoplm-current-ui/contact-sheet.png` was visually inspected after the final rebuild. `outputs/workshoplm-current-ui.zip` SHA-256 is `a596c2eea78c4c70210978dabc17bc56168a6b3d25c90efd171823dda8319d49`. `git diff --check` passes.
+- No OpenAI provider request ran during this milestone; the provider-operation ledger remains 107.
+
+### Decisions
+
+- `Created work` is the quiet container for the product's first-class formats; no format is presented as the singular destination.
+- Historical Source text and internal serialized identifiers retain older wording where rewriting would falsify evidence or break compatibility. Active navigation, actions, empty states, success states, and current proof use the locked vocabulary.
+- A current visual proof surface is part of product truth. Regenerated screenshots and their hash manifest replace stale proof; they do not claim a new provider run.
+- `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+### Open items
+
+- The current five-item critical path in `GOAL.md` is unchanged. The next required external input is still Daniel's authentic founder brainstorm and transcript.
+- Four final founder-derived film slots remain intentionally blocked; the authorized sample film is not represented as the public submission video.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-16 17:29 CT — GOAL reconciliation log-order correction
 
 - The complete `17:28 CT — GOAL.md concurrent-edit reconciliation` entry was appended at line 2723 because its patch matched an earlier repeated Session-ID anchor. It remains valid evidence, but this tail entry is the chronological marker.
@@ -9604,3 +9643,11 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Daniel still needs to record and provide the authentic founder brainstorm and transcript. Run the private preflight first, review it locally, then use the printed shareable preflight only after confirming those exact files belong in the public demonstration.
 - The four final founder-derived film slots remain blocked by design; no sample artifact is represented as authentic founder evidence.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 18:44 CT — Created-work proof chronology tail
+
+- The complete `18:42 CT — Current created-work proof is visually current and vocabulary-coherent` entry was appended at line 2723 because its patch matched an earlier repeated Session-ID anchor. It remains valid append-only evidence; this entry is the authoritative chronological tail marker.
+- Current truth: the sixteen-screen gallery, active product vocabulary, compact Video focus/scroll behavior, full repository suite, 31-screen-state visual suite, recorded acceptance seam, local HyperFrames sample film, submission manifest, judge thumbnail, and packet integrity checks all pass.
+- No OpenAI provider request ran; the provider-operation ledger remains 107. The pre-existing user edit to `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.

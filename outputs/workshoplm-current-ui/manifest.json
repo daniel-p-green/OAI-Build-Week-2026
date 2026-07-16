@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
   "status": "current-workbench-gallery",
-  "builtAt": "2026-07-16T17:51:49.305Z",
+  "builtAt": "2026-07-16T23:36:03.869Z",
   "screenshots": [
     {
       "name": "01-start.png",
       "label": "Choose the professional outcome",
       "source": "apps/web/tests/visual/__screenshots__/desktop-onboarding-welcome.png",
-      "sha256": "359d3511e5a4f4794efd2167bb7c2aa10279eef7916544e6c142ef84d4286f05",
+      "sha256": "a4545ba2b9c17382b85a62b696b0b187f3784a7605c34f2153ae56ab56f3ac41",
       "width": 1200,
       "height": 800
     },
@@ -61,9 +61,9 @@
     },
     {
       "name": "08-current-outputs.png",
-      "label": "Review the current provider-backed deliverables",
+      "label": "Review the current provider-backed created work",
       "source": "artifacts/ui-review/outputs-latest-only-desktop-2026-07-16.png",
-      "sha256": "3a879ea024d98bc60d6003e9fe67877eddd2b76a790953b4513a98f743cdd8e1",
+      "sha256": "2903e3b1ec0d3d7e6445b40a5873b238c714dd53e1648f03811b23a93502f13f",
       "width": 1200,
       "height": 800
     },
@@ -87,7 +87,7 @@
       "name": "11-replace-image.png",
       "label": "Direct one image replacement without prompt editing",
       "source": "apps/web/tests/visual/__screenshots__/desktop-image-replacement.png",
-      "sha256": "cf28b3d844efa81674a2676eac856f57b25f65777a101f1fdc8af91727b235e3",
+      "sha256": "4ce94c5d48c2be4d15266e54450c7056b71e3236ebc1b6d0caabc55be23fd779",
       "width": 1200,
       "height": 800
     },
@@ -95,7 +95,7 @@
       "name": "12-storyboard.png",
       "label": "Edit and approve the Storyboard",
       "source": "apps/web/tests/visual/__screenshots__/desktop-storyboard.png",
-      "sha256": "e9fc9192bea0595908bf0e4df35e6b2e2caa00810580ad2d767eaaa7503ce958",
+      "sha256": "191e3dcf21211e355981462e1ab8305187de30f1875a9f2e93b135dedaf92383",
       "width": 1200,
       "height": 800
     },
@@ -109,9 +109,9 @@
     },
     {
       "name": "14-original-reveal.png",
-      "label": "Trace finished work back to the original thought",
+      "label": "Trace created work back to the original thought",
       "source": "apps/web/tests/visual/__screenshots__/desktop-original-reveal.png",
-      "sha256": "e32987370fd29e95ca8b5743795835e494f39961d2144a4450a37f647c5e0977",
+      "sha256": "adda186ec4c054998591ae4f046a7df3b9c32d25c46cc11da5ee47db10dc4dc8",
       "width": 1200,
       "height": 800
     },
@@ -125,7 +125,7 @@
     },
     {
       "name": "16-mobile-outputs.png",
-      "label": "Review current Outputs on mobile",
+      "label": "Review current created work on mobile",
       "source": "apps/web/tests/visual/__screenshots__/mobile-outputs.png",
       "sha256": "e0f7b7c992d48e47e28cf281077f188683f1757aa3d416f774931a119bc1fc03",
       "width": 390,
@@ -134,7 +134,7 @@
   ],
   "contactSheet": {
     "name": "contact-sheet.png",
-    "sha256": "5342126b42915edf99f0a5610db4d9b3950f579017b497dbca79559e7541cedf",
+    "sha256": "a4a821753cdf9b8694cd06c6752b39b3b2d6f9c4848a2f177fafed26ccab5929",
     "width": 1920,
     "height": 1280
   }

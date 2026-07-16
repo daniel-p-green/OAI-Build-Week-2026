@@ -6,9 +6,9 @@
     "width": 1280,
     "height": 720
   },
-  "filmPlanSha256": "d511abe267c9ade4366ccce60820799f65fbce7a2076084818495a5651b0bab1",
+  "filmPlanSha256": "7f24cc595619106ebde335aa03debf04a2ec800c3fe68459a6019590802cd5e5",
   "productProof": "outputs/workshoplm-current-ui/08-current-outputs.png",
-  "productProofSha256": "3a879ea024d98bc60d6003e9fe67877eddd2b76a790953b4513a98f743cdd8e1",
-  "thumbnailSha256": "fceb6d2c279eacc4c5197bd2fb4261a8fc57052b06238c3cd75476f9437c04e3",
-  "byteCount": 159625
+  "productProofSha256": "2903e3b1ec0d3d7e6445b40a5873b238c714dd53e1648f03811b23a93502f13f",
+  "thumbnailSha256": "8a52245a452dc55a6db5687e9b7ba29d2706b83e853ca9dc9e245ba43f6810da",
+  "byteCount": 107142
 }

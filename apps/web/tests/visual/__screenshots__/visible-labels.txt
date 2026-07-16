@@ -1,6 +1,6 @@
 010203040506Image set6 imagesPlanned3 sources
-01Slides02Infographic03Image set04Storyboard05Demo videoStoryboard5 panelsReady for review3 sources
-01Slides5s
+01Presentation02Infographic03Image set04Storyboard05Demo videoStoryboard5 panelsReady for review3 sources
+01Presentation5s
 02Infographic5s
 03Image set5s
 04Storyboard5s
@@ -8,28 +8,28 @@
 Add material
 Approve storyboard
 Back to Brief
+Back to Created work
 Back to Map
-Back to Outputs
 Brief3 sourcesApproved
 Build notes · §2
 ChatAsk your sources
 Collapse Create
 Collapse Sources
+Created work
+Created work4 readyUp to date
 Edit
 Expand Sources
 Goal · capture
 Image set
 Infographic
 Infographic3 sourcesUp to date
-Outputs
-Outputs4 readyUp to date
 PDFBuild Week brief3 claims
+Presentation
+Presentation3 sourcesUp to date
 Review storyboard
 Show source
 Sketch
 Sketch4 ideasUp to date3 sources
-Slides
-Slides3 sourcesUp to date
 Sources behind this brief
 Storyboard
 Storyboard5 editable panelsNeeds review

@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "WorkshopLM",
-  description: "Turn raw thinking into finished work.",
+  description: "Turn raw thinking into professional knowledge work.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
