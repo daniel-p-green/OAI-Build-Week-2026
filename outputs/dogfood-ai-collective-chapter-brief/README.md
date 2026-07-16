@@ -37,3 +37,15 @@ Choose one:
 - **Revise** — name the first slide or sentence that prevents sending it.
 
 This package is ready for that review. It has not yet received an external send-or-revise judgment and must not be described as externally approved.
+
+## Share the cold-review packet
+
+Build the privacy-safe reviewer bundle from the current deck with:
+
+```sh
+pnpm dogfood:review:build
+```
+
+Send `workshoplm-ai-collective-cold-review.zip`. Its `START-HERE.html` shows the complete presentation, links the PDF and editable PowerPoint, and asks for exactly one decision: `Send` or the first blocking `Revise`. Feedback downloads locally as a text file; the page has no analytics, account requirement, form endpoint, or network submission. `FEEDBACK.txt` is included as a no-JavaScript fallback.
+
+The bundle is a review instrument, not review evidence. Do not close the professional gate until a real intended-audience reviewer returns the completed feedback.

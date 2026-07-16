@@ -7022,3 +7022,42 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - The next product gate remains the intended-audience review of the external AI Collective deck: `Send` or one concrete `Revise`.
 - Provider-backed Map, Realtime, Images, narration, founder recording, final public Video and links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 00:08 CT — Dogfood one becomes a six-file handoff
+
+**Area:** External dogfood / Professional review / Privacy-safe distribution / Send-it gate
+
+### Changed
+
+- Added `pnpm dogfood:review:build`, a repeatable builder for the external AI Collective cold-review packet.
+- The builder fails closed unless the current deck has nine slides, the PDF has nine pages, the PowerPoint archive is valid, and every required input exists with bytes.
+- The resulting ZIP contains exactly six shareable files: `START-HERE.html`, the PDF, editable PowerPoint, contact sheet, `FEEDBACK.txt`, and a hash manifest.
+- `START-HERE.html` shows the finished sequence before project explanation, asks one professional decision—`Send` or the first blocking `Revise`—and downloads feedback locally. It has no analytics, account, form endpoint, private Workshop state, or automatic transmission.
+- Added the packet build and honest external-review boundary to the dogfood README.
+
+### Verified
+
+- Built the packet twice with the identical ZIP SHA-256 `28f96b028e4d5288db0e4f734df42d6764bc8bd4761fbb98841523bc384657f9`.
+- `unzip -t` passed and the archive contained exactly the six declared files in manifest order.
+- All six reviewer links returned HTTP success from a clean local server. PDF extraction recovered the final recommendation, and PowerPoint XML retained the `180+` proof.
+- In the Codex in-app browser, full-page desktop inspection showed the actual nine-slide contact sheet, two document actions, and one focused feedback surface. The empty decision and unexplained `Revise` paths returned the correct validation messages; a completed revision returned the local-download success state with no console warnings or errors.
+- At 390×844, body, document, and viewport widths were all exactly 390px. Fields, choices, feedback action, and privacy notice remained readable with no horizontal overflow.
+- A recursive privacy scan found no absolute local path, API key marker, private ChatGPT locator, or sanitized fixture marker in the packet.
+- `pnpm check` passed all 13 workspace packages, including 14 production tests, 106 worker tests, 27 web tests, 16 domain tests, and seven plugin tests.
+- `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. The submission manifest remains honestly `partial` because its five provider/final-media gaps are still open.
+- `pnpm demo:film:verify` passed the 162-second draft plan with six ready shots and four evidence-blocked shots; it correctly reported that no final Video exists instead of promoting the draft.
+- No external message was sent and no provider request or paid call ran.
+
+### Decisions
+
+- The product cannot manufacture external approval, but it can make honest uncoached review a one-file handoff instead of a coordination project.
+- Feedback stays local and reviewer-controlled. The packet records no response until the reviewer deliberately returns the downloaded text file.
+- A verified review instrument is readiness evidence, not `Send` evidence; the product and dogfood checkboxes remain open.
+
+### Open items
+
+- Share `workshoplm-ai-collective-cold-review.zip` with one intended-audience professional and ingest the returned `Send` or first blocking `Revise` as the next product decision.
+- Provider-backed Map, Realtime, Images, narration, founder recording, final public Video and links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
