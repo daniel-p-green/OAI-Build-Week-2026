@@ -58,3 +58,8 @@ export function realtimeAssistantTranscript(state: RealtimeTranscriptState): { t
   const latest = responseIds.at(-1);
   return { text, responseId: latest, eventIds: responseIds.flatMap((responseId) => state.assistantEventByResponse[responseId] ? [state.assistantEventByResponse[responseId]!] : []) };
 }
+
+export function realtimeFunctionOutput(callId: string, result: unknown): Record<string, unknown> {
+  if (!callId.trim()) throw new Error("Realtime call ID is required.");
+  return { type: "conversation.item.create", item: { type: "function_call_output", call_id: callId, output: JSON.stringify(result) } };
+}

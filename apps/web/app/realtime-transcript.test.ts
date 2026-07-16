@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { emptyRealtimeTranscript, realtimeAssistantTranscript, realtimeTranscriptEvidence, realtimeTranscriptText, reduceRealtimeTranscript } from "./realtime-transcript";
+import { emptyRealtimeTranscript, realtimeAssistantTranscript, realtimeFunctionOutput, realtimeTranscriptEvidence, realtimeTranscriptText, reduceRealtimeTranscript } from "./realtime-transcript";
 
 describe("Realtime transcript events", () => {
   it("assembles deltas, replaces them with the final transcript, and keeps turn order", () => {
@@ -21,5 +21,10 @@ describe("Realtime transcript events", () => {
     let state = reduceRealtimeTranscript(emptyRealtimeTranscript(), { type: "response.output_audio_transcript.delta", response_id: "response-1", delta: "Grounded " });
     state = reduceRealtimeTranscript(state, { type: "response.output_audio_transcript.done", response_id: "response-1", event_id: "assistant-event-1", transcript: "Grounded answer." });
     expect(realtimeAssistantTranscript(state)).toEqual({ text: "Grounded answer.", responseId: "response-1", eventIds: ["assistant-event-1"] });
+  });
+
+  it("builds the confirmed function result envelope for the open voice session", () => {
+    expect(realtimeFunctionOutput("call-confirmed", { summary: "Brief approved", isError: false })).toEqual({ type: "conversation.item.create", item: { type: "function_call_output", call_id: "call-confirmed", output: JSON.stringify({ summary: "Brief approved", isError: false }) } });
+    expect(() => realtimeFunctionOutput("", {})).toThrow(/call ID/);
   });
 });

@@ -32,6 +32,7 @@ import { RealtimeCapture } from "./realtime-capture";
 import { ExcalidrawMap } from "./excalidraw-map";
 import { claimsForArtifact } from "./artifact-evidence";
 import { sourceInputKind, sourceTitleFromText } from "./source-input";
+import { realtimeFunctionOutput } from "./realtime-transcript";
 
 type ObjectView = "conversation" | "map" | "brief" | "outputs" | "storyboard" | "output";
 type Sheet = "workshops" | "sources" | "evidence" | "add-source" | "style" | "original" | "help" | null;
@@ -139,6 +140,7 @@ export default function WorkshopPage() {
   const [notice, setNotice] = useState<{ message: string; tone: "status" | "error" } | null>(null);
   const [busy, setBusy] = useState(false);
   const [streamingReply, setStreamingReply] = useState("");
+  const [realtimeContinuation, setRealtimeContinuation] = useState<Record<string, unknown> | undefined>();
   const returnFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => { void Promise.all([reload(), reloadWorkshops(), reloadStyleLibrary()]); }, []);
@@ -290,9 +292,10 @@ export default function WorkshopPage() {
     setNotice(null);
     try {
       const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "executeTool", toolCall: { name: call.name, arguments: call.input, channel: call.channel, explicitUserIntent: true, provider: call.provider } }) });
-      const confirmed = await response.json() as { state?: PersistedWorkshop; result?: { isError?: boolean; summary?: string }; error?: string };
+      const confirmed = await response.json() as { state?: PersistedWorkshop; result?: { isError?: boolean; summary?: string; data?: unknown }; error?: string };
       if (!response.ok || !confirmed.state || confirmed.result?.isError) throw new Error(confirmed.error ?? confirmed.result?.summary ?? "That action could not be confirmed");
       setState(confirmed.state);
+      if (call.channel === "realtime" && call.provider?.callId && confirmed.result) setRealtimeContinuation(realtimeFunctionOutput(call.provider.callId, confirmed.result));
       return true;
     } catch (error) {
       setNotice({ message: error instanceof Error ? error.message : "That action could not be confirmed", tone: "error" });
@@ -403,7 +406,7 @@ export default function WorkshopPage() {
         <section className="object-canvas" aria-label={currentTitle}>
           {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
           {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
-          {loadState === "ready" && view === "conversation" && <ConversationView state={state} busy={busy} streamingReply={streamingReply} onSend={sendConversation} onVoiceSave={async (text, capture) => Boolean(await post({ action: "captureFallbackTranscript", text, capture }))} onVoiceToolEvent={handleRealtimeToolEvent} onConfirmTool={confirmToolCall} onShowSource={showSource} />}
+          {loadState === "ready" && view === "conversation" && <ConversationView state={state} busy={busy} streamingReply={streamingReply} realtimeContinuation={realtimeContinuation} onRealtimeContinuationSent={() => setRealtimeContinuation(undefined)} onSend={sendConversation} onVoiceSave={async (text, capture) => Boolean(await post({ action: "captureFallbackTranscript", text, capture }))} onVoiceToolEvent={handleRealtimeToolEvent} onConfirmTool={confirmToolCall} onShowSource={showSource} />}
           {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "map" }); }} onReviewStyle={() => openSheet("style")} onRetryStyle={(url) => { void post({ action: "beginWebsiteStyleAnalysis", url }); }} onUseDefaultStyle={() => { void post({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: state?.onboarding.outcome } }); }} />}
           {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
           {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
@@ -695,7 +698,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   </SideSheet>;
 }
 
-function ConversationView({ state, busy, streamingReply, onSend, onVoiceSave, onVoiceToolEvent, onConfirmTool, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; streamingReply: string; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] } }) => Promise<boolean>; onVoiceToolEvent: (event: unknown) => Promise<Record<string, unknown> | undefined>; onConfirmTool: (call: ConversationToolCall) => Promise<boolean>; onShowSource: (target?: EvidenceTarget) => void }) {
+function ConversationView({ state, busy, streamingReply, realtimeContinuation, onRealtimeContinuationSent, onSend, onVoiceSave, onVoiceToolEvent, onConfirmTool, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; streamingReply: string; realtimeContinuation?: Record<string, unknown>; onRealtimeContinuationSent: () => void; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] } }) => Promise<boolean>; onVoiceToolEvent: (event: unknown) => Promise<Record<string, unknown> | undefined>; onConfirmTool: (call: ConversationToolCall) => Promise<boolean>; onShowSource: (target?: EvidenceTarget) => void }) {
   const [draft, setDraft] = useState("");
   const [voiceOpen, setVoiceOpen] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
@@ -728,10 +731,10 @@ function ConversationView({ state, busy, streamingReply, onSend, onVoiceSave, on
       <div ref={endRef} />
     </div>
     <div className="conversation-compose">
-      {voiceOpen && <RealtimeCapture mode="conversation" disabled={busy} onProviderToolEvent={onVoiceToolEvent} onSave={async (text, capture) => { const saved = await onVoiceSave(text, capture); if (saved) setVoiceOpen(false); return saved; }} />}
+      {voiceOpen && <RealtimeCapture mode="conversation" disabled={busy} continuationOutput={realtimeContinuation} onContinuationSent={onRealtimeContinuationSent} onProviderToolEvent={onVoiceToolEvent} onSave={async (text, capture) => { const saved = await onVoiceSave(text, capture); if (saved) { onRealtimeContinuationSent(); setVoiceOpen(false); } return saved; }} />}
       <form className="conversation-composer" onSubmit={(event) => { event.preventDefault(); void send(); }}>
         <TextArea aria-label="Message WorkshopLM" placeholder="Ask about the selected Sources…" value={draft} maxLength={4000} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); void send(); } }} />
-        <div className="conversation-actions"><Button type="button" variant="secondary" aria-expanded={voiceOpen} onClick={() => setVoiceOpen((current) => !current)}>{voiceOpen ? "Close voice" : "Voice"}</Button><Button type="submit" disabled={busy || !draft.trim()}>{busy ? "Working…" : "Send"}</Button></div>
+        <div className="conversation-actions"><Button type="button" variant="secondary" aria-expanded={voiceOpen} onClick={() => { onRealtimeContinuationSent(); setVoiceOpen((current) => !current); }}>{voiceOpen ? "Close voice" : "Voice"}</Button><Button type="submit" disabled={busy || !draft.trim()}>{busy ? "Working…" : "Send"}</Button></div>
       </form>
     </div>
   </ConversationSurface>;

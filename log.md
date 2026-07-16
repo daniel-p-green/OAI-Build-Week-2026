@@ -6611,3 +6611,31 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Live-verify one grounded read, one visible confirmed write, spoken response, interruption, input/assistant transcripts, and durable provider provenance after explicit spend authorization.
 - Obtain the external deck `Send`/`Revise` review; provider media, founder recording, final public Video, public links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 21:40 CT — Voice confirmation resumes the same spoken session
+
+**Area:** Realtime / Confirmation / Conversation continuity
+
+### Changed
+
+- Converted a successful visible Realtime confirmation into the official `conversation.item.create` function-output envelope and returned it to the still-open voice data channel, followed by `response.create`.
+- Made the continuation single-use and connection-safe: it flushes immediately on an open channel or when a connecting channel opens, then clears from browser state.
+- Discarded any unsent continuation when the voice surface closes or saves so an old confirmed action cannot enter a later session.
+
+### Verified
+
+- The new envelope test proves the exact call ID and serialized successful result returned to Realtime and rejects an empty call ID.
+- All 23 web tests and web typecheck passed. `git diff --check` passed. No paid provider request ran.
+
+### Decisions
+
+- The visible confirmation remains the authorization boundary; voice never infers consent from speech alone.
+- A confirmed result belongs only to the session that proposed it. Closing voice intentionally forfeits spoken acknowledgement while preserving the already-completed Workshop mutation and durable audit trail.
+
+### Open items
+
+- Provider-backed proof remains required for spoken grounding, remote audio, interruption, read-tool continuation, visible write confirmation, and post-confirmation speech.
+- The external deck `Send`/`Revise` review and all final provider/demo/submission evidence remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

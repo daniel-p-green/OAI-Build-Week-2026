@@ -9,7 +9,7 @@ type RealtimeMode = "capture" | "conversation";
 type TokenResponse = { value?: string; expiresAt?: number; model?: "gpt-realtime-2.1"; transcriptionModel?: "gpt-realtime-whisper"; mode?: RealtimeMode; error?: string };
 type SaveEvidence = { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[]; assistant?: { text: string; responseId: string; eventIds: string[] } };
 
-export function RealtimeCapture({ disabled = false, mode = "capture", onSave, onProviderToolEvent }: { disabled?: boolean; mode?: RealtimeMode; onSave: (text: string, evidence: SaveEvidence) => Promise<boolean>; onProviderToolEvent?: (event: unknown) => Promise<Record<string, unknown> | undefined> }) {
+export function RealtimeCapture({ disabled = false, mode = "capture", continuationOutput, onContinuationSent, onSave, onProviderToolEvent }: { disabled?: boolean; mode?: RealtimeMode; continuationOutput?: Record<string, unknown>; onContinuationSent?: () => void; onSave: (text: string, evidence: SaveEvidence) => Promise<boolean>; onProviderToolEvent?: (event: unknown) => Promise<Record<string, unknown> | undefined> }) {
   const [phase, setPhase] = useState<CapturePhase>("idle");
   const [transcript, setTranscript] = useState<RealtimeTranscriptState>(() => emptyRealtimeTranscript());
   const [error, setError] = useState("");
@@ -17,6 +17,8 @@ export function RealtimeCapture({ disabled = false, mode = "capture", onSave, on
   const streamRef = useRef<MediaStream | null>(null);
   const channelRef = useRef<RTCDataChannel | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const continuationRef = useRef<Record<string, unknown> | undefined>(continuationOutput);
+  const continuationSentRef = useRef(onContinuationSent);
   const modelRef = useRef<{ model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper" } | null>(null);
   const text = useMemo(() => realtimeTranscriptText(transcript), [transcript]);
   const providerEvents = useMemo(() => realtimeTranscriptEvidence(transcript), [transcript]);
@@ -33,6 +35,18 @@ export function RealtimeCapture({ disabled = false, mode = "capture", onSave, on
   }
 
   useEffect(() => () => release(), []);
+  function sendContinuation(channel: RTCDataChannel) {
+    if (!continuationRef.current || channel.readyState !== "open") return;
+    channel.send(JSON.stringify(continuationRef.current));
+    channel.send(JSON.stringify({ type: "response.create" }));
+    continuationRef.current = undefined;
+    continuationSentRef.current?.();
+  }
+  useEffect(() => {
+    continuationRef.current = continuationOutput;
+    continuationSentRef.current = onContinuationSent;
+    if (channelRef.current) sendContinuation(channelRef.current);
+  }, [continuationOutput, onContinuationSent]);
 
   async function start() {
     setPhase("connecting");
@@ -66,7 +80,7 @@ export function RealtimeCapture({ disabled = false, mode = "capture", onSave, on
         }
         catch { setError("WorkshopLM received an unreadable transcript event."); setPhase("error"); }
       });
-      channel.addEventListener("open", () => setPhase("recording"));
+      channel.addEventListener("open", () => { setPhase("recording"); sendContinuation(channel); });
       channel.addEventListener("error", () => { setError("The voice connection was interrupted."); setPhase("error"); });
       const offer = await peer.createOffer();
       await peer.setLocalDescription(offer);
