@@ -49,3 +49,11 @@ pnpm dogfood:review:build
 Send `workshoplm-ai-collective-cold-review.zip`. Its `START-HERE.html` shows the complete presentation, links the PDF and editable PowerPoint, and asks for exactly one decision: `Send` or the first blocking `Revise`. Feedback downloads locally as a text file; the page has no analytics, account requirement, form endpoint, or network submission. `FEEDBACK.txt` is included as a no-JavaScript fallback.
 
 The bundle is a review instrument, not review evidence. Do not close the professional gate until a real intended-audience reviewer returns the completed feedback.
+
+When that text file returns, validate and preserve it against the exact deck version with:
+
+```sh
+pnpm dogfood:review:ingest -- /path/to/workshoplm-cold-review.txt
+```
+
+The command rejects an untouched template, a missing reviewer role, an unexplained `Revise`, and feedback for an older Review ID. A valid response is preserved under `artifacts/dogfood/reviews/` with the reviewed PDF/PowerPoint hashes and an explicit identity-verification boundary. It does not automatically close the product gate or claim external approval.

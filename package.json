@@ -21,6 +21,7 @@
     "demo:film:verify-final": "tsx scripts/verify-demo-film.ts --final",
     "dogfood:deck:build": "tsx scripts/rebuild-dogfood-deck.ts",
     "dogfood:review:build": "tsx scripts/build-dogfood-review-packet.ts",
+    "dogfood:review:ingest": "tsx scripts/ingest-dogfood-review.ts",
     "dogfood:intents:build": "tsx scripts/render-intent-profile-review.ts",
     "submission:build": "tsx scripts/submission-output-set.ts build",
     "submission:verify": "tsx scripts/submission-output-set.ts verify",

@@ -14,7 +14,7 @@ async function requireFile(path: string) {
   if (!info.isFile() || info.size === 0) throw new Error(`Required review artifact is missing or empty: ${path}`);
 }
 
-function reviewHtml() {
+function reviewHtml(reviewId: string) {
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -58,7 +58,7 @@ function reviewHtml() {
       const status = document.querySelector('#status');
       if (!decision) { status.textContent = 'Choose Send or Revise first.'; return; }
       if (decision === 'Revise' && !blocker && !reason) { status.textContent = 'Name the first blocking issue before downloading.'; return; }
-      const text = ['WorkshopLM cold review', '', 'Decision: ' + decision, 'Role: ' + (role || 'Not provided'), 'First blocker: ' + (blocker || 'None'), '', 'Reason:', reason || 'No additional comment.', ''].join('\\n');
+      const text = ['WorkshopLM cold review', '', 'Review ID: ${reviewId}', 'Decision: ' + decision, 'Role: ' + (role || 'Not provided'), 'First blocker: ' + (blocker || 'None'), '', 'Reason:', reason || 'No additional comment.', ''].join('\\n');
       const href = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
       const link = document.createElement('a'); link.href = href; link.download = 'workshoplm-cold-review.txt'; link.click(); URL.revokeObjectURL(href);
       status.textContent = 'Feedback downloaded. Return that text file to the project team.';
@@ -91,12 +91,13 @@ async function main() {
   await rm(zipPath, { force: true });
   await mkdir(packet, { recursive: true });
   for (const [input, output] of copies) await copyFile(join(source, input), join(packet, output));
-  await writeFile(join(packet, "START-HERE.html"), reviewHtml(), "utf8");
-  await writeFile(join(packet, "FEEDBACK.txt"), "WorkshopLM cold review\n\nDecision: Send / Revise\nRole:\nFirst blocker:\n\nReason:\n", "utf8");
+  const reviewId = `aic-${(await sha256(join(packet, "AI-Collective-chapter-launch.pdf"))).slice(0, 16)}`;
+  await writeFile(join(packet, "START-HERE.html"), reviewHtml(reviewId), "utf8");
+  await writeFile(join(packet, "FEEDBACK.txt"), `WorkshopLM cold review\n\nReview ID: ${reviewId}\nDecision: Send / Revise\nRole:\nFirst blocker:\n\nReason:\n`, "utf8");
 
   const packetFiles = ["START-HERE.html", "AI-Collective-chapter-launch.pdf", "AI-Collective-chapter-launch.pptx", "contact-sheet.png", "FEEDBACK.txt"];
   const hashes = Object.fromEntries(await Promise.all(packetFiles.map(async (file) => [file, await sha256(join(packet, file))])));
-  const manifest = { schemaVersion: 1, purpose: "Uncoached Send or Revise review of the external WorkshopLM dogfood deck.", privacy: "Contains only the shareable AI Collective brief, its editable handoff, and local feedback tools. No private Workshop data or network submission.", files: hashes };
+  const manifest = { schemaVersion: 2, reviewId, purpose: "Uncoached Send or Revise review of the external WorkshopLM dogfood deck.", privacy: "Contains only the shareable AI Collective brief, its editable handoff, and local feedback tools. No private Workshop data or network submission.", files: hashes };
   await writeFile(join(packet, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
   packetFiles.push("manifest.json");
   for (const file of packetFiles) await utimes(join(packet, file), fixedMtime, fixedMtime);
@@ -106,7 +107,7 @@ async function main() {
   const archived = execFileSync("unzip", ["-Z1", zipPath], { encoding: "utf8" }).trim().split("\n").filter(Boolean);
   if (archived.join("\n") !== packetFiles.join("\n")) throw new Error("Cold-review ZIP contents do not match the declared packet.");
 
-  process.stdout.write(`${JSON.stringify({ packet: zipPath, files: archived, sha256: await sha256(zipPath) }, null, 2)}\n`);
+  process.stdout.write(`${JSON.stringify({ packet: zipPath, reviewId, files: archived, sha256: await sha256(zipPath) }, null, 2)}\n`);
 }
 
 main().catch((error: unknown) => {

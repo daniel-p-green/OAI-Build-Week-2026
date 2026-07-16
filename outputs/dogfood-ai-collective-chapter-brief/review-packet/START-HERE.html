@@ -41,7 +41,7 @@
       const status = document.querySelector('#status');
       if (!decision) { status.textContent = 'Choose Send or Revise first.'; return; }
       if (decision === 'Revise' && !blocker && !reason) { status.textContent = 'Name the first blocking issue before downloading.'; return; }
-      const text = ['WorkshopLM cold review', '', 'Decision: ' + decision, 'Role: ' + (role || 'Not provided'), 'First blocker: ' + (blocker || 'None'), '', 'Reason:', reason || 'No additional comment.', ''].join('\n');
+      const text = ['WorkshopLM cold review', '', 'Review ID: aic-53586afb923fa3ca', 'Decision: ' + decision, 'Role: ' + (role || 'Not provided'), 'First blocker: ' + (blocker || 'None'), '', 'Reason:', reason || 'No additional comment.', ''].join('\n');
       const href = URL.createObjectURL(new Blob([text], { type: 'text/plain' }));
       const link = document.createElement('a'); link.href = href; link.download = 'workshoplm-cold-review.txt'; link.click(); URL.revokeObjectURL(href);
       status.textContent = 'Feedback downloaded. Return that text file to the project team.';

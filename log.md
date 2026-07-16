@@ -7099,3 +7099,41 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Send the refreshed cold-review ZIP to one intended-audience professional and ingest the returned `Send` or first blocking `Revise`.
 - Provider-backed Map, Realtime, Images, narration, founder recording, final public Video and links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 00:23 CT — Professional feedback is bound to the deck reviewed
+
+**Area:** External dogfood / Evidence integrity / Review loop / Send-it gate
+
+### Changed
+
+- Added a content-derived Review ID to the cold-review manifest, no-JavaScript fallback, and downloaded browser response. The current ID `aic-53586afb923fa3ca` is derived from the exact reviewed PDF bytes.
+- Added `pnpm dogfood:review:ingest -- <returned-feedback.txt>` to validate and preserve a returned review against the current packet and source deck.
+- Ingestion rejects an untouched `Send / Revise` template, missing role, unexplained `Revise`, mismatched Review ID, tampered packet document, or a packet whose PDF/PowerPoint no longer matches the current source deck.
+- A valid response records its decision, role, blocker, reason, returned-file hash, and reviewed PDF/PowerPoint hashes under `artifacts/dogfood/reviews/`. It explicitly records that reviewer identity is not independently authenticated and does not automatically close `GOAL.md`.
+- Documented the return command and evidence boundary in the external dogfood README; rebuilt the six-file review ZIP.
+
+### Verified
+
+- Dry-run ingestion accepted a complete current-version `Send` response and returned the exact Review ID, reviewer role, reviewed document hashes, and identity boundary without writing project evidence.
+- Negative round-trip checks rejected a stale Review ID, an unexplained `Revise`, and the untouched fallback template with distinct fail-closed messages.
+- A current-version `Revise` dry run preserved both lines of a multiline reason and the exact first blocker instead of truncating reviewer context.
+- A second packet build produced the same Review ID and deterministic ZIP SHA-256 `a3abb4752bfe364fcfd149b785c59fa86db5ee95e0ed905eedbb479d353cb35d`.
+- The ZIP archive test passed; both `START-HERE.html` and `FEEDBACK.txt` contain the current Review ID.
+- `pnpm check` passed all 13 packages, including 15 production, 106 worker, 27 web, 16 domain, and seven plugin tests.
+- `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. The 18-asset set remains honestly `partial` with five provider gaps.
+- `pnpm demo:film:verify` passed the 162-second draft truth gate with six ready shots, four evidence-blocked shots, and no final-video claim.
+- No external message was sent and no provider request or paid call ran.
+
+### Decisions
+
+- A `Send` response is useful only if it can be tied to the exact candidate reviewed. Review IDs are content-derived rather than manually versioned.
+- Evidence ingestion must fail closed when the source deck moves after the packet was built; an internally valid old packet is still stale product evidence.
+- The tool preserves the returned response but cannot authenticate the human behind it. That boundary stays explicit instead of being promoted into stronger external-validation proof.
+
+### Open items
+
+- Send the current ZIP to one intended-audience professional and ingest the returned response. No external review evidence exists yet.
+- Provider-backed Map, Realtime, Images, narration, founder recording, final public Video and links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
