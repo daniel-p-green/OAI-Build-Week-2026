@@ -40,6 +40,7 @@ type WorkshopSummary = { id: string; title: string; sources: number; outputs: nu
 type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string; permission: "private" | "sanitized" | "shareable" };
 type EvidenceTarget = { sourceId?: string; claimId?: string; locator?: string };
 type EvidenceSelection = { excerpt: string; locator: string };
+type PendingSourceScope = { sourceIds: string[]; sourceTitle: string; change: "add" | "remove"; affected: string[] };
 type ConversationTurn = { id: string; role: "user" | "assistant"; text: string; input: "text" | "voice" | "system"; createdAt: string; evidence: { claimId?: string; sourceId: string; chunkId?: string; locator: string }[]; sourceId?: string; operation?: { name: "search" | "source_search" | "voice_capture"; status: "completed" } };
 type ConversationToolCall = { id: string; name: string; channel: "plugin" | "responses" | "realtime"; input: Record<string, unknown>; explicitUserIntent: boolean; effect: string; status: "succeeded" | "failed"; startedAt: string; completedAt: string; provider?: { model?: string; responseId?: string; callId?: string; eventId?: string }; result: { summary: string; isError: boolean } };
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
@@ -125,6 +126,18 @@ function boundImage(panel: PersistedWorkshop["storyboard"]["panels"][number], im
   return imageBatch?.panels.find((image) => image.id === panel.imagePanelId && image.version === panel.imagePanelVersion && image.state === "generated");
 }
 
+function affectedWorkForSourceScope(state: PersistedWorkshop | null) {
+  if (!state) return [];
+  const affected = state.mapNodes.length ? ["Map"] : [];
+  if (state.frame || state.briefApproved) affected.push("Brief");
+  if (state.outputs.some((output) => output.type === "deck")) affected.push("Presentation");
+  if (state.outputs.some((output) => output.type === "infographic")) affected.push("Infographic");
+  if (state.imageBatch) affected.push("Image set");
+  if (state.storyboard.panels.length) affected.push("Storyboard");
+  if (state.videos.length) affected.push("Video");
+  return affected;
+}
+
 export default function WorkshopPage() {
   const [state, setState] = useState<PersistedWorkshop | null>(null);
   const [workshops, setWorkshops] = useState<WorkshopSummary[]>([]);
@@ -141,6 +154,9 @@ export default function WorkshopPage() {
   const [busy, setBusy] = useState(false);
   const [streamingReply, setStreamingReply] = useState("");
   const [realtimeContinuation, setRealtimeContinuation] = useState<Record<string, unknown> | undefined>();
+  const [leftRailOpen, setLeftRailOpen] = useState(true);
+  const [rightRailOpen, setRightRailOpen] = useState(true);
+  const [pendingSourceScope, setPendingSourceScope] = useState<PendingSourceScope | null>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => { void Promise.all([reload(), reloadWorkshops(), reloadStyleLibrary()]); }, []);
@@ -212,7 +228,7 @@ export default function WorkshopPage() {
       if (!response.ok) throw new Error(next.error ?? "That action did not work");
       setState(next);
       if (body.action === "createWorkshop" || body.action === "selectWorkshop") {
-        setView("map"); setSelectedNodeId(""); setSelectedSource(null); setSelectedEvidence(null); setSelectedPanelId(""); setSelectedOutputId(""); closeSheet();
+        setView("map"); setSelectedNodeId(""); setSelectedSource(null); setSelectedEvidence(null); setSelectedPanelId(""); setSelectedOutputId(""); setPendingSourceScope(null); closeSheet();
       }
       if (body.action === "lockManualStyle" || body.action === "lockWebsiteStyle" || body.action === "applyStyleLibrary") void reloadStyleLibrary();
       void reloadWorkshops();
@@ -362,6 +378,30 @@ export default function WorkshopPage() {
     openView("outputs");
   }
 
+  function requestSourceScopeChange(sourceId: string) {
+    const current = state?.activeSourceIds ?? [];
+    const source = state?.sourceItems.find((item) => item.id === sourceId);
+    const removing = current.includes(sourceId);
+    const sourceIds = removing ? current.filter((id) => id !== sourceId) : [...current, sourceId];
+    if (!sourceIds.length) {
+      setNotice({ message: "Keep at least one Source selected.", tone: "error" });
+      return;
+    }
+    if (source) setSelectedSource(source);
+    const affected = affectedWorkForSourceScope(state);
+    if (!affected.length) {
+      void post({ action: "setActiveSourceScope", sourceIds });
+      return;
+    }
+    setPendingSourceScope({ sourceIds, sourceTitle: source?.title ?? "this Source", change: removing ? "remove" : "add", affected });
+  }
+
+  async function applySourceScopeChange() {
+    if (!pendingSourceScope) return;
+    const next = await post({ action: "setActiveSourceScope", sourceIds: pendingSourceScope.sourceIds });
+    if (next) setPendingSourceScope(null);
+  }
+
   const sourceCount = state?.activeSourceIds.length ?? 0;
   const visibleSourceCount = view === "output" && selectedOutput
     ? outputSourceCount(selectedOutput, state)
@@ -400,8 +440,8 @@ export default function WorkshopPage() {
 
       {notice && <Card className={`notice notice--${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}><span>{notice.message}</span><IconButton label="Dismiss" onClick={() => setNotice(null)}><CloseIcon /></IconButton></Card>}
 
-      <Workbench className="workbench">
-        {loadState === "ready" && <SourcesRail sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} conversationActive={view === "conversation"} onConversation={() => openView("conversation")} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => openSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
+      <Workbench className={`workbench ${leftRailOpen ? "" : "left-rail-collapsed"} ${rightRailOpen ? "" : "right-rail-collapsed"}`}>
+        {loadState === "ready" && <SourcesRail open={leftRailOpen} sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} pending={sheet === "sources" ? null : pendingSourceScope} busy={busy} conversationActive={view === "conversation"} onConversation={() => openView("conversation")} onSelect={setSelectedSource} onToggle={requestSourceScopeChange} onApplyScope={() => { void applySourceScopeChange(); }} onCancelScope={() => setPendingSourceScope(null)} onCollapse={() => setLeftRailOpen((current) => !current)} onAdd={() => openSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
         {loadState === "ready" && <ObjectSwitcher className="mobile-object-switcher" aria-label="Workshop objects"><Button variant="secondary" size="small" aria-pressed={view === "conversation"} onClick={() => openView("conversation")}>Chat</Button><Button variant="secondary" size="small" aria-pressed={view === "map"} onClick={() => openView("map")}>Map</Button><Button variant="secondary" size="small" aria-label="View brief" aria-pressed={view === "brief"} disabled={!state?.briefApproved} onClick={() => openView("brief")}>Brief</Button><Button variant="secondary" size="small" aria-label="View outputs" aria-pressed={view === "outputs" || view === "output"} disabled={!(state?.outputs.length || state?.imageBatch)} onClick={() => openView("outputs")}>Outputs</Button><Button variant="secondary" size="small" aria-label="View storyboard" aria-pressed={view === "storyboard"} disabled={!state?.storyboard.panels.length} onClick={() => openView("storyboard")}>Story</Button></ObjectSwitcher>}
         <section className="object-canvas" aria-label={currentTitle}>
           {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
@@ -413,11 +453,11 @@ export default function WorkshopPage() {
           {loadState === "ready" && view === "storyboard" && <StoryboardView storyboard={state?.storyboard} imageBatch={state?.imageBatch} approved={Boolean(state?.storyboardApproved)} panel={selectedPanel} busy={busy} onSelect={setSelectedPanelId} onPost={post} onShowSource={showSource} />}
           {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} busy={busy} onShowSource={showSource} onShowOriginal={() => openSheet("original")} onRequestReplacement={async (panelId) => { const next = await post({ action: "regenerateImagePanel", panelId }); if (next) setNotice({ message: "Replacement requested. Review the new image in Storyboard before approving Video.", tone: "status" }); }} />}
         </section>
-        {loadState === "ready" && <ProductionRail state={state} view={view} action={workflowAction} onOpenView={openView} onOpenOutput={openOutput} onOpenStyle={() => openSheet("style")} />}
+        {loadState === "ready" && <ProductionRail open={rightRailOpen} state={state} view={view} action={workflowAction} onCollapse={() => setRightRailOpen((current) => !current)} onOpenView={openView} onOpenOutput={openOutput} onOpenStyle={() => openSheet("style")} />}
       </Workbench>
 
       {sheet === "workshops" && <WorkshopsSheet workshops={workshops} busy={busy} onClose={closeSheet} onSelect={(workshopId) => { void post({ action: "selectWorkshop", workshopId }); }} onCreate={(title) => post({ action: "createWorkshop", title }).then(Boolean)} onHelp={() => setSheet("help")} />}
-      {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} onClose={closeSheet} onSelect={setSelectedSource} onToggle={(sourceId) => { const current = state?.activeSourceIds ?? []; const sourceIds = current.includes(sourceId) ? current.filter((id) => id !== sourceId) : [...current, sourceId]; void post({ action: "setActiveSourceScope", sourceIds }); }} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
+      {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} pending={pendingSourceScope} busy={busy} onClose={closeSheet} onSelect={setSelectedSource} onToggle={requestSourceScopeChange} onApplyScope={() => { void applySourceScopeChange(); }} onCancelScope={() => setPendingSourceScope(null)} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "evidence" && selectedSource && <EvidenceSheet source={selectedSource} evidence={selectedEvidence} onClose={closeSheet} onShowMap={() => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === selectedSource.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "add-source" && <AddSourceSheet onClose={() => setSheet("sources")} onPost={post} />}
       {sheet === "style" && <StyleSheet style={state?.style} analysisSuggestion={state?.onboarding.styleAnalysis?.status === "ready" ? state.onboarding.styleAnalysis.suggestion : undefined} defaultIntent={state?.onboarding.outcome} library={styleLibrary} busy={busy} onClose={closeSheet} onPost={post} onAnalyzeWebsite={analyzeWebsiteStyle} />}
@@ -779,13 +819,23 @@ function ToolActivity({ call, confirmed, busy, onConfirm }: { call: Conversation
   </article>;
 }
 
-function SourcesRail({ sources, activeIds, selected, conversationActive, onConversation, onSelect, onToggle, onAdd, onShowMap }: { sources: SourceItem[]; activeIds: string[]; selected: SourceItem | null; conversationActive: boolean; onConversation: () => void; onSelect: (source: SourceItem) => void; onToggle: (id: string) => void; onAdd: () => void; onShowMap: (source: SourceItem) => void }) {
+function SourceScopeImpact({ pending, busy, onApply, onCancel }: { pending: PendingSourceScope; busy: boolean; onApply: () => void; onCancel: () => void }) {
+  return <Card className="source-scope-impact" role="status" aria-label="Source change impact">
+    <div><strong>{pending.change === "remove" ? "Remove" : "Add"} {pending.sourceTitle}?</strong><p>{pending.affected.join(", ")} will need an update. Your Style stays the same.</p></div>
+    <div className="button-row"><Button size="small" disabled={busy} onClick={onApply}>Update sources</Button><Button variant="secondary" size="small" disabled={busy} onClick={onCancel}>Cancel</Button></div>
+  </Card>;
+}
+
+function SourcesRail({ open, sources, activeIds, selected, pending, busy, conversationActive, onConversation, onSelect, onToggle, onApplyScope, onCancelScope, onCollapse, onAdd, onShowMap }: { open: boolean; sources: SourceItem[]; activeIds: string[]; selected: SourceItem | null; pending: PendingSourceScope | null; busy: boolean; conversationActive: boolean; onConversation: () => void; onSelect: (source: SourceItem) => void; onToggle: (id: string) => void; onApplyScope: () => void; onCancelScope: () => void; onCollapse: () => void; onAdd: () => void; onShowMap: (source: SourceItem) => void }) {
   const active = selected ?? sources[0];
-  return <WorkbenchRail side="left" className="sources-rail" aria-label="Sources">
-    <header className="rail-heading"><div><strong>Sources</strong><small>{activeIds.length} of {sources.length} selected</small></div><IconButton label="Add material" onClick={onAdd}><PlusIcon /></IconButton></header>
+  return <WorkbenchRail side="left" className="sources-rail" aria-label="Sources" data-collapsed={!open || undefined}>
+    <header className={`rail-heading ${open ? "" : "rail-heading--collapsed"}`}>{open && <div><strong>Sources</strong><small>{activeIds.length} of {sources.length} selected</small></div>}<div className="rail-actions">{open && <IconButton label="Add material" onClick={onAdd}><PlusIcon /></IconButton>}<IconButton label={open ? "Collapse Sources" : "Expand Sources"} aria-expanded={open} onClick={onCollapse}><span className={open ? "" : "rail-chevron rail-chevron--right"}><ArrowLeftIcon /></span></IconButton></div></header>
+    {!open ? null : <>
     <ListRow className={`conversation-entry ${conversationActive ? "selected" : ""}`}><ListRowAction aria-current={conversationActive ? "page" : undefined} onClick={onConversation}><span><strong>Conversation</strong><small>Ask across selected Sources</small></span></ListRowAction></ListRow>
+    {pending && <SourceScopeImpact pending={pending} busy={busy} onApply={onApplyScope} onCancel={onCancelScope} />}
     {sources.length ? <ListGroup className="rail-source-list">{sources.map((source) => <ListRow className={active?.id === source.id ? "source-row selected" : "source-row"} key={source.id}><Checkbox aria-label={`Use ${source.title}`} checked={activeIds.includes(source.id)} onChange={() => onToggle(source.id)} /><ListRowAction onClick={() => onSelect(source)}><FileIcon label={source.type} /><span><strong>{source.title}</strong><small>{source.claimCount} claims</small></span></ListRowAction></ListRow>)}</ListGroup> : <p className="rail-empty">Add a meeting, document, or conversation.</p>}
     {active && <section className="rail-source-preview" aria-label={`Selected source: ${active.title}`}><strong>{active.title}</strong><p>“{active.excerpt}”</p><small>{active.locator}</small><Button variant="secondary" size="small" onClick={() => onShowMap(active)}>Show on map</Button></section>}
+    </>}
   </WorkbenchRail>;
 }
 
@@ -794,7 +844,7 @@ function ProductionItem({ title, detail, status, tone = "waiting", onClick, aria
   return <ListRow className="production-item">{onClick ? <ListRowAction aria-label={ariaLabel} onClick={onClick}>{content}</ListRowAction> : <div className="production-item-static">{content}</div>}</ListRow>;
 }
 
-function ProductionRail({ state, view, action, onOpenView, onOpenOutput, onOpenStyle }: { state: PersistedWorkshop | null; view: ObjectView; action: ReactNode; onOpenView: (view: ObjectView) => void; onOpenOutput: (id: string) => void; onOpenStyle: () => void }) {
+function ProductionRail({ open, state, view, action, onCollapse, onOpenView, onOpenOutput, onOpenStyle }: { open: boolean; state: PersistedWorkshop | null; view: ObjectView; action: ReactNode; onCollapse: () => void; onOpenView: (view: ObjectView) => void; onOpenOutput: (id: string) => void; onOpenStyle: () => void }) {
   const latest = (type: "deck" | "infographic") => [...(state?.outputs ?? [])].reverse().find((output) => output.type === type);
   const deck = latest("deck");
   const infographic = latest("infographic");
@@ -806,8 +856,9 @@ function ProductionRail({ state, view, action, onOpenView, onOpenOutput, onOpenS
   const hasOutputs = Boolean(deck || infographic || state?.imageBatch || state?.storyboard.panels.length || currentVideo);
   const deliverStatus = !briefReady ? "Blocked by Brief" : !styleReady ? "Choose Style" : hasOutputs ? outputSetStatus(state).actionRequired ? "Needs update" : "In progress" : "Ready";
 
-  return <WorkbenchRail side="right" className="production-rail" aria-label="Production">
-    <header className="rail-heading"><div><strong>Production</strong><small>From thinking to finished work</small></div></header>
+  return <WorkbenchRail side="right" className="production-rail" aria-label="Production" data-collapsed={!open || undefined}>
+    <header className={`rail-heading ${open ? "" : "rail-heading--collapsed"}`}>{open && <div><strong>Production</strong><small>From thinking to finished work</small></div>}<div className="rail-actions"><IconButton label={open ? "Collapse Production" : "Expand Production"} aria-expanded={open} onClick={onCollapse}><span className={open ? "rail-chevron rail-chevron--right" : ""}><ArrowLeftIcon /></span></IconButton></div></header>
+    {!open ? null : <>
     <section className="stage-progress" aria-label="Workshop progress">
       <ListRowAction aria-current={view === "conversation" ? "step" : undefined} onClick={() => onOpenView("conversation")}><span><strong>Capture</strong><small>{state?.activeSourceIds.length ?? 0} active sources</small></span><Status tone={(state?.activeSourceIds.length ?? 0) > 0 ? "current" : "waiting"}>{(state?.activeSourceIds.length ?? 0) > 0 ? "Ready" : "Start"}</Status></ListRowAction>
       <ListRowAction aria-current={view === "map" || view === "brief" ? "step" : undefined} onClick={() => onOpenView(briefReady ? "brief" : "map")}><span><strong>Shape</strong><small>Map and Brief</small></span><Status tone={briefReady ? "current" : "waiting"}>{briefReady ? "Approved" : "Needs review"}</Status></ListRowAction>
@@ -823,6 +874,7 @@ function ProductionRail({ state, view, action, onOpenView, onOpenOutput, onOpenS
       <ProductionItem title="Storyboard" detail={state?.storyboard.panels.length ? `${state.storyboard.panels.length} editable panels` : "Review before Video"} status={state?.storyboard.stale ? "Needs update" : state?.storyboardApproved ? "Approved" : state?.storyboard.panels.length ? "Needs review" : "Planned"} tone={state?.storyboardApproved && !state.storyboard.stale ? "current" : "waiting"} onClick={state?.storyboard.panels.length ? () => onOpenView("storyboard") : undefined} ariaLabel="View storyboard" />
       <ProductionItem title="Video" detail={currentVideo ? `Version ${currentVideo.version}` : "From approved Storyboard"} status={currentVideo?.stale ? "Needs update" : currentVideo ? "Up to date" : state?.videoState === "queued" || state?.videoState === "rendering" ? "Creating" : "Planned"} tone={currentVideo && !currentVideo.stale ? "current" : "waiting"} onClick={currentVideo ? () => onOpenOutput(currentVideo.id) : undefined} />
     </ListGroup>
+    </>}
   </WorkbenchRail>;
 }
 
@@ -865,9 +917,9 @@ function HowItWorksSheet({ onClose }: { onClose: () => void }) {
   </SideSheet>;
 }
 
-function SourcesSheet({ sources, activeIds, selected, onClose, onSelect, onToggle, onAdd, onShowMap }: { sources: SourceItem[]; activeIds: string[]; selected: SourceItem | null; onClose: () => void; onSelect: (source: SourceItem) => void; onToggle: (id: string) => void; onAdd: () => void; onShowMap: (source: SourceItem) => void }) {
+function SourcesSheet({ sources, activeIds, selected, pending, busy, onClose, onSelect, onToggle, onApplyScope, onCancelScope, onAdd, onShowMap }: { sources: SourceItem[]; activeIds: string[]; selected: SourceItem | null; pending: PendingSourceScope | null; busy: boolean; onClose: () => void; onSelect: (source: SourceItem) => void; onToggle: (id: string) => void; onApplyScope: () => void; onCancelScope: () => void; onAdd: () => void; onShowMap: (source: SourceItem) => void }) {
   const active = selected ?? sources[0];
-  return <SideSheet title="Sources" onClose={onClose}><div className="sheet-heading"><p>{activeIds.length} of {sources.length} selected</p><Button variant="secondary" onClick={onAdd}><PlusIcon /> Add source</Button></div><ListGroup>{sources.map((source) => <ListRow className={active?.id === source.id ? "source-row selected" : "source-row"} key={source.id}><Checkbox aria-label={`Use ${source.title}`} checked={activeIds.includes(source.id)} onChange={() => onToggle(source.id)} /><ListRowAction onClick={() => onSelect(source)}><FileIcon label={source.type} /><span><strong>{source.title}</strong><small>{source.origin} · {source.claimCount} claims</small></span></ListRowAction></ListRow>)}</ListGroup>{active && <Card className="source-preview"><strong>{active.title}</strong><p>“{active.excerpt}”</p><small>{active.locator}</small><Button variant="secondary" size="small" onClick={() => onShowMap(active)}>Show on map</Button></Card>}</SideSheet>;
+  return <SideSheet title="Sources" onClose={onClose}><div className="sheet-heading"><p>{activeIds.length} of {sources.length} selected</p><Button variant="secondary" onClick={onAdd}><PlusIcon /> Add source</Button></div>{pending && <SourceScopeImpact pending={pending} busy={busy} onApply={onApplyScope} onCancel={onCancelScope} />}<ListGroup>{sources.map((source) => <ListRow className={active?.id === source.id ? "source-row selected" : "source-row"} key={source.id}><Checkbox aria-label={`Use ${source.title}`} checked={activeIds.includes(source.id)} onChange={() => onToggle(source.id)} /><ListRowAction onClick={() => onSelect(source)}><FileIcon label={source.type} /><span><strong>{source.title}</strong><small>{source.origin} · {source.claimCount} claims</small></span></ListRowAction></ListRow>)}</ListGroup>{active && <Card className="source-preview"><strong>{active.title}</strong><p>“{active.excerpt}”</p><small>{active.locator}</small><Button variant="secondary" size="small" onClick={() => onShowMap(active)}>Show on map</Button></Card>}</SideSheet>;
 }
 
 function EvidenceSheet({ source, evidence, onClose, onShowMap }: { source: SourceItem; evidence: EvidenceSelection | null; onClose: () => void; onShowMap: () => void }) {

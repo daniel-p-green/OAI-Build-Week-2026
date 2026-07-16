@@ -64,7 +64,7 @@ describe("official Apps in ChatGPT UI implementation", () => {
   });
 
   it("keeps desktop source, current-object, and production context in one workbench", () => {
-    expect(page).toContain('<Workbench className="workbench"');
+    expect(page).toContain('<Workbench className={`workbench ${leftRailOpen ? "" : "left-rail-collapsed"} ${rightRailOpen ? "" : "right-rail-collapsed"}`}>');
     expect(page).toContain('<WorkbenchRail side="left" className="sources-rail" aria-label="Sources"');
     expect(page).toContain('<WorkbenchRail side="right" className="production-rail" aria-label="Production"');
     expect(page).toContain('<ObjectSwitcher className="mobile-object-switcher" aria-label="Workshop objects"');
@@ -73,6 +73,18 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(page).toContain('className="stage-progress" aria-label="Workshop progress"');
     expect(appCss).toContain("grid-template-columns: 220px minmax(0, 1fr) 252px");
     expect(appCss).toContain(".mobile-sources-trigger, .mobile-workflow-action { display: none; }");
+  });
+
+  it("lets the canvas reclaim rail space without hiding source-scope consequences", () => {
+    for (const label of ["Collapse Sources", "Expand Sources", "Collapse Production", "Expand Production"]) expect(page).toContain(label);
+    expect(page).toContain('aria-label="Source change impact"');
+    expect(page).toContain('pending.affected.join(", ")');
+    expect(page).toContain("will need an update. Your Style stays the same.");
+    expect(page).toContain(">Update sources</Button>");
+    expect(page).toContain("Keep at least one Source selected.");
+    expect(page).toContain('action: "setActiveSourceScope", sourceIds: pendingSourceScope.sourceIds');
+    expect(appCss).toContain(".workbench.left-rail-collapsed.right-rail-collapsed");
+    expect(appCss).toContain("grid-template-columns: 48px minmax(0, 1fr) 48px");
   });
 
   it("keeps reusable Styles inside the existing Style sheet", () => {

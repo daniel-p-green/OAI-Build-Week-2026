@@ -6673,3 +6673,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Put the revised deck in front of its intended professional audience. Record the cold `Send`/`Revise` decision and apply concrete revisions until it clears the bar; no external approval is claimed yet.
 - Provider-backed text, speech, image, and narration proof; founder recording; final public Video and links; and the `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 22:03 CT — The workbench makes room without hiding consequences
+
+**Area:** Workbench / Source scope / Staleness / Responsive UX
+
+### Changed
+
+- Added independent desktop collapse controls to the persistent Sources and Production rails. Each open rail retains the locked three-column composition; each collapsed rail becomes one quiet 48px restore handle, and collapsing both gives the current object the reclaimed space.
+- Added a pre-mutation Source-scope disclosure. Selecting or clearing a Source now identifies the affected Source, keeps its excerpt and locator visible, names every current downstream artifact that will need an update, and explicitly says the reusable Style stays the same.
+- Kept the professional in control with only `Update sources` and `Cancel`. The checkbox reflects durable scope until the professional confirms; attempting to clear the last Source is rejected locally with plain-language copy.
+- Reused the official Apps in ChatGPT IconButton, Card, Button, Checkbox, WorkbenchRail, and SideSheet primitives. No new navigation, modal system, settings concept, or custom raw control was introduced.
+- The first browser implementation showed the same impact card in the rail and the open Sources sheet. Suppressed the background rail copy while the sheet owns the interaction, leaving exactly one visible disclosure.
+
+### Verified
+
+- In the real Codex in-app browser at 1280×720, the open Sources/Production/canvas widths were 220/252/808px. Both unique collapse controls reduced the rails to 48/48px and expanded the canvas to 1184px; both restore controls remained accessible.
+- Added a second local test Source through the visible UI, then requested its removal. Before mutation the checked state stayed durable and one disclosure named Map, Brief, Presentation, Infographic, Image set, Storyboard, Video, and the preserved Style beside the selected Source excerpt.
+- `Update sources` moved active scope from two Sources to one, returned the Map from seven ideas to six, preserved Style as `Ready`, and visibly marked Brief, Presentation, Infographic, Image set, Storyboard, and Video `Needs update`.
+- At a 390px viewport, desktop rails remained hidden, the direct Source count and object switcher remained visible, and the same single disclosure fit in the Source sheet without horizontal overflow. Browser console and warning logs were empty.
+- Direct comparison against the locked Map reference and the latest desktop/mobile screenshots passed the seven-point fidelity ledger in `artifacts/ui/workbench-rails-qa-2026-07-15.md`. The screenshots and exact responsive boundaries are checked in under `artifacts/ui/`.
+- All 24 web tests passed, including the expanded official-component and collapse/impact contract. `pnpm check` passed all 13 packages; `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed after resetting the acceptance fixture. The 17-asset package remains honestly `partial` with the same four provider limitations. No paid request ran.
+
+### Decisions
+
+- Rail collapse is a reversible view preference, not Workshop data. It remains session-local and disappears entirely at the compact breakpoint where the established sheet/switcher model is clearer.
+- Source scope is a high-consequence grounding decision after a Map exists. WorkshopLM must disclose its blast radius before changing durable scope rather than explaining stale work afterward.
+- Style is deliberately excluded from Source-scope invalidation and is named as preserved so the disclosure communicates both impact and safety.
+
+### Open items
+
+- Production's complete failed/partial/retry state coverage remains open; provider-backed text, speech, image, and narration proof is still required.
+- The external deck cold `Send`/`Revise` judgment, founder recording, final public Video and links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
