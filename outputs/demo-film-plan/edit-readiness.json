@@ -64,11 +64,11 @@
     {
       "shotId": "meta-reveal",
       "label": "Verified non-partial final submission Output set",
-      "path": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
+      "path": ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json",
       "validator": "ready-submission-manifest",
-      "exists": true,
+      "exists": false,
       "satisfied": false,
-      "issue": "Submission status is partial, not ready."
+      "issue": "Evidence file is missing or empty."
     },
     {
       "shotId": "final-export",

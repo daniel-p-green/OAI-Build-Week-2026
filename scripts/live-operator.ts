@@ -2,10 +2,11 @@ import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { executeOne } from "../apps/worker/src/executor.ts";
 import { inspectFounderCapture, stageFounderCapture, stageFounderFilmInputs, type FounderCaptureManifest } from "../apps/worker/src/founder-capture.ts";
-import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, planOpenAiMediaRetry, validateImageBatchCoherence, validateNarrationReadiness, type OpenAiMediaConfig } from "../apps/worker/src/openai-media.ts";
+import { defaultOpenAiMediaConfig, generateOpenAiAudioOverview, generateOpenAiImageBatch, generateOpenAiNarration, planOpenAiMediaRetry, validateImageBatchCoherence, validateNarrationReadiness, type OpenAiMediaConfig } from "../apps/worker/src/openai-media.ts";
 import { classifyFailedRun, operatorRunEvidence, operatorStateFingerprint, protectsPaidOperatorState, retryCommandFor, retryEligibility, safeOperatorError, verifiedRealtimeCaptures, type OperatorRunRecord } from "../apps/worker/src/live-operator-evidence.ts";
 import { generateGroundedMapWithGpt56 } from "../apps/worker/src/openai-reasoning.ts";
 import { createProviderRequestBudget, type ProviderRequestBudget } from "../apps/worker/src/provider-budget.ts";
+import { buildSubmissionOutputSet, verifySubmissionOutputSet } from "../apps/worker/src/submission-package.ts";
 import {
   applyWorkshopAction,
   approveVisualDna,
@@ -16,6 +17,7 @@ import {
   dismissWorkshopOrientation,
   extractWorkshopCandidates,
   generateAssetPlan,
+  generateAudioOverview,
   generateOutput,
   generateStoryboard,
   ingestSource,
@@ -47,7 +49,7 @@ const founderTranscriptPath = flagValue("--founder-transcript");
 const stageFilmInputs = process.argv.includes("--stage-film-inputs");
 if (Boolean(founderRecordingPath) !== Boolean(founderTranscriptPath)) throw new Error("--founder-recording and --founder-transcript must be provided together.");
 if (stageFilmInputs && (!founderRecordingPath || !founderTranscriptPath)) throw new Error("--stage-film-inputs requires a founder recording and transcript.");
-const liveOperatorPaidRequestCount = 12;
+const liveOperatorPaidRequestCount = 13;
 const runArtifactPath = resolve(dirname(root), `${basename(root)}-run.json`);
 
 async function writeRunArtifact(value: Record<string, unknown>): Promise<void> {
@@ -128,6 +130,7 @@ async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: Prov
   generateAssetPlan(root);
   await generateOutput("deck", root);
   await generateOutput("infographic", root);
+  generateAudioOverview(root);
   createImageBatch(root);
   generateStoryboard(root);
   return founderManifest;
@@ -161,7 +164,9 @@ async function main(): Promise<void> {
     }
     const prior = retryFailed ? readWorkshopState(root) : undefined;
     const retryPlan = prior ? planOpenAiMediaRetry(prior) : undefined;
-    const requiredRequests = retryPlan?.plannedRequests ?? liveOperatorPaidRequestCount;
+    const priorAudioOverview = prior ? [...prior.audioOverviews].reverse().find((overview) => !overview.stale) : undefined;
+    const audioOverviewNeedsProvider = !priorAudioOverview || priorAudioOverview.status !== "audio_ready";
+    const requiredRequests = (retryPlan?.plannedRequests ?? (liveOperatorPaidRequestCount - 1)) + (audioOverviewNeedsProvider ? 1 : 0);
     config = executeLive && requiredRequests > 0 ? liveConfig(requiredRequests) : undefined;
     startedAt = new Date().toISOString();
     const mode = retryFailed ? (executeLive ? "live-retry" : "retry-preflight") : (executeLive ? "live" : "preflight");
@@ -185,8 +190,8 @@ async function main(): Promise<void> {
       root,
       paidCallsMade: false,
       plannedPaidRequests: retryPlan
-        ? { liveOperator: retryPlan.plannedRequests, gpt56GroundedMap: 0, gptImage2: retryPlan.imagePanelIds.length, gpt4oMiniTts: retryPlan.narrationPanelIds.length, separateGpt56Benchmark: 9 }
-        : { liveOperator: liveOperatorPaidRequestCount, gpt56GroundedMap: 1, gptImage2: prepared.imageBatch?.panels.length ?? 0, gpt4oMiniTts: prepared.storyboard.panels.length, separateGpt56Benchmark: 9 },
+        ? { liveOperator: requiredRequests, gpt56GroundedMap: 0, gptImage2: retryPlan.imagePanelIds.length, gpt4oMiniTts: retryPlan.narrationPanelIds.length, gpt4oMiniTtsAudioOverview: audioOverviewNeedsProvider ? 1 : 0, separateGpt56Benchmark: 9 }
+        : { liveOperator: liveOperatorPaidRequestCount, gpt56GroundedMap: 1, gptImage2: prepared.imageBatch?.panels.length ?? 0, gpt4oMiniTts: prepared.storyboard.panels.length, gpt4oMiniTtsAudioOverview: 1, separateGpt56Benchmark: 9 },
       retrySelection: retryPlan ?? null,
       requestCeiling: config?.budget.maxRequests ?? null,
       providerVoiceReady: providerVoiceTurns > 0,
@@ -237,6 +242,8 @@ async function main(): Promise<void> {
       const narration = await generateOpenAiNarration(root, config!.media, config!.budget.fetch, narrationSelection);
       if (narration.status !== "passed") throw new Error(`Live narration was partial; failed panels: ${narration.failed.join(", ")}`);
     }
+    failedStage = "audio-overview";
+    if (audioOverviewNeedsProvider) await generateOpenAiAudioOverview(root, config!.media, config!.budget.fetch);
     failedStage = "video";
     const beforeRender = readWorkshopState(root);
     let video: Awaited<ReturnType<typeof executeOne>> | { state: "succeeded"; artifact: { relativePath: string } };
@@ -251,6 +258,10 @@ async function main(): Promise<void> {
       if (video.state !== "succeeded") throw new Error(video.error ?? "HyperFrames video render failed.");
     }
     const finalState = readWorkshopState(root);
+    failedStage = "submission-output-set";
+    const submission = await buildSubmissionOutputSet(root);
+    const submissionVerification = await verifySubmissionOutputSet(root, submission.manifestPath);
+    if (!submissionVerification.valid) throw new Error(`Final submission Output set failed verification: ${submissionVerification.issues.join("; ")}`);
     const outcome = {
       ...plan,
       status: "passed",
@@ -262,13 +273,15 @@ async function main(): Promise<void> {
       approvals: { brief: finalState.briefApproved, storyboard: finalState.storyboardApproved },
       ...operatorRunEvidence(finalState),
       video: video.artifact?.relativePath,
+      submission: { manifestPath: submission.manifestPath, status: submission.outputSet.status, limitations: submission.outputSet.limitations, assets: submission.outputSet.assets.length, verification: submissionVerification },
     };
     await writeRunArtifact(outcome);
     console.log(JSON.stringify(outcome, null, 2));
   } catch (error) {
     if (runStarted) {
       const state = readWorkshopState(root);
-      const retry = retryCommandFor(state, liveOperatorPaidRequestCount);
+      const audioOverview = [...state.audioOverviews].reverse().find((overview) => !overview.stale);
+      const retry = retryCommandFor(state, liveOperatorPaidRequestCount, audioOverview?.status === "audio_ready" ? 0 : 1);
       await writeRunArtifact({
         mode: retryFailed ? "live-retry" : "live",
         status: classifyFailedRun(state, failedStage),

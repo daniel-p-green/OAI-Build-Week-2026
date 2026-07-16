@@ -58,6 +58,7 @@ describe("live operator evidence", () => {
     const retry = retryCommandFor(state);
     expect(retry.selection).toMatchObject({ plannedRequests: 9, imagePanelIds: expect.not.arrayContaining([imagePanel.id]), narrationPanelIds: expect.not.arrayContaining([narrationPanel.id]) });
     expect(retry.command).toContain("WORKSHOPLM_MAX_PAID_REQUESTS=9");
+    expect(retryCommandFor(state, 13, 1).command).toContain("WORKSHOPLM_MAX_PAID_REQUESTS=10");
     expect(classifyFailedRun(state, "narration")).toBe("partial");
     expect(classifyFailedRun(state, "video")).toBe("failed");
     expect(operatorRunEvidence(state)).toMatchObject({
@@ -67,11 +68,11 @@ describe("live operator evidence", () => {
     });
   });
 
-  it("falls back to a clean twelve-request run before a media plan exists", async () => {
+  it("falls back to a clean thirteen-request run before a media plan exists", async () => {
     const root = await mkdtemp(join(tmpdir(), "workshop-operator-unprepared-"));
     roots.push(root);
     const state = readWorkshopState(root);
-    expect(retryCommandFor(state)).toEqual({ selection: null, command: "WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=12 OPENAI_API_KEY=... pnpm demo:live -- --execute" });
+    expect(retryCommandFor(state)).toEqual({ selection: null, command: "WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=13 OPENAI_API_KEY=... pnpm demo:live -- --execute" });
   });
 
   it("allows retries only from a paid partial or post-Map failed run", () => {

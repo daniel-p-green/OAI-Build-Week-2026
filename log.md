@@ -7432,3 +7432,37 @@ The final acceptance sequence also proved that `pnpm demo:e2e` intentionally res
 ## 2026-07-16 03:28 CT — Founder-handoff milestone placement correction
 
 The 03:27 CT founder-capture and final-operator milestone was inserted after an earlier matching `Codex Session ID` marker instead of the physical end of this append-only file. Its implementation, tests, and evidence remain correct. This later note restores the chronological boundary without rewriting history. The current state is unchanged: the one-command founder handoff is verified and ready, while the real founder files, final Source-derived Output set, final MP4, eligible Session record, external review, and public links remain open.
+
+---
+
+## 2026-07-16 03:32 CT — Final operator now completes Audio Overview and submission packaging
+
+**Area:** Final provider run / Submission Output set / Film finality
+
+### Changed
+
+- The final preflight now creates a grounded Audio Overview script alongside the presentation, infographic, image set, and Storyboard.
+- The paid ceiling is thirteen requests: Terra Map `1`, GPT Image 2 `6`, Cedar Storyboard narration `5`, and Cedar Audio Overview `1`. Retry budgeting adds the Audio Overview request only when its current version is not already `audio_ready`.
+- After the approved HyperFrames Video succeeds, the operator builds and verifies the traced submission Output set in the same final data root and records manifest path, status, limitations, asset count, and integrity result in its run evidence.
+- The film meta-reveal now requires `.workshoplm/final-operator/generated/submission-output-set-v1/manifest.json`. The deterministic acceptance package can no longer accidentally satisfy finality.
+
+### Verified
+
+- A no-spend command-level founder preflight reported exactly thirteen planned requests, one planned Audio Overview request, a thirteen-request next command, and one current grounded Audio Overview script in SQLite.
+- Retry unit coverage proves an incomplete Audio Overview adds exactly one request to a partial image/narration recovery. The pre-contract fallback now reports the complete thirteen-request clean run.
+- `pnpm check` passed all 13 packages with 114 worker and 30 web tests. `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. `pnpm demo:film:verify` passed in draft mode and now reports the absent final-operator manifest instead of the acceptance fixture's known partial manifest.
+- `git diff --check` passed excluding the preserved unrelated `PLAN-2026-07-13.md` modification.
+
+### Decisions
+
+- Audio Overview belongs in the final operator because the submission package already treats provider-backed speech as a readiness criterion. Leaving it as a separate manual request would make the one-command handoff incomplete.
+- The final package may still be `partial` when the founder transcript is imported from a file. That is correct: authentic founder footage and provider-verified WebRTC evidence are separate claims.
+- Package construction is part of the operator success condition. A rendered Video without a verified traced Output set is not a passed final run.
+
+### Open items
+
+- Record the real founder files. Prefer capturing a provider-verified microphone turn in `.workshoplm/final-operator`; otherwise accept the honest one-limitation package from the file import and keep the Realtime proof as separate product evidence.
+- Run the thirteen-request final generation only after inspecting the real no-spend preflight, then replace the two blocked film shots and export the final MP4.
+- Eligible Session ID, external professional review, public links, and final Devpost actions remain human-gated.
+- No provider request ran in this milestone; the ledger remains 97 HTTP operations and no exact-dollar total is invented.
+- Codex Session ID: unavailable on this surface; not inferred.

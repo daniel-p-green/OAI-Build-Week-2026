@@ -57,13 +57,14 @@ export function safeOperatorError(error: unknown): string {
     .slice(0, 500);
 }
 
-export function retryCommandFor(state: WorkshopState, normalRequestCount = 12): { selection: OpenAiMediaRetryPlan | null; command: string } {
+export function retryCommandFor(state: WorkshopState, normalRequestCount = 13, additionalRequests = 0): { selection: OpenAiMediaRetryPlan | null; command: string } {
   try {
     const selection = planOpenAiMediaRetry(state);
+    const plannedRequests = selection.plannedRequests + additionalRequests;
     return {
       selection,
-      command: selection.plannedRequests > 0
-        ? `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${selection.plannedRequests} OPENAI_API_KEY=... pnpm demo:live -- --execute --retry-failed`
+      command: plannedRequests > 0
+        ? `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${plannedRequests} OPENAI_API_KEY=... pnpm demo:live -- --execute --retry-failed`
         : "pnpm demo:live -- --execute --retry-failed",
     };
   } catch {
