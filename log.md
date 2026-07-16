@@ -8983,3 +8983,35 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 13:20 CT — Storyboard timing becomes an editable production decision
+
+**Area:** Storyboard editability / Video control / responsive UX / validation
+
+### Changed
+
+- Audited the product's `editable Storyboard` claim against the live interface. Panel title and narration were editable, but the persisted duration that directly controls narrated HyperFrames scene timing was visible only as a generated label.
+- Added one official `Input` labeled `Seconds` to the existing focused panel. It sits with title and narration rather than creating a timing mode, advanced drawer, or separate control surface.
+- Added matching client and service validation: duration must be a whole number from 1 to 120. Invalid timing stays local, explains the repair in one sentence, and disables `Save changes`; malformed direct requests fail closed in the worker service.
+- A valid timing edit reuses the immutable Storyboard contract: it creates the next version, preserves the formerly approved duration in history, revokes Storyboard approval, marks narration and prior Videos `Needs update`, and makes approval the next action before another render.
+
+### Verified
+
+- The worker suite passed all 120 tests. The Storyboard edit regression now rejects zero and fractional timing before proving that a valid six-second edit preserves the earlier approved version and creates a new unapproved version.
+- The complete production-browser suite passed all 30 cases in 1.3 minutes. The real Video-revision path rejects zero, enables and saves seven seconds, shows `7s` on the selected panel, revokes approval, and marks the existing Video `Needs update`.
+- Visually inspected the active timing edit at 1200×800 and the restored current timing at 1024×768. The control fits the existing official field hierarchy, the primary canvas remains dominant, compact scrolling reveals the whole editor and Version history without horizontal overflow, and no new navigation appears. Desktop proof hashes to `f6fdd20e2a3aa33aa5453a8d98a525b4a97fbc8a823c2bb2c8d281be409721ba`; compact proof hashes to `f1e7dc38136d524734ab3d4658674edfaf4c716719a58f99623a41991d24f162`.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages. `pnpm demo:e2e` passed the complete recorded Source-to-Video seam. `pnpm submission:packet:verify` remains green with Terra, six provider-backed GPT Image 2 panels, Cedar narration, the 2:20 film plan, sixteen gallery screens, eight ready shots, and two honest founder/final-package blocks.
+- No provider request ran. The evidence ledger remains at 104 OpenAI HTTP operations; exact dollar debit is still not inferred.
+
+### Decisions
+
+- Timing belongs beside the words and visual it controls. A dedicated timeline would add complexity without improving the current professional approval task.
+- Whole seconds are the right initial contract for a short professional storyboard: easy to scan, deterministic for narration and local HyperFrames staging, and bounded against accidental multi-minute panels.
+- `PLAN-2026-07-13.md` remained advisory only for enduring acceptance principles. Its pre-existing user modification was untouched and excluded from staging.
+
+### Open items
+
+- Founder recording and transcript, founder-derived ready Output set, final compositor run, human film taste review, intended-audience deck review, uncoached professional tests, `/feedback`, release, public upload, Devpost submission, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

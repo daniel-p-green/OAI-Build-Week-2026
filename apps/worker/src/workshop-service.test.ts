@@ -432,6 +432,8 @@ it("keeps an approved Storyboard readable after a panel edit", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-story-"));
   applyWorkshopAction("approveBrief", root); applyWorkshopAction("lockManualStyle", root);
   const approved = applyWorkshopAction("approveStoryboard", root);
+  expect(() => updateStoryboardPanel("panel-2", { title: "Evidence Map", narration: "Reveal linked source chunks.", durationSeconds: 0 }, root)).toThrow(/1 to 120 seconds/);
+  expect(() => updateStoryboardPanel("panel-2", { title: "Evidence Map", narration: "Reveal linked source chunks.", durationSeconds: 2.5 }, root)).toThrow(/1 to 120 seconds/);
   const edited = updateStoryboardPanel("panel-2", { title: "Evidence Map", narration: "Reveal linked source chunks.", durationSeconds: 6 }, root);
   expect(edited.storyboardApproved).toBe(false);
   expect(edited.storyboard).toMatchObject({ version: approved.storyboard.version + 1, approved: false });

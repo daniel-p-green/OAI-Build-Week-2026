@@ -776,6 +776,12 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
   await openWorkshopView(page, "outputs");
   await page.getByRole("button", { name: "Open Storyboard" }).click();
   const preview = page.locator(".panel-visual");
+  const timing = page.getByRole("spinbutton", { name: "Seconds" });
+  await expect(timing).toHaveValue("4");
+  await timing.fill("9");
+  await expect(page.getByText("Saving will require Storyboard approval and a new Video.", { exact: true })).toBeVisible();
+  await expectScreen(page, "desktop-storyboard-timing");
+  await timing.fill("4");
   await expect(preview.locator("img")).toHaveAttribute("src", "/api/workshop/artifacts/image-panel-1");
   await expect(preview.getByText("Image", { exact: true })).toBeVisible();
   await expectScreen(page, "desktop-storyboard-bound-image");
@@ -790,6 +796,10 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
   await expect(historySheet.locator(".panel-visual img")).toHaveAttribute("src", "/api/workshop/artifacts/storyboard-v2-panel-1-image");
   await expect(historySheet.getByRole("button", { name: "Save changes" })).toHaveCount(0);
   await expectScreen(page, "desktop-storyboard-history");
+  await closeDialog(page, "Storyboard · Version 2");
+  await page.setViewportSize({ width: 1024, height: 768 });
+  await timing.scrollIntoViewIfNeeded();
+  await expectScreen(page, "compact-storyboard-timing");
 });
 
 test("Image set review exposes each visual job, exact source, and selective replacement", async ({ page }) => {
@@ -1233,10 +1243,16 @@ test("the local render becomes a real Video preview and the next action", async 
 
   await page.getByRole("button", { name: "Edit storyboard" }).click();
   const narration = page.getByRole("textbox", { name: "Narration" });
+  const seconds = page.getByRole("spinbutton", { name: "Seconds" });
   await narration.fill(`${await narration.inputValue()} Tighten the close.`);
+  await seconds.fill("0");
+  await expect(page.getByText("Use a whole number from 1 to 120.", { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Save changes" })).toBeDisabled();
+  await seconds.fill("7");
   await expect(page.getByText("Saving will require Storyboard approval and a new Video.", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Save changes" }).click();
   await expect(page.getByRole("button", { name: "Approve storyboard" })).toBeVisible();
+  await expect(page.locator(".storyboard-strip .film-frame.selected")).toContainText("7s");
   await openWorkshopView(page, "outputs");
   await expect(page.getByRole("button", { name: /Open Demo video/ })).toContainText("Needs update");
 });

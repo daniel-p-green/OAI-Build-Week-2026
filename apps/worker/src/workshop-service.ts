@@ -1500,7 +1500,7 @@ export function recordNarrationProgress(narration: WorkshopNarration, root?: str
 }
 export function updateStoryboardPanel(panelId: string, patch: Pick<StoryboardPanel, "title" | "narration" | "durationSeconds">, root?: string): WorkshopState {
   const current = readWorkshopState(root); const index = current.storyboard.panels.findIndex((panel) => panel.id === panelId); if (index < 0) throw new Error(`Storyboard panel not found: ${panelId}.`);
-  if (!patch.title.trim() || !patch.narration.trim() || patch.durationSeconds <= 0) throw new Error("Storyboard panel requires a title, narration, and positive duration.");
+  if (!patch.title.trim() || !patch.narration.trim() || !Number.isInteger(patch.durationSeconds) || patch.durationSeconds < 1 || patch.durationSeconds > 120) throw new Error("Storyboard panel requires a title, narration, and duration from 1 to 120 seconds.");
   const panels = [...current.storyboard.panels]; panels[index] = { ...panels[index], ...patch, approved: true, stale: false };
   return write({ ...current, storyboard: { version: current.storyboard.version + 1, panels, stale: false, approved: false }, storyboardHistory: storyboardHistoryWithCurrent(current), narration: current.narration ? { ...current.narration, stale: true } : undefined, videos: staleVideos(current), storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
