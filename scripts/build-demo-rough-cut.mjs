@@ -85,6 +85,7 @@ function guideVoiceRate(text, durationSeconds) {
 
 function overlaySvg(shot, index) {
   if (cleanEditorialStyle) {
+    if (shot.id === "meta-reveal") return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"/>`;
     const lines = captionLines(shot.narration, 74);
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   <rect x="22" y="606" width="1236" height="96" rx="18" fill="#ffffff" fill-opacity="0.94"/>
@@ -123,9 +124,12 @@ async function metaRevealSvg(finalManifestPath, options = {}) {
   <text x="84" y="184" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1.2" fill="#6b6b6b">${options.preview ? "LAYOUT PREVIEW · SAMPLE TRANSCRIPT" : "FOUNDER BRAINSTORM · UNEDITED TRANSCRIPT"}</text>
   ${transcriptLines.map((line, index) => `<text x="84" y="${226 + index * 36}" font-family="Arial, sans-serif" font-size="22" font-weight="500" fill="#0d0d0d">${escapeXml(line)}</text>`).join("\n  ")}
   <text x="84" y="594" font-family="Arial, sans-serif" font-size="13" fill="#6b6b6b">${options.preview ? "Sample only · final mode requires hash-bound founder evidence" : "Private Source · hash-bound to the final Workshop"}</text>
-  <image href="${thumbnails[0]}" x="596" y="148" width="292" height="213" preserveAspectRatio="xMidYMid slice"/>
-  <image href="${thumbnails[1]}" x="908" y="148" width="292" height="213" preserveAspectRatio="xMidYMid slice"/>
-  <image href="${thumbnails[2]}" x="596" y="381" width="604" height="241" preserveAspectRatio="xMidYMid slice"/>
+  <rect x="596" y="148" width="292" height="213" fill="#0d0d0d"/>
+  <rect x="908" y="148" width="292" height="213" fill="#0d0d0d"/>
+  <rect x="596" y="381" width="604" height="241" fill="#0d0d0d"/>
+  <image href="${thumbnails[0]}" x="596" y="148" width="292" height="213" preserveAspectRatio="xMidYMid meet"/>
+  <image href="${thumbnails[1]}" x="908" y="148" width="292" height="213" preserveAspectRatio="xMidYMid meet"/>
+  <image href="${thumbnails[2]}" x="596" y="381" width="604" height="241" preserveAspectRatio="xMidYMid meet"/>
   <rect x="596" y="148" width="604" height="474" rx="22" fill="none" stroke="#dededb" stroke-width="2"/>
   <text x="1198" y="670" text-anchor="end" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0d0d0d">WORKSHOPLM · BUILT WITH OPENAI + CODEX</text>
 </svg>`;

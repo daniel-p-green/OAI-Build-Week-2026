@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-16 03:51 CT
+Last updated: 2026-07-16 03:55 CT
 
 ## Status
 
@@ -457,10 +457,11 @@ The primary integrator selects and justifies these without separate founder appr
 - [x] Adapt the three-column model for mobile with a compact Chat / Map / Brief / Outputs / Story object switcher; preserve source count, production state, and the next action without squeezing desktop columns or hiding critical capability.
 - [x] Verify the rebuilt Phase 2 path at 1200x800, 1024x768, 390x844, keyboard-only, 200% logical zoom, reduced motion, and WCAG AA. The 28-case production-browser suite covers Conversation, exact citation opening, embedded voice capture, stable rails, and the existing seam. Re-run this gate after collapse controls or live provider behavior land.
 - [x] Move Style behind a compact Brief summary and an on-demand sheet; keep Sketch and Storyboard inside Outputs; keep source trace and technical data in contextual source/Details sheets.
-- [ ] Complete the visual Outputs gallery with real presentation, infographic, image-set, storyboard, and video previews.
+- [x] Complete the visual Outputs gallery with real presentation, infographic, image-set, storyboard, and video previews.
   - 2026-07-15: persisted deck and infographic HTML render as real gallery previews; the production-route fixture now renders, serves, displays, opens, and responsively captures the completed local MP4. Image generation still has only a planned manifest, not provider image bytes; keep this item open.
   - 2026-07-15: all five deliverables use one official media-card grid instead of image/Storyboard carousels beneath the primary work. The newest Presentation now owns the full-width hero position; Infographic, Image set, Storyboard, and Video follow as supporting deliverables in professional workflow order. Image set opens a dedicated responsive six-up review surface with honest per-panel states, source access, and direct real-file links when bytes exist. Keep the item open until provider image bytes replace the planned panels in the captured gallery.
   - 2026-07-15: the six-up surface now replaces generic `Image 1–6` labels with Hero concept, Systems diagram, Evidence chain, Decision visual, Storyboard sequence, and Section art; each card exposes only its grounded idea, status, exact Source, and selective replacement. Desktop, compact, mobile, 200% zoom, and generated-image interactions passed the production-browser suite. Provider image bytes remain the only visual-gallery completion blocker.
+  - 2026-07-16 completion proof: the authorized live run replaced all six planned panels with verified GPT Image 2 bytes; those real images now populate the six-up Image set, Storyboard cards, finished Outputs gallery, and provider-narrated Video. `outputs/workshoplm-current-ui/20-real-output-gallery.png`, `artifacts/live-review/gpt-image-2-contact-sheet.png`, and the inspected Video contact sheet prove the complete visual family. The older planned-image blocker is superseded.
 - [x] Remove raw Markdown, artifact paths, internal IDs, version mechanics, absent trace stages, and gate implementation language from normal UI while preserving them under Details or export.
 - [x] Make each screen expose no more than three labeled actions in the default viewport and exactly one visually dominant next action when progress is possible. Hide actions that do not apply to the current state.
 - [x] Add frontend tests for progressive disclosure, contextual citations, two approval bars, visual output previews, and suppression of incomplete provenance rows.

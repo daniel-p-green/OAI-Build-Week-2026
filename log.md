@@ -7509,3 +7509,22 @@ The 03:27 CT founder-capture and final-operator milestone was inserted after an 
 ## 2026-07-16 03:53 CT — Final-film milestone placement correction
 
 The 03:51 CT deterministic final-film milestone was inserted after an earlier matching `Codex Session ID` marker instead of the physical end of this append-only file. Its implementation and verification evidence remain correct. This later note restores the chronological boundary without rewriting history. The current state is unchanged: the clean final compositor is verified to fail closed, while founder files, the ready final-operator package, and the actual final MP4 remain open.
+
+---
+
+## 2026-07-16 03:55 CT — Real Outputs gallery reconciled and reveal composition refined
+
+**Area:** Visual gallery / Final-film polish
+
+### Changed and verified
+
+- Closed the stale gallery checklist item: the authorized GPT Image 2 bytes now appear in the six-up Image set, Storyboard, complete Outputs gallery, and provider-narrated Video alongside the real Presentation and Infographic previews. `outputs/workshoplm-current-ui/20-real-output-gallery.png` and the live-review contact sheets are the captured proof.
+- Removed the generic bottom caption from only the final meta-reveal shot so it cannot cover the evidence mosaic or compete with the reveal itself.
+- Changed the three submission thumbnails from crop-to-fill to contained compositions on black stages. The complete titles and visual hierarchy remain visible instead of being clipped to fit unequal slots.
+- Re-rendered and visually inspected the ten-shot final-style contact sheet and 1280×720 meta-reveal preview. The preview retains its explicit sample-only label; final mode still requires the real founder transcript and verified package.
+- `node --check scripts/build-demo-rough-cut.mjs` and `git diff --check` passed. No provider request ran; the ledger remains 97 HTTP operations.
+
+### Open items
+
+- Founder capture, final Source-derived provider run, ready final package, and final MP4 remain the next critical path. External review and public submission actions remain human-gated.
+- Codex Session ID: unavailable on this surface; not inferred.
