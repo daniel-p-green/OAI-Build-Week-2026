@@ -8049,3 +8049,59 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - The professional-own-material, external `Send`/`Revise`, founder capture, final package, final MP4, eligible Session ID, and public submission gates remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 07:56 CT — Focused Outputs show the complete artifact first
+
+**Area:** Professional workbench / Presentation and Video review / responsive artifact fit
+
+### Changed
+
+- Used the checked-in external-use screenshot to audit the actual focused Presentation viewer. At 1200×800, the clean PowerPoint cover was still cropped inside the product before its title became visible because the iframe inherited the leftover viewport height.
+- Replaced the height-squeezed focused layout with one scroll surface and an intrinsic 16:9 artifact frame. Sources and version history now follow the complete artifact instead of shrinking or overlaying it.
+- Kept Audio Overview on its purpose-built grid and retained the existing narrow mobile scaling behavior. Presentation, Infographic, and Video share the corrected professional review frame.
+- Added a production-browser assertion that the first slide and its cover title both fit inside the iframe. It fails on the retired desktop viewer even when horizontal overflow remains zero.
+- Replaced only the six intentionally changed visual contracts: desktop/compact Presentation, Video, and original-brainstorm reveal. The strict first run rejected the old cropped Presentation snapshot before any baseline update.
+
+### Verified
+
+- The live provider-backed Presentation Version 3 fit completely at 1200×800, 1024×768, and 760×900. Measured preview frames were 1056×594, 896×504, and 712×400.5 respectively; slide and title bottoms remained inside each iframe.
+- The 1200px and 1024px focused surfaces scroll vertically to Sources and history rather than clipping them. The 760px view fits the complete artifact, Sources, and history with document width equal to viewport width.
+- Visual inspection accepted the updated fixture Presentation and full-size Video viewers plus the original-brainstorm sheet over the corrected Video frame. Evidence and hashes are under `artifacts/ui-review/presentation-fit/` and the production snapshot directory.
+- The snapshot-update run passed all 29 production-browser states after changing only the six reviewed baselines.
+
+### Decisions
+
+- In a professional artifact viewer, the artifact owns its real aspect ratio. Provenance remains immediately adjacent but may move below the frame and scroll; it may not reduce the artifact to an unreadable crop.
+- Snapshot changes require a strict failure and visual review of the actual replacement. This pass did not broadly regenerate unrelated visual baselines.
+- No provider request ran; the evidence ledger remains 98 HTTP operations.
+
+### Open items
+
+- Run the complete production-browser suite strictly after the reviewed snapshot replacement, then run the broader repository and submission gates before committing.
+- The professional-own-material, external `Send`/`Revise`, founder capture, final package, final MP4, eligible Session ID, and public submission gates remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 08:00 CT — Artifact-first viewer clears strict acceptance
+
+**Area:** Integration / visual contract / demo seam
+
+### Verified
+
+- The strict production-browser suite rebuilt the production app and passed all 29 states in 1.1 minutes with no snapshot updates. The new slide/title fit assertion passed at desktop, compact, and mobile widths.
+- `pnpm check` passed all thirteen packages with 118 worker, 30 web, and 19 production tests.
+- `pnpm demo:e2e` passed the full recorded Capture → Map → Brief → Style → Outputs → Storyboard → Video seam.
+- `pnpm submission:packet:verify` passed with Terra, six GPT Image 2 panels, five product Cedar clips, the 2:20 Cedar editorial film, eight ready/two blocked shots, sixteen current UI screens, and four honest founder/final-package gaps.
+- `git diff --check` passed outside the preserved user-owned `PLAN-2026-07-13.md` modification.
+
+### Decisions
+
+- The focused-viewer repair is isolated, visually reviewed, and compatible with the complete product and submission seam. It is ready to commit without additional provider spend.
+
+### Open items
+
+- The professional-own-material, external `Send`/`Revise`, founder capture, final package, final MP4, eligible Session ID, and public submission gates remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

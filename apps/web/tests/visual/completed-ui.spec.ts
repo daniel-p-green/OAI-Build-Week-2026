@@ -506,6 +506,14 @@ test.describe("completed Workshop judge path", () => {
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
       await expect(page.getByRole("link", { name: "Open preview" })).toBeVisible();
       await expectPreviewFramesReady(page);
+      expect(await page.locator(".focused-output-preview iframe").evaluate((iframe: HTMLIFrameElement) => {
+        const slide = iframe.contentDocument?.querySelector(".slide")?.getBoundingClientRect();
+        const title = iframe.contentDocument?.querySelector(".cover .title")?.getBoundingClientRect();
+        return {
+          slideFits: Boolean(slide && slide.bottom <= iframe.clientHeight),
+          titleFits: Boolean(title && title.bottom <= iframe.clientHeight),
+        };
+      })).toEqual({ slideFits: true, titleFits: true });
       await expectScreen(page, `${viewport.name}-output-viewer`);
       await page.getByRole("button", { name: "Back to Outputs" }).click();
 

@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-16 07:41 CT
+Last updated: 2026-07-16 07:56 CT
 
 ## Status
 
@@ -15,6 +15,7 @@ Last updated: 2026-07-16 07:41 CT
 - The current editable Infographic Version 4 now uses the same semantic content decisions without inheriting Presentation-only layout rules. The real authorized-sample output replaces its clipped opening claim and generic process card with a complete idea plus a visual Capture → Shape → Deliver sequence in responsive HTML and editable PowerPoint. Its archive, one-page LibreOffice PDF, extracted text, desktop/compact workbench proof, gallery, and rebuilt film evidence are accepted under `artifacts/live-review/infographic-v4/`; no provider request was added.
 - The live UI now has one contextual workbench instead of a dashboard: Sources + Chat on the Map, a five-item Create summary, auto-collapsed context around Outputs and focused artifacts, and no persistent stage stack. `Voice brainstorm` replaces timestamp-heavy capture copy. Desktop and 390×844 Map, Outputs, and Storyboard screenshots are under `artifacts/ui-review/`.
 - The live provider-backed Outputs gallery now shows only the current version of each deliverable; older versions move into a focused `Version history` instead of duplicating full-size gallery cards. Visible source trails say `Voice brainstorm` or the professional Source title while exact provider locators remain preserved in hidden trace metadata. The real desktop and 390×844 gallery plus compact Presentation history were inspected in the Codex in-app browser and captured under `artifacts/ui-review/outputs-latest-only-*` and `presentation-version-history-compact-2026-07-16.png`.
+- Focused professional Outputs now show the complete artifact before its trace. Presentation, Infographic, and Video use their real 16:9 frame inside one scroll surface; Sources and version history follow instead of shrinking or overlaying the artifact. The provider-backed Presentation cover now fits completely at 1200×800, 1024×768, and 760×900 with zero horizontal overflow. The browser contract verifies slide and title fit, and accepted screenshots are under `artifacts/ui-review/presentation-fit/`.
 - The finished Video now exposes `Edit storyboard` beside its source, original-brainstorm, and playback actions. A changed panel says exactly what saving will do, `Save changes` revokes Storyboard approval, the existing Video becomes `Needs update`, and `Approve storyboard` becomes the one dominant next action. Video staleness no longer incorrectly offers to regenerate unrelated Outputs. The complete revision loop is locked by the production-browser suite at desktop, compact, and mobile widths.
 - Image replacement is now a professional revision loop rather than a blind retry. The focused official-component sheet keeps the current grounded image visible, accepts one plain-language change of at most 400 characters, preserves the approved idea, Style, evidence, and base prompt, and sends that instruction only to the selected GPT Image 2 panel. Pending work keeps the existing image on screen, shows the requested change, revokes Storyboard approval, and requires review before Video. Desktop and 390×844 snapshots are locked in the production-browser suite.
 - Voice provenance now has an explicit disclosure boundary: Sources navigation uses `Voice brainstorm` and `Voice` instead of provider model, timestamp, or fallback mechanics; the semantic Map says `Voice stays available`; the Source evidence sheet still reveals the exact unchanged locator needed to defend the claim. A dedicated 390×844 regression proves provider transport language stays out of the primary Sources surface without weakening traceability.
@@ -763,6 +764,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [Experience acceptance criteria](research/ui-experience-acceptance-criteria-2026-07-14.md)
 - [Plugin research and adoption map](research/plugins/README.md)
 - [Current UI screenshot gallery](outputs/workshoplm-current-ui/README.md)
+- [Focused Presentation fit review](artifacts/ui-review/presentation-fit/README.md)
 - [Latest-only Output gallery and focused history screenshots](artifacts/ui-review/outputs-latest-only-desktop-2026-07-16.png)
 - [Provider-backed Presentation Version 4 review](artifacts/live-review/presentation-v4/contact-sheet.png)
 - [Provider-backed Presentation dependency evidence](artifacts/live-review/presentation-v4/evidence.json)
