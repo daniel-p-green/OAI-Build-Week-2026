@@ -34,13 +34,6 @@ async function hold(milliseconds: number): Promise<void> {
   await new Promise((resolveHold) => setTimeout(resolveHold, milliseconds));
 }
 
-async function selectProductPromise(page: Page): Promise<void> {
-  const map = await page.locator(".excalidraw-map").boundingBox();
-  if (!map) throw new Error("The editable Map did not expose a recording boundary.");
-  await page.mouse.click(map.x + 407, map.y + 136);
-  await expect(page.getByRole("button", { name: "Show source" })).toBeVisible();
-}
-
 async function main(): Promise<void> {
   await rm(dataRoot, { recursive: true, force: true });
   await rm(outputRoot, { recursive: true, force: true });
@@ -83,23 +76,23 @@ async function main(): Promise<void> {
     };
 
     await page.goto(baseUrl);
+    await page.getByRole("radio", { name: /Client pitch/ }).click();
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByRole("button", { name: "Build my Map" }).click();
     await expect(page.getByRole("region", { name: "Map" })).toBeVisible();
     await expect(page.locator(".excalidraw-map canvas").first()).toBeVisible();
     await beat("map", "Grounded editable Map", async () => undefined, 2200);
 
     await beat("sources", "Contemporaneous fixture brainstorm and source scope", async () => {
-      await page.getByRole("button", { name: /sources$/ }).click();
-      await expect(page.getByRole("dialog", { name: "Sources" })).toContainText("Capture-only transcript");
-      await page.getByRole("button", { name: /Capture-only transcript/ }).click();
+      await expect(page.locator('[aria-label="Sources"]')).toContainText("Voice brainstorm");
     }, 2200);
-    await page.getByRole("button", { name: "Close Sources" }).click();
 
     await beat("source-trace", "Map claim to exact source excerpt", async () => {
-      await selectProductPromise(page);
-      await page.getByRole("button", { name: "Show source" }).click();
+      await page.getByRole("button", { name: /Voice brainstorm/ }).click();
       await expect(page.getByRole("dialog", { name: "Source" })).toBeVisible();
     }, 1800);
-    await page.getByRole("button", { name: "Close Source" }).click();
+    await page.getByRole("button", { name: "Show on map" }).click();
+    await expect(page.getByRole("button", { name: "Show source", exact: true })).toBeVisible();
 
     await beat("map-edit", "Edit a semantic claim before approval", async () => {
       const claim = page.getByRole("textbox", { name: "Claim" });
@@ -107,7 +100,7 @@ async function main(): Promise<void> {
       await page.getByRole("button", { name: "Save" }).click();
       await expect.poll(async () => {
         const state = await (await page.request.get(`${baseUrl}/api/workshop`)).json() as { mapNodes: Array<{ id: string; title: string }> };
-        return state.mapNodes.find((node) => node.id === "promise")?.title;
+        return state.mapNodes.find((node) => node.title === "The product promise, grounded")?.title;
       }).toBe("The product promise, grounded");
     }, 1500);
     const closeClaim = page.getByRole("button", { name: "Close claim" });
@@ -115,13 +108,13 @@ async function main(): Promise<void> {
 
     await beat("brief-approval", "First gate: approve the Brief", async () => {
       await page.getByRole("button", { name: "Approve brief" }).click();
-      await expect(page.getByRole("heading", { level: 1 })).toContainText("Turn raw thinking into finished work");
+      await expect(page.getByRole("heading", { level: 1 })).toContainText("The product promise, grounded");
     }, 2200);
 
     await beat("style", "Apply exact professional Style and intent", async () => {
       await page.getByRole("button", { name: "Choose style" }).click();
       const sheet = page.getByRole("dialog", { name: "Style" });
-      await sheet.getByRole("button", { name: /Board presentation/ }).click();
+      await sheet.getByRole("button", { name: "Set manually" }).click();
       await sheet.getByRole("button", { name: "Use this style" }).click();
       await expect(sheet).toBeHidden();
     }, 1800);
@@ -134,15 +127,15 @@ async function main(): Promise<void> {
     }, 2600);
 
     await beat("output-evidence", "Follow a presentation back to its source", async () => {
-      await page.getByRole("button", { name: "Open Presentation" }).click();
-      await page.getByRole("button", { name: "Show source" }).click();
+      await page.getByRole("button", { name: "Open Presentation", exact: true }).click();
+      await page.getByRole("button", { name: "Show source", exact: true }).click();
       await expect(page.getByRole("dialog", { name: "Source" })).toBeVisible();
     }, 1800);
     await page.getByRole("button", { name: "Close Source" }).click();
     await page.getByRole("button", { name: "Back to Outputs" }).click();
 
     await beat("storyboard-edit", "Edit the Storyboard before rendering", async () => {
-      await page.getByRole("button", { name: "View storyboard" }).click();
+      await page.getByRole("button", { name: "Review storyboard", exact: true }).click();
       const title = page.getByRole("textbox", { name: "Panel title" });
       await title.fill("Presentation proof");
       await page.getByRole("button", { name: "Save" }).click();
@@ -156,7 +149,7 @@ async function main(): Promise<void> {
 
     await beat("video-render", "Render the approved Storyboard locally", async () => {
       await page.getByRole("button", { name: "Create video" }).click();
-      await expect(page.getByRole("button", { name: "Creating…" })).toBeDisabled();
+      await expect(page.getByRole("button", { name: "Cancel video" })).toBeVisible();
       const result = await executeOne(dataRoot);
       if (result.state !== "succeeded") throw new Error(result.error ?? "The recording draft video did not render.");
       await expect(page.getByRole("button", { name: "View video" })).toBeVisible({ timeout: 5000 });
@@ -166,7 +159,7 @@ async function main(): Promise<void> {
       await page.getByRole("button", { name: "View video" }).click();
       await expect(page.locator(".focused-output-preview video")).toBeVisible();
       await page.getByRole("button", { name: "Show original" }).click();
-      await expect(page.getByRole("dialog", { name: "Original brainstorm" })).toContainText("Became five connected Outputs");
+      await expect(page.getByRole("dialog", { name: "Original brainstorm" })).toContainText("Became six connected Outputs");
     }, 3000);
 
     const finalState = readWorkshopState(dataRoot);

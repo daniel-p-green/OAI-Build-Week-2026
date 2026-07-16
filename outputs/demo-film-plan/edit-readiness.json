@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceCapturedAt": "2026-07-15T08:31:14.633Z",
+  "sourceCapturedAt": "2026-07-16T09:57:17.891Z",
   "mode": "draft",
   "planStatus": "draft",
   "finalReady": false,
@@ -13,8 +13,8 @@
   },
   "capture": {
     "status": "fixture-draft",
-    "durationSeconds": 37.76,
-    "sha256": "26c898f24bc0b643225e6abac69483d958b609a31200504e9797d57c3d7be8f7",
+    "durationSeconds": 41.36,
+    "sha256": "46f3e8c1b76779947229aa1d5fd36b22aa473a1b9dc31855edef290d39e3a7b9",
     "referencedBeats": 12
   },
   "finalVideo": {

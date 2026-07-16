@@ -7638,3 +7638,36 @@ The 03:51 CT deterministic final-film milestone was inserted after an earlier ma
 ## 2026-07-16 04:42 CT — Voice-language verification placement correction
 
 The 04:41 CT verification entry was inserted before the 04:38 implementation entry because an earlier matching end marker was selected. No history was rewritten. This physical-end correction records the current state: the strict production-browser suite passed 29/29 without updates, `pnpm check` passed all 13 packages with 115 worker and 30 web tests, `pnpm demo:e2e` passed, and `git diff --check` passed outside the preserved stale plan. The milestone is ready to ship; founder capture and the final submission artifacts remain open.
+
+---
+
+## 2026-07-16 05:00 CT — Judge footage is reconciled to the current workbench
+
+**Area:** Demo capture / editorial rough cut / acceptance automation
+
+### Changed
+
+- Repaired the deterministic recording harness after the capture-first onboarding and simplified workbench made its old selectors and assertions stale. The recorder now chooses the professional outcome, enters the Map from an existing voice Source, uses the desktop Sources rail, opens the exact Source before returning to the selected Map claim, applies the current manual Style path, opens the hero Presentation unambiguously, follows the current Storyboard action, recognizes queued Video state, and verifies the six-Output reveal.
+- Recorded a fresh 41.36-second, 12-beat fixture walkthrough through Map, Sources, exact evidence, semantic edit, Brief approval, Style, Outputs, focused evidence, Storyboard edit, Storyboard approval, local render, and original-brainstorm reveal.
+- Rebuilt the 2:20 editorial rough cut from the current footage. The Storyboard frame no longer exposes provider transport language inside creative narration; exact provider provenance remains visible only in the focused Source evidence view.
+- Fixed the rough-cut builder so an existing verified `outputs/demo-film-narration/manifest.json` is the default narration source. A routine rebuild can no longer silently downgrade the already verified OpenAI Cedar film to macOS guide speech.
+
+### Verified
+
+- `pnpm --filter @workshoplm/web capture:demo` completed with 12 beats, SHA-256 `46f3e8c1b76779947229aa1d5fd36b22aa473a1b9dc31855edef290d39e3a7b9`, `briefApproved: true`, `storyboardApproved: true`, and `videoState: rendered`.
+- `pnpm demo:film:rough` produced a 140.021-second 1280×720 H.264/AAC rough cut with SHA-256 `517e7f3764cd08fc6913c09cb15e69761663e24894386cea4260a6ef49cfcf99`. Its manifest records OpenAI `gpt-4o-mini-tts`, Cedar, ten hash-bound requests, and `finalProviderNarration: true`.
+- The refreshed recording contact sheet and editorial contact sheet were visually inspected. Focused review of shots 03, 08, and 10 accepted the friendly Sources rail, exact evidence boundary, current Storyboard workbench, and six-Output reveal.
+- `pnpm demo:film:verify` remains honestly in draft mode with eight ready shots and two blocked shots. Only the founder recording/transcript, ready final-operator submission manifest, and final MP4 are missing.
+- `node --check scripts/build-demo-rough-cut.mjs`, `pnpm check`, `pnpm demo:e2e`, and `git diff --check` outside the explicitly preserved stale-plan modification all passed. The repository suite remains green across 13 packages with 115 worker and 30 web tests.
+
+### Decisions
+
+- The judge artifact must be rebuilt whenever the visible workbench changes materially; green product tests do not prove the film still demonstrates the current product.
+- Generated, hash-verified provider narration is a durable local build input. Reusing it is the honest no-spend default; a local guide voice is only a fallback when that manifest does not exist.
+- Exact provider locators belong in `Show source`, not in Storyboard narration or primary navigation.
+- No provider request ran in this milestone. The evidence ledger remains 97 HTTP operations; exact dollar debit is unavailable and no exact spend is invented.
+
+### Open items
+
+- Founder capture, final thirteen-request Source-derived operator run, verified final package, final MP4, external send/revise review, eligible Session ID, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

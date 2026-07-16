@@ -15,9 +15,10 @@ const outputVideo = resolve(outputRoot, finalBuild ? "workshoplm-demo.mp4" : "wo
 const contactSheet = resolve(outputRoot, "contact-sheet.jpg");
 const manifestPath = resolve(outputRoot, "manifest.json");
 const reviewRoot = resolve(outputRoot, "review");
+const verifiedNarrationManifest = resolve(repository, "outputs/demo-film-narration/manifest.json");
 const narrationManifestPath = process.env.WORKSHOPLM_ROUGH_CUT_NARRATION_MANIFEST
   ? resolve(repository, process.env.WORKSHOPLM_ROUGH_CUT_NARRATION_MANIFEST)
-  : finalBuild ? resolve(repository, "outputs/demo-film-narration/manifest.json") : undefined;
+  : finalBuild || existsSync(verifiedNarrationManifest) ? verifiedNarrationManifest : undefined;
 const voice = process.env.WORKSHOPLM_ROUGH_CUT_VOICE || "Samantha";
 const fixedSpeechRate = process.env.WORKSHOPLM_ROUGH_CUT_RATE ? Number(process.env.WORKSHOPLM_ROUGH_CUT_RATE) : undefined;
 const width = 1280;

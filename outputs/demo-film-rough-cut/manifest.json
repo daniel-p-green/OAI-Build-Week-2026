@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "editorial-rough-cut",
   "disclosure": "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video.",
-  "builtAt": "2026-07-16T08:12:04.944Z",
+  "builtAt": "2026-07-16T09:59:32.220Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "voice": {
@@ -15,7 +15,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-rough-cut.mp4",
-    "sha256": "8e1cfe904a93659893b05c5b38ee7d64e205d0486710604fc0ab06f6854f1396",
+    "sha256": "517e7f3764cd08fc6913c09cb15e69761663e24894386cea4260a6ef49cfcf99",
     "durationSeconds": 140.021333,
     "streams": [
       {
@@ -33,12 +33,12 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "22df822c9db73d536cfeaefa3a6f9448845c21d6279183f2b0bf10428e698785"
+    "sha256": "db19cab17cf1791e89b56ea956a3076b378aa8deeb9dad505fe9b548341a07d3"
   },
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "bc269d915e3635e3528edd46107edfee2bae7eca6caef5a81bceae62b2859575"
+      "sha256": "e44452b7d6e27886d5046c683517af3c72d3b0eb3e9070fa207ec67c85b7b905"
     },
     {
       "relativePath": "review/02.jpg",
@@ -46,19 +46,19 @@
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "c0e90f097d93598bb6503655a8d5173aae953f5f52337269dbcde3b31d1c3fda"
+      "sha256": "d62983c76509e985629b265662420d2717da6fca0d5f501417da36024836333a"
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "14b08bafa5f8cfe0c11c2661e7ecd2745f5600be9febd6f73282d28b22047c18"
+      "sha256": "42463100d1df86db56446adb5de128258dc0135c38b0eef0a1f8e4d7898b1a91"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "d46c4698c124bf3433191c3682fd9e81e4a34df43313cb05a7417fccabb49fd4"
+      "sha256": "3888ed1aaa0fbb78c4e437efd11be875fb6325e84deff0fd0f410a886cb37dd2"
     },
     {
       "relativePath": "review/06.jpg",
-      "sha256": "f40916265fbceb059f261c4139dcd9ec4b3ea28111a48f3316d2b5f330b02f01"
+      "sha256": "1a5f0a2702af3aa8417e6a74eac47ee9da1910599210847fd4db430ec529c57f"
     },
     {
       "relativePath": "review/07.jpg",
@@ -66,7 +66,7 @@
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "3fadc9e19395c2019b32f7987478e0102a3f4cb27740b17158268b75fc7a58f8"
+      "sha256": "dd81ee5232b926bc6b8ffd55476adad829058204b1bb06c69ac3e4122250ab49"
     },
     {
       "relativePath": "review/09.jpg",
@@ -74,7 +74,7 @@
     },
     {
       "relativePath": "review/10.jpg",
-      "sha256": "c9ea20647511353cf90f7fb3d4ed5fd782cdbd230771797b8010d1d81752f73b"
+      "sha256": "5a961f2a250af4a16f8093cadb8df1eb13f632e5deb0573e494614b583b4c4e3"
     }
   ],
   "shots": [
@@ -91,8 +91,8 @@
       "sourceBeats": [
         "map"
       ],
-      "sourceStartSeconds": 0.568,
-      "sourceEndSeconds": 2.671
+      "sourceStartSeconds": 0.696,
+      "sourceEndSeconds": 2.798
     },
     {
       "id": "codex-doorway",
@@ -121,8 +121,8 @@
       "sourceBeats": [
         "sources"
       ],
-      "sourceStartSeconds": 2.771,
-      "sourceEndSeconds": 4.946
+      "sourceStartSeconds": 2.898,
+      "sourceEndSeconds": 5.003
     },
     {
       "id": "evidence-and-control",
@@ -138,8 +138,8 @@
         "source-trace",
         "map-edit"
       ],
-      "sourceStartSeconds": 5.071,
-      "sourceEndSeconds": 8.374
+      "sourceStartSeconds": 5.103,
+      "sourceEndSeconds": 8.38
     },
     {
       "id": "brief-approval",
@@ -154,8 +154,8 @@
       "sourceBeats": [
         "brief-approval"
       ],
-      "sourceStartSeconds": 8.505,
-      "sourceEndSeconds": 10.654
+      "sourceStartSeconds": 8.508,
+      "sourceEndSeconds": 10.659
     },
     {
       "id": "style",
@@ -170,8 +170,8 @@
       "sourceBeats": [
         "style"
       ],
-      "sourceStartSeconds": 10.754,
-      "sourceEndSeconds": 12.533
+      "sourceStartSeconds": 10.759,
+      "sourceEndSeconds": 12.528
     },
     {
       "id": "outputs",
@@ -201,8 +201,8 @@
         "storyboard-edit",
         "storyboard-approval"
       ],
-      "sourceStartSeconds": 17.309,
-      "sourceEndSeconds": 20.92
+      "sourceStartSeconds": 17.248,
+      "sourceEndSeconds": 20.849
     },
     {
       "id": "render-and-trace",
@@ -231,8 +231,8 @@
       "sourceBeats": [
         "original-reveal"
       ],
-      "sourceStartSeconds": 34.585,
-      "sourceEndSeconds": 37.539
+      "sourceStartSeconds": 38.573,
+      "sourceEndSeconds": 41.36
     }
   ],
   "limitations": [

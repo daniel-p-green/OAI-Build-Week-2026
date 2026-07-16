@@ -2,15 +2,15 @@
   "schemaVersion": 1,
   "status": "fixture-draft",
   "disclosure": "Sanitized recorded fixture. No paid provider calls. Placeholder narration remains disclosed in the product state.",
-  "capturedAt": "2026-07-15T08:31:14.633Z",
+  "capturedAt": "2026-07-16T09:57:17.891Z",
   "viewport": {
     "width": 1200,
     "height": 800
   },
   "video": {
     "relativePath": "workshoplm-fixture-walkthrough.webm",
-    "sha256": "26c898f24bc0b643225e6abac69483d958b609a31200504e9797d57c3d7be8f7",
-    "durationSeconds": 37.76,
+    "sha256": "46f3e8c1b76779947229aa1d5fd36b22aa473a1b9dc31855edef290d39e3a7b9",
+    "durationSeconds": 41.36,
     "streams": [
       {
         "codec_name": "vp8",
@@ -23,92 +23,92 @@
   "reviewImages": [
     {
       "relativePath": "contact-sheet.png",
-      "sha256": "a07f04aa7131b044c2cd6dcd9f18a5fb0c12ffbcf88c75edc817e0200800ab94"
+      "sha256": "ee395ff7d5aab9b39cd9e02acf1f0ffafd410a14e2af1d1f7cb2505e33a334c5"
     },
     {
       "relativePath": "original-reveal.png",
-      "sha256": "7e5cf63c81a9d9ba3ef406d95f5f603cfd2490f691ec144f9829cf040385f30f"
+      "sha256": "2064d0973ea876ee9db2024da103e47be04d33b4938303dc006028f50b10c5bc"
     }
   ],
   "beats": [
     {
       "id": "map",
       "label": "Grounded editable Map",
-      "startMs": 768,
-      "endMs": 2971
+      "startMs": 896,
+      "endMs": 3098
     },
     {
       "id": "sources",
       "label": "Contemporaneous fixture brainstorm and source scope",
-      "startMs": 2971,
-      "endMs": 5246
+      "startMs": 3098,
+      "endMs": 5303
     },
     {
       "id": "source-trace",
       "label": "Map claim to exact source excerpt",
-      "startMs": 5271,
-      "endMs": 7114
+      "startMs": 5303,
+      "endMs": 7124
     },
     {
       "id": "map-edit",
       "label": "Edit a semantic claim before approval",
-      "startMs": 7135,
-      "endMs": 8674
+      "startMs": 7150,
+      "endMs": 8680
     },
     {
       "id": "brief-approval",
       "label": "First gate: approve the Brief",
-      "startMs": 8705,
-      "endMs": 10954
+      "startMs": 8708,
+      "endMs": 10959
     },
     {
       "id": "style",
       "label": "Apply exact professional Style and intent",
-      "startMs": 10954,
-      "endMs": 12833
+      "startMs": 10959,
+      "endMs": 12828
     },
     {
       "id": "create-outputs",
       "label": "Create the traced Output set",
-      "startMs": 12851,
-      "endMs": 15569
+      "startMs": 12847,
+      "endMs": 15522
     },
     {
       "id": "output-evidence",
       "label": "Follow a presentation back to its source",
-      "startMs": 15569,
-      "endMs": 17429
+      "startMs": 15522,
+      "endMs": 17381
     },
     {
       "id": "storyboard-edit",
       "label": "Edit the Storyboard before rendering",
-      "startMs": 17509,
-      "endMs": 19568
+      "startMs": 17448,
+      "endMs": 19503
     },
     {
       "id": "storyboard-approval",
       "label": "Second gate: approve the Storyboard",
-      "startMs": 19568,
-      "endMs": 21220
+      "startMs": 19503,
+      "endMs": 21149
     },
     {
       "id": "video-render",
       "label": "Render the approved Storyboard locally",
-      "startMs": 21220,
-      "endMs": 34785
+      "startMs": 21149,
+      "endMs": 38773
     },
     {
       "id": "original-reveal",
       "label": "Reveal the original thought beside the finished work",
-      "startMs": 34785,
-      "endMs": 37839
+      "startMs": 38773,
+      "endMs": 41821
     }
   ],
   "finalState": {
     "briefApproved": true,
     "storyboardApproved": true,
     "videoState": "rendered",
-    "sources": 4,
+    "sources": 1,
     "outputs": 2,
     "imagePanels": 6,
     "storyboardPanels": 5
