@@ -582,9 +582,10 @@ export function normalizePdfLayoutText(text: string) {
     .replace(/:\s+(?=\d+[.)]\s+)/g, ":\n\n");
   return normalizeSourceText(paragraphs).split(/\n\n+/).map((paragraph) => paragraph.replace(/\n+/g, " ").replace(/\s+/g, " ").trim()).filter(Boolean).join("\n\n");
 }
-function sourceClaimCount(text: string) { return Math.max(1, text.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean).length); }
+function isSourceMetadataChunk(text: string) { return /^\s*(?:source\s+locator|source\s+url|citations?)\s*:/i.test(text); }
+function sourceClaimCount(text: string) { return Math.max(1, text.split(/\n\n+/).filter((paragraph) => !isSourceMetadataChunk(paragraph)).flatMap((paragraph) => paragraph.split(/[.!?]+/)).map((sentence) => sentence.trim()).filter(Boolean).length); }
 function chunksFor(text: string, sourceId: string, hash: string, origin: string): WorkshopChunk[] { return text.split(/\n\n+/).flatMap((paragraph) => paragraph.match(/.{1,700}(?:\s|$)/g) ?? [paragraph]).filter(Boolean).map((chunk, ordinal) => ({ id: `chunk-${hash.slice(0, 12)}-${ordinal + 1}`, sourceId, text: chunk.trim(), locator: `${origin} · chunk ${String(ordinal + 1).padStart(2, "0")}`, ordinal })); }
-function claimsFor(chunks: WorkshopChunk[], hash: string): WorkshopClaim[] { return chunks.flatMap((chunk) => chunk.text.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean).map((text, index) => ({ id: `claim-${hash.slice(0, 12)}-${chunk.ordinal}-${index + 1}`, sourceId: chunk.sourceId, chunkId: chunk.id, text, evidenceState: "verified" as const, locator: chunk.locator }))); }
+function claimsFor(chunks: WorkshopChunk[], hash: string): WorkshopClaim[] { return chunks.filter((chunk) => !isSourceMetadataChunk(chunk.text)).flatMap((chunk) => chunk.text.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean).map((text, index) => ({ id: `claim-${hash.slice(0, 12)}-${chunk.ordinal}-${index + 1}`, sourceId: chunk.sourceId, chunkId: chunk.id, text, evidenceState: "verified" as const, locator: chunk.locator }))); }
 function sourceExcerpt(text: string) { return text.length <= 240 ? text : `${text.slice(0, 240).replace(/\s+\S*$/, "").trimEnd()}…`; }
 function mapNodeTitle(text: string) {
   const clean = prose(text);
@@ -1072,7 +1073,7 @@ const deckTopicStopwords = new Set(["about", "brief", "briefing", "client", "dec
 function deckTopicTerms(title: string) { return prose(title).toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((term) => term.length >= 4 && !deckTopicStopwords.has(term)); }
 function deckCandidateScore(text: string, role: DeckRole, raw: string, sourcePriority: number, topicTerms: string[], topicContext: string, sourceType: WorkshopSource["type"] | undefined) {
   const words = text.split(/\s+/).filter(Boolean).length;
-  if (/^\s*(?:\||#{1,6}\s)/.test(raw) || /:\s*$/.test(text) || words < 4 || text.length < 24 || /^(?:md|json|tsx?|html)\b|^(?:date|status|last (updated|refreshed)|at a glance|hackathon|track|deadline|source|version)\b\s*:?/i.test(text)) return Number.NEGATIVE_INFINITY;
+  if (isSourceMetadataChunk(raw) || /^\s*(?:\||#{1,6}\s)/.test(raw) || /:\s*$/.test(text) || words < 4 || text.length < 24 || /^(?:md|json|tsx?|html)\b|^(?:date|status|last (updated|refreshed)|at a glance|hackathon|track|deadline|source|version)\b\s*:?/i.test(text)) return Number.NEGATIVE_INFINITY;
   let score = roleSignals[role].test(text) ? 12 : 0;
   if (words >= 8 && words <= 34) score += 6;
   else if (words <= 48) score += 2;
@@ -1096,9 +1097,10 @@ function deckCandidateScore(text: string, role: DeckRole, raw: string, sourcePri
 }
 function selectDeckClaims(state: WorkshopState) {
   const topicTerms = deckTopicTerms(state.title);
+  const chunks = new Map(state.sourceChunks.map((chunk) => [chunk.id, chunk]));
   const candidates = activeClaimsFor(state).map((claim, order) => {
     const source = state.sourceItems.find((candidate) => candidate.id === claim.sourceId);
-    return { claim, order, raw: claim.text, text: prose(claim.text), sourceType: source?.type, topicContext: source?.type === "WEB" ? claim.text : `${claim.text} ${source?.title ?? ""}`, sourcePriority: Math.max(0, state.activeSourceIds.length - state.activeSourceIds.indexOf(claim.sourceId)) };
+    return { claim, order, raw: chunks.get(claim.chunkId)?.text ?? claim.text, text: prose(claim.text), sourceType: source?.type, topicContext: source?.type === "WEB" ? claim.text : `${claim.text} ${source?.title ?? ""}`, sourcePriority: Math.max(0, state.activeSourceIds.length - state.activeSourceIds.indexOf(claim.sourceId)) };
   });
   const used = new Set<string>();
   return deckRoles.flatMap((role) => {
@@ -1115,12 +1117,25 @@ function selectDeckClaims(state: WorkshopState) {
     return [{ ...selected, role }];
   });
 }
+function parallelTransformation(text: string) {
+  const match = text.match(/^(.+?)\s+(becomes?|turns? into)\s+([^,.;]+?)\s+and\s+([^,.;]+)[.]?$/i);
+  if (!match) return undefined;
+  const [, subject, verb, primary, rawSecondary] = match;
+  const article = primary.match(/^(a|an)\s+/i)?.[1];
+  const secondary = article && !/^(?:a|an|the)\s+/i.test(rawSecondary) ? `${article} ${rawSecondary}` : rawSecondary;
+  return {
+    heading: `${subject} ${verb} ${primary}`,
+    body: `${subject} also ${verb} ${secondary}.`,
+  };
+}
 function deckHeading(text: string, role: DeckRole) {
   const transformation = text.match(/\b(?:should show how|shows? how)\s+(.+?)\s+(becomes?|turns? into)\s+([^,.;]+)/i);
   if (transformation) {
     const heading = `${transformation[1]} ${transformation[2]} ${transformation[3]}`.trim();
     return `${heading.charAt(0).toUpperCase()}${heading.slice(1)}`;
   }
+  const parallel = parallelTransformation(text);
+  if (parallel) return `${parallel.heading.charAt(0).toUpperCase()}${parallel.heading.slice(1)}`;
   const sequence = deckSequence(text);
   if (sequence.length >= 3) return `One continuous path from ${sequence[0]} to ${sequence.at(-1)}`;
   if (role === "recommendation") {
@@ -1136,6 +1151,8 @@ function deckBody(text: string, heading: string) {
     const remainder = text.slice(transformation.index + transformation[0].length).replace(/^\s*,\s*/, "").replace(/[.]$/, "").trim();
     if (remainder) return canonicalDeckObjects(`The path continues through ${remainder}.`);
   }
+  const parallel = parallelTransformation(text);
+  if (parallel) return canonicalDeckObjects(parallel.body);
   if (deckSequence(text).length >= 3) return "";
   const headingPrefix = heading.replace(/…$/, "").trim();
   if (heading.endsWith("…") && text.toLowerCase().startsWith(headingPrefix.toLowerCase())) return text.slice(headingPrefix.length).replace(/^\s*[,;:—–-]\s*/, "").trim();

@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "status": "accepted-controlled-provider-proof",
+  "reviewedAt": "2026-07-16T07:41:00-05:00",
+  "source": {
+    "label": "AI Collective external-use chapter corpus",
+    "permission": "shareable",
+    "factualBlocks": 5,
+    "sha256": "4ba53c26b10b4e90f9eeee5616e620d6e106776db05fc71fe00278744f460228"
+  },
+  "provider": {
+    "operation": "grounded_graph",
+    "model": "gpt-5.6-terra",
+    "requestId": "req_67fce808cc364de8be8834dd2481e33c",
+    "outputSha256": "41fc4ca58f8ed11178ed2582a081a9799ddca9f83af1684cbfc85ded63d2eda4",
+    "requestsUsed": 1,
+    "requestCeiling": 1
+  },
+  "measuredFirstDraft": {
+    "sourceToProviderMapSeconds": 5.957927,
+    "sourceToEditablePresentationSeconds": 5.983927,
+    "timingReconstructedFromNormalizedSourceMtime": true,
+    "providerRequestSeconds": null,
+    "manualRepairsBeforeFirstPresentation": 0,
+    "editablePresentationSha256": "1cd257f51c7887738a39193c5c54aead915416aa7c46af9e73b8c6b13a7f2699"
+  },
+  "acceptedRepair": {
+    "presentationVersion": 3,
+    "additionalProviderRequests": 0,
+    "repairReason": "The first draft exposed source-locator metadata as slide copy and clipped one parallel transformation.",
+    "claims": [
+      "claim-86d36ede32c0-1-1",
+      "claim-86d36ede32c0-0-1",
+      "claim-86d36ede32c0-3-1",
+      "claim-86d36ede32c0-6-1"
+    ],
+    "editablePresentationSha256": "14dc2bcbf3806160b49f53c31ef6eb74023ab8a40f78cc2fb48dce1d1ad1acda",
+    "pdfSha256": "6144a6feefeb322fa434e77f63777628a6acd1723ed7c5d7a82122d49d3371cf",
+    "contactSheetSha256": "4fc1512f491d9ea236280d09977b286bb87057eff40f2db422432fc4d93a60fd",
+    "pages": 5,
+    "pageSizePoints": "960.009 x 540",
+    "observedClipping": false,
+    "observedSourceMetadataLeak": false
+  },
+  "workbench": {
+    "desktop": {
+      "width": 1200,
+      "mapHorizontalOverflow": false,
+      "presentationHorizontalOverflow": false
+    },
+    "compact": {
+      "width": 760,
+      "mapHorizontalOverflow": false,
+      "presentationHorizontalOverflow": false
+    }
+  },
+  "limitations": [
+    "This is controlled automation over reviewable external-use material, not an uncoached professional using their own files.",
+    "Recovered timing starts at the normalized Source file timestamp and does not claim the earlier ingestion interval or provider-only duration.",
+    "Internal visual acceptance does not satisfy the open external Send or Revise gate."
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "status": "controlled-provider-proof",
+  "startedAt": "2026-07-16T12:31:00.728Z",
+  "completedAt": "2026-07-16T12:31:06.712Z",
+  "root": ".workshoplm/first-fifteen-external",
+  "source": {
+    "label": "AI Collective external-use chapter corpus",
+    "factualBlocks": 5,
+    "sha256": "4ba53c26b10b4e90f9eeee5616e620d6e106776db05fc71fe00278744f460228",
+    "permission": "shareable"
+  },
+  "timing": {
+    "sourceToProviderMapSeconds": 5.957927,
+    "providerRequestSeconds": null,
+    "sourceToEditablePresentationSeconds": 5.983927,
+    "reconstructedFromNormalizedSourceMtime": true,
+    "mapUnderTwoMinutes": true,
+    "presentationUnderFifteenMinutes": true
+  },
+  "provider": {
+    "model": "gpt-5.6-terra",
+    "requestId": "req_67fce808cc364de8be8834dd2481e33c",
+    "outputSha256": "41fc4ca58f8ed11178ed2582a081a9799ddca9f83af1684cbfc85ded63d2eda4",
+    "requestsUsed": 1,
+    "requestCeiling": 1
+  },
+  "result": {
+    "activeSources": 1,
+    "groundedClaims": 28,
+    "mapNodes": 6,
+    "mapEdges": 5,
+    "briefVersion": 1,
+    "styleVersion": 1,
+    "firstPresentationId": "deck-v1",
+    "firstPresentationRelativePath": "generated/workshop-ai-collective-chapter-launch-decision/deck-v1.deck.html",
+    "firstEditablePresentationRelativePath": "generated/workshop-ai-collective-chapter-launch-decision/deck-v1.presentation.pptx",
+    "firstEditablePresentationSha256": "1cd257f51c7887738a39193c5c54aead915416aa7c46af9e73b8c6b13a7f2699",
+    "manualRepairsBeforeFirstPresentation": 0
+  },
+  "limitations": [
+    "This is controlled automation over reviewable external-use material, not an uncoached professional using their own files.",
+    "The harness initially rejected the correct provider record after generation; recovered timing starts at the normalized Source file timestamp and does not claim the earlier ingestion interval or provider-only duration.",
+    "The run proves provider and product latency, not external Send approval or the founder meta-demo path."
+  ]
+}

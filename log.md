@@ -2718,6 +2718,8 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
+---
+
 ## 2026-07-16 03:51 CT — Final film assembly is deterministic and fail-closed
 
 **Area:** Demo film / Meta reveal / Submission truth
@@ -7984,4 +7986,66 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 ### Open items
 
 - Founder capture, the founder-derived final operator run, verified final package, final MP4, external professional review, eligible Session ID, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 07:41 CT — External-use provider first-draft proof and production repair
+
+**Area:** First five minutes / live Terra Map / editable Presentation / professional output quality
+
+### Changed
+
+- Added a fail-closed external-use proof harness that permits exactly one `gpt-5.6-terra` request, isolates its local data root, imports five shareable AI Collective evidence blocks, builds the provider Map, approves the Brief, applies the AI Collective Style, and creates an editable PowerPoint.
+- Ran the proof once. The product completed the provider Map and first editable Presentation, but the harness initially rejected the correct result because it expected the retired `grounded_map` operation name and `providerRequestId` field. Repaired only the harness, reused the already-paid state, and did not issue a second request for evidence bookkeeping.
+- Inspected the first real PowerPoint instead of accepting latency alone. It exposed two production defects: a `Source locator:` paragraph had been sentence-split into a slide claim, and `A chapter lead becomes a visible facilitator and go-to resource…` became a clipped headline plus an orphan `community` body.
+- Repaired source normalization so locator/citation metadata paragraphs remain searchable source material but cannot become claims. Added a backward-compatible deck-selection guard so already-persisted metadata claims also cannot become slide content.
+- Added content-aware handling for `becomes X and Y`: the renderer now writes a complete executive headline and grammatical supporting sentence instead of truncating by character count.
+- Regenerated the accepted Presentation as Version 3 locally with no additional provider request. Preserved the first-draft timing/hash separately from the repaired-output hashes and added an honest checked-in evidence packet under `artifacts/live-review/first-fifteen-external/`.
+
+### Verified
+
+- Provider request `req_67fce808cc364de8be8834dd2481e33c` produced a six-node, five-edge Map with output SHA-256 `41fc4ca58f8ed11178ed2582a081a9799ddca9f83af1684cbfc85ded63d2eda4` under a one-request ceiling.
+- Recovered timing from the normalized Source timestamp records 5.957927 seconds to the provider Map and 5.983927 seconds to the first editable Presentation. It deliberately does not claim the earlier ingestion interval or provider-only duration.
+- The first Presentation PowerPoint SHA-256 remains `1cd257f51c7887738a39193c5c54aead915416aa7c46af9e73b8c6b13a7f2699`; it is preserved as measured first-draft evidence, not accepted quality evidence.
+- The repaired Version 3 archive passed `unzip -t`. LibreOffice rendered five 16:9 pages at 960.009 × 540 points, and layout-preserving text extraction retained the complete chapter-lead headline/support, `180+ / 40+ / 400+` proof, recommendation, and visible source labels without locator leakage.
+- Full-resolution contact-sheet inspection found no clipping or overflow. The accepted editable PowerPoint SHA-256 is `14dc2bcbf3806160b49f53c31ef6eb74023ab8a40f78cc2fb48dce1d1ad1acda`; PDF `6144a6feefeb322fa434e77f63777628a6acd1723ed7c5d7a82122d49d3371cf`; contact sheet `4fc1512f491d9ea236280d09977b286bb87057eff40f2db422432fc4d93a60fd`.
+- Controlled Playwright inspected the real provider Map and focused Presentation at 1200×800 and 760×900. Both widths had document, body, and viewport widths equal with zero horizontal overflow; screenshots and their hashes are in the evidence packet.
+- `@workshoplm/worker` passed 118 tests and typecheck. The new regression proves metadata paragraphs do not become claims and the chapter-lead transformation remains complete.
+
+### Decisions
+
+- Provider latency is necessary evidence, not an acceptance criterion. A fast malformed deck is a failed first draft; visual inspection must be allowed to reject it and feed a product-level repair.
+- Explicit source locators are provenance metadata, not narrative evidence. They remain in normalized source chunks for retrieval but may not become Map ideas or Output claims.
+- Historical proof distinguishes the timed first Presentation from the accepted repaired Presentation. Regeneration may not silently rewrite the first-draft hash or claim that no repair occurred.
+- The evidence ledger increases from 97 to 98 OpenAI HTTP operations. Exact dollar debit remains unavailable and is not invented.
+
+### Open items
+
+- The named first-use gates remain open: this was controlled automation over external-use material, not an uncoached professional using their own files. The recovered timer excludes the initial ingestion interval, and no external professional has returned `Send` or `Revise`.
+- Founder capture, the founder-derived final operator run, verified final package, final MP4, eligible Session ID, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 07:44 CT — External-use repair clears full acceptance
+
+**Area:** Integration / production-browser regression / submission truth
+
+### Verified
+
+- `pnpm check` passed all thirteen packages with 118 worker, 30 web, and 19 production tests.
+- `pnpm demo:e2e` passed the recorded seam through grounded Map, both approvals, editable Outputs, Storyboard, and rendered Video.
+- `pnpm --filter @workshoplm/web test:visual` rebuilt the production app and passed all 29 desktop, compact, mobile, recovery, accessibility, source-trace, and revision states in 1.1 minutes.
+- `pnpm submission:packet:verify` passed with Terra, six GPT Image 2 panels, five product Cedar clips, the 2:20 Cedar editorial film, eight ready/two blocked shots, sixteen current UI screens, and four honest founder/final-package gaps.
+- `git diff --check` passed outside the preserved user-owned `PLAN-2026-07-13.md` modification.
+
+### Decisions
+
+- The product repair is compatible with the complete judge seam and may ship as one isolated milestone. The stale plan remains untouched and excluded from staging.
+- No additional provider request ran during repair or broad verification; the evidence ledger remains 98 HTTP operations.
+
+### Open items
+
+- The professional-own-material, external `Send`/`Revise`, founder capture, final package, final MP4, eligible Session ID, and public submission gates remain open.
 - Codex Session ID: unavailable on this surface; not inferred.

@@ -322,6 +322,31 @@ it("turns spoken transformation and process language into complete professional 
   expect(html).toContain('<div class="sequence-step"><span>Deliver</span></div>');
   await rm(root, { recursive: true, force: true });
 });
+it("keeps source-locator metadata out of claims and writes a complete parallel transformation", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-source-metadata-"));
+  createWorkshop("AI Collective chapter launch decision", root);
+  const ingested = await ingestSource({
+    title: "AI Collective chapter evidence",
+    origin: "External-use chapter corpus",
+    text: [
+      "Build the local front door to applied AI",
+      "A chapter lead becomes a visible facilitator and go-to resource for the local AI community.",
+      "Source locator: Local PDF · GenAI Collective Chapter Startup FAQ.pdf · chunk 05",
+      "180+ chapters, 40+ countries, 400+ organizers.",
+      "Start with one repeatable event format.",
+    ].join("\n\n"),
+  }, root);
+  expect(ingested.claims.map((claim) => claim.text)).not.toEqual(expect.arrayContaining([expect.stringMatching(/Source locator|FAQ|pdf · chunk/i)]));
+  expect(ingested.sourceChunks.map((chunk) => chunk.text)).toEqual(expect.arrayContaining([expect.stringContaining("Source locator:")]));
+  applyWorkshopAction("approveBrief", root);
+  lockManualStyle({}, root);
+  const generated = await generateOutput("deck", root);
+  const html = await readFile(join(root, generated.outputs.at(-1)!.relativePath), "utf8");
+  expect(html).toContain("A chapter lead becomes a visible facilitator");
+  expect(html).toContain("A chapter lead also becomes a go-to resource for the local AI community.");
+  expect(html).not.toMatch(/Source locator|FAQ|pdf · chunk|facilitator and go-to resource for the local AI…/i);
+  await rm(root, { recursive: true, force: true });
+});
 it("plans a professional deck from narrative evidence instead of source metadata", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-deck-plan-"));
   createWorkshop("Leadership strategy", root);
