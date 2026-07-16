@@ -40,6 +40,7 @@ type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; orig
 type EvidenceTarget = { sourceId?: string; claimId?: string; locator?: string };
 type EvidenceSelection = { excerpt: string; locator: string };
 type ConversationTurn = { id: string; role: "user" | "assistant"; text: string; input: "text" | "voice" | "system"; createdAt: string; evidence: { claimId?: string; sourceId: string; chunkId?: string; locator: string }[]; sourceId?: string; operation?: { name: "search" | "source_search" | "voice_capture"; status: "completed" } };
+type ConversationToolCall = { id: string; name: string; channel: "plugin" | "responses" | "realtime"; effect: string; status: "succeeded" | "failed"; startedAt: string; completedAt: string; result: { summary: string; isError: boolean } };
 type MapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
 type MapEdge = { id: string; from: string; to: string; kind: "supports" | "relates_to" | "depends_on" | "contradicts" | "contains"; label?: string };
 type FontAvailability = "system" | "user_confirmed" | "unverified";
@@ -59,6 +60,8 @@ type PersistedWorkshop = {
   videoState: "blocked" | "queued" | "rendering" | "rendered";
   transcriptSegments?: { id: string; origin: "chatgpt" | "realtime_fallback"; transport: "fixture" | "webrtc"; text: string; capturedAt: string }[];
   conversationTurns?: ConversationTurn[];
+  toolCalls?: ConversationToolCall[];
+  conversationContinuation?: { responseId: string; model?: string; recordedAt: string };
   firstTranscriptAt?: string;
   firstRenderedOutputAt?: string;
   sourceItems: SourceItem[];
@@ -219,6 +222,19 @@ export default function WorkshopPage() {
     }
   }
 
+  async function handleRealtimeToolEvent(event: unknown): Promise<Record<string, unknown> | undefined> {
+    try {
+      const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "handleProviderToolEvent", providerEvent: { channel: "realtime", event, model: "gpt-realtime-2.1", explicitUserIntent: false } }) });
+      const handled = await response.json() as { state?: PersistedWorkshop; providerOutput?: Record<string, unknown>; error?: string };
+      if (!response.ok || !handled.state) throw new Error(handled.error ?? "That voice action did not work");
+      setState(handled.state);
+      return handled.providerOutput;
+    } catch (error) {
+      setNotice({ message: error instanceof Error ? error.message : "That voice action did not work", tone: "error" });
+      return undefined;
+    }
+  }
+
   async function analyzeWebsiteStyle(url: string) {
     setBusy(true);
     setNotice(null);
@@ -320,7 +336,7 @@ export default function WorkshopPage() {
         <section className="object-canvas" aria-label={currentTitle}>
           {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
           {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
-          {loadState === "ready" && view === "conversation" && <ConversationView state={state} busy={busy} onSend={async (text) => Boolean(await post({ action: "sendConversationMessage", text }))} onVoiceSave={async (text, capture) => Boolean(await post({ action: "captureFallbackTranscript", text, capture }))} onShowSource={showSource} />}
+          {loadState === "ready" && view === "conversation" && <ConversationView state={state} busy={busy} onSend={async (text) => Boolean(await post({ action: "sendConversationMessage", text }))} onVoiceSave={async (text, capture) => Boolean(await post({ action: "captureFallbackTranscript", text, capture }))} onVoiceToolEvent={handleRealtimeToolEvent} onShowSource={showSource} />}
           {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "map" }); }} onReviewStyle={() => openSheet("style")} onRetryStyle={(url) => { void post({ action: "beginWebsiteStyleAnalysis", url }); }} onUseDefaultStyle={() => { void post({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: state?.onboarding.outcome } }); }} />}
           {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
           {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
@@ -612,12 +628,17 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   </SideSheet>;
 }
 
-function ConversationView({ state, busy, onSend, onVoiceSave, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[] }) => Promise<boolean>; onShowSource: (target?: EvidenceTarget) => void }) {
+function ConversationView({ state, busy, onSend, onVoiceSave, onVoiceToolEvent, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[] }) => Promise<boolean>; onVoiceToolEvent: (event: unknown) => Promise<Record<string, unknown> | undefined>; onShowSource: (target?: EvidenceTarget) => void }) {
   const [draft, setDraft] = useState("");
   const [voiceOpen, setVoiceOpen] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
   const turns = state?.conversationTurns ?? [];
-  useEffect(() => { endRef.current?.scrollIntoView({ block: "end" }); }, [turns.length]);
+  const toolCalls = state?.toolCalls ?? [];
+  const timeline = [
+    ...turns.map((turn) => ({ kind: "turn" as const, at: turn.createdAt, value: turn })),
+    ...toolCalls.map((call) => ({ kind: "tool" as const, at: call.completedAt, value: call })),
+  ].sort((left, right) => Date.parse(left.at) - Date.parse(right.at));
+  useEffect(() => { endRef.current?.scrollIntoView({ block: "end" }); }, [timeline.length]);
 
   async function send() {
     const text = draft.trim();
@@ -628,22 +649,42 @@ function ConversationView({ state, busy, onSend, onVoiceSave, onShowSource }: { 
   return <ConversationSurface className="conversation-view" aria-label="WorkshopLM Conversation">
     <header className="conversation-heading"><div><h1>Work with your sources</h1><p>{state?.activeSourceIds.length ?? 0} selected · answers stay linked to evidence</p></div></header>
     <div className="conversation-thread" aria-live="polite">
-      {!turns.length && <div className="conversation-empty"><h2>What should we make clear?</h2><p>Ask a question across the selected Sources. Voice capture adds your spoken thought as a private Source before WorkshopLM responds.</p><div className="conversation-prompts"><Button variant="secondary" size="small" onClick={() => setDraft("What is the strongest recommendation in these sources?")}>Find the recommendation</Button><Button variant="secondary" size="small" onClick={() => setDraft("What evidence should lead the presentation?")}>Find the lead evidence</Button></div></div>}
-      {turns.map((turn) => <article className={`conversation-turn conversation-turn--${turn.role}`} key={turn.id}>
-        <small>{turn.role === "assistant" ? "WorkshopLM" : "You"}{turn.input === "voice" ? " · Voice" : ""}</small>
-        <p>{turn.text}</p>
-        {turn.evidence.length > 0 && <div className="conversation-citations" aria-label="Sources used">{turn.evidence.map((evidence, index) => { const source = state?.sourceItems.find((item) => item.id === evidence.sourceId); return <Token key={`${turn.id}-${evidence.chunkId ?? index}`} onClick={() => onShowSource(evidence)}>{source?.title ?? `Source ${index + 1}`}</Token>; })}</div>}
-      </article>)}
+      {!timeline.length && <div className="conversation-empty"><h2>What should we make clear?</h2><p>Ask a question across the selected Sources. Voice capture adds your spoken thought as a private Source before WorkshopLM responds.</p><div className="conversation-prompts"><Button variant="secondary" size="small" onClick={() => setDraft("What is the strongest recommendation in these sources?")}>Find the recommendation</Button><Button variant="secondary" size="small" onClick={() => setDraft("What evidence should lead the presentation?")}>Find the lead evidence</Button></div></div>}
+      {timeline.map((entry) => entry.kind === "turn" ? <article className={`conversation-turn conversation-turn--${entry.value.role}`} key={entry.value.id}>
+        <small>{entry.value.role === "assistant" ? "WorkshopLM" : "You"}{entry.value.input === "voice" ? " · Voice" : ""}</small>
+        <p>{entry.value.text}</p>
+        {entry.value.evidence.length > 0 && <div className="conversation-citations" aria-label="Sources used">{entry.value.evidence.map((evidence, index) => { const source = state?.sourceItems.find((item) => item.id === evidence.sourceId); return <Token key={`${entry.value.id}-${evidence.chunkId ?? index}`} onClick={() => onShowSource(evidence)}>{source?.title ?? `Source ${index + 1}`}</Token>; })}</div>}
+      </article> : <ToolActivity call={entry.value} key={entry.value.id} />)}
       <div ref={endRef} />
     </div>
     <div className="conversation-compose">
-      {voiceOpen && <RealtimeCapture disabled={busy} onSave={async (text, capture) => { const saved = await onVoiceSave(text, capture); if (saved) setVoiceOpen(false); return saved; }} />}
+      {voiceOpen && <RealtimeCapture disabled={busy} onProviderToolEvent={onVoiceToolEvent} onSave={async (text, capture) => { const saved = await onVoiceSave(text, capture); if (saved) setVoiceOpen(false); return saved; }} />}
       <form className="conversation-composer" onSubmit={(event) => { event.preventDefault(); void send(); }}>
         <TextArea aria-label="Message WorkshopLM" placeholder="Ask about the selected Sources…" value={draft} maxLength={4000} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter" && !event.shiftKey) { event.preventDefault(); void send(); } }} />
         <div className="conversation-actions"><Button type="button" variant="secondary" aria-expanded={voiceOpen} onClick={() => setVoiceOpen((current) => !current)}>{voiceOpen ? "Close voice" : "Voice"}</Button><Button type="submit" disabled={busy || !draft.trim()}>{busy ? "Working…" : "Send"}</Button></div>
       </form>
     </div>
   </ConversationSurface>;
+}
+
+const TOOL_ACTIVITY_LABELS: Record<string, string> = {
+  search: "Searched selected sources",
+  fetch: "Opened source evidence",
+  workshop_get_trace: "Checked source trace",
+  workshop_set_source_scope: "Updated selected sources",
+  workshop_approve_brief: "Approved Brief",
+  workshop_create_output: "Created an Output",
+  workshop_approve_storyboard: "Approved Storyboard",
+  workshop_render_video: "Started Video creation",
+};
+function ToolActivity({ call }: { call: ConversationToolCall }) {
+  const channel = call.channel === "realtime" ? "Voice" : call.channel === "responses" ? "Chat" : "Plugin";
+  const label = TOOL_ACTIVITY_LABELS[call.name] ?? "Workshop action";
+  const visibleLabel = call.result.isError ? `Couldn't complete: ${label.toLocaleLowerCase()}` : label;
+  return <article className={`conversation-tool ${call.result.isError ? "conversation-tool--error" : ""}`} aria-label={`${label}: ${call.status}`}>
+    <small>{visibleLabel} · {channel}</small>
+    <p>{call.result.summary}</p>
+  </article>;
 }
 
 function SourcesRail({ sources, activeIds, selected, conversationActive, onConversation, onSelect, onToggle, onAdd, onShowMap }: { sources: SourceItem[]; activeIds: string[]; selected: SourceItem | null; conversationActive: boolean; onConversation: () => void; onSelect: (source: SourceItem) => void; onToggle: (id: string) => void; onAdd: () => void; onShowMap: (source: SourceItem) => void }) {

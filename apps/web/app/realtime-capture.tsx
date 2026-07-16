@@ -7,7 +7,7 @@ import { emptyRealtimeTranscript, realtimeTranscriptEvidence, realtimeTranscript
 type CapturePhase = "idle" | "connecting" | "recording" | "review" | "saving" | "error";
 type TokenResponse = { value?: string; expiresAt?: number; model?: "gpt-realtime-2.1"; transcriptionModel?: "gpt-realtime-whisper"; error?: string };
 
-export function RealtimeCapture({ disabled = false, onSave }: { disabled?: boolean; onSave: (text: string, evidence: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[] }) => Promise<boolean> }) {
+export function RealtimeCapture({ disabled = false, onSave, onProviderToolEvent }: { disabled?: boolean; onSave: (text: string, evidence: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[] }) => Promise<boolean>; onProviderToolEvent?: (event: unknown) => Promise<Record<string, unknown> | undefined> }) {
   const [phase, setPhase] = useState<CapturePhase>("idle");
   const [transcript, setTranscript] = useState<RealtimeTranscriptState>(() => emptyRealtimeTranscript());
   const [error, setError] = useState("");
@@ -48,7 +48,17 @@ export function RealtimeCapture({ disabled = false, onSave }: { disabled?: boole
       const channel = peer.createDataChannel("oai-events");
       channelRef.current = channel;
       channel.addEventListener("message", (message) => {
-        try { setTranscript((current) => reduceRealtimeTranscript(current, JSON.parse(String(message.data)))); }
+        try {
+          const event = JSON.parse(String(message.data)) as { type?: string };
+          setTranscript((current) => reduceRealtimeTranscript(current, event));
+          if (event.type === "response.function_call_arguments.done" && onProviderToolEvent) {
+            void onProviderToolEvent(event).then((providerOutput) => {
+              if (!providerOutput || channel.readyState !== "open") return;
+              channel.send(JSON.stringify(providerOutput));
+              channel.send(JSON.stringify({ type: "response.create" }));
+            }).catch(() => setError("WorkshopLM could not complete that voice action."));
+          }
+        }
         catch { setError("WorkshopLM received an unreadable transcript event."); setPhase("error"); }
       });
       channel.addEventListener("open", () => setPhase("recording"));

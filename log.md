@@ -6481,3 +6481,36 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Enable and live-verify Realtime spoken responses, interruption, one safe read, and one explicit visible write only after request spend is authorized.
 - Obtain the external-use deck's cold professional `Send`/`Revise` decision; provider media, founder recording, final public Video, public links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 21:14 CT — Official provider events reach visible Workshop Conversation activity
+
+**Area:** Responses / Realtime / Conversation / Provider provenance
+
+### Changed
+
+- Added thin adapters for the official Responses `response.output_item.done` function item and Realtime `response.function_call_arguments.done` event. Both decode arguments, call the shared executor, persist exact provider IDs and results, and return the provider-specific function output envelope.
+- Added durable Responses continuation state. Non-tool response lifecycle events and completed tool items can record the current response ID and model without making hosted state the Workshop source of truth.
+- Wired the browser Realtime data channel to send completed function events through the local API, return `conversation.item.create` function output, and request continuation. Capture-only sessions still disable automatic tool choice, so this is ready plumbing rather than a live voice-agent claim.
+- Merged persisted tool calls into the chronological Conversation timeline. Professionals see short activity such as `Searched selected sources · Chat` and the grounded result summary; raw tool names, call IDs, response IDs, and event IDs remain hidden.
+
+### Verified
+
+- `pnpm check` passed all 13 packages with 16 domain tests, seven plugin tests, 20 web tests, and 95 worker tests. New adapter tests cover Responses continuation, Responses function output, Realtime function output, grounded provenance, and invalid provider arguments as a durable failed result.
+- Sent a simulated official Responses event through the real isolated local API. It searched the active Workshop, returned two exact evidence chunks, persisted `resp-ui-proof-1`, and created one successful Responses tool call with the exact item/call provenance.
+- Inspected the real local Conversation using Chrome automation because the Codex in-app Browser tool was unavailable in this task. At 1200×800 and 390×844, the activity remained legible, fit the available width, and exposed no raw `workshop_` tool name or provider call ID. Evidence captures are `artifacts/spikes/provider-tool-event-ui-2026-07-15/desktop-conversation.png` (`2c7bcefd0552…`) and `mobile-conversation.png` (`c23054308183…`).
+- `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. The submission remains truthfully `partial` with the same four provider-media limitations. No paid request ran.
+
+### Decisions
+
+- Provider events remain adapters, not a second execution system. All policy, version, source-scope, mutation, idempotency, and persistence behavior stays in the shared executor.
+- Model output is not user authorization. Realtime writes currently fail safely because the browser passes `explicitUserIntent: false`; the next loop must show a clear confirmation before retrying a write with authorization.
+- Visible activity uses official UI tokens and plain professional language. An initial hard-coded OpenAI green was rejected by the design-system test and replaced with the inspected `--oai-green` token before acceptance.
+
+### Open items
+
+- Implement the actual spend-gated Responses SSE producer and continuation loop, persist streamed assistant text plus evidence, and add explicit write confirmation.
+- Promote Realtime from capture-only to speech-to-speech with the same confirmation path, then live-verify interruption, one read, one write, transcript, and tool provenance after authorization.
+- Collapsible rails, contextual affected-work disclosure, the external deck's cold `Send`/`Revise` decision, provider media, founder recording, final public Video, public links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

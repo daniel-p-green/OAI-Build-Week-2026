@@ -23,6 +23,7 @@ export type RealtimeCaptureEvidence = { transport: "webrtc"; model: "gpt-realtim
 export type WorkshopTranscriptSegment = { id: string; origin: "manual_import" | "realtime_fallback"; transport: "fixture" | "webrtc"; text: string; capturedAt: string; provider?: Omit<RealtimeCaptureEvidence, "transport"> };
 export type WorkshopConversationTurn = DomainConversationTurn;
 export type WorkshopToolInvocation = DomainWorkshopToolCall;
+export type WorkshopConversationContinuation = { responseId: string; model?: string; recordedAt: string };
 export type WorkshopMapNode = { id: string; title: string; body: string; kind: "grounded" | "derived" | "creative"; locator: string; sourceId?: string; x: number; y: number; width: number; height: number };
 export type CanvasNodePatch = { id: string; title: string; x: number; y: number; width: number; height: number };
 export type WorkshopFrame = { version: number; markdown: string; markdownPath: string; executablePath: string; stale: boolean; approvedAt: string };
@@ -91,7 +92,7 @@ export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativ
 export type WorkshopBuildTraceRecord = { htmlPath: string; dataPath: string; htmlSha256: string; dataSha256: string; milestoneCount: number; commitCount: number; taskIds: string[] };
 export type WorkshopVideo = { id: string; version: number; storyboardVersion: number; styleVersion: number; visualDnaVersion?: number; imageBatchId?: string; relativePath: string; provenancePath: string; artifactPath: string; sha256: string; byteCount: number; claimIds: string[]; buildTrace: WorkshopBuildTraceRecord; stale: boolean; createdAt: string };
 export type RenderedVideoInput = Omit<WorkshopVideo, "id" | "version" | "stale" | "createdAt">;
-export type WorkshopState = { id: string; title: string; onboarding: WorkshopOnboarding; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; conversationTurns: WorkshopConversationTurn[]; toolCalls: WorkshopToolInvocation[]; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
+export type WorkshopState = { id: string; title: string; onboarding: WorkshopOnboarding; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered"; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; conversationTurns: WorkshopConversationTurn[]; toolCalls: WorkshopToolInvocation[]; conversationContinuation?: WorkshopConversationContinuation; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
 export type WorkshopSummary = { id: string; title: string; sources: number; outputs: number; updatedAt: string; active: boolean };
 export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string; permission?: WorkshopSource["permission"] };
 const execFile = promisify(execFileCallback);
@@ -545,6 +546,12 @@ export function recordWorkshopToolCall(input: WorkshopToolInvocation, root?: str
   const call = WorkshopToolCall.parse(input); const current = readWorkshopState(root, call.workshopId);
   if (current.toolCalls.some((candidate) => candidate.id === call.id)) throw new Error(`Workshop tool call already exists: ${call.id}.`);
   return write({ ...current, toolCalls: [...current.toolCalls, call], updatedAt: call.completedAt }, root);
+}
+export function recordConversationContinuation(input: WorkshopConversationContinuation, root?: string): WorkshopState {
+  const current = readWorkshopState(root);
+  if (!input.responseId.trim()) throw new Error("Conversation response ID is required.");
+  if (!Number.isFinite(Date.parse(input.recordedAt))) throw new Error("Conversation continuation time is invalid.");
+  return write({ ...current, conversationContinuation: { responseId: input.responseId, model: input.model, recordedAt: input.recordedAt }, updatedAt: input.recordedAt }, root);
 }
 type GroundedConversationReply = { text: string; evidence: Array<{ claimId?: string; sourceId: string; chunkId: string; locator: string; snippet: string; snippetHash: string }>; operation: { name: "search"; status: "completed" } };
 function groundedConversationReply(state: WorkshopState, query: string, root?: string): GroundedConversationReply {
