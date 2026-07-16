@@ -119,6 +119,21 @@ export type WorkshopToolDefinition = {
   requiresExplicitUserIntent: boolean;
   effects: readonly ("none" | "creates_workshop" | "selects_workshop" | "adds_source" | "changes_source_scope" | "approves_brief" | "creates_output" | "approves_storyboard" | "queues_video")[];
 };
+export const WorkshopToolCall = z.object({
+  id: z.string().min(1),
+  workshopId: WorkshopId,
+  name: WorkshopToolName,
+  channel: z.enum(["plugin", "responses", "realtime"]),
+  input: z.record(z.string(), z.unknown()),
+  explicitUserIntent: z.boolean(),
+  effect: z.enum(["none", "creates_workshop", "selects_workshop", "adds_source", "changes_source_scope", "approves_brief", "creates_output", "approves_storyboard", "queues_video"]),
+  status: z.enum(["succeeded", "failed"]),
+  startedAt: z.string().datetime(),
+  completedAt: z.string().datetime(),
+  provider: z.object({ model: z.string().min(1).optional(), responseId: z.string().min(1).optional(), callId: z.string().min(1).optional(), eventId: z.string().min(1).optional() }).strict().optional(),
+  result: z.object({ summary: z.string().min(1).max(1_000), isError: z.boolean(), data: z.record(z.string(), z.unknown()).optional() }).strict(),
+}).strict();
+export type WorkshopToolCall = z.infer<typeof WorkshopToolCall>;
 const WorkshopToolDefinitionContract = z.object({
   name: WorkshopToolName,
   kind: z.enum(["read", "write"]),
@@ -157,6 +172,25 @@ export function parseWorkshopToolInput(name: WorkshopToolName, input: unknown): 
   const extra = Object.keys(value).find((key) => !allowed.has(key));
   if (extra) throw new Error(`${name} does not accept ${extra}`);
   for (const required of tool.inputSchema.required ?? []) if (!(required in value)) throw new Error(`${name} requires ${required}`);
+  for (const [key, rawSchema] of Object.entries(tool.inputSchema.properties)) {
+    if (!(key in value)) continue;
+    const schema = rawSchema as { type?: string; minLength?: number; enum?: unknown[]; minItems?: number; uniqueItems?: boolean; items?: { type?: string; minLength?: number } };
+    const candidate = value[key];
+    if (schema.type === "string") {
+      if (typeof candidate !== "string") throw new Error(`${name}.${key} must be a string`);
+      if (schema.minLength && candidate.length < schema.minLength) throw new Error(`${name}.${key} must not be empty`);
+      if (schema.enum && !schema.enum.includes(candidate)) throw new Error(`${name}.${key} is not supported`);
+    }
+    if (schema.type === "array") {
+      if (!Array.isArray(candidate)) throw new Error(`${name}.${key} must be an array`);
+      if (schema.minItems && candidate.length < schema.minItems) throw new Error(`${name}.${key} requires at least ${schema.minItems} item`);
+      if (schema.uniqueItems && new Set(candidate.map((item) => JSON.stringify(item))).size !== candidate.length) throw new Error(`${name}.${key} must contain unique items`);
+      for (const item of candidate) {
+        if (schema.items?.type === "string" && typeof item !== "string") throw new Error(`${name}.${key} items must be strings`);
+        if (schema.items?.minLength && typeof item === "string" && item.length < schema.items.minLength) throw new Error(`${name}.${key} items must not be empty`);
+      }
+    }
+  }
   return value;
 }
 

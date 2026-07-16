@@ -6448,3 +6448,36 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - A fresh Codex task is still required to prove the host reloads the refreshed tool list; the current task cannot hot-reload its own plugin process.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 21:02 CT — Shared provider tool executor persists trustworthy Workshop effects
+
+**Area:** Conversation / Realtime / Responses / Durable state
+
+### Changed
+
+- Added one local server-side executor for every conversational Workshop tool in the canonical registry. Responses and Realtime now have the same strict input parser, channel allowlist, active-Workshop boundary, active Source-scope enforcement, exact Map and Storyboard version gates, and explicit-user-intent requirement for writes.
+- Persisted successful and failed tool calls in Workshop state with their input, visible effect, result, model, response ID, call ID, event ID, timestamps, and error state. Provider retries with the same channel and call ID replay the original result instead of repeating a mutation; malformed retries are idempotent too.
+- Added the local Workshop API boundary for executing a provider tool call. Search and fetch return exact grounded chunks and linked claims; source-scope, Brief approval, Output creation, Storyboard approval, and Video render calls reuse the existing Workshop mutation and stale-propagation paths.
+- Reframed the product tracker around the next truthful boundary: provider event binding and visible Conversation activity remain open even though the shared executor is complete.
+
+### Verified
+
+- `pnpm check` passed all 13 packages with 16 domain tests, seven plugin tests, 20 web tests, and 91 worker tests. New executor tests cover grounded Responses evidence, explicit write intent, exact version rejection, Source-scope rejection, successful mutation, durable provider provenance, duplicate provider replay, and repeated malformed-call replay.
+- `pnpm demo:e2e` passed the full deterministic seam through rendered Video.
+- `pnpm submission:build` and `pnpm submission:verify` passed the 17-asset package without stale or tampered files. Its status remains truthfully `partial`: no provider-verified WebRTC transcript, no live GPT-5.6 Map, zero of six GPT Image 2 panels, and placeholder narration tones.
+- `git diff --check` passed. No paid provider request ran.
+
+### Decisions
+
+- Provider identity is channel-scoped so a coincidentally reused call ID cannot collide across Responses and Realtime.
+- Tool execution and tool presentation are separate completion bars. Durable server behavior is implemented; WorkshopLM will not claim a working agent loop until provider events call it and the professional sees each read, write, result, and consequence in Conversation.
+- The colleague's product-first wedge does not require another scope rewrite: the live `GOAL.md` already makes the source-defensible Presentation the hero, grades Outputs against the send-it bar, and keeps trust, return use, and dogfood evidence ahead of additional breadth.
+
+### Open items
+
+- Bind Responses streaming and Realtime function-call events to the executor, persist continuation IDs, and render tool activity plus visible effects in Conversation.
+- Enable and live-verify Realtime spoken responses, interruption, one safe read, and one explicit visible write only after request spend is authorized.
+- Obtain the external-use deck's cold professional `Send`/`Revise` decision; provider media, founder recording, final public Video, public links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

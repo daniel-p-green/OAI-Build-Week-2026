@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ArtifactJson, Claim, ConversationTurn, DomainError, GraphOperation, SemanticGraph, StoryboardPanel, SubmissionOutputSet, appendGraphOperation, applyGraphOperation, applyStalePropagation, assertCommandEligible, assertEligible, collectStaleDependents, deriveGates, openAiWorkshopTools, parseGraphState, parseWorkshopToolInput, serializeGraphState, undoGraphOperation, undoLatestGraphOperation, workshopToolRegistry, workshopToolsFor } from "./index.js";
+import { ArtifactJson, Claim, ConversationTurn, DomainError, GraphOperation, SemanticGraph, StoryboardPanel, SubmissionOutputSet, WorkshopToolCall, appendGraphOperation, applyGraphOperation, applyStalePropagation, assertCommandEligible, assertEligible, collectStaleDependents, deriveGates, openAiWorkshopTools, parseGraphState, parseWorkshopToolInput, serializeGraphState, undoGraphOperation, undoLatestGraphOperation, workshopToolRegistry, workshopToolsFor } from "./index.js";
 
 const now = "2026-07-13T12:00:00.000Z";
 const ids = { workshopId: "workshop-1", graphId: "graph-1", nodeA: "node-a", nodeB: "node-b", edge: "edge-1", claim: "claim-1", source: "source-1", chunk: "chunk-1", artifact: "artifact-1" };
@@ -20,7 +20,14 @@ describe("domain contracts", () => {
     expect(workshopToolsFor("responses").filter((tool) => tool.kind === "write").every((tool) => tool.requiresExplicitUserIntent)).toBe(true);
     expect(parseWorkshopToolInput("search", { query: "source proof" })).toEqual({ query: "source proof" });
     expect(() => parseWorkshopToolInput("search", { query: "source proof", publish: true })).toThrow(/does not accept publish/);
+    expect(() => parseWorkshopToolInput("search", { query: 42 })).toThrow(/must be a string/);
+    expect(() => parseWorkshopToolInput("workshop_set_source_scope", { workshopId: ids.workshopId, sourceIds: [ids.source, ids.source] })).toThrow(/unique/);
     expect(() => parseWorkshopToolInput("workshop_approve_brief", { workshopId: ids.workshopId })).toThrow(/requires mapVersion/);
+  });
+  it("validates durable provider-aware Workshop tool calls", () => {
+    const call = WorkshopToolCall.parse({ id: "tool-call-1", workshopId: ids.workshopId, name: "search", channel: "responses", input: { query: "proof" }, explicitUserIntent: false, effect: "none", status: "succeeded", startedAt: now, completedAt: now, provider: { model: "gpt-5.6-terra", responseId: "resp-1", callId: "call-1" }, result: { summary: "Found evidence.", isError: false, data: { count: 1 } } });
+    expect(call.provider).toMatchObject({ responseId: "resp-1", callId: "call-1" });
+    expect(() => WorkshopToolCall.parse({ ...call, result: { summary: "", isError: false } })).toThrow();
   });
   it("applies graph operations and undoes an AI mutation", () => {
     const result = applyGraphOperation(graph(), GraphOperation.parse({ type: "add_node", node: { id: ids.nodeB, kind: "idea", label: "Narrative", evidenceState: "derived" } }));
