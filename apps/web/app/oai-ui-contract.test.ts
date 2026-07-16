@@ -111,6 +111,9 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(page).toContain('fetch("/api/workshop?view=styles")');
     expect(page).toContain('action: "applyStyleLibrary"');
     expect(page).toContain('<fieldset className="style-options"><legend>Saved styles</legend>');
+    expect(page).toContain('style?.source ?? "website"');
+    expect(page).toContain('intentProfile: defaultIntent ?? entry.intentProfile');
+    expect(page).not.toContain('<legend>Use it for</legend>');
     expect(page).not.toContain('type Sheet = "styles"');
   });
 

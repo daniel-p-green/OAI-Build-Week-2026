@@ -227,6 +227,8 @@ button { -webkit-tap-highlight-color: transparent; }
 .palette-preview.compact { gap: 4px; }
 .palette-preview.compact i { width: 22px; height: 22px; }
 .style-preview { display: grid; gap: 18px; margin: 4px 0 20px; }
+.style-context { margin: 0 0 18px; color: #5d5d5d; font-size: 14px; line-height: 20px; }
+.style-context strong { color: #0d0d0d; font-weight: 600; }
 .style-options { min-width: 0; display: grid; gap: 8px; margin: 0 0 18px; padding: 0; border: 0; }
 .style-options legend { margin-bottom: 8px; color: #5d5d5d; font-size: 14px; line-height: 20px; }
 .style-choice { padding: 0; }

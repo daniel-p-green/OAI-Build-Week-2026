@@ -6883,3 +6883,68 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - The same under-two-minute path must still run with provider-backed GPT-5.6 organization and a real Realtime microphone turn before the live first-five-minutes gate can close.
 - The external deck cold `Send`/`Revise` judgment, provider media, founder recording, final public Video and links, and `/feedback` Session ID remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 23:24 CT — Style stops asking the same question twice
+
+**Area:** Product wedge / First 15 minutes / Company Style / Responsive UX
+
+### Changed
+
+- Reconciled the proposed product-first roadmap against `GOAL.md`. The current goal already names the weekly professional persona, grounded branded deck wedge, send-it bar, trust and return-visit tests, dogfood ladder, and kill list; the hackathon remains a deadline and distribution event rather than the product definition.
+- Corrected the fresh post-Brief Style path after live inspection. A new Workshop now starts with website extraction selected instead of opening the full manual brand form.
+- Removed the duplicate `Use it for` chooser from Style. `Client pitch`, `Board presentation`, or `Team workshop` is chosen once when the Workshop is created and appears in Style only as context.
+- Applying a saved Company Style now preserves the current Workshop outcome rather than silently applying the Intent Profile stored on the reusable brand revision.
+- Updated the locked first-use contract and Style checklist in `GOAL.md` to make Workshop outcome and reusable Company Style separate product concepts.
+
+### Verified
+
+- Inspected the real post-Brief Style surface in the Codex in-app browser. Before the change, fresh manual setup extended below the 1280×720 viewport and repeated all three outcome choices. After the change, Website, its URL field, `For Client pitch`, and `Review style` fit in one calm decision surface.
+- Repeated the same inspection at 390×844. `innerWidth`, document width, and body width were all 390px; there was no horizontal overflow.
+- Updated and visually inspected the intentional desktop, compact, and mobile website-Style baselines. Focused production-browser coverage passed for website-first setup and completed website review.
+- `pnpm check` passed all 13 packages, including 27 web, 106 worker, 16 domain, 13 production, and seven plugin tests.
+- `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. The 18-asset submission remains valid, current, untampered, and honestly `partial` with five provider-evidence gaps.
+- `pnpm demo:film:verify` passed its 162-second draft truth gate; six shots remain ready and four evidence-blocked. No paid provider request ran.
+
+### Decisions
+
+- NotebookLM already establishes a strong source-grounded understanding model. WorkshopLM's differentiated promise is carrying that trust into editable, branded work a professional will send—not claiming grounding itself is novel.
+- Company identity is reusable; production intent belongs to the Workshop. Reusing a brand must never change what the professional is making.
+- The website path is the product's promised low-friction default. Exact manual rules remain fully available as the fallback, not as the first screen.
+
+### Open items
+
+- The product-first roadmap does not change the two highest-leverage external gates: intended-audience `Send`/`Revise` review of the nine-slide deck and provider-backed proof after explicit spend authorization.
+- Founder recording, final public Video and links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 23:44 CT — The full browser contract catches up to the product
+
+**Area:** Production-browser regression / Responsive baselines / Current product truth
+
+### Changed
+
+- Reconciled accumulated browser-test drift from the recent capture-first onboarding, fitted Map, grounded Conversation voice, source-scope confirmation, Audio Overview, image-specific recovery, and six-Output reveal changes.
+- Replaced coordinate-dependent completed-Map selection with the semantic outline control while retaining a direct Excalidraw selection, edit, drag, persistence, and Undo check in the reset path.
+- Updated the cold-start acceptance test to follow the real sequence: choose outcome, add material, build Map, approve Brief, choose Style, then create the editable deck.
+- Updated partial-output recovery to review and replace the failed image instead of regenerating unaffected work, and removed a timing assertion that required the local Video render to remain visibly queued even when it completed immediately.
+- Refreshed the inspected responsive screenshot and label baselines to the current fitted Map, six Outputs, website-first Style, Audio Overview, and capture-first flow.
+
+### Verified
+
+- `pnpm --filter @workshoplm/web test:visual --update-snapshots` completed all 28 cases after the intentional baselines were inspected and accepted.
+- A clean `pnpm --filter @workshoplm/web test:visual` rerun passed all 28 cases in 46.3 seconds without updating a single baseline.
+- The suite covers desktop 1200×800, compact 1024×768, mobile 390×844, keyboard approval, focus return, source evidence, empty/loading/error/partial/needs-update states, output history, image replacement, original brainstorm reveal, local Video completion, and empty-Workshop onboarding.
+
+### Decisions
+
+- Visual regression tests must encode the current professional workflow, not preserve obsolete screens merely because their screenshots are stable.
+- Fast local completion is valid behavior. The durable requirement is that the finished `View video` state appears, not that a transient `Creating…` frame remains observable for a minimum time.
+
+### Open items
+
+- This closes current deterministic browser regression drift. It does not close the provider-backed proof, intended-audience `Send`/`Revise`, founder recording, public Video, links, or `/feedback` Session ID gates.
+- Codex Session ID: unavailable on this surface; not inferred.

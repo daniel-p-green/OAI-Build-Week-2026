@@ -5,13 +5,18 @@
 03Image set4s
 04Storyboard4s
 05Demo video6s
+41 wordsAudio OverviewAudio · Version 1Ready for review3 sourced points
 Add material
+Audio Overview
+Audio Overview41 wordsReady for review
 Back to Brief
 Back to Map
 Back to Outputs
 BriefVersion 3Approved
 Build notes · §2
 Capture3 active sourcesReady
+Collapse Production
+Collapse Sources
 ConversationAsk across selected Sources
 Create video
 DeliverStyle and OutputsIn progress
@@ -19,7 +24,7 @@ Edit
 Evidence
 Goal · capture
 Image set
-Image set0 of 6 readyPlanned
+Image set0 of 6 readyIn progress
 Infographic
 InfographicInfographic · Version 1Up to date3 sources
 InfographicOne-page visualUp to date

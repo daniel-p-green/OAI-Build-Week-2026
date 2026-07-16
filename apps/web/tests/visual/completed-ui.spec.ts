@@ -40,13 +40,12 @@ async function expectMapReady(page: Page, viewport: typeof viewports[number]) {
 }
 
 async function selectProductPromise(page: Page, viewport: typeof viewports[number]) {
+  const outlineNode = page.locator(".map-mobile-outline button", { hasText: "The product promise" });
   if (viewport.name === "mobile") {
-    await page.getByRole("button", { name: /The product promise/ }).click();
+    await outlineNode.click();
     return;
   }
-  const map = await page.locator(".excalidraw-map").boundingBox();
-  if (!map) throw new Error("Editable Map did not expose a canvas boundary");
-  await page.mouse.click(map.x + 407, map.y + 136);
+  await outlineNode.evaluate((button: HTMLButtonElement) => button.click());
 }
 
 async function pressTabUntil(page: Page, label: string, limit = 40) {
@@ -92,7 +91,8 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await expectMapReady(page, viewports[0]);
   const map = await page.locator(".excalidraw-map").boundingBox();
   if (!map) throw new Error("Editable Map did not expose a canvas boundary");
-  await page.mouse.dblclick(map.x + 407, map.y + 136);
+  const promisePoint = { x: map.x + 303, y: map.y + 275 };
+  await page.mouse.click(promisePoint.x, promisePoint.y);
   const claimEditor = page.getByRole("textbox", { name: "Claim" });
   await expect(claimEditor).toBeVisible();
   await claimEditor.fill("The product promise revised");
@@ -102,9 +102,9 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await page.getByRole("button", { name: "Undo" }).click();
   await expect.poll(async () => (await (await page.request.get("/api/workshop")).json()).mapNodes.find((node: { id: string }) => node.id === "promise")?.title).toBe("The product promise");
   await page.waitForTimeout(500);
-  await page.mouse.move(map.x + 407, map.y + 136);
+  await page.mouse.move(promisePoint.x, promisePoint.y);
   await page.mouse.down();
-  await page.mouse.move(map.x + 457, map.y + 166, { steps: 8 });
+  await page.mouse.move(promisePoint.x + 50, promisePoint.y + 30, { steps: 8 });
   await page.mouse.up();
   await expect.poll(async () => (await (await page.request.get("/api/workshop")).json()).mapNodes.find((node: { id: string }) => node.id === "promise")?.x).toBeGreaterThan(11);
   await page.getByRole("button", { name: "Close claim" }).click();
@@ -118,6 +118,8 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await pressTabUntil(page, "Choose style");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog", { name: "Style" })).toBeVisible();
+  await pressTabUntil(page, "Set manuallyEnter exact brand rules yourself");
+  await page.keyboard.press("Enter");
   await pressTabUntil(page, "Use this style");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog", { name: "Style" })).toBeHidden();
@@ -165,8 +167,8 @@ test("grounded Conversation preserves source scope, citations, and responsive wo
     await expect(page.getByRole("dialog", { name: "Source" })).toContainText(claim.locator);
     await closeDialog(page, "Source");
     await surface.getByRole("button", { name: "Voice" }).click();
-    await expect(surface.getByRole("button", { name: "Record voice" })).toBeVisible();
-    await expect(surface.getByText("Your spoken thought becomes a private Source and stays in this Conversation.")).toBeVisible();
+    await expect(surface.getByRole("button", { name: "Start talking" })).toBeVisible();
+    await expect(surface.getByText("Speak naturally. Answers stay grounded in the selected Sources, and your transcript becomes a private Source.")).toBeVisible();
     await surface.getByRole("button", { name: "Close voice" }).click();
   }
 });
@@ -217,6 +219,7 @@ test("failed actions announce an error without removing the current work", async
   });
   await page.goto("/");
   await page.getByRole("checkbox").first().click();
+  await page.getByRole("button", { name: "Update sources" }).click();
   await expect(page.locator(".notice[role='alert']")).toContainText("The source could not be added. Try again.");
   await expect(page.getByRole("complementary", { name: "Sources" })).toBeVisible();
   await expect(page.locator(".object-canvas[aria-label='Map']")).toBeVisible();
@@ -234,9 +237,6 @@ test("an empty Workshop reaches an editable deck through one obvious path", asyn
     await page.goto("/");
     await page.getByRole("radio", { name: /Client pitch/ }).click();
     await page.getByRole("button", { name: "Continue" }).click();
-    const savedStyle = styleLibrary.styles[0];
-    if (savedStyle) await page.getByRole("button", { name: new RegExp(savedStyle.name) }).click();
-    else await page.getByRole("button", { name: "Use a clean default for now" }).click();
 
     await page.getByRole("textbox", { name: "Source" }).fill([
       "Weekly client meeting",
@@ -250,6 +250,13 @@ test("an empty Workshop reaches an editable deck through one obvious path", asyn
 
     await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
     await page.getByRole("button", { name: "Approve brief" }).click();
+    await page.getByRole("button", { name: "Choose style" }).click();
+    const savedStyle = styleLibrary.styles[0];
+    if (savedStyle) await page.getByRole("button", { name: new RegExp(savedStyle.name) }).click();
+    else {
+      await page.getByRole("button", { name: "Set manually" }).click();
+      await page.getByRole("button", { name: "Use this style" }).click();
+    }
     await expect(page.getByRole("button", { name: "Create outputs" })).toBeVisible();
     await page.getByRole("button", { name: "Create outputs" }).click();
 
@@ -268,10 +275,10 @@ test("an empty Workshop reaches an editable deck through one obvious path", asyn
   }
 });
 
-test("Style can start from a website and apply a professional intent", async ({ page }) => {
+test("Style starts from a website and preserves the Workshop outcome", async ({ page }) => {
   await page.request.post("/api/workshop", { data: { action: "approveBrief" } });
   const readyState = await (await page.request.get("/api/workshop")).json();
-  const stylelessState = { ...readyState, style: undefined };
+  const stylelessState = { ...readyState, style: undefined, onboarding: { ...readyState.onboarding, outcome: "board_deck" } };
   const posted: Record<string, unknown>[] = [];
   const suggestion = { referenceUrl: "https://example.com/brand", name: "Example Studio foundation", accent: "#2457D6", ink: "#102030", paper: "#FAF8F4", paletteRoles: { accent: { value: "#2457D6", source: "website" }, text: { value: "#102030", source: "website" }, background: { value: "#FAF8F4", source: "website" } }, logos: ["https://example.com/logo.svg"], assetCandidates: [{ url: "https://example.com/logo.svg", kind: "logo" }], fontCandidates: ["Studio Sans"], typographyCandidates: [{ family: "Studio Sans", availability: "unverified", source: "website" }], references: ["https://example.com/brand"], negativeRules: [], findings: { colors: 3, fontCandidates: 1, assets: 1, stylesheets: 1 } };
   await page.route("**/api/workshop/brand-preview**", async (route) => route.fulfill({ contentType: "image/svg+xml", body: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 32"><rect width="64" height="32" rx="5" fill="#2457D6"/><circle cx="48" cy="16" r="8" fill="#FAF8F4"/></svg>' }));
@@ -292,11 +299,10 @@ test("Style can start from a website and apply a professional intent", async ({ 
     const sheet = page.getByRole("dialog", { name: "Style" });
     const createAnother = sheet.getByRole("button", { name: "Create another style" });
     if (await createAnother.isVisible()) await createAnother.click();
-    await sheet.getByRole("button", { name: /Website/ }).click();
-    await sheet.getByRole("textbox", { name: "Website" }).fill("https://example.com/brand");
-    await sheet.getByRole("button", { name: /Board presentation/ }).click();
     await expect(sheet.getByRole("button", { name: /Website/ })).toHaveAttribute("aria-pressed", "true");
-    await expect(sheet.getByRole("button", { name: /Board presentation/ })).toHaveAttribute("aria-pressed", "true");
+    await sheet.getByRole("textbox", { name: "Website" }).fill("https://example.com/brand");
+    await expect(sheet.getByText("For Board presentation")).toBeVisible();
+    await expect(sheet.getByText("Use it for")).toHaveCount(0);
     await sheet.getByRole("button", { name: "Review style" }).click();
     await expect(sheet.getByRole("status")).toContainText("Found 3 colors, 1 font candidate, and 1 brand asset");
     await expect(sheet.getByRole("textbox", { name: "Name" })).toHaveValue("Example Studio foundation");
@@ -343,7 +349,7 @@ test("a completed website review hands off from the editable Map without blockin
   await expect(sheet.getByRole("textbox", { name: "Heading" })).toHaveValue("Studio Sans");
   await expect(sheet.getByText("Found on the website · usage not verified")).toBeVisible();
   await expect(sheet.getByText("System fallback · candidate not used until confirmed")).toBeVisible();
-  await expect(sheet.getByRole("button", { name: /Board presentation/ })).toHaveAttribute("aria-pressed", "true");
+  await expect(sheet.getByText("For Board presentation")).toBeVisible();
   await sheet.getByRole("button", { name: "Save company style" }).click();
   await expect.poll(() => posted.at(-1)?.action).toBe("lockWebsiteStyle");
   await expect.poll(() => (posted.at(-1)?.manualStyle as Record<string, unknown>)?.fontsConfirmed).toBe(false);
@@ -376,6 +382,7 @@ test("a failed website review keeps the Map usable and offers all safe Style fal
 
   await page.getByRole("button", { name: "Set manually" }).click();
   const sheet = page.getByRole("dialog", { name: "Style" });
+  await sheet.getByRole("button", { name: "Set manually" }).click();
   await expect(sheet.getByRole("textbox", { name: "Accent" })).toHaveValue("#0285FF");
   await expect(sheet.getByRole("button", { name: "Use this style" })).toBeVisible();
   await closeDialog(page, "Style");
@@ -522,6 +529,11 @@ test.describe("completed Workshop judge path", () => {
       await titleField.fill(originalTitle);
       await expect(page.getByRole("button", { name: "Save" })).toHaveCount(0);
       if (viewport.name === "mobile") {
+        const updateOutputs = page.getByRole("button", { name: "Update outputs" });
+        if (await updateOutputs.isVisible()) {
+          await updateOutputs.click();
+          await page.getByRole("button", { name: "View storyboard" }).click();
+        }
         await pressTabUntil(page, "Approve storyboard");
         await page.keyboard.press("Enter");
         await expect(page.getByRole("button", { name: "Create video" })).toBeVisible();
@@ -586,12 +598,13 @@ test("empty, loading, partial, error, and needs-update states stay calm and acti
     await page.getByRole("button", { name: "View brief" }).click();
     await page.getByRole("button", { name: "View outputs" }).click();
     await expect(page.getByRole("heading", { name: "Some Outputs are ready" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Update outputs" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Review image", exact: true })).toBeVisible();
     await expectPrimaryActions(page, 1);
     await expectScreen(page, `${viewport.name}-state-partial`);
-    await page.getByRole("button", { name: "Update outputs" }).click();
-    await expect(page.getByRole("status")).toContainText("Outputs created");
-    expect(postedActions).toContain("createImageBatch");
+    await page.getByRole("button", { name: "Review image", exact: true }).click();
+    await page.getByRole("region", { name: "Hero concept" }).getByRole("button", { name: "Request replacement" }).click();
+    await expect(page.getByRole("status")).toContainText("Replacement requested");
+    expect(postedActions).toContain("regenerateImagePanel");
     await page.unroute("**/api/workshop");
 
     const needsUpdateState = { ...readyState, outputs: readyState.outputs.map((output: Record<string, unknown>) => ({ ...output, stale: true })), assetPlan: { ...readyState.assetPlan, stale: true }, imageBatch: { ...readyState.imageBatch, stale: true }, storyboard: { ...readyState.storyboard, stale: true } };
@@ -740,7 +753,7 @@ test("finished Video reveals the original brainstorm without adding navigation",
     await reveal.click();
     const sheet = page.getByRole("dialog", { name: "Original brainstorm" });
     await expect(sheet).toContainText("Before · Recorded fixture transcript");
-    await expect(sheet).toContainText("Became five connected Outputs");
+    await expect(sheet).toContainText("Became six connected Outputs");
     await expect(sheet).toContainText("102 seconds from first transcript to first rendered Output");
     await expect(sheet.getByText("Presentation", { exact: true })).toBeVisible();
     await expect(sheet.getByText("Demo video", { exact: true })).toBeVisible();
@@ -978,7 +991,6 @@ test("queued local video work refreshes into the finished next action", async ({
   await page.getByRole("button", { name: "View outputs" }).click();
   await page.getByRole("button", { name: "View storyboard" }).click();
   await page.getByRole("button", { name: "Create video" }).click();
-  await expect(page.getByRole("button", { name: "Creating…" })).toBeDisabled();
   await expect(page.getByRole("button", { name: "View video" })).toBeVisible({ timeout: 3500 });
 });
 
@@ -1073,11 +1085,6 @@ test("a new professional reaches the real Map through the durable first-use path
   await page.getByLabel("Workshop name").fill("Acme leadership update");
   await page.getByRole("button", { name: "Continue" }).click();
 
-  await expect(page.getByRole("heading", { name: "Make every Output feel like yours." })).toBeVisible();
-  await expect(page.getByText("This website will not be added to Sources.")).toBeVisible();
-  await expectScreen(page, "desktop-onboarding-style");
-  await page.getByRole("button", { name: "Use a clean default for now" }).click();
-
   await expect(page.getByRole("heading", { name: "Add the thinking." })).toBeVisible();
   await expect(page.getByRole("button", { name: "Build my Map" })).toBeDisabled();
   await expectScreen(page, "desktop-onboarding-sources");
@@ -1104,9 +1111,14 @@ test("a new professional reaches the real Map through the durable first-use path
   await problemEvidence.getByRole("button", { name: "Pasted notes · chunk 01" }).click();
   await expect(page.getByRole("dialog", { name: "Source" })).toContainText("Professional teams lose hours turning meeting notes into client-ready presentations");
   await closeDialog(page, "Source");
+  await page.getByRole("button", { name: "Choose style" }).click();
+  await expect(page.getByRole("dialog", { name: "Style" })).toContainText("For Board presentation");
+  await expectScreen(page, "desktop-onboarding-style");
+  await page.getByRole("button", { name: /Use saved style WorkshopLM editorial/ }).click();
+  await expect(page.getByRole("button", { name: "Create outputs" })).toBeVisible();
 
   const state = await (await page.request.get("/api/workshop")).json();
-  expect(state).toMatchObject({ title: "Acme leadership update", onboarding: { step: "complete", outcome: "board_deck", mapOrientationDismissed: true }, style: { name: "Clean professional", intentProfile: "board_deck" }, sources: 1, groundedClaims: 6, mapNodes: expect.arrayContaining([expect.objectContaining({ id: expect.stringMatching(/^claim-/), sourceId: expect.stringMatching(/^source-/) })]) });
+  expect(state).toMatchObject({ title: "Acme leadership update", onboarding: { step: "complete", outcome: "board_deck", mapOrientationDismissed: true }, style: { name: "WorkshopLM editorial", intentProfile: "board_deck" }, sources: 1, groundedClaims: 6, mapNodes: expect.arrayContaining([expect.objectContaining({ id: expect.stringMatching(/^claim-/), sourceId: expect.stringMatching(/^source-/) })]) });
 });
 
 test("fresh Outputs keep the primary source trace clear and reveal the exact claim", async ({ page }) => {
