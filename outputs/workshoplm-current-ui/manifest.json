@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "status": "current-workbench-gallery",
+  "builtAt": "2026-07-16T10:20:31.049Z",
+  "screenshots": [
+    {
+      "name": "01-start.png",
+      "label": "Choose the professional outcome",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-onboarding-welcome.png",
+      "sha256": "1b6348f13c4407976b4ca1d5695348049cf713dc3d9c7341a3cbff07aab1634e",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "name": "02-add-thinking.png",
+      "label": "Start with voice or source material",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-onboarding-sources.png",
+      "sha256": "640052e609f902b290127bde610a43e66cf1f393baf646916232df7b1b38e853",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "name": "03-grounded-map.png",
+      "label": "Shape grounded claims on the semantic Map",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-map.png",
+      "sha256": "4af1d216c3e11310fda4da3647fc17579d2e70b18cb9aea5adc705dde4436e07",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "name": "04-grounded-chat.png",
+      "label": "Ask selected Sources with text or voice",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-conversation.png",
+      "sha256": "a9b8a860049d940b479dd75e7fb05d299edd112423c3f1e36810abf1375f383c",
+      "width": 936,
+      "height": 748
+    },
+    {
+      "name": "05-source-evidence.png",
+      "label": "Inspect the exact supporting Source",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-evidence.png",
+      "sha256": "915e26e4f3a5443958a5bcba288dde6fdeaa54481902c7144355b6d2e8f11f66",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "name": "06-approved-brief.png",
+      "label": "Review the approved executable Brief",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-brief.png",
+      "sha256": "7fa2fc0bc73f5502784aef8c5fda508192911c1515c22532e57c029f47eac415",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "name": "07-company-style.png",
+      "label": "Apply one reviewable visual system",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-style.png",
+      "sha256": "68dd3ebb951f855d5b79a4a9dee477660212e93e3f32cf4f205c5a4038db57dd",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "name": "08-current-outputs.png",
+      "label": "Review the current provider-backed deliverables",
+      "source": "artifacts/ui-review/outputs-latest-only-desktop-2026-07-16.png",
+      "sha256": "d80914a7c072ed26bac2aa2782f3dc61f9db5dbb72e12a9b3dafce1f741a76eb",
+      "width": 1280,
+      "height": 720
+    },
+    {
+      "name": "09-presentation.png",
+      "label": "Open the hero presentation and its source trail",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-output-viewer.png",
+      "sha256": "bf5154f1535712eb7f61cd7cbfce682c3bb1f58eace902e3c0e9bc3cc180962f",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "name": "10-image-set.png",
+      "label": "Review grounded image jobs before generation",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-image-set.png",
+      "sha256": "80d5486250af2439943fc2db7a32e49b78e17907fffd7575e7c4f39058203f19",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "name": "11-replace-image.png",
+      "label": "Direct one image replacement without prompt editing",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-image-replacement.png",
+      "sha256": "cf28b3d844efa81674a2676eac856f57b25f65777a101f1fdc8af91727b235e3",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "name": "12-storyboard.png",
+      "label": "Edit and approve the Storyboard",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-storyboard.png",
+      "sha256": "39784303ed23f1d6c67f24b1e7a41210377b05010af90542e3f8961f2cacdca1",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "name": "13-narrated-video.png",
+      "label": "Review the locally rendered Video",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-video-viewer.png",
+      "sha256": "dc99d2be0d766ed4b7dec0948956b3d12b062a689c30ae95915df32f6bc405df",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "name": "14-original-reveal.png",
+      "label": "Trace finished work back to the original thought",
+      "source": "apps/web/tests/visual/__screenshots__/desktop-original-reveal.png",
+      "sha256": "8a928b17ec03129102f53c2121e01d19eb9d915029c161104f9891e5ad91ebe1",
+      "width": 1200,
+      "height": 800
+    },
+    {
+      "name": "15-mobile-map.png",
+      "label": "Review the Map on mobile",
+      "source": "apps/web/tests/visual/__screenshots__/mobile-map.png",
+      "sha256": "efb2460e0d90f294ba8f71a788ef1cddaf0d24a9bed7cb9b27af6fb9e194bf6a",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "name": "16-mobile-outputs.png",
+      "label": "Review current Outputs on mobile",
+      "source": "apps/web/tests/visual/__screenshots__/mobile-outputs.png",
+      "sha256": "1acb3fb4293e802915d6d7675aff62fa3e1c0cbba78d4b76e7a1d2683cc737a9",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "contactSheet": {
+    "name": "contact-sheet.png",
+    "sha256": "18858d0aa8a75b64d105eeb2c145e4932a917bee839884bea390aab6daa8d2ea",
+    "width": 1920,
+    "height": 1280
+  }
+}

@@ -144,7 +144,7 @@ async function main() {
     const previewPath = resolve(repository, "outputs/demo-film-plan/final-overlay-preview.png");
     const framePreviewPath = resolve(repository, "outputs/demo-film-plan/final-overlay-frame.png");
     const metaPreviewPath = resolve(repository, "outputs/demo-film-plan/meta-reveal-layout-preview.png");
-    const previewBases = ["01-map.png", "06-workshop-details.png", "04-capture-transcript.png", "07-claim-evidence.png", "11-approved-brief.png", "12-style-locked.png", "20-real-output-gallery.png", "15-storyboard.png", "14-outputs.png", "04-capture-transcript.png"];
+    const previewBases = ["03-grounded-map.png", "04-grounded-chat.png", "02-add-thinking.png", "05-source-evidence.png", "06-approved-brief.png", "07-company-style.png", "08-current-outputs.png", "12-storyboard.png", "13-narrated-video.png", "14-original-reveal.png"];
     await rm(previewRoot, { recursive: true, force: true });
     await mkdir(previewRoot, { recursive: true });
     const frames = [];
@@ -254,8 +254,8 @@ async function main() {
       run("ffmpeg", ["-y", "-ss", sourceStart.toFixed(3), "-i", sourceVideo, "-vf", `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5,trim=duration=${sourceDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${duration},zoompan=z='min(zoom+0.00012,1.04)':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s=${width}x${height}:fps=30,format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
       shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: shot.captureBeats, sourceStartSeconds: Number(sourceStart.toFixed(3)), sourceEndSeconds: Number(sourceEnd.toFixed(3)) });
     } else {
-      run("ffmpeg", ["-y", "-loop", "1", "-i", resolve(repository, "outputs/workshoplm-current-ui/01-map.png"), "-t", String(duration), "-vf", `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5,fps=30,format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
-      shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: [], stillFallback: "outputs/workshoplm-current-ui/01-map.png" });
+      run("ffmpeg", ["-y", "-loop", "1", "-i", resolve(repository, "outputs/workshoplm-current-ui/03-grounded-map.png"), "-t", String(duration), "-vf", `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5,fps=30,format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
+      shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: [], stillFallback: "outputs/workshoplm-current-ui/03-grounded-map.png" });
     }
 
     const audioDuration = Number(probe(audioPath).format?.duration || 0);

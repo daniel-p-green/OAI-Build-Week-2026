@@ -7706,3 +7706,38 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - Founder capture, final thirteen-request Source-derived operator run, verified final package, final MP4, external send/revise review, eligible Session ID, and public submission links remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 05:21 CT — Current UI evidence replaces the discarded MVP archive
+
+**Area:** Judge evidence / UI gallery / film preview integrity
+
+### Changed
+
+- Replaced the twenty numbered July 14 tabbed-MVP screenshots in `outputs/workshoplm-current-ui/` with a curated sixteen-screen journey through the current Capture → Shape → Deliver workbench.
+- Added `pnpm ui:gallery:build`, which copies only named current visual baselines, probes their dimensions, binds each source and byte payload by SHA-256, renders a 1920×1280 contact sheet, and creates a flat shareable ZIP.
+- Kept the evidence boundary explicit: screen 08 is the inspected provider-backed Outputs gallery; the other screens are sanitized fixture evidence, and the pre-generation Image plan is labeled as such.
+- Repaired the final-film overlay preview and still fallback so they no longer reference deleted screenshots from the discarded interface.
+- Extended `pnpm submission:packet:verify` to require the canonical sixteen-screen manifest, verify every screenshot hash, require the provider-backed Outputs source, and reject retired filenames. The ignored shareable ZIP remains reproducible from the tracked builder rather than becoming a clean-checkout requirement.
+- Reconciled the NotebookLM flow audit and stale 37.76-second GOAL reference to the current sixteen-screen gallery and 41.36-second recording.
+
+### Verified
+
+- `pnpm ui:gallery:build` produced sixteen screenshots, `contact-sheet.png`, `manifest.json`, and `outputs/workshoplm-current-ui.zip` with SHA-256 `a464209ca7ce866c9503fe9a4f5813e4055e2624c201ea3dceddf975609f506a`. The ZIP contains exactly nineteen flat entries: README, manifest, contact sheet, and sixteen screens.
+- The full contact sheet was visually inspected. The current interface is consistent across onboarding, Map, Conversation, Source evidence, Brief, Style, provider-backed Outputs, Presentation, Image plan/replacement, Storyboard, Video, original reveal, and two mobile states.
+- `pnpm demo:film:preview-final` rebuilt the ten-frame editorial overlay and meta-reveal previews exclusively from current filenames. Both previews were visually inspected and accepted.
+- `pnpm submission:packet:verify` passed with Terra, six provider images, five product narration clips, the 2:20 Cedar film, eight ready/two blocked shots, sixteen current UI screens, and four unresolved founder/final-package slots.
+- `pnpm check` passed all thirteen packages with 115 worker and 30 web tests. `pnpm demo:e2e` passed the complete recorded-fixture seam. Node syntax checks and `git diff --check` outside the preserved stale-plan modification passed.
+
+### Decisions
+
+- A canonical screenshot directory is evidence, not an archive. Superseded UI belongs in Git history, not beside the current judge path.
+- Provider-backed pixels and deterministic fixture pixels may coexist only when the boundary is visible and machine-verifiable.
+- Film previews must consume the same canonical UI evidence that the shareable gallery exposes; deleted legacy filenames should fail rather than silently survive.
+- No provider request ran in this milestone. The evidence ledger remains 97 HTTP operations; exact dollar debit is unavailable and no exact spend is invented.
+
+### Open items
+
+- Founder capture, final thirteen-request Source-derived operator run, verified final package, final MP4, external send/revise review, eligible Session ID, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

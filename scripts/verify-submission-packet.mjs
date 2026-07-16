@@ -1,5 +1,6 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 
 const repository = resolve(import.meta.dirname, "..");
@@ -17,9 +18,10 @@ const paths = {
   narration: "outputs/demo-film-narration/manifest.json",
   roughCut: "outputs/demo-film-rough-cut/manifest.json",
   filmPlan: "submission/demo-film-plan.json",
+  uiGallery: "outputs/workshoplm-current-ui/manifest.json",
 };
 
-const [devpost, script, ledger, audit, checklist, provider, narration, roughCut, filmPlan] = await Promise.all([
+const [devpost, script, ledger, audit, checklist, provider, narration, roughCut, filmPlan, uiGallery] = await Promise.all([
   readText(paths.devpost),
   readText(paths.script),
   readText(paths.ledger),
@@ -29,6 +31,7 @@ const [devpost, script, ledger, audit, checklist, provider, narration, roughCut,
   readJson(paths.narration),
   readJson(paths.roughCut),
   readJson(paths.filmPlan),
+  readJson(paths.uiGallery),
 ]);
 
 assert(!existsSync(resolve(repository, "submission/DEVPOST-DRAFT 2.md")), "A redundant stale Devpost draft still exists.");
@@ -65,6 +68,15 @@ assert(roughCut.voice?.provider === "OpenAI" && roughCut.voice.name === "cedar" 
 assert(Math.round(roughCut.video?.durationSeconds) === 140 && roughCut.video.streams.some((stream) => stream.codec_name === "h264") && roughCut.video.streams.some((stream) => stream.codec_name === "aac"), "Rough cut is not the verified 2:20 H.264/AAC edit.");
 assert(filmPlan.shots.at(-1)?.endSeconds === 140 && filmPlan.shots.filter((shot) => shot.state === "ready").length === 8 && filmPlan.shots.filter((shot) => shot.state === "blocked").length === 2, "Film plan is not at the eight-ready/two-blocked truth state.");
 
+assert(uiGallery.status === "current-workbench-gallery" && uiGallery.screenshots?.length === 16, "Current UI gallery is not the canonical sixteen-screen workbench journey.");
+assert(uiGallery.screenshots.some((shot) => shot.name === "08-current-outputs.png" && shot.source === "artifacts/ui-review/outputs-latest-only-desktop-2026-07-16.png"), "Current UI gallery is missing the inspected provider-backed Outputs screen.");
+for (const shot of uiGallery.screenshots) {
+  const bytes = await readFile(resolve(repository, "outputs/workshoplm-current-ui", shot.name));
+  assert(createHash("sha256").update(bytes).digest("hex") === shot.sha256, `Current UI gallery hash mismatch: ${shot.name}`);
+}
+for (const retired of ["01-map.png", "06-workshop-details.png", "20-real-output-gallery.png"]) {
+  assert(!existsSync(resolve(repository, "outputs/workshoplm-current-ui", retired)), `Retired UI evidence is still present: ${retired}`);
+}
 const unresolvedSlots = [...devpost.matchAll(/`\[(LIVE|FALLBACK):/g)].length;
 assert(unresolvedSlots === 4, `Expected four founder/final-package slots, found ${unresolvedSlots}.`);
 
@@ -72,5 +84,6 @@ process.stdout.write(`${JSON.stringify({
   status: "passed",
   providerEvidence: { model: provider.groundedMap.model, images: provider.imageBatch.panelCount, productNarration: provider.narration.panelCount },
   editorialFilm: { seconds: roughCut.video.durationSeconds, voice: roughCut.voice.name, readyShots: 8, blockedShots: 2 },
+  uiGallery: { screenshots: uiGallery.screenshots.length, providerBackedOutputs: "08-current-outputs.png" },
   unresolvedFounderSlots: unresolvedSlots,
 }, null, 2)}\n`);

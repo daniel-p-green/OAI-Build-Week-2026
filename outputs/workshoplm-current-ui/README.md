@@ -1,33 +1,38 @@
-# Current WorkshopLM UI gallery
+# WorkshopLM current UI gallery
 
-The authoritative screenshots are captured from the production Next.js route by the visual acceptance suite. They use the deterministic local fixture and cover the current no-tabs interface at desktop (`1200×800`), compact (`1024×768`), and mobile (`390×844`) widths.
+Sixteen current screens show the professional Capture → Shape → Deliver path in the simplified ChatGPT/Codex-style workbench. The discarded tabbed MVP is no longer included.
 
-## Core journey
+![WorkshopLM current UI contact sheet](contact-sheet.png)
 
-| Screen | Desktop | Compact | Mobile |
-| --- | --- | --- | --- |
-| Map | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-map.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-map.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-map.png) |
-| Sources | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-sources.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-sources.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-sources.png) |
-| Source evidence | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-evidence.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-evidence.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-evidence.png) |
-| Add source and voice | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-add-source.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-add-source.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-add-source.png) |
-| Brief | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-brief.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-brief.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-brief.png) |
-| Style | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-style.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-style.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-style.png) |
-| Website Style | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-website-style.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-website-style.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-website-style.png) |
-| Outputs | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-outputs.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-outputs.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-outputs.png) |
-| Focused Output | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-output-viewer.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-output-viewer.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-output-viewer.png) |
-| Storyboard | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-storyboard.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-storyboard.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-storyboard.png) |
-| Rendered Video in Outputs | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-video-output.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-video-output.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-video-output.png) |
-| Focused Video | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-video-viewer.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-video-viewer.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-video-viewer.png) |
-| Original brainstorm reveal | [desktop](../../apps/web/tests/visual/__screenshots__/desktop-original-reveal.png) | [compact](../../apps/web/tests/visual/__screenshots__/compact-original-reveal.png) | [mobile](../../apps/web/tests/visual/__screenshots__/mobile-original-reveal.png) |
+## Journey
 
-## Product states
+| # | Screen | What it proves |
+| --- | --- | --- |
+| 01 | [Start](01-start.png) | One clear professional outcome starts the Workshop. |
+| 02 | [Add thinking](02-add-thinking.png) | Voice, notes, URLs, and local files enter through one capture surface. |
+| 03 | [Grounded Map](03-grounded-map.png) | Sources become editable, linked claims on the semantic whiteboard. |
+| 04 | [Grounded Chat](04-grounded-chat.png) | Text or voice questions stay scoped to selected Sources. |
+| 05 | [Source evidence](05-source-evidence.png) | `Show source` reveals the exact supporting excerpt and locator. |
+| 06 | [Approved Brief](06-approved-brief.png) | The first sign-off turns the current Map into the executable Brief. |
+| 07 | [Company Style](07-company-style.png) | Website or manual brand rules stay reviewable before production. |
+| 08 | [Current Outputs](08-current-outputs.png) | The provider-backed gallery shows only the current deliverables; history moves into focused objects. |
+| 09 | [Presentation](09-presentation.png) | The hero deliverable retains its source trail and editable export. |
+| 10 | [Image plan](10-image-set.png) | Grounded visual jobs remain reviewable before generation. |
+| 11 | [Replace image](11-replace-image.png) | A professional directs one revision without editing model prompts. |
+| 12 | [Storyboard](12-storyboard.png) | Panels remain editable before the second and final sign-off. |
+| 13 | [Narrated Video](13-narrated-video.png) | Only the approved current Storyboard reaches the local renderer. |
+| 14 | [Original reveal](14-original-reveal.png) | Finished work traces back to the thought that started it. |
+| 15 | [Mobile Map](15-mobile-map.png) | The grounded Map remains legible at 390×844. |
+| 16 | [Mobile Outputs](16-mobile-outputs.png) | Current deliverables remain usable at 390×844. |
 
-The same suite records empty, loading, partial, error, `Needs update`, and reset states at all three widths. Run:
+## Evidence boundary
+
+Screens 01–07 and 09–16 come from the strict production-route visual suite using a sanitized deterministic fixture; screen 10 deliberately shows the pre-generation plan. Screen 08 comes from an isolated copy of the inspected provider-backed Workshop and shows the real current output family. Provider provenance is recorded separately in `artifacts/live/provider-run.json`; the gallery does not claim that fixture pixels are provider results.
+
+Rebuild the directory, manifest, contact sheet, and shareable ZIP with:
 
 ```bash
-pnpm --filter @workshoplm/web test:visual
+pnpm ui:gallery:build
 ```
 
-The numbered PNG files retained in this directory are a July 14 pre-simplification archive. They show the discarded tabbed/Library MVP and are not evidence of the current interface.
-
-These screenshots prove fixture-backed product behavior and responsive composition. They do not prove live GPT-5.6 product reasoning, GPT Image 2 generation, a provider-backed Realtime microphone turn, provider narration, or ChatGPT Work support.
+The generated `manifest.json` records every source file, dimension, and SHA-256. The root `outputs/workshoplm-current-ui.zip` contains this README, all sixteen screens, the manifest, and the contact sheet.
