@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "current-workbench-gallery",
-  "builtAt": "2026-07-16T11:29:36.770Z",
+  "builtAt": "2026-07-16T11:37:37.634Z",
   "screenshots": [
     {
       "name": "01-start.png",
@@ -23,7 +23,7 @@
       "name": "03-grounded-map.png",
       "label": "Shape grounded claims on the semantic Map",
       "source": "apps/web/tests/visual/__screenshots__/desktop-map.png",
-      "sha256": "b8d9e2460bfa58c60eaa9d6ada2e3511dd2ae714bd7bc4a9f9d732b6b309dc28",
+      "sha256": "fb4d6d0710f2fa02f66e56212ded0d95fa3949cddfe8083d97fa4624dbe4faac",
       "width": 1200,
       "height": 800
     },
@@ -39,7 +39,7 @@
       "name": "05-source-evidence.png",
       "label": "Inspect the exact supporting Source",
       "source": "apps/web/tests/visual/__screenshots__/desktop-evidence.png",
-      "sha256": "62b8612a72f8450849598924c0be1692ce31cb49a8a119b4e850004176739487",
+      "sha256": "dae79a357a54a91b1ad0f60b4691355715ccb9c949695b10bfd91000407c3a04",
       "width": 1200,
       "height": 800
     },
@@ -103,7 +103,7 @@
       "name": "13-narrated-video.png",
       "label": "Review the locally rendered Video",
       "source": "apps/web/tests/visual/__screenshots__/desktop-video-viewer.png",
-      "sha256": "3d6eaba02d44aff8c4f17fcc62644b51e3b2df5662d01363931862f0c70c8ce1",
+      "sha256": "d48a6c8e120c769d22cda0e07bcacdb6683ef360aba6497c04d7acbf8d18de90",
       "width": 1200,
       "height": 800
     },
@@ -111,7 +111,7 @@
       "name": "14-original-reveal.png",
       "label": "Trace finished work back to the original thought",
       "source": "apps/web/tests/visual/__screenshots__/desktop-original-reveal.png",
-      "sha256": "7b86ebe2855f0ff8818297eb652954fb6d965ce3fdc988792e4415412d4780b6",
+      "sha256": "2ac679905471b33afe2b481b975d0ac51cad009fc9c89126f9d40169a8965661",
       "width": 1200,
       "height": 800
     },
@@ -134,7 +134,7 @@
   ],
   "contactSheet": {
     "name": "contact-sheet.png",
-    "sha256": "6d86f6fac12ff2b6c03af3a0078569e5f0c6f7772d7030c64b12b9459b003a6e",
+    "sha256": "e463816bd89f801c1f8da837c349f7ab60aff2c26e7f1adb2e2ca81fc0df0244",
     "width": 1920,
     "height": 1280
   }

@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-16 06:31 CT
+Last updated: 2026-07-16 06:36 CT
 
 ## Status
 
@@ -72,6 +72,7 @@ WorkshopLM should preserve the clarity that makes NotebookLM useful while comple
 - [x] Apply the current `DESIGN.md` consistently but appropriately. The Map may inherit its paper, ink, and accent while retaining semantic verified/derived/creative colors. Presentations, infographics, GPT Image 2 prompts, storyboards, and videos inherit the full typography, palette, layout, image-treatment, motion, asset, and negative-rule system.
 - [x] Treat the approved Storyboard as the editable contract for video. HyperFrames receives the exact current `DESIGN.md` and token version, approved image versions, grounded narration, timing, and Cedar audio; it lints and inspects the composition before deterministic local rendering. Users see one plain-language `Create video` action and recoverable errors, never CLI or timeline mechanics.
 - [ ] Make all generated work editable enough for the professional's final 10 percent. Preserve source trace, version history, and calm `Needs update` behavior through regeneration rather than overwriting prior work.
+  - 2026-07-16 Video revision path: the focused Video now exposes `Edit storyboard` beside source trace, original brainstorm, and standard MP4 actions. It returns directly to the approved panel editor without mutating or bypassing approval; any saved panel change still revokes approval, stales Video, and requires the existing review → approve → render sequence. Desktop, compact, and mobile browser proof verifies the action and the intact approval boundary. Keep this item open for founder-Source dogfood and intended-audience confirmation of the complete last-10-percent loop.
   - 2026-07-16 image revision pass: `Request replacement` now opens a focused `Replace image` sheet where the professional describes exactly one visual correction. The current image remains visible while pending; the revision is bounded, versioned, source-preserving, Style-preserving, and proven to reach only the selected GPT Image 2 request. Keep this item open for final founder-Source dogfood and intended-audience review of the complete Output set.
 - [ ] Judge every visible Output against “would a serious professional send this?” Repair weak hierarchy, generic imagery, awkward narration, inconsistent art direction, and templated layouts before adding output breadth.
 - [ ] Continue simplifying language. Use familiar nouns and verbs—Sources, Map, Brief, Style, Presentation, Storyboard, Video, `Show source`, `Approve brief`, `Create outputs`—and remove implementation terms, file names, model names, IDs, and duplicated actions from the primary UI.

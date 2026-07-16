@@ -1091,6 +1091,13 @@ test("the local render becomes a real Video preview and the next action", async 
     const player = page.locator(".focused-output-preview video[controls]");
     await expect(player).toBeVisible();
     await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveClass(/oai-button--primary/);
+    const editStoryboard = page.getByRole("button", { name: "Edit storyboard" });
+    await expect(editStoryboard).toBeVisible();
+    await editStoryboard.click();
+    await expect(page.getByRole("textbox", { name: "Panel title" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Approve storyboard" })).toHaveCount(0);
+    await page.getByRole("button", { name: "View video" }).click();
+    await expect(player).toBeVisible();
     await expect(page.getByRole("region", { name: "Sources in this output" })).toBeVisible();
     await expect(page.getByRole("button", { name: /^Show source for / })).toHaveCount(4);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);

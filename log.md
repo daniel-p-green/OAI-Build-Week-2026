@@ -7847,3 +7847,34 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 - The language gate remains continuous through founder-Source and final-film review; this milestone does not claim uncoached-user or external `Send` evidence.
 - Founder capture, the founder-derived final operator run, verified final package, final MP4, external professional review, eligible Session ID, and public submission links remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 06:36 CT — Video exposes its real revision loop
+
+**Area:** Last-10-percent control / Storyboard approval / responsive Video UX
+
+### Changed
+
+- Added `Edit storyboard` as a contextual secondary action in the focused Video view. It sits beside `Show source`, `Show original`, and `Open video`, so the professional can revise the production contract without discovering a hidden backtracking path.
+- Kept the action navigational only. Opening Storyboard does not mutate the approved artifact; an actual saved panel edit continues to revoke approval, mark downstream Video stale, and require the existing approve-and-render sequence.
+- Rebuilt the desktop, compact, and mobile Video viewer baselines, original-reveal states, canonical sixteen-screen gallery, and final-style film preview.
+
+### Verified
+
+- The production-browser regression clicks `Edit storyboard` at all three widths, reaches the editable panel title and narration fields, confirms no `Approve storyboard` action appears before a change, and returns through the existing `View video` action.
+- The complete production-browser suite passed all 29 tests. The refreshed mobile screenshot proves the four contextual Video actions wrap into two quiet rows without horizontal overflow.
+- `pnpm --filter @workshoplm/web test` passed 30 tests, and web typecheck passed. The rebuilt sixteen-screen gallery and manifest passed `pnpm submission:packet:verify` with the same honest eight-ready/two-blocked film state.
+- `pnpm check` passed all thirteen packages with 116 worker, 30 web, and 17 production tests. `pnpm demo:e2e` passed the complete recorded-fixture seam after the navigation change.
+
+### Decisions
+
+- A capability does not satisfy the last-10-percent promise if the professional must infer how to reach it. Revision belongs on the finished object's focused surface.
+- `Edit storyboard` means inspect and revise the approved contract; it never means silently mutate or regenerate the finished Video.
+- No provider request ran in this milestone. The evidence ledger remains 97 HTTP operations; exact dollar debit is unavailable and no exact spend is invented.
+
+### Open items
+
+- Founder-Source dogfood and intended-audience review still determine whether the complete revision loop clears the professional send-it bar.
+- Founder capture, the founder-derived final operator run, verified final package, final MP4, external professional review, eligible Session ID, and public submission links remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
