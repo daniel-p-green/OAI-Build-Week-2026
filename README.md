@@ -4,9 +4,9 @@
 
 WorkshopLM turns meetings, documents, and half-formed thinking into a branded deck a professional can defend, with every factual claim traced to its source. It is built for consultants, strategists, and enablement leads who produce client-facing or leadership-facing work every week.
 
-Notebook-style tools help people understand source material. WorkshopLM is designed to help them ship from it: capture the conversation in ChatGPT/Codex, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create a presentation that remains editable in PowerPoint. Infographic, Image set, Storyboard, and Video are supporting Outputs around that wedge.
+Notebook-style tools help people understand source material. WorkshopLM is designed to help them ship from it: speak or type in the focused Conversation, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create a presentation that remains editable in PowerPoint. Infographic, Image set, Storyboard, and Video are supporting Outputs around that wedge.
 
-The local product keeps one clear boundary: ChatGPT/Codex owns the conversation; the in-app browser owns the focused Map, Brief, Outputs, and Storyboard workspace. WorkshopLM does not add a second chat composer.
+WorkshopLM runs locally in the Codex in-app browser as one focused workbench. Conversation, Sources, Map, Brief, Style, Outputs, and Storyboard stay in one product surface; contextual views and sheets preserve the full workflow without a persistent tab maze. Codex desktop/CLI is the verified plugin host and build environment. ChatGPT Work support is not claimed.
 
 ## The professional path
 
@@ -23,23 +23,23 @@ The repository currently provides a local-first deterministic seam with:
 
 - SQLite WAL state, hash-addressed local artifacts, and leased local jobs;
 - normalized, locally searchable sanitized source fixtures and claim-level evidence in the recorded acceptance run;
-- local ingestion for pasted notes, public URLs, and absolute PDF paths, plus an implemented and tested capture-only Realtime transport awaiting its first provider-backed microphone proof;
+- local ingestion for pasted notes, public URLs, and absolute PDF paths, plus a live `gpt-realtime-2.1` WebRTC conversation that searched and fetched exact Workshop Sources, persisted transcript and tool provenance, handled interruption, and completed an explicitly confirmed Brief approval;
 - an editable, persisted Excalidraw Map with typed operations and versioned approvals;
 - materialized `FRAME.md`, `DESIGN.md`, style-token, asset-plan, deck, infographic, and editable storyboard artifacts;
 - independent brief and storyboard approval gates, stale propagation, retry, and queued-render cancellation;
 - source-traceable presentation and infographic previews plus editable PowerPoint handoffs with claim locators and source notes;
-- a versioned local HyperFrames Video render with per-scene provenance for the approved sanitized Storyboard fixture;
+- a versioned local HyperFrames Video render with per-scene provenance for the approved sanitized Storyboard fixture, plus an inspected provider-backed render using five OpenAI Cedar narration clips;
 - a unified `0.1.3` plugin whose stdio tools search and fetch grounded local evidence, route authorized workflow writes through the same loopback Workshop API, and declare Granola and Google Drive as optional host-provided source apps using the current plugin manifest contract;
 - a responsive Apps in ChatGPT-aligned interface where the current Presentation is the hero Output and supporting work remains one interaction away.
 
-This is active Build Week work, not a claim that every locked capability is complete. Native ChatGPT durable voice synchronization is not supported in this build. Paid GPT-5.6 reasoning, live GPT Image 2 rendering, a provider-backed Realtime microphone turn, provider narration, and the final public demo remain unproven or in progress. The recorded path uses labeled deterministic fallbacks where provider behavior has not been demonstrated. See [GOAL.md](GOAL.md) for the exact completion definition and [log.md](log.md) for dated evidence.
+This is active Build Week work, not a claim that every locked capability is complete. The authorized sample run has now proven a grounded `gpt-5.6-terra` Map, six accepted GPT Image 2 panels, a live grounded Realtime conversation, OpenAI Cedar narration, and a local HyperFrames Video. The no-credential recorded fixture remains a separate deterministic path and uses labeled fallbacks. Native ChatGPT durable voice synchronization is not supported, and the founder-derived final package and public demo remain open. See [GOAL.md](GOAL.md) for the exact completion definition, [log.md](log.md) for dated evidence, and the [public claim ledger](submission/CLAIM-LEDGER.md) for the allowed wording and proof boundary.
 
 ## Run the recorded fixture
 
 Requirements: Node.js 22+ and pnpm 10+ (HyperFrames also needs its locally configured runtime).
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 pnpm demo:reset
 pnpm demo:e2e
 pnpm demo:render
@@ -51,20 +51,22 @@ pnpm demo:serve
 
 After `pnpm demo:serve` starts, open `http://localhost:3000` in the Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, real presentation and infographic previews, editable PowerPoint files, planned Image set, editable Storyboard, and local Video. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
 
-The GPT-5.6 routing benchmark is deliberately spend-gated. Once a paid-call authorization exists, run `WORKSHOPLM_LIVE_OPENAI=1 OPENAI_API_KEY=… pnpm --filter @workshoplm/ai probe:gpt56`; it compares Sol, Terra, and Luna on compact grounded-graph, brief, and claim-triage cases, recording latency, reported token usage, and deterministic JSON/evidence checks. It does not invent dollar costs from token counts.
+Two paid routing benchmark passes compared Sol, Terra, and Luna on compact grounded-graph, brief, and claim-triage cases. Their recorded latency, token usage, and deterministic JSON/evidence checks selected `gpt-5.6-terra` at medium reasoning as the current product default. Any rerun remains explicitly spend-gated and must not infer dollar costs from token counts.
 
 ## Prepare the live demo run
 
 `pnpm demo:live` builds a fresh, isolated operator Workshop under `.workshoplm/live-operator/`. It ingests sanitized sources, captures a transcript through the documented fallback, approves the Brief, locks the official demo style, and creates the traced deck, infographic, image plan, and Storyboard. The Storyboard remains ready for the second deliberate approval after the real image set exists. The default command is a no-spend preflight: it validates both image coherence and every grounded narration input, prints the exact provider request count, and makes no OpenAI call.
 
-After explicit spend authorization and the routing benchmark, the same command uses GPT-5.6 Sol to build a claim-validated grounded Map, generates six GPT Image 2 panels concurrently, generates one `gpt-4o-mini-tts` WAV per approved storyboard panel, and renders those clips through the local HyperFrames worker:
+After explicit spend authorization, the same command uses `gpt-5.6-terra` at medium reasoning to build a claim-validated grounded Map, generates six GPT Image 2 panels concurrently, generates one `gpt-4o-mini-tts` Cedar WAV per approved Storyboard panel, and renders those clips through the local HyperFrames worker:
 
 ```bash
-WORKSHOPLM_LIVE_OPENAI=1 OPENAI_API_KEY=… pnpm demo:live -- --execute
+WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=13 OPENAI_API_KEY=… pnpm demo:live -- --execute
 WORKSHOPLM_DATA_ROOT="$PWD/.workshoplm/live-operator" pnpm dev
 ```
 
 The live command fails closed when either opt-in flag or credential is absent. The GPT-5.6 Map rejects any node that cites a claim outside the active source scope and records the model, request ID, input claim IDs, and output hash. Every image and narration clip is likewise stored locally with model, request, version, and SHA-256 provenance. A partial image batch retains completed panels and marks only failed panels for retry.
+
+The inspected authorized-sample run is recorded in [`artifacts/live/provider-run.json`](artifacts/live/provider-run.json). Visual review artifacts include the [GPT Image 2 contact sheet](artifacts/live-review/gpt-image-2-contact-sheet.png), [HyperFrames Video review](artifacts/live-review/hyperframes-v4/README.md), and [Realtime grounded-conversation record](artifacts/live-review/realtime-grounded-conversation.json). These prove provider behavior without implying that the final founder Source or public submission is complete.
 
 ## Checks
 
@@ -119,6 +121,6 @@ The project is built in dated commits during Build Week. Product decisions and v
 
 Codex accelerated the implementation and verification of the monorepo, local SQLite state, MCP doorway, typed Map operations, browser workspace, deterministic fixture, and HyperFrames render path. The dated commits and `log.md` record that work and its command-level evidence.
 
-Human decisions locked the product boundary: professional work rather than education, one ChatGPT/Codex conversation surface plus one visual browser workspace, exactly two approval gates, local-first judging, privacy-safe sample data, and proportional public claims.
+Human decisions locked the product boundary: professional work rather than education, one focused WorkshopLM workbench in the Codex in-app browser, exactly two approval gates, local-first judging, privacy-safe sample data, and proportional public claims.
 
-GPT-5.6 contributes through Codex during implementation and is also represented in WorkshopLM's operation-level runtime routing policy: Sol for quality-critical graph work, Terra for structured synthesis, and Luna for repeatable triage. The live API benchmark remains spend-gated; this repository does not claim that its recorded fixture used paid GPT-5.6 runtime calls.
+GPT-5.6 contributes through Codex during implementation and through WorkshopLM's runtime path. Two inspected Sol/Terra/Luna benchmark passes selected `gpt-5.6-terra` at medium reasoning for the grounded Map, and the authorized sample run records its request ID and output hash. The deterministic recorded fixture remains credential-free and does not claim paid runtime calls; the separate provider-backed run supplies that evidence.
