@@ -87,7 +87,7 @@ function guideVoiceRate(text, durationSeconds) {
 function overlaySvg(shot, index) {
   if (cleanEditorialStyle) {
     if (shot.id === "meta-reveal") return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"/>`;
-    const lines = captionLines(shot.narration, 74);
+    const lines = captionLines(shot.caption ?? shot.narration, 74);
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   <rect x="22" y="606" width="1236" height="96" rx="18" fill="#ffffff" fill-opacity="0.94"/>
   <text x="48" y="632" font-family="Arial, sans-serif" font-size="11" font-weight="700" letter-spacing="1.2" fill="#6b6b6b">${String(index + 1).padStart(2, "0")} · ${escapeXml(shot.title.toUpperCase())}</text>
@@ -97,7 +97,7 @@ function overlaySvg(shot, index) {
   }
   const state = shot.state === "ready" ? (shot.captureBeats.length ? "CAPTURED FIXTURE" : "CAPTURED EVIDENCE") : "FINAL EVIDENCE PENDING";
   const stateFill = shot.state === "ready" ? "#15803d" : "#b45309";
-  const lines = captionLines(shot.narration);
+  const lines = captionLines(shot.caption ?? shot.narration);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   <rect x="24" y="22" width="266" height="30" rx="15" fill="#0d0d0d" fill-opacity="0.88"/>
   <text x="40" y="42" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1.2" fill="#ffffff">EDITORIAL ROUGH CUT · FIXTURE</text>

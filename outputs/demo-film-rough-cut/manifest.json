@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "editorial-rough-cut",
   "disclosure": "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video.",
-  "builtAt": "2026-07-16T12:26:59.889Z",
+  "builtAt": "2026-07-16T14:12:18.639Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "voice": {
@@ -15,7 +15,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-rough-cut.mp4",
-    "sha256": "ea6dc0526050192866694849879f5be2fd4a20fd460686fbedc3acd49049bd53",
+    "sha256": "631c2bc1507c841c94ebb5cafe9ef1a21b807f1b708fdec29b6df90712854d35",
     "durationSeconds": 140.021333,
     "streams": [
       {
@@ -33,48 +33,48 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "9f66ec16141dac5a8922a231dc969866241072a00abf15113598f43b62c847d7"
+    "sha256": "ddea88cea231d42ef620e973da6322eaf7236f9bd2fbb08adf41f9f49140408e"
   },
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "e44452b7d6e27886d5046c683517af3c72d3b0eb3e9070fa207ec67c85b7b905"
+      "sha256": "bdbad47dacaffed6379442ebd0499e3f576e4065f8119aca18952711146451d8"
     },
     {
       "relativePath": "review/02.jpg",
-      "sha256": "d423cabf17fa263042787480b6a2f06c081330a346465492624d96d24f60a9f6"
+      "sha256": "6e36a13a22024daa6d318b3204dac60cac23e7f9cc1f98e9770c2b26b5bf1675"
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "d62983c76509e985629b265662420d2717da6fca0d5f501417da36024836333a"
+      "sha256": "cacbc12e6dda28d0846307a0efefbc047b1021998ade87207882111ff8a8911c"
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "42463100d1df86db56446adb5de128258dc0135c38b0eef0a1f8e4d7898b1a91"
+      "sha256": "83d0c821c8fcc4559ef28feb5c94996cc30bbdedc6084d8f52845e72bfcbaef9"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "3888ed1aaa0fbb78c4e437efd11be875fb6325e84deff0fd0f410a886cb37dd2"
+      "sha256": "58c38484799592ecd0de9bb82d20e42fc6adde7cde05c4f57204603bbff1f6f4"
     },
     {
       "relativePath": "review/06.jpg",
-      "sha256": "1a5f0a2702af3aa8417e6a74eac47ee9da1910599210847fd4db430ec529c57f"
+      "sha256": "2dd76504ba80a67a9c5e87158a8099da66795512ce8fa6854d992a220a28c715"
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "9b589b978ff3f30fb707b76fe8696ddcf36622fc67051325c123ebd334a71ef8"
+      "sha256": "d26b568b55d1938f9cc7c06c9e9fbce8dbbd64b545fac8ec032eeb5f91d191f3"
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "dd81ee5232b926bc6b8ffd55476adad829058204b1bb06c69ac3e4122250ab49"
+      "sha256": "5598ab5bcf4af8b40e79338d75dd8b376ad500b811da2a596763f2cf59058c9f"
     },
     {
       "relativePath": "review/09.jpg",
-      "sha256": "af0a697f579f1c1b3f4c55231ce9abde6a3576fe2438e6ec82863ffae5f0e90b"
+      "sha256": "b6da06f2b24ad70ff42fed9c4094757a8fc34ea7850eea6903a3a83a0aa3697d"
     },
     {
       "relativePath": "review/10.jpg",
-      "sha256": "5a961f2a250af4a16f8093cadb8df1eb13f632e5deb0573e494614b583b4c4e3"
+      "sha256": "8e3f36658f359832e7c2e6f8f73d367721a9b990c0a99951a142e62172ec9849"
     }
   ],
   "shots": [

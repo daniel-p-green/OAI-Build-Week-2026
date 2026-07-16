@@ -8318,3 +8318,35 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - Founder recording, deliberate public-share decision, final provider regeneration, final ready package, under-three-minute public Video, intended-audience `Send`/`Revise`, eligible `/feedback` Session ID, release tag, Devpost fields, and logged-out link checks remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 09:12 CT — Judge-film proof captions no longer truncate
+
+**Area:** Demo film / visual quality / final-export guardrail
+
+### Changed
+
+- Audited the current 2:20 Cedar rough cut at full-frame resolution rather than relying on its passing manifest. Shot nine visibly clipped the HyperFrames/OpenAI proof statement with an ellipsis, weakening the most technical judge-facing beat.
+- Separated the on-screen proof caption from spoken narration. Each of the ten film-plan shots now owns a deliberate short caption, while the Cedar script remains unchanged.
+- Updated both rough-cut and clean-final overlay styles to render the explicit caption. The film verifier now requires every caption and rejects any longer than 80 characters before assembly.
+- Rebuilt the complete 1280×720 H.264/AAC rough cut, ten review frames, contact sheet, and hash manifest without making a provider request.
+
+### Verified
+
+- Full-resolution inspection accepted the repaired render frame: `Only approved work becomes the narrated Video` appears completely with no ellipsis or collision. The ten-frame contact sheet shows one concise, complete proof statement per shot.
+- `pnpm demo:film:verify` passed the 140-second, ten-shot plan at 129.4 narration words per minute with eight ready shots and the same two honest founder/final-package blocks.
+- `pnpm demo:film:rough` produced a 140.021333-second H.264/AAC Video with SHA-256 `631c2bc1507c841c94ebb5cafe9ef1a21b807f1b708fdec29b6df90712854d35` using the existing ten hash-bound OpenAI Cedar clips.
+- `pnpm submission:packet:verify` passed with Terra, six GPT Image 2 panels, five product Cedar clips, ten editorial Cedar clips, sixteen UI screens, eight ready shots, two blocked shots, and four honest unresolved founder/final-package slots.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages. No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Decisions
+
+- Spoken narration and on-screen proof copy have different jobs. Captions must be intentionally scannable and complete; the compositor must not silently truncate narration into UI.
+- The two blocked shots remain visibly pending. Improving the edit does not upgrade founder or final-submission evidence that does not yet exist.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- A human taste review of Cedar pacing and the provider Video remains open, along with founder recording, final ready package, final public MP4, intended-audience deck review, `/feedback`, release, Devpost, and link verification.
+- Codex Session ID: unavailable on this surface; not inferred.

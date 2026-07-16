@@ -8,6 +8,7 @@ type RequiredEvidence = { label: string; path: string; validator?: "ready-submis
 type FilmShot = {
   id: string;
   title: string;
+  caption: string;
   startSeconds: number;
   endSeconds: number;
   state: "ready" | "blocked";
@@ -166,6 +167,7 @@ async function main(): Promise<void> {
     assert(shot.startSeconds === cursor, `Timeline gap or overlap before ${shot.id}: expected ${cursor}, received ${shot.startSeconds}.`);
     assert(shot.endSeconds > shot.startSeconds, `Shot ${shot.id} has a non-positive duration.`);
     assert(wordCount(shot.narration) <= (shot.endSeconds - shot.startSeconds) * 2.7, `Narration for ${shot.id} is too dense for its slot.`);
+    assert(Boolean(shot.caption?.trim()) && shot.caption.length <= 80, `Caption for ${shot.id} must be present and at most 80 characters.`);
     if (shot.state === "blocked") assert(shot.requiredEvidence.length > 0, `Blocked shot ${shot.id} must name its missing evidence.`);
     shot.requiredMoments.forEach((moment) => seenMoments.add(moment));
     cursor = shot.endSeconds;

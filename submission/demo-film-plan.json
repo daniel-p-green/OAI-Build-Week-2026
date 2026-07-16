@@ -11,6 +11,7 @@
     {
       "id": "promise",
       "title": "The promise",
+      "caption": "From meetings and documents to a deck you can defend",
       "startSeconds": 0,
       "endSeconds": 13,
       "state": "ready",
@@ -28,6 +29,7 @@
     {
       "id": "codex-doorway",
       "title": "Codex is the conversation surface",
+      "caption": "One plugin keeps conversation and production together",
       "startSeconds": 13,
       "endSeconds": 26,
       "state": "ready",
@@ -44,6 +46,7 @@
     {
       "id": "capture-and-shape",
       "title": "Messy thought becomes a grounded Map",
+      "caption": "A raw brainstorm becomes a grounded visual Map",
       "startSeconds": 26,
       "endSeconds": 44,
       "state": "blocked",
@@ -76,6 +79,7 @@
     {
       "id": "evidence-and-control",
       "title": "Evidence remains inspectable and editable",
+      "caption": "Every claim stays inspectable and editable",
       "startSeconds": 44,
       "endSeconds": 58,
       "state": "ready",
@@ -87,6 +91,7 @@
     {
       "id": "brief-approval",
       "title": "First approval: Brief",
+      "caption": "The first approval turns the Map into a Brief",
       "startSeconds": 58,
       "endSeconds": 70,
       "state": "ready",
@@ -98,6 +103,7 @@
     {
       "id": "style",
       "title": "One reviewable visual system",
+      "caption": "Set the visual system once",
       "startSeconds": 70,
       "endSeconds": 82,
       "state": "ready",
@@ -109,6 +115,7 @@
     {
       "id": "outputs",
       "title": "A deck you can defend",
+      "caption": "Create one defensible deck and its supporting assets",
       "startSeconds": 82,
       "endSeconds": 96,
       "state": "ready",
@@ -131,6 +138,7 @@
     {
       "id": "storyboard-approval",
       "title": "Second approval: Storyboard",
+      "caption": "Review and approve the Storyboard before Video",
       "startSeconds": 96,
       "endSeconds": 109,
       "state": "ready",
@@ -142,6 +150,7 @@
     {
       "id": "render-and-trace",
       "title": "Approved work renders locally",
+      "caption": "Only approved work becomes the narrated Video",
       "startSeconds": 109,
       "endSeconds": 124,
       "state": "ready",
@@ -159,6 +168,7 @@
     {
       "id": "meta-reveal",
       "title": "The submission proves the product",
+      "caption": "The brainstorm became the submission you just watched",
       "startSeconds": 124,
       "endSeconds": 140,
       "state": "blocked",
