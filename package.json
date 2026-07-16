@@ -12,6 +12,7 @@
     "demo:reset": "node scripts/reset-demo.mjs",
     "demo:e2e": "tsx scripts/demo-e2e.ts",
     "demo:serve": "WORKSHOPLM_DATA_ROOT=$PWD/.workshoplm/acceptance pnpm --filter @workshoplm/web dev",
+    "judge:start": "pnpm demo:e2e && pnpm demo:serve",
     "demo:live": "tsx scripts/live-operator.ts",
     "demo:founder": "tsx scripts/live-operator.ts --root .workshoplm/final-operator --stage-film-inputs",
     "demo:render": "tsx scripts/run-worker-render.ts",

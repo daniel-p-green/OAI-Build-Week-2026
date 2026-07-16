@@ -8438,3 +8438,33 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 
 - Founder capture, final ready package, final public MP4, human film taste review, intended-audience deck review, `/feedback`, release, Devpost, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 09:29 CT — Optional judge path is exact and one command
+
+**Area:** Judge access / public documentation / submission compliance
+
+### Changed
+
+- Refreshed the live OpenAI Build Week rules before finalizing the optional inspection path. The current rules require a working-as-depicted project, a public sub-three-minute YouTube video, relevant source and licensing access, `/feedback`, and concise installation, platform, and test instructions for plugin/developer-tool submissions.
+- Verified the repository's MIT `LICENSE`, then found a concrete judge-path defect: the Devpost draft instructed judges to run `pnpm dev`, which opens the default product workspace rather than the recorded acceptance Workshop.
+- Added `pnpm judge:start`, which runs the credential-free recorded acceptance and then serves its exact data root. Replaced the README and Devpost instructions with a frozen install plus that single command.
+- Added packet assertions for the exact script and public instructions. The submission verifier now rejects a return to the incorrect `pnpm demo:e2e && pnpm dev` path.
+
+### Verified
+
+- `PORT=3107 pnpm judge:start` completed every recorded acceptance gate and started the local app. Live requests to `/` and `/api/workshop` both returned HTTP 200.
+- API inspection returned `WorkshopLM Build Week`, one Source, approved Brief, approved Storyboard, rendered Video, and current Presentation plus Infographic outputs. The served HTML response was 14,022 bytes.
+- `pnpm submission:packet:verify`, `pnpm check`, and `git diff --check` passed. No provider request ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Decisions
+
+- The public video remains the canonical judge path. The local fixture is a bounded, one-command optional inspection surface, not a second hosted product or a claim that judges will recreate the provider run.
+- Ordinary `pnpm dev` remains useful for development and intentionally opens the default local workspace; judge instructions must use the explicit acceptance-root command.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder capture, final ready package, final public MP4, human film taste review, intended-audience deck review, `/feedback`, release, Devpost, and logged-out submitted-link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

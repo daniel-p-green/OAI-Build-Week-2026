@@ -20,9 +20,10 @@ const paths = {
   roughCut: "outputs/demo-film-rough-cut/manifest.json",
   filmPlan: "submission/demo-film-plan.json",
   uiGallery: "outputs/workshoplm-current-ui/manifest.json",
+  package: "package.json",
 };
 
-const [devpost, script, ledger, audit, checklist, roughReadme, provider, narration, roughCut, filmPlan, uiGallery] = await Promise.all([
+const [devpost, script, ledger, audit, checklist, roughReadme, provider, narration, roughCut, filmPlan, uiGallery, packageJson] = await Promise.all([
   readText(paths.devpost),
   readText(paths.script),
   readText(paths.ledger),
@@ -34,6 +35,7 @@ const [devpost, script, ledger, audit, checklist, roughReadme, provider, narrati
   readJson(paths.roughCut),
   readJson(paths.filmPlan),
   readJson(paths.uiGallery),
+  readJson(paths.package),
 ]);
 
 assert(!existsSync(resolve(repository, "submission/DEVPOST-DRAFT 2.md")), "A redundant stale Devpost draft still exists.");
@@ -58,6 +60,8 @@ assert(devpost.includes("**GPT-5.6 runs the product.**"), "Devpost copy does not
 assert(devpost.includes("six GPT Image 2 visuals") && devpost.includes("five Cedar Storyboard clips"), "Devpost copy does not include verified provider media.");
 assert(script.includes("Target: 2:20") && script.includes("**No.** Dated recording and transcript are missing"), "Demo script is not reconciled to the current 2:20 founder-gated edit.");
 assert(roughReadme.includes("Replace shot 10 only after the final non-partial submission Output set exists.") && roughReadme.includes("`/feedback` remains a separate Devpost submission requirement, not a film-content gate."), "Rough-cut handoff incorrectly treats /feedback as film evidence.");
+assert(packageJson.scripts?.["judge:start"] === "pnpm demo:e2e && pnpm demo:serve", "The one-command judge fixture path is missing or no longer serves the acceptance root.");
+assert(devpost.includes("pnpm install --frozen-lockfile") && devpost.includes("pnpm judge:start") && !devpost.includes("pnpm demo:e2e && pnpm dev"), "Devpost judge instructions do not use the verified one-command fixture path.");
 assert(ledger.includes("Last reconciled: 2026-07-16 CT") && audit.includes("Audit date: 2026-07-16 CT"), "Submission truth files are not dated to the current reconciliation.");
 
 assert(provider.sourceMode === "authorized-sample" && provider.founderSource === false, "Provider evidence no longer records the authorized-sample boundary.");

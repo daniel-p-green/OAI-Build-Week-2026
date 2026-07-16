@@ -81,9 +81,8 @@ Local-first by design: SQLite in WAL mode, FTS5/BM25 retrieval over normalized e
 The judge path needs no account, connector, credentials, or spend:
 
 ```
-pnpm install
-pnpm demo:reset && pnpm demo:e2e
-pnpm dev
+pnpm install --frozen-lockfile
+pnpm judge:start
 ```
 
 That runs the complete recorded seam (Sources → Map → Brief → Style → Outputs → Storyboard → rendered MP4) and opens the Workshop in your browser. The README covers the Codex plugin installation from the public marketplace snapshot and the optional live-provider path. The current build passes checks across 13 packages, the production-route browser suite, all six acceptance gates, and submission integrity verification. The final publication gate will pin a tagged judge release and preserve it through the winner announcement.
@@ -111,7 +110,7 @@ Every public claim in this description is reconciled against the evidence ledger
 WorkshopLM is a local-first Codex plugin and browser workspace. You can score it three ways, in increasing depth:
 
 1. **Video (3 min):** the captured product flow, both approval gates, the plugin moment, and the source-to-submission provenance reveal.
-2. **Recorded fixture (5 min, no credentials):** clone the repo at the tagged release, run `pnpm install && pnpm demo:reset && pnpm demo:e2e && pnpm dev`. Sanitized data, no account, no API key, no cost.
+2. **Recorded fixture (5 min, no credentials):** clone the repo at the tagged release, run `pnpm install --frozen-lockfile && pnpm judge:start`, then open the printed local URL. That one command recreates and serves the exact sanitized acceptance Workshop; no account, API key, or cost.
 3. **Codex plugin (10 min):** `codex plugin marketplace add daniel-p-green/OAI-Build-Week-2026` then `codex plugin add workshoplm@workshoplm-local`. Activate `$workshoplm` in a fresh task to search and fetch grounded evidence, and open the local Workshop doorway. Verified platform: macOS with Codex desktop/CLI; Chrome-based in-app browser at 1200×800.
 
 The append-only build log (`log.md`), goal file (`GOAL.md`), and claim ledger (`submission/CLAIM-LEDGER.md`) document the autonomous build and bound every public claim to direct evidence.

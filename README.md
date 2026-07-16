@@ -40,16 +40,12 @@ Requirements: Node.js 22+ and pnpm 10+ (HyperFrames also needs its locally confi
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm demo:reset
-pnpm demo:e2e
-pnpm demo:render
-pnpm demo:thumbnail
-pnpm demo:serve
+pnpm judge:start
 ```
 
-`pnpm demo:e2e` is recorded-fixture mode: it does not require OpenAI credentials or paid model calls. It builds the judge-ready Workshop under `.workshoplm/acceptance`, completes first-use onboarding, and dismisses tutorial cues so the recorded surface opens directly on the grounded Map. `pnpm demo:render` runs the approved sanitized fixture through the local HyperFrames worker. `pnpm demo:thumbnail` derives a local PNG thumbnail and hash metadata from that rendered video. `pnpm demo:serve` starts the app against that exact verified fixture; ordinary `pnpm dev` remains available for a fresh product workspace. The repository-owned `.workshoplm/` data root is reset by `demo:reset`.
+`pnpm judge:start` recreates the no-credential acceptance Workshop and serves that exact data root in one command. It does not require OpenAI credentials or paid model calls. The fixture completes first-use onboarding, dismisses tutorial cues, and opens directly on the grounded Map. `pnpm demo:render` can independently rerun the approved sanitized fixture through the local HyperFrames worker, and `pnpm demo:thumbnail` derives a hash-bound PNG from that Video. Ordinary `pnpm dev` intentionally opens the default product workspace rather than the judge fixture.
 
-After `pnpm demo:serve` starts, open `http://localhost:3000` in the Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, real presentation and infographic previews, editable PowerPoint files, planned Image set, editable Storyboard, and local Video. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
+After `pnpm judge:start` starts the server, open the printed local URL in the Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, real presentation and infographic previews, editable PowerPoint files, planned Image set, editable Storyboard, and local Video. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
 
 Two paid routing benchmark passes compared Sol, Terra, and Luna on compact grounded-graph, brief, and claim-triage cases. Their recorded latency, token usage, and deterministic JSON/evidence checks selected `gpt-5.6-terra` at medium reasoning as the current product default. Any rerun remains explicitly spend-gated and must not infer dollar costs from token counts.
 
