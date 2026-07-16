@@ -1,7 +1,7 @@
 import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { executeOne } from "../apps/worker/src/executor.ts";
-import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, planOpenAiMediaRetry, validateImageBatchCoherence, type OpenAiMediaConfig } from "../apps/worker/src/openai-media.ts";
+import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, planOpenAiMediaRetry, validateImageBatchCoherence, validateNarrationReadiness, type OpenAiMediaConfig } from "../apps/worker/src/openai-media.ts";
 import { classifyFailedRun, operatorRunEvidence, operatorStateFingerprint, protectsPaidOperatorState, retryCommandFor, retryEligibility, safeOperatorError, verifiedRealtimeCaptures, type OperatorRunRecord } from "../apps/worker/src/live-operator-evidence.ts";
 import { generateGroundedMapWithGpt56 } from "../apps/worker/src/openai-reasoning.ts";
 import { createProviderRequestBudget, type ProviderRequestBudget } from "../apps/worker/src/provider-budget.ts";
@@ -133,6 +133,8 @@ async function main(): Promise<void> {
     const prepared = readWorkshopState(root);
     const imageReadiness = await validateImageBatchCoherence(root, prepared);
     if (!imageReadiness.valid) throw new Error(`Live image plan is not ready: ${imageReadiness.issues.join(" ")}`);
+    const narrationReadiness = validateNarrationReadiness(prepared);
+    if (!narrationReadiness.valid) throw new Error(`Live narration plan is not ready: ${narrationReadiness.issues.join(" ")}`);
     const providerVoiceTurns = verifiedRealtimeCaptures(prepared).length;
     const plan = {
       mode,
@@ -150,6 +152,7 @@ async function main(): Promise<void> {
       sources: prepared.sourceItems.filter((source) => source.origin === "Sanitized operator fixture" || source.origin.includes("capture-only fallback")).map((source) => ({ title: source.title, permission: source.permission })),
       outputs: prepared.outputs.map((output) => ({ type: output.type, relativePath: output.relativePath, claims: output.claimIds.length })),
       imageReadiness,
+      narrationReadiness,
       imagePlan: prepared.imageBatch?.panels.map((panel) => ({ id: panel.id, prompt: panel.prompt, evidence: panel.evidence })) ?? [],
       imageReviewRubric: [
         "Each panel belongs in a client or leadership deck without relying on generic AI illustration.",

@@ -43,6 +43,7 @@ export type OpenAiMediaRetryPlan = {
 };
 
 export type ImageCoherenceReport = { valid: boolean; referenceId?: string; referenceSha256?: string; panelCount: number; issues: string[] };
+export type NarrationReadinessReport = { valid: boolean; panelCount: number; totalCharacters: number; maxPanelCharacters: number; issues: string[] };
 
 function currentGraphRevision(state: WorkshopState): number {
   if (!state.graphState) return 0;
@@ -81,6 +82,39 @@ export async function validateImageBatchCoherence(root: string, state: WorkshopS
     issues.push("The shared reference image is missing.");
   }
   return { valid: issues.length === 0, referenceId: batch.referenceId, referenceSha256: batch.referenceSha256, panelCount: batch.panels.length, issues };
+}
+
+export function validateNarrationReadiness(state: WorkshopState): NarrationReadinessReport {
+  const panels = state.storyboard.panels;
+  const issues: string[] = [];
+  if (state.storyboard.stale) issues.push("A current Storyboard is required.");
+  if (!panels.length) issues.push("At least one Storyboard panel is required.");
+  if (new Set(panels.map((panel) => panel.id)).size !== panels.length) issues.push("Storyboard panel IDs are not unique.");
+  for (const panel of panels) {
+    if (!panel.title.trim()) issues.push(`${panel.id} has no title.`);
+    if (!panel.narration.trim()) issues.push(`${panel.id} has no narration.`);
+    if (panel.narration.length > maxTtsInputCharacters) issues.push(`${panel.id} exceeds the ${maxTtsInputCharacters}-character Speech API input limit.`);
+    if (!Number.isFinite(panel.durationSeconds) || panel.durationSeconds <= 0) issues.push(`${panel.id} has no valid approved duration.`);
+    if (!panel.claimIds.length || !panel.evidence.length) issues.push(`${panel.id} has no source evidence.`);
+    for (const claimId of panel.claimIds) {
+      const claim = state.claims.find((candidate) => candidate.id === claimId);
+      if (!claim || !state.activeSourceIds.includes(claim.sourceId)) issues.push(`${panel.id} references an invalid or inactive claim.`);
+    }
+    for (const reference of panel.evidence) {
+      const claim = reference.claimId ? state.claims.find((candidate) => candidate.id === reference.claimId) : undefined;
+      if (!state.activeSourceIds.includes(reference.sourceId) || (reference.claimId && (!claim || claim.sourceId !== reference.sourceId || claim.chunkId !== reference.chunkId || claim.locator !== reference.locator))) {
+        issues.push(`${panel.id} has an invalid source edge.`);
+      }
+    }
+  }
+  const lengths = panels.map((panel) => panel.narration.length);
+  return {
+    valid: issues.length === 0,
+    panelCount: panels.length,
+    totalCharacters: lengths.reduce((total, length) => total + length, 0),
+    maxPanelCharacters: lengths.length ? Math.max(...lengths) : 0,
+    issues,
+  };
 }
 
 export function planOpenAiMediaRetry(state: WorkshopState): OpenAiMediaRetryPlan {
@@ -239,12 +273,12 @@ export async function generateOpenAiNarration(
   requireApiKey(config);
   const state = readWorkshopState(root);
   if (!state.storyboardApproved || state.storyboard.stale || state.storyboard.panels.some((panel) => panel.stale || !panel.approved)) throw new Error("Narration requires an approved current storyboard.");
+  const narrationReadiness = validateNarrationReadiness(state);
+  if (!narrationReadiness.valid) throw new Error(`Narration readiness contract failed: ${narrationReadiness.issues.join(" ")}`);
   const requested = panelIds?.length ? new Set(panelIds) : undefined;
   const panelsToGenerate = state.storyboard.panels.filter((panel) => !requested || requested.has(panel.id));
   if (!panelsToGenerate.length) throw new Error("No narration panels were selected.");
   if (requested && panelsToGenerate.length !== requested.size) throw new Error("The narration selection contains an unknown panel.");
-  const oversizedPanel = panelsToGenerate.find((panel) => panel.narration.length > maxTtsInputCharacters);
-  if (oversizedPanel) throw new Error(`Storyboard panel ${oversizedPanel.id} exceeds the ${maxTtsInputCharacters}-character Speech API input limit.`);
   const outputDirectory = join(root, workshopGeneratedPath(state.id, "narration", `storyboard-v${state.storyboard.version}`));
   await mkdir(outputDirectory, { recursive: true });
 

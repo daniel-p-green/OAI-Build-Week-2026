@@ -6062,3 +6062,33 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 - Provider-backed Map, six-image gallery, Realtime turn, narration, founder brainstorm, cold professional `Send`/`Revise`, final public Video, and `/feedback` Session ID remain open under `GOAL.md`.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 19:03 CT — Narration now fails closed before provider spend
+
+**Area:** Live operator / OpenAI media / Spend safety
+
+### Changed
+
+- Reran `pnpm demo:live` in its default zero-spend mode. It rebuilt the isolated operator Workshop, produced two four-claim Outputs, validated six distinct GPT Image 2 jobs against one untampered shared reference, planned one GPT-5.6 Map call plus six Image calls and five Speech calls, and made zero provider calls.
+- Found that image coherence was validated during preflight while narration validity was deferred until after the Map and image requests. Added a narration-readiness contract that now runs before live execution can begin.
+- The contract checks current Storyboard state, unique panels, non-empty titles and narration, positive durations, active claim/source/chunk/locator edges, source evidence, and the 4,096-character Speech API input limit. Live narration generation reuses the same contract before dispatch.
+- Corrected the README's live-preflight description: the Brief is approved, but the Storyboard intentionally remains ready for the second approval until the generated images exist.
+
+### Verified
+
+- The repaired `pnpm demo:live` preflight reported `paidCallsMade: false`, `providerVoiceReady: false`, no executable paid command, six valid image panels with zero issues, and five valid narration panels totaling 507 characters with a 112-character maximum and zero issues.
+- Added coverage proving a valid five-panel narration plan passes, an oversized panel fails before fetch, and a tampered locator fails the exact-source contract. The worker suite now passes 85 tests.
+- `pnpm check` passed all 13 packages. `pnpm demo:e2e` passed all six gates; `pnpm submission:build` and `pnpm submission:verify` produced and validated the truthful 17-asset `partial` set; `pnpm demo:film:verify` retained six ready shots and four explicitly evidence-blocked shots; `git diff --check` passed.
+
+### Decisions
+
+- The live operator should discover every deterministic media-plan defect before the first paid request, not after the most expensive batch has already completed.
+- Storyboard approval remains a real post-image sign-off. Preflight may validate the planned narration without pretending that the professional has approved the still-planned visual sequence.
+
+### Open items
+
+- Record and inspect one provider-backed Realtime turn, rerun this preflight to unlock its exact twelve-request command, and obtain explicit spend authorization before executing it.
+- Provider-backed Map, six-image gallery, narration, founder brainstorm, cold professional `Send`/`Revise`, final public Video, and `/feedback` Session ID remain open under `GOAL.md`.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -2,7 +2,7 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
-import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, maxTtsInputCharacters, planOpenAiMediaRetry, validateImageBatchCoherence, type OpenAiMediaConfig } from "./openai-media.js";
+import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, maxTtsInputCharacters, planOpenAiMediaRetry, validateImageBatchCoherence, validateNarrationReadiness, type OpenAiMediaConfig } from "./openai-media.js";
 import { applyWorkshopAction, approveVisualDna, createImageBatch, createVisualDna, generateAssetPlan, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, resolveWorkshopArtifact, updateStoryboardPanel } from "./workshop-service.js";
 
 const roots: string[] = [];
@@ -137,6 +137,7 @@ describe("OpenAI media adapters", () => {
 
   it("persists complete AI-generated WAV narration only for an approved current storyboard", async () => {
     const root = await readyRoot();
+    expect(validateNarrationReadiness(readWorkshopState(root))).toMatchObject({ valid: true, panelCount: 5, totalCharacters: expect.any(Number), maxPanelCharacters: expect.any(Number), issues: [] });
     const calls: Record<string, unknown>[] = [];
     const fetchImpl: typeof fetch = async (_input, init) => {
       calls.push(JSON.parse(String(init?.body)) as Record<string, unknown>);
@@ -173,6 +174,7 @@ describe("OpenAI media adapters", () => {
     const panel = readWorkshopState(root).storyboard.panels[0]!;
     updateStoryboardPanel(panel.id, { title: panel.title, narration: "x".repeat(maxTtsInputCharacters + 1), durationSeconds: panel.durationSeconds }, root);
     applyWorkshopAction("approveStoryboard", root);
+    expect(validateNarrationReadiness(readWorkshopState(root))).toMatchObject({ valid: false, issues: [`${panel.id} exceeds the ${maxTtsInputCharacters}-character Speech API input limit.`] });
     let calls = 0;
     const fetchImpl: typeof fetch = async () => {
       calls += 1;
@@ -181,6 +183,13 @@ describe("OpenAI media adapters", () => {
 
     await expect(generateOpenAiNarration(root, config, fetchImpl)).rejects.toThrow(`exceeds the ${maxTtsInputCharacters}-character Speech API input limit`);
     expect(calls).toBe(0);
+  });
+
+  it("fails narration preflight when a Storyboard panel loses its exact source edge", async () => {
+    const root = await readyRoot();
+    const state = readWorkshopState(root);
+    state.storyboard.panels[0]!.evidence[0]!.locator = "tampered locator";
+    expect(validateNarrationReadiness(state)).toMatchObject({ valid: false, issues: [`${state.storyboard.panels[0]!.id} has an invalid source edge.`] });
   });
 
   it("preserves successful narration clips and retries only the failed panel", async () => {

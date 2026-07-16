@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-15 18:59 CT
+Last updated: 2026-07-15 19:03 CT
 
 ## Status
 
@@ -538,6 +538,7 @@ Use the NotebookLM screenshots for orientation behavior and the official Apps in
 - [x] Create a sanitized local demo fixture that requires no private connector and makes video capture deterministic.
 - [x] Create a bounded live operator path on sample sources for recording the real demo seam.
   - 2026-07-15: `pnpm demo:live` passed its isolated no-spend preflight with the Brief approved, the Storyboard honestly `Ready for review`, two traced outputs, one planned GPT-5.6 request, six planned GPT Image 2 requests, five planned TTS requests, and zero provider calls. In live execution, all six image results now land before the operator crosses the Storyboard approval boundary; narration and video remain blocked until that point. Live execution requires `WORKSHOPLM_MAX_PAID_REQUESTS=12`; the separate nine-request routing benchmark requires its own ceiling. Paid execution remains unrun.
+  - 2026-07-15 pre-spend narration gate: the zero-spend operator now validates all five narration inputs before any GPT-5.6, Image, or Speech request. It rejects missing text, invalid duration, inactive or tampered claim/source/chunk/locator edges, and any panel above the 4,096-character Speech limit. The current plan passed with five grounded panels, 507 total characters, a 112-character maximum panel, and zero issues; `paidCallsMade` remained false and verified Realtime voice remains the next required evidence.
 - [x] Share and test Responses text extraction across the GPT-5.6 benchmark and live grounded-Map adapter so nested `output[].content[]` payloads cannot be mis-scored as empty.
 
 ### 6. Capture

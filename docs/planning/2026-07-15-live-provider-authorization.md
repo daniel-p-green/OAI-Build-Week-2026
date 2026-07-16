@@ -50,6 +50,8 @@ pnpm demo:live
 
 The first preflight intentionally reports `providerVoiceReady: false` and no executable `nextCommand`. Start the printed `viewCommand`, open **Add source**, use **Record voice**, and choose **Add transcript** after the provider transcript appears. Then rerun `pnpm demo:live`. The operator preserves that exact verified WebRTC transcript and provider item/event IDs while rebuilding the clean Workshop. Only then does preflight report `providerVoiceReady: true` and print the twelve-request command.
 
+Preflight also validates the complete media contract before the first paid request: six unique current image panels with exact active-source edges and an untampered shared reference, plus every Storyboard narration's title, text, positive duration, active claim/source/chunk/locator edge, and 4,096-character Speech API limit. The report prints panel and character counts. A defect in either plan blocks execution before GPT-5.6 or media spend.
+
 Live execution refuses before any paid GPT-5.6, Image, or Speech request when verified voice evidence is absent. This prevents a successful media run from remaining permanently `partial` at submission packaging time.
 
 ## Inspection gate

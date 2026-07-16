@@ -55,7 +55,7 @@ The GPT-5.6 routing benchmark is deliberately spend-gated. Once a paid-call auth
 
 ## Prepare the live demo run
 
-`pnpm demo:live` builds a fresh, isolated operator Workshop under `.workshoplm/live-operator/`. It ingests sanitized sources, captures a transcript through the documented fallback, approves the Brief and Storyboard, locks the official demo style, and creates the traced deck, infographic, image plan, and storyboard. The default command is a no-spend preflight: it prints the exact provider request count and makes no OpenAI call.
+`pnpm demo:live` builds a fresh, isolated operator Workshop under `.workshoplm/live-operator/`. It ingests sanitized sources, captures a transcript through the documented fallback, approves the Brief, locks the official demo style, and creates the traced deck, infographic, image plan, and Storyboard. The Storyboard remains ready for the second deliberate approval after the real image set exists. The default command is a no-spend preflight: it validates both image coherence and every grounded narration input, prints the exact provider request count, and makes no OpenAI call.
 
 After explicit spend authorization and the routing benchmark, the same command uses GPT-5.6 Sol to build a claim-validated grounded Map, generates six GPT Image 2 panels concurrently, generates one `gpt-4o-mini-tts` WAV per approved storyboard panel, and renders those clips through the local HyperFrames worker:
 
