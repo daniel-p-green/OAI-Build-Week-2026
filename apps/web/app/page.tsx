@@ -138,6 +138,7 @@ export default function WorkshopPage() {
   const [selectedOutputId, setSelectedOutputId] = useState("");
   const [notice, setNotice] = useState<{ message: string; tone: "status" | "error" } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [streamingReply, setStreamingReply] = useState("");
   const returnFocusRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => { void Promise.all([reload(), reloadWorkshops(), reloadStyleLibrary()]); }, []);
@@ -232,6 +233,55 @@ export default function WorkshopPage() {
     } catch (error) {
       setNotice({ message: error instanceof Error ? error.message : "That voice action did not work", tone: "error" });
       return undefined;
+    }
+  }
+
+  async function sendConversation(text: string): Promise<boolean> {
+    setBusy(true);
+    setNotice(null);
+    setStreamingReply("");
+    try {
+      const response = await fetch("/api/conversation", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ text, messageId: globalThis.crypto.randomUUID() }) });
+      if (response.status === 503) {
+        const fallback = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "sendConversationMessage", text }) });
+        const next = await fallback.json() as PersistedWorkshop & { error?: string };
+        if (!fallback.ok) throw new Error(next.error ?? "That message did not work");
+        setState(next);
+        void reloadWorkshops();
+        return true;
+      }
+      if (!response.ok || !response.body) {
+        const failure = await response.json().catch(() => ({})) as { error?: string };
+        throw new Error(failure.error ?? "That message did not work");
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let completed = false;
+      while (true) {
+        const { done, value } = await reader.read();
+        buffer += decoder.decode(value, { stream: !done });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const event = JSON.parse(line) as { type: "text_delta" | "tool_result" | "done" | "error"; delta?: string; state?: PersistedWorkshop; message?: string };
+          if (event.type === "text_delta" && event.delta) setStreamingReply((current) => current + event.delta);
+          if (event.type === "done" && event.state) { setState(event.state); completed = true; }
+          if (event.type === "error") throw new Error(event.message ?? "That message did not work");
+        }
+        if (done) break;
+      }
+      if (!completed) throw new Error("WorkshopLM did not finish its response.");
+      setStreamingReply("");
+      void reloadWorkshops();
+      return true;
+    } catch (error) {
+      setStreamingReply("");
+      setNotice({ message: error instanceof Error ? error.message : "That message did not work", tone: "error" });
+      return false;
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -353,7 +403,7 @@ export default function WorkshopPage() {
         <section className="object-canvas" aria-label={currentTitle}>
           {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
           {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
-          {loadState === "ready" && view === "conversation" && <ConversationView state={state} busy={busy} onSend={async (text) => Boolean(await post({ action: "sendConversationMessage", text }))} onVoiceSave={async (text, capture) => Boolean(await post({ action: "captureFallbackTranscript", text, capture }))} onVoiceToolEvent={handleRealtimeToolEvent} onConfirmTool={confirmToolCall} onShowSource={showSource} />}
+          {loadState === "ready" && view === "conversation" && <ConversationView state={state} busy={busy} streamingReply={streamingReply} onSend={sendConversation} onVoiceSave={async (text, capture) => Boolean(await post({ action: "captureFallbackTranscript", text, capture }))} onVoiceToolEvent={handleRealtimeToolEvent} onConfirmTool={confirmToolCall} onShowSource={showSource} />}
           {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "map" }); }} onReviewStyle={() => openSheet("style")} onRetryStyle={(url) => { void post({ action: "beginWebsiteStyleAnalysis", url }); }} onUseDefaultStyle={() => { void post({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: state?.onboarding.outcome } }); }} />}
           {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
           {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
@@ -645,7 +695,7 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   </SideSheet>;
 }
 
-function ConversationView({ state, busy, onSend, onVoiceSave, onVoiceToolEvent, onConfirmTool, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[] }) => Promise<boolean>; onVoiceToolEvent: (event: unknown) => Promise<Record<string, unknown> | undefined>; onConfirmTool: (call: ConversationToolCall) => Promise<boolean>; onShowSource: (target?: EvidenceTarget) => void }) {
+function ConversationView({ state, busy, streamingReply, onSend, onVoiceSave, onVoiceToolEvent, onConfirmTool, onShowSource }: { state: PersistedWorkshop | null; busy: boolean; streamingReply: string; onSend: (text: string) => Promise<boolean>; onVoiceSave: (text: string, capture: { transport: "webrtc"; model: "gpt-realtime-2.1"; transcriptionModel: "gpt-realtime-whisper"; itemIds: string[]; eventIds: string[] }) => Promise<boolean>; onVoiceToolEvent: (event: unknown) => Promise<Record<string, unknown> | undefined>; onConfirmTool: (call: ConversationToolCall) => Promise<boolean>; onShowSource: (target?: EvidenceTarget) => void }) {
   const [draft, setDraft] = useState("");
   const [voiceOpen, setVoiceOpen] = useState(false);
   const endRef = useRef<HTMLDivElement | null>(null);
@@ -657,7 +707,7 @@ function ConversationView({ state, busy, onSend, onVoiceSave, onVoiceToolEvent, 
     ...turns.map((turn) => ({ kind: "turn" as const, at: turn.createdAt, value: turn })),
     ...visibleToolCalls.map((call) => ({ kind: "tool" as const, at: call.completedAt, value: call })),
   ].sort((left, right) => Date.parse(left.at) - Date.parse(right.at));
-  useEffect(() => { endRef.current?.scrollIntoView({ block: "end" }); }, [timeline.length]);
+  useEffect(() => { endRef.current?.scrollIntoView({ block: "end" }); }, [timeline.length, streamingReply]);
 
   async function send() {
     const text = draft.trim();
@@ -674,6 +724,7 @@ function ConversationView({ state, busy, onSend, onVoiceSave, onVoiceToolEvent, 
         <p>{entry.value.text}</p>
         {entry.value.evidence.length > 0 && <div className="conversation-citations" aria-label="Sources used">{entry.value.evidence.map((evidence, index) => { const source = state?.sourceItems.find((item) => item.id === evidence.sourceId); return <Token key={`${entry.value.id}-${evidence.chunkId ?? index}`} onClick={() => onShowSource(evidence)}>{source?.title ?? `Source ${index + 1}`}</Token>; })}</div>}
       </article> : <ToolActivity call={entry.value} confirmed={Boolean(entry.value.provider?.callId && confirmedProviderCalls.has(`${entry.value.channel}:${entry.value.provider.callId}`))} busy={busy} onConfirm={onConfirmTool} key={entry.value.id} />)}
+      {streamingReply && <article className="conversation-turn conversation-turn--assistant" aria-busy="true"><small>WorkshopLM</small><p>{streamingReply}</p></article>}
       <div ref={endRef} />
     </div>
     <div className="conversation-compose">

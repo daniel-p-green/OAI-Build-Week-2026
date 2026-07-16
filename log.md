@@ -6546,3 +6546,35 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Enable the same confirmation-aware Realtime speech loop, then live-verify interruption, one read, one write, transcript, and provider provenance after authorization.
 - The external deck `Send`/`Revise` review and all final provider/demo/submission evidence remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 21:30 CT — Grounded Responses streaming reaches the browser Conversation
+
+**Area:** Responses / Conversation / Grounding / Durable state
+
+### Changed
+
+- Added the spend-gated Responses producer and SSE loop. It sends the canonical Workshop tools, consumes text deltas and completed function items, returns local `function_call_output` records with the prior response ID, and enforces a one-to-four-request ceiling.
+- Added idempotent provider Conversation persistence. The user turn is keyed to the browser message ID; the final assistant turn is keyed to the OpenAI response ID and stores the exact evidence returned by successful `search` or `fetch` calls plus the durable continuation ID.
+- Added an NDJSON browser route and visible streaming assistant turn. When live access is disabled or unavailable, the UI uses the existing deterministic grounded answer without presenting provider configuration as a user-facing failure.
+
+### Verified
+
+- All 98 worker tests passed. New deterministic fetch tests cover a streamed direct response, a grounded search-to-continuation loop with exact evidence, and rejection before persistence when authorization or the request ceiling is missing.
+- All 20 web tests and both worker/web typechecks passed.
+- Ran the real local UI against a clean seeded data root using Chrome automation because the Codex in-app Browser tool was unavailable in this task. `/api/conversation` returned 503 with live flags absent; the visible answer completed through local grounding and the persisted assistant turn carried three evidence links while `conversationContinuation` remained unset.
+- `pnpm check`, `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed. The 17-asset package remains honestly `partial` with no provider-verified voice, live GPT-5.6 reasoning, GPT Image 2 panels, or provider narration. No paid request ran.
+
+### Decisions
+
+- Provider streaming is additive to the local product, not a hidden dependency. The Workshop remains usable and source-grounded without credentials.
+- The server owns API credentials, request ceilings, tool execution, evidence derivation, and durable continuation. The browser receives only bounded stream events and final Workshop state.
+- This closes implementation and deterministic verification of the Responses loop, not provider-backed product proof.
+
+### Open items
+
+- Run the exact Responses path with authorized provider spend and inspect visible streamed text, source citations, tool activity, and continuation persistence.
+- Promote Realtime to confirmation-aware speech-to-speech, then live-verify spoken response, interruption, one read, one write, transcript, and provider provenance after authorization.
+- Obtain the external deck `Send`/`Revise` review; provider media, founder recording, final public Video, public links, and `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

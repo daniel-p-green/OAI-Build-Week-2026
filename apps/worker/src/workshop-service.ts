@@ -582,6 +582,49 @@ export function sendConversationMessage(text: string, root?: string): WorkshopSt
   ];
   return write({ ...current, conversationTurns: [...current.conversationTurns, ...turns], updatedAt: createdAt }, root);
 }
+export function beginProviderConversation(text: string, messageId: string, root?: string): WorkshopState {
+  const normalized = normalizeSourceText(text); const stableMessageId = messageId.trim();
+  if (!normalized) throw new Error("Write a message first.");
+  if (normalized.length > 4_000) throw new Error("Conversation messages are limited to 4,000 characters.");
+  if (!stableMessageId) throw new Error("Conversation message ID is required.");
+  const current = readWorkshopState(root);
+  const id = `turn-user-provider-${createHash("sha256").update(stableMessageId).digest("hex").slice(0, 16)}`;
+  if (current.conversationTurns.some((turn) => turn.id === id)) return current;
+  const createdAt = new Date().toISOString();
+  const turn = ConversationTurn.parse({ id, workshopId: current.id, role: "user", text: normalized, input: "text", createdAt, evidence: [] });
+  return write({ ...current, conversationTurns: [...current.conversationTurns, turn], updatedAt: createdAt }, root);
+}
+function providerConversationEvidence(state: WorkshopState, toolCallIds: string[]) {
+  const evidence = new Map<string, { claimId?: string; sourceId: string; chunkId: string; locator: string; snippet: string; snippetHash: string }>();
+  const object = (value: unknown) => value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : undefined;
+  const collect = (value: unknown) => {
+    const chunk = object(value); const sourceId = chunk?.sourceId; const chunkId = chunk?.id; const snippet = chunk?.text; const locator = chunk?.locator;
+    if (typeof sourceId !== "string" || typeof chunkId !== "string" || typeof snippet !== "string" || typeof locator !== "string") return;
+    const claims = Array.isArray(chunk?.claims) ? chunk.claims.map(object).filter(Boolean) : [];
+    const claimId = claims.find((claim) => typeof claim?.id === "string")?.id;
+    evidence.set(`${sourceId}\u0000${chunkId}`, { claimId: typeof claimId === "string" ? claimId : undefined, sourceId, chunkId, locator, snippet, snippetHash: createHash("sha256").update(snippet).digest("hex") });
+  };
+  for (const call of state.toolCalls.filter((candidate) => toolCallIds.includes(candidate.id) && !candidate.result.isError)) {
+    const data = call.result.data;
+    if (call.name === "search" && Array.isArray(data?.results)) for (const result of data.results) collect(result);
+    if (call.name === "fetch") collect(object(data?.result));
+  }
+  return [...evidence.values()];
+}
+export function completeProviderConversation(input: { text: string; responseId: string; model?: string; toolCallIds?: string[] }, root?: string): WorkshopState {
+  const text = normalizeSourceText(input.text); const responseId = input.responseId.trim();
+  if (!text) throw new Error("The provider response did not contain assistant text.");
+  if (text.length > 16_000) throw new Error("The provider response exceeded the Conversation limit.");
+  if (!responseId) throw new Error("Conversation response ID is required.");
+  const current = readWorkshopState(root); const id = `turn-assistant-provider-${createHash("sha256").update(responseId).digest("hex").slice(0, 16)}`;
+  if (current.conversationTurns.some((turn) => turn.id === id)) return recordConversationContinuation({ responseId, model: input.model, recordedAt: new Date().toISOString() }, root);
+  const createdAt = new Date().toISOString(); const toolCallIds = input.toolCallIds ?? [];
+  const evidence = providerConversationEvidence(current, toolCallIds);
+  const operation = current.toolCalls.some((call) => toolCallIds.includes(call.id) && call.name === "search") ? { name: "search" as const, status: "completed" as const } : undefined;
+  const turn = ConversationTurn.parse({ id, workshopId: current.id, role: "assistant", text, input: "system", createdAt, evidence, operation });
+  const next = write({ ...current, conversationTurns: [...current.conversationTurns, turn], conversationContinuation: { responseId, model: input.model, recordedAt: createdAt }, updatedAt: createdAt }, root);
+  return next;
+}
 export async function ingestSource(input: SourceIngestion, root?: string): Promise<WorkshopState> {
   const text = normalizeSourceText(input.text);
   if (!text) throw new Error("Source text is required.");
