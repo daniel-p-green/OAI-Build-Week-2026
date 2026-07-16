@@ -1,7 +1,7 @@
 {
   "recordedAt": "2026-07-15T13:27:00-05:00",
   "kind": "external-professional-deck-candidate",
-  "workshop": "AI Collective chapter launch briefing",
+  "workshop": "AI Collective chapter launch decision",
   "privacy": "shareable sources only",
   "sources": [
     {
@@ -14,6 +14,14 @@
       "origin": "https://newsletter.aicollective.com/",
       "claims": 63,
       "retrievedAt": "2026-07-15T12:05:00-05:00"
+    },
+    {
+      "title": "The AI Collective Code of Conduct",
+      "origin": "https://www.aicollective.com/files/Code%20of%20Conduct.pdf"
+    },
+    {
+      "title": "The AI Collective Data Privacy and Use Policy",
+      "origin": "https://www.aicollective.com/files/Data%20Privacy%20and%20Use%20Policy%20~%20The%20AI%20Collective.pdf"
     }
   ],
   "sourceNormalization": {
@@ -27,14 +35,8 @@
     {
       "role": "statement",
       "claimId": "claim-bb80dd1be045-4-1",
-      "heading": "Become a go-to resource",
+      "heading": "A local front door to applied AI",
       "locator": "Local PDF · GenAI Collective Chapter Startup FAQ.pdf · chunk 05"
-    },
-    {
-      "role": "commitment",
-      "claimId": "claim-bb80dd1be045-29-2",
-      "heading": "Your events are financially sustainable",
-      "locator": "Local PDF · GenAI Collective Chapter Startup FAQ.pdf · chunk 30"
     },
     {
       "role": "proof",
@@ -43,12 +45,52 @@
       "locator": "https://newsletter.aicollective.com/ · chunk 79"
     },
     {
+      "role": "context",
+      "claimId": "claim-aic-event-formats",
+      "heading": "A repeatable event format",
+      "locator": "Local PDF · GenAI Collective Chapter Startup FAQ.pdf · chunk 17"
+    },
+    {
+      "role": "plan",
+      "claimId": "derived-30-day-launch-plan",
+      "heading": "A four-week path to the first event",
+      "locator": "Derived from the chapter FAQ; validate milestones with AI Collective HQ"
+    },
+    {
+      "role": "commitment",
+      "claimId": "claim-bb80dd1be045-29-2",
+      "heading": "Make the chapter financially sustainable",
+      "locator": "Local PDF · GenAI Collective Chapter Startup FAQ.pdf · chunk 30"
+    },
+    {
+      "role": "proof",
+      "claimId": "claim-aic-conduct-privacy",
+      "heading": "Trust is part of the operating model",
+      "locator": "AI Collective Code of Conduct and Data Privacy and Use Policy"
+    },
+    {
+      "role": "decision",
+      "claimId": "derived-launch-decisions",
+      "heading": "Three decisions before announcing",
+      "locator": "Derived from the source set; confirm ownership, cadence, and budget"
+    },
+    {
       "role": "recommendation",
-      "claimId": "claim-60bb5377e97a-80-3",
-      "heading": "Start a chapter in your city",
-      "locator": "https://newsletter.aicollective.com/ · chunk 81"
+      "claimId": "derived-launch-recommendation",
+      "heading": "Approve a 30-day launch sprint",
+      "locator": "Derived recommendation; validate with AI Collective HQ before public announcement"
     }
   ],
+  "defectBeforeRepair": {
+    "decision": "Revise",
+    "finding": "The original five-slide output was a polished promotional teaser, not a professional chapter-launch decision artifact.",
+    "missing": [
+      "an executable launch plan",
+      "operating and trust commitments",
+      "the decisions required before announcement"
+    ],
+    "repair": "Rebuilt the sequence around evidence, a visibly derived four-week plan, operating commitments, explicit decisions, and one recommendation. Added editable plan and decision layouts rather than stretching the existing promotional templates."
+  },
   "style": {
     "name": "AI Collective",
     "accent": "#FF640D",
@@ -60,16 +102,16 @@
   "outputs": {
     "inputManifest": "outputs/dogfood-ai-collective-chapter-brief/deck-input.json",
     "rebuildCommand": "pnpm dogfood:deck:build",
-    "htmlSha256": "9e0c34ac108a7c8337c955d8bb869a4790b39b5c79a8519dbce4abb99bf48ed2",
-    "pptxSha256": "5e9f0f4e3471037dc0f3e57ba32a66aa8578bddb1a7739ce1b7103dfef2be9a7",
-    "pdfSha256": "7c1308e171f7c2d40539ccc20709f719adb36d26d809cdeb5b67f2cfe189ea03",
-    "contactSheetSha256": "08696d9a84b3944473ab568c549b2724dd5fc918be09a4c23767a03331c93ce2",
-    "slides": 5,
+    "htmlSha256": "479080e06a19fdb782cc46c4b683a48e1afff9d82a05228c8a7bca32531bbc5d",
+    "pptxSha256": "2e799084acfd462a5cd6d78519f90b48aac57564bba8f93f1021e3b259d9a67c",
+    "pdfSha256": "a7217fc969dca4d7f1a34e30705f54c923635ad7cc279bc4a8e91187f7db7631",
+    "contactSheetSha256": "a81366d314e18f436ba29987d1a081f27e676d1793dfb89bda5aa23364a7e333",
+    "slides": 9,
     "pageSize": "16:9",
     "pptxArchive": "passed",
     "libreOfficeRoundTrip": "passed",
-    "visualInspection": "passed-no-observed-overflow-raw-implementation-labels-or-empty-body-furniture",
-    "latestRevision": "2026-07-15 19:21 CT: selected-logo dimensions now preserve the reviewed mark's aspect ratio in editable PowerPoint; the rebuild identifies the SVG from content despite its misleading .png filename; the five-slide composition, visible citations, and exact source notes remain intact"
+    "visualInspection": "passed-no-observed-overflow-clipping-raw-implementation-labels-or-unlabeled-derived-claims",
+    "latestRevision": "2026-07-15 21:48 CT: rebuilt the thin five-slide teaser as a nine-slide decision artifact; added editable plan and decision layouts, visible derived-content labels, operating commitments, and a decision-ready sequence while preserving quiet citations and exact source notes"
   },
   "boundary": "This is the first privacy-safe candidate intended for a real professional audience. It is ready for cold review but has not received an external send-or-revise judgment and is not externally approved."
 }

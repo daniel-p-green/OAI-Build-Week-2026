@@ -27,6 +27,12 @@ async function main() {
   const outputDir = join(root, "outputs", "dogfood-ai-collective-chapter-brief");
   const inputPath = join(outputDir, "deck-input.json");
   const input = JSON.parse(await readFile(inputPath, "utf8")) as DeckInput;
+  if (input.blocks.length < 6) throw new Error("External dogfood deck must contain a decision-ready narrative, not a four-claim teaser.");
+  for (const block of input.blocks) {
+    if (!block.citations.length) throw new Error(`Deck block ${block.id} is missing source trace.`);
+    if (block.id.startsWith("derived-") && !block.citationLabel?.toLowerCase().includes("derived") && !block.citationLabel?.toLowerCase().includes("recommendation")) throw new Error(`Derived block ${block.id} must be visibly labeled.`);
+    if ((block.layout === "plan" || block.layout === "decision") && (block.items?.length ?? 0) < 3) throw new Error(`${block.layout} block ${block.id} needs at least three actionable items.`);
+  }
   const { logoPath, ...style } = input.style;
   const logo = logoPath ? logoPayload(await readFile(join(outputDir, logoPath)), logoPath) : undefined;
   const brief: RenderBrief = { ...input, style: { ...style, logoData: logo?.data, logoAspectRatio: logo?.aspectRatio } };

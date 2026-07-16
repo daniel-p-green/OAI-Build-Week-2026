@@ -6639,3 +6639,37 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Provider-backed proof remains required for spoken grounding, remote audio, interruption, read-tool continuation, visible write confirmation, and post-confirmation speech.
 - The external deck `Send`/`Revise` review and all final provider/demo/submission evidence remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-15 21:51 CT — External deck dogfood becomes a decision artifact
+
+**Area:** Professional wedge / Deck / Dogfood one / Send-it quality
+
+### Changed
+
+- Rejected the original five-slide AI Collective chapter-launch candidate as a polished promotional teaser rather than treating clean rendering as product success. It lacked an executable plan, operating commitments, and a decision for its intended professional audience.
+- Rebuilt the checked-in source-defensible brief as a nine-slide sequence: professional purpose, scale proof, repeatable event model, visibly derived four-week plan, sustainability commitment, trust policies, three launch decisions, and one recommendation.
+- Added dedicated plan and decision layouts to responsive HTML and editable PowerPoint. The plan uses editable week cards; the decision view uses editable numbered decision cards. Both preserve quiet citations and exact source notes.
+- Added the AI Collective Code of Conduct and Data Privacy and Use Policy to the evidence record. Derived plan and recommendation content is visibly labeled as derived and requiring AI Collective HQ validation.
+- Hardened the rebuild command so an external candidate cannot silently regress to a teaser, omit source trace, hide derived content, or render plan/decision views without actionable items.
+
+### Verified
+
+- `pnpm dogfood:deck:build` produced nine slides, responsive HTML, editable PowerPoint, a nine-page 16:9 PDF, nine review frames, and a two-column contact sheet from the checked-in manifest.
+- The PowerPoint ZIP archive passed `unzip -t`; LibreOffice completed the PowerPoint-to-PDF round trip; `pdfinfo` reported nine 960×540-point pages.
+- Full-resolution inspection of the four-week plan, decision view, and complete contact sheet found no observed overflow, clipping, raw implementation labels, or unlabeled derived claims. A PNG viewer artifact was ruled out by rendering the same page to JPEG; the PDF footer remained intact.
+- The output hashes are recorded in `artifacts/spikes/external-deck-dogfood-2026-07-15.json`. `pnpm check` passed all 13 packages, including 12 production, 23 web, and 99 worker tests. `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed; the 17-asset submission remains honestly `partial` with the four provider limitations unchanged.
+- `git diff --check` and the scoped credential scan passed. No paid provider request ran.
+
+### Decisions
+
+- The professional wedge is a grounded, branded deck that helps someone make or communicate a decision—not a generic collection of attractive source summaries.
+- Internal visual review may return `Revise` and drive product work, but it cannot substitute for the intended audience's cold `Send`/`Revise` judgment.
+- Derived professional recommendations are allowed only when the output distinguishes them from source facts and names the required validation boundary.
+
+### Open items
+
+- Put the revised deck in front of its intended professional audience. Record the cold `Send`/`Revise` decision and apply concrete revisions until it clears the bar; no external approval is claimed yet.
+- Provider-backed text, speech, image, and narration proof; founder recording; final public Video and links; and the `/feedback` Session ID remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

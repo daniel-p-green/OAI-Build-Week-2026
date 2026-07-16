@@ -18,9 +18,9 @@ type PptxPresentation = {
 };
 const PptxGenJS = createRequire(import.meta.url)("pptxgenjs") as new () => PptxPresentation;
 
-export type SlideLayout = "statement" | "split" | "proof" | "recommendation";
+export type SlideLayout = "statement" | "split" | "proof" | "plan" | "decision" | "recommendation";
 export type IntentProfile = "client_facing_pitch" | "board_deck" | "internal_workshop";
-export type RenderBlock = { id: string; heading: string; body: string; citations: readonly string[]; citationLabel?: string; layout?: SlideLayout };
+export type RenderBlock = { id: string; heading: string; body: string; items?: readonly string[]; citations: readonly string[]; citationLabel?: string; layout?: SlideLayout };
 export type RenderBrief = {
   workshopTitle: string;
   version: string;
@@ -66,9 +66,9 @@ const intentClass = (brief: RenderBrief) => `intent-${intentProfile(brief).repla
 const deckSummary = (brief: RenderBrief) => brief.blocks[0]?.body || brief.blocks[0]?.heading || "A grounded brief with every factual claim connected to its source.";
 const slideLayout = (block: RenderBlock, index: number, count: number): SlideLayout => block.layout ?? (index === 0 ? "statement" : index === count - 1 ? "recommendation" : index % 2 ? "split" : "proof");
 const slideLabel = (layout: SlideLayout, intent: IntentProfile = "client_facing_pitch") => {
-  if (intent === "board_deck") return layout === "proof" ? "Decision evidence" : layout === "recommendation" ? "Leadership decision" : layout === "split" ? "Decision context" : "Executive summary";
-  if (intent === "internal_workshop") return layout === "proof" ? "What we know" : layout === "recommendation" ? "Next action" : layout === "split" ? "Discuss together" : "Working point";
-  return layout === "proof" ? "Evidence" : layout === "recommendation" ? "Recommended next move" : layout === "split" ? "What changes" : "Core insight";
+  if (intent === "board_deck") return layout === "proof" ? "Decision evidence" : layout === "plan" ? "Execution plan" : layout === "decision" || layout === "recommendation" ? "Leadership decision" : layout === "split" ? "Decision context" : "Executive summary";
+  if (intent === "internal_workshop") return layout === "proof" ? "What we know" : layout === "plan" ? "Working plan" : layout === "decision" ? "Decide together" : layout === "recommendation" ? "Next action" : layout === "split" ? "Discuss together" : "Working point";
+  return layout === "proof" ? "Evidence" : layout === "plan" ? "Launch plan" : layout === "decision" ? "Decision required" : layout === "recommendation" ? "Recommended next move" : layout === "split" ? "What changes" : "Core insight";
 };
 const visibleCitationLabel = (block: RenderBlock) => (block.citationLabel ?? (block.citations.join(" · ") || "Approved Workshop brief")).replace(/\s+·\s+chunk\s+\d+\b/i, "");
 const proofMetrics = (block: RenderBlock) => [...block.heading.matchAll(/(\d[\d,.]*[+%×x]?)[ ]+([A-Za-z][A-Za-z-]*)/gi)].filter((match) => !/^(?:and|for|in|of|to|with)$/i.test(match[2]!)).slice(0, 2).map((match) => ({ value: match[1]!, label: match[2]!.trim() }));
@@ -83,9 +83,11 @@ function shell(title: string, brief: RenderBrief, body: string) {
   .split.is-sparse{display:flex;align-items:center;background:var(--ink);color:var(--paper);padding-left:8%;padding-right:8%}.split.is-sparse:before{content:'';position:absolute;left:6.4%;top:18%;bottom:18%;width:6px;background:var(--accent)}.split.is-sparse .number{position:absolute;right:4%;bottom:-10%;font-size:clamp(180px,24vw,340px);line-height:.8;opacity:.92}.split.is-sparse>div:not(.number){position:relative;z-index:1;width:82%;padding-left:4%}.split.is-sparse .eyebrow{color:var(--accent)}.split.is-sparse h2{max-width:78%;font-size:clamp(44px,5.3vw,78px);color:var(--paper)}.split.is-sparse .cite{color:color-mix(in srgb,var(--paper) 62%,transparent)}
   .intent-board-deck .cover{background:var(--paper);color:var(--ink);border-top:14px solid var(--accent)}.intent-board-deck .cover:before{display:none}.intent-board-deck .cover .eyebrow{color:var(--ink);opacity:.7}.intent-board-deck .cover .title{max-width:74%;font-size:clamp(34px,4.4vw,64px)}.intent-board-deck .cover .subtitle{color:var(--muted);max-width:76%}.intent-board-deck .slide:not(.cover){border-top:7px solid var(--accent)}.intent-board-deck .slide h2{font-size:clamp(28px,3.2vw,48px);max-width:92%}.intent-board-deck .statement .body{max-width:82%}.intent-board-deck .split{grid-template-columns:24% 1fr}.intent-board-deck .split .number{font-size:clamp(72px,10vw,150px)}.intent-board-deck .recommendation{background:var(--ink);color:var(--paper)}.intent-board-deck .recommendation .eyebrow,.intent-board-deck .recommendation .cite{color:var(--paper)}
   .intent-internal-workshop .cover{background:var(--accent);color:var(--accent-foreground)}.intent-internal-workshop .cover:before{border-radius:0;background:var(--ink);opacity:.1;inset:0 0 0 auto;height:100%;width:30%}.intent-internal-workshop .cover .eyebrow,.intent-internal-workshop .cover .subtitle{color:var(--accent-foreground)}.intent-internal-workshop .cover .brand-logo{height:72px;max-width:176px;padding:8px;background:var(--paper);border-radius:4px}.intent-internal-workshop .slide:not(.cover){border-left:12px solid var(--accent)}.intent-internal-workshop .slide h2{max-width:92%}.intent-internal-workshop .split{grid-template-columns:22% 1fr;background:linear-gradient(90deg,color-mix(in srgb,var(--accent) 13%,var(--paper)) 0 23%,var(--paper) 23%)}.intent-internal-workshop .split .number{font-size:clamp(72px,10vw,150px)}.intent-internal-workshop .split.is-sparse{background:color-mix(in srgb,var(--accent) 10%,var(--paper));color:var(--ink)}.intent-internal-workshop .split.is-sparse h2{color:var(--ink)}.intent-internal-workshop .split.is-sparse .number{opacity:.18}.intent-internal-workshop .split.is-sparse .cite{color:var(--muted)}
+  .plan{display:flex;flex-direction:column;justify-content:center}.plan h2{margin-bottom:20px}.plan .body{max-width:78%;color:var(--muted);font-size:clamp(14px,1.25vw,18px)}.plan-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin-top:34px}.plan-step{min-height:150px;border-top:3px solid var(--accent);padding:18px 14px;background:color-mix(in srgb,var(--accent) 5%,var(--paper))}.plan-step strong{display:block;color:var(--accent);font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:14px}.plan-step span{font:500 clamp(16px,1.45vw,21px)/1.25 var(--heading)}
+  .decision{display:grid;grid-template-columns:1fr 44%;gap:7%;align-items:center}.decision h2{max-width:96%}.decision .body{max-width:88%;color:var(--muted);font-size:clamp(14px,1.3vw,19px)}.decision-list{display:grid;gap:12px;counter-reset:decision}.decision-item{counter-increment:decision;display:grid;grid-template-columns:34px 1fr;align-items:center;min-height:70px;padding:14px 16px;background:var(--ink);color:var(--paper);font-size:clamp(14px,1.2vw,18px)}.decision-item:before{content:counter(decision,decimal-leading-zero);color:var(--accent);font-size:11px;font-weight:700}
   .infographic.intent-board-deck{border-top:14px solid var(--accent);padding-top:4.6%}.infographic.intent-board-deck:before{display:none}.infographic.intent-board-deck .title{font-size:clamp(30px,3.3vw,50px);max-width:72%}.infographic.intent-board-deck .block{padding-left:54px}.infographic.intent-board-deck .block .cite{left:54px;max-width:calc(100% - 54px)}
   .infographic.intent-internal-workshop{background:color-mix(in srgb,var(--accent) 8%,var(--paper))}.infographic.intent-internal-workshop:before{width:24px}.infographic.intent-internal-workshop .title{max-width:92%}.infographic.intent-internal-workshop .block{border-top:3px solid var(--accent);background:var(--paper);padding:22px 18px 30px 68px}.infographic.intent-internal-workshop .block-number{left:18px}.infographic.intent-internal-workshop .block .cite{left:68px;max-width:calc(100% - 86px)}
-  @media print{html,body{background:white}.deck{display:block;padding:0}.slide{width:100vw;height:100vh;box-shadow:none;break-after:page}.infographic{box-shadow:none;margin:0;width:100vw;height:100vh}}@media(max-width:720px){.deck{padding:12px;gap:12px}.slide{width:calc(100vw - 24px);padding:7%}.split,.proof{display:flex;flex-direction:column;align-items:stretch;justify-content:center}.split .number{font-size:72px}.split.is-sparse .number{font-size:120px}.proof .proof-card{display:none}.cite{max-width:72%}.infographic{width:calc(100vw - 24px);aspect-ratio:auto;margin:12px;padding:44px 28px 44px 38px}.infographic-grid{grid-template-columns:1fr}.infographic .block{min-height:160px}}
+  @media print{html,body{background:white}.deck{display:block;padding:0}.slide{width:100vw;height:100vh;box-shadow:none;break-after:page}.infographic{box-shadow:none;margin:0;width:100vw;height:100vh}}@media(max-width:720px){.deck{padding:12px;gap:12px}.slide{width:calc(100vw - 24px);padding:7%}.split,.proof,.decision{display:flex;flex-direction:column;align-items:stretch;justify-content:center}.split .number{font-size:72px}.split.is-sparse .number{font-size:120px}.proof .proof-card{display:none}.plan-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.plan-step{min-height:110px}.cite{max-width:72%}.infographic{width:calc(100vw - 24px);aspect-ratio:auto;margin:12px;padding:44px 28px 44px 38px}.infographic-grid{grid-template-columns:1fr}.infographic .block{min-height:160px}}
   </style></head><body>${body}</body></html>`;
 }
 
@@ -109,6 +111,8 @@ export function renderDeck(brief: RenderBrief): string {
       if (metrics.length) return `<section class="slide proof metrics" data-page="${page}">${eyebrow}<div class="metric-grid">${metrics.map((metric) => `<div class="metric"><strong>${escapeHtml(metric.value)}</strong><span>${escapeHtml(metric.label)}</span></div>`).join("")}</div>${body}${cite}</section>`;
       return `<section class="slide proof${sparse ? " is-sparse" : ""}" data-page="${page}"><div>${eyebrow}${heading}${body}</div><aside class="proof-card"><span class="eyebrow">Source-backed</span><strong>${escapeHtml(visibleCitationLabel(block))}</strong></aside>${cite}</section>`;
     }
+    if (layout === "plan") return `<section class="slide plan" data-page="${page}">${eyebrow}${heading}${body}<div class="plan-grid">${(block.items ?? []).map((item, itemIndex) => `<div class="plan-step"><strong>Week ${itemIndex + 1}</strong><span>${escapeHtml(item)}</span></div>`).join("")}</div>${cite}</section>`;
+    if (layout === "decision") return `<section class="slide decision" data-page="${page}"><div>${eyebrow}${heading}${body}</div><div class="decision-list">${(block.items ?? []).map((item) => `<div class="decision-item">${escapeHtml(item)}</div>`).join("")}</div>${cite}</section>`;
     return `<section class="slide ${layout}${sparse ? " is-sparse" : ""}" data-page="${page}">${eyebrow}${heading}${body}${cite}</section>`;
   }).join("\n");
   return shell(`${brief.workshopTitle} deck`, brief, `<main class="deck ${intentClass(brief)}" data-intent="${intentProfile(brief)}">${cover}${slides}</main>`);
@@ -192,6 +196,27 @@ export async function writeEditableDeck(path: string, brief: RenderBrief): Promi
         slide.addText("SOURCE-BACKED", { x: 8.95, y: 4.25, w: 3.15, h: 0.22, fontFace: bodyFont(brief), fontSize: 8, bold: true, color: accent, charSpacing: 1.2, margin: 0 });
         slide.addText(visibleCitationLabel(block), { x: 8.92, y: 4.72, w: 3.1, h: 1.15, fontFace: headingFont(brief), fontSize: 20, color: paper, margin: 0, breakLine: false, fit: "shrink", valign: "bottom" });
       }
+    } else if (layout === "plan") {
+      slide.addText(label, { x: 0.75, y: 0.78, w: 5.6, h: 0.2, fontFace: bodyFont(brief), fontSize: 9, bold: true, color: accent, charSpacing: 1.5, margin: 0 });
+      slide.addText(block.heading, { x: 0.72, y: 1.18, w: 11.3, h: 0.95, fontFace: headingFont(brief), fontSize: 32, color: ink, margin: 0, fit: "shrink" });
+      if (body) slide.addText(body, { x: 0.75, y: 2.12, w: 10.2, h: 0.42, fontFace: bodyFont(brief), fontSize: 12, color: ink, transparency: 28, margin: 0, fit: "shrink" });
+      (block.items ?? []).slice(0, 4).forEach((item, itemIndex) => {
+        const x = 0.75 + itemIndex * 3.05;
+        slide.addShape(pptx.ShapeType.rect, { x, y: 3.0, w: 2.7, h: 0.035, fill: { color: accent }, line: { color: accent, transparency: 100 } });
+        slide.addShape(pptx.ShapeType.rect, { x, y: 3.04, w: 2.7, h: 2.15, fill: { color: accent, transparency: 95 }, line: { color: accent, transparency: 100 } });
+        slide.addText(`WEEK ${itemIndex + 1}`, { x: x + 0.18, y: 3.35, w: 2.3, h: 0.2, fontFace: bodyFont(brief), fontSize: 8, bold: true, color: accent, charSpacing: 1.2, margin: 0 });
+        slide.addText(item, { x: x + 0.18, y: 3.82, w: 2.25, h: 0.88, fontFace: headingFont(brief), fontSize: 17, color: ink, margin: 0, fit: "shrink", valign: "mid" });
+      });
+    } else if (layout === "decision") {
+      slide.addText(label, { x: 0.75, y: 1.02, w: 5.6, h: 0.2, fontFace: bodyFont(brief), fontSize: 9, bold: true, color: accent, charSpacing: 1.5, margin: 0 });
+      slide.addText(block.heading, { x: 0.72, y: 1.48, w: 6.2, h: 1.55, fontFace: headingFont(brief), fontSize: 34, color: ink, margin: 0, fit: "shrink" });
+      if (body) slide.addText(body, { x: 0.75, y: 3.35, w: 5.7, h: 1.15, fontFace: bodyFont(brief), fontSize: 15, color: ink, transparency: 22, margin: 0, fit: "shrink", valign: "top" });
+      (block.items ?? []).slice(0, 4).forEach((item, itemIndex) => {
+        const y = 1.18 + itemIndex * 1.22;
+        slide.addShape(pptx.ShapeType.rect, { x: 7.35, y, w: 5.2, h: 0.98, fill: { color: ink }, line: { color: ink } });
+        slide.addText(String(itemIndex + 1).padStart(2, "0"), { x: 7.62, y: y + 0.36, w: 0.42, h: 0.18, fontFace: bodyFont(brief), fontSize: 8, bold: true, color: accent, margin: 0 });
+        slide.addText(item, { x: 8.2, y: y + 0.22, w: 3.95, h: 0.52, fontFace: bodyFont(brief), fontSize: 14, color: paper, margin: 0, fit: "shrink", valign: "mid" });
+      });
     } else {
       slide.addText(label, { x: 0.75, y: layout === "statement" ? 1.18 : 1.02, w: 5.6, h: 0.2, fontFace: bodyFont(brief), fontSize: 9, bold: true, color: layout === "recommendation" ? accentText : accent, charSpacing: 1.5, margin: 0 });
       slide.addText(block.heading, { x: 0.72, y: body ? (layout === "statement" ? 1.72 : 1.55) : 2.2, w: 11.35, h: body ? 2.15 : 2.7, fontFace: headingFont(brief), fontSize: body ? (layout === "recommendation" ? 42 : 38) : (layout === "recommendation" ? 48 : 44), color: foreground, margin: 0, breakLine: false, fit: "shrink" });

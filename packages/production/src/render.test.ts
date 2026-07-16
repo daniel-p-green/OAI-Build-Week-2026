@@ -51,6 +51,17 @@ describe("production renderers", () => {
     expect(deck).not.toContain("Source: AI Collective Newsletter · chunk 79");
     expect(deck).toContain('data-source="newsletter · chunk 79"');
   });
+  it("renders execution plans and decision lists as distinct professional layouts", () => {
+    const deck = renderDeck({ ...brief, blocks: [
+      { id: "plan", heading: "A four-week launch sequence", body: "Derived recommendation; confirm timing with the team.", items: ["Confirm owners", "Secure venue", "Open registration", "Host and review"], citations: ["approved brief"], layout: "plan" },
+      { id: "decision", heading: "Make three decisions", body: "The launch cannot begin until these are named.", items: ["Lead team", "Format and date", "Venue partner"], citations: ["approved brief"], layout: "decision" },
+    ] });
+    expect(deck).toContain('class="slide plan"');
+    expect(deck).toContain('<strong>Week 1</strong><span>Confirm owners</span>');
+    expect(deck).toContain('class="slide decision"');
+    expect(deck).toContain('class="decision-item">Lead team</div>');
+    expect(deck).toContain("03 · Decision required");
+  });
   it("chooses readable foreground text for a light brand accent", () => {
     const deck = renderDeck({ ...brief, style: { ...brief.style, accent: "#FF97E2", ink: "#171816", paper: "#FFFFFF" } });
     expect(deck).toContain("--accent-foreground:#000000");
