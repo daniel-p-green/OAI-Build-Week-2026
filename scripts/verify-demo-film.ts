@@ -3,7 +3,7 @@ import { execFileSync } from "node:child_process";
 import { mkdir, readFile, stat, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 
-type RequiredEvidence = { label: string; path: string; validator?: "ready-submission-manifest" | "provider-run" | "realtime-turn" | "film-narration" | "video-media" | "av-media" };
+type RequiredEvidence = { label: string; path: string; validator?: "ready-submission-manifest" | "provider-run" | "realtime-turn" | "film-narration" | "founder-capture" | "video-media" | "av-media" };
 type FilmShot = {
   id: string;
   title: string;
@@ -108,6 +108,24 @@ async function inspectEvidence(item: RequiredEvidence): Promise<{ exists: boolea
       }
     } catch {
       return { exists: true, satisfied: false, issue: "Film narration evidence is invalid or references missing audio." };
+    }
+  }
+  if (item.validator === "founder-capture") {
+    try {
+      const manifestPath = resolve(dirname(resolve(repository, item.path)), "founder-capture.json");
+      const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as { provenance?: string; providerRealtimeEvidence?: boolean; recording?: { relativePath?: string; sha256?: string; byteCount?: number; durationSeconds?: number }; transcript?: { relativePath?: string; sha256?: string; byteCount?: number; characterCount?: number } };
+      if (manifest.provenance !== "founder-provided-recording-and-transcript" || manifest.providerRealtimeEvidence !== false) return { exists: true, satisfied: false, issue: "Founder capture manifest overstates or omits its provenance boundary." };
+      const directory = dirname(manifestPath);
+      for (const evidence of [manifest.recording, manifest.transcript]) {
+        if (!evidence?.relativePath || !evidence.sha256 || !evidence.byteCount) return { exists: true, satisfied: false, issue: "Founder capture manifest is incomplete." };
+        const bytes = await readFile(resolve(directory, evidence.relativePath));
+        if (bytes.byteLength !== evidence.byteCount || createHash("sha256").update(bytes).digest("hex") !== evidence.sha256) return { exists: true, satisfied: false, issue: "Founder capture no longer matches its recorded hash and byte count." };
+      }
+      if (!manifest.recording?.durationSeconds || manifest.recording.durationSeconds < 3 || !manifest.transcript?.characterCount || manifest.transcript.characterCount < 40) return { exists: true, satisfied: false, issue: "Founder capture does not meet the minimum media and transcript evidence bar." };
+      const probe = JSON.parse(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-show_entries", "stream=codec_type", "-of", "json", resolve(directory, manifest.recording.relativePath!)], { encoding: "utf8" })) as { format?: { duration?: string }; streams?: Array<{ codec_type?: string }> };
+      if (Number(probe.format?.duration ?? 0) < 3 || !probe.streams?.some((stream) => stream.codec_type === "video") || !probe.streams.some((stream) => stream.codec_type === "audio")) return { exists: true, satisfied: false, issue: "Founder recording must remain playable with both video and audio streams." };
+    } catch {
+      return { exists: true, satisfied: false, issue: "Founder capture evidence is invalid or references missing media." };
     }
   }
   if (item.validator === "video-media" || item.validator === "av-media") {

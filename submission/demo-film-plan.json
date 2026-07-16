@@ -53,11 +53,13 @@
       "requiredEvidence": [
         {
           "label": "Honestly dated founder-brainstorm recording",
-          "path": "outputs/demo-film-inputs/founder-brainstorm.mov"
+          "path": "outputs/demo-film-inputs/founder-brainstorm.mov",
+          "validator": "founder-capture"
         },
         {
           "label": "Founder-brainstorm transcript used by the recorded Workshop",
-          "path": "outputs/demo-film-inputs/founder-brainstorm.txt"
+          "path": "outputs/demo-film-inputs/founder-brainstorm.txt",
+          "validator": "founder-capture"
         },
         {
           "label": "Inspected Realtime microphone-turn evidence",

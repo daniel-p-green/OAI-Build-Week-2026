@@ -774,6 +774,21 @@ export async function captureFallbackTranscript(text: string, root?: string, evi
   ];
   return write({ ...ingested, transcriptSegments: [...ingested.transcriptSegments, segment], conversationTurns: [...ingested.conversationTurns, ...turns], firstTranscriptAt: ingested.firstTranscriptAt ?? capturedAt, updatedAt: capturedAt }, root);
 }
+export async function captureImportedTranscript(text: string, input: { title: string; origin: string; permission?: WorkshopSource["permission"] }, root?: string): Promise<WorkshopState> {
+  const normalized = normalizeSourceText(text);
+  if (!normalized) throw new Error("Imported transcript text is required.");
+  const capturedAt = new Date().toISOString();
+  const ingested = await ingestSource({ title: input.title, origin: input.origin, type: "TXT", text: normalized, permission: input.permission ?? "private" }, root);
+  const digest = createHash("sha256").update(`${capturedAt}\n${normalized}`).digest("hex").slice(0, 12);
+  const source = ingested.sourceItems.at(-1);
+  const reply = groundedConversationReply(ingested, normalized, root);
+  const segment: WorkshopTranscriptSegment = { id: `import-${digest}`, origin: "manual_import", transport: "fixture", text: normalized, capturedAt };
+  const turns: WorkshopConversationTurn[] = [
+    ConversationTurn.parse({ id: `turn-user-${digest}`, workshopId: ingested.id, role: "user", text: normalized, input: "voice", createdAt: capturedAt, evidence: [], sourceId: source?.id, operation: { name: "voice_capture", status: "completed" } }),
+    ConversationTurn.parse({ id: `turn-assistant-${digest}`, workshopId: ingested.id, role: "assistant", text: reply.text, input: "system", createdAt: capturedAt, evidence: reply.evidence, operation: reply.operation }),
+  ];
+  return write({ ...ingested, transcriptSegments: [...ingested.transcriptSegments, segment], conversationTurns: [...ingested.conversationTurns, ...turns], firstTranscriptAt: ingested.firstTranscriptAt ?? capturedAt, updatedAt: capturedAt }, root);
+}
 function isPrivateAddress(address: string) { return address === "::1" || address.startsWith("127.") || address.startsWith("10.") || address.startsWith("192.168.") || /^172\.(1[6-9]|2\d|3[0-1])\./.test(address) || address.startsWith("fc") || address.startsWith("fd") || address.startsWith("fe80:"); }
 async function fetchPublicResponse(rawUrl: string, accept: string, fetchImpl: typeof fetch = fetch) {
   let url: URL; try { url = new URL(rawUrl); } catch { throw new Error("A valid HTTP(S) URL is required."); }

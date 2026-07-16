@@ -1,6 +1,7 @@
 import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { basename, dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { executeOne } from "../apps/worker/src/executor.ts";
+import { inspectFounderCapture, stageFounderCapture, stageFounderFilmInputs, type FounderCaptureManifest } from "../apps/worker/src/founder-capture.ts";
 import { defaultOpenAiMediaConfig, generateOpenAiImageBatch, generateOpenAiNarration, planOpenAiMediaRetry, validateImageBatchCoherence, validateNarrationReadiness, type OpenAiMediaConfig } from "../apps/worker/src/openai-media.ts";
 import { classifyFailedRun, operatorRunEvidence, operatorStateFingerprint, protectsPaidOperatorState, retryCommandFor, retryEligibility, safeOperatorError, verifiedRealtimeCaptures, type OperatorRunRecord } from "../apps/worker/src/live-operator-evidence.ts";
 import { generateGroundedMapWithGpt56 } from "../apps/worker/src/openai-reasoning.ts";
@@ -9,6 +10,7 @@ import {
   applyWorkshopAction,
   approveVisualDna,
   captureFallbackTranscript,
+  captureImportedTranscript,
   createImageBatch,
   createVisualDna,
   dismissWorkshopOrientation,
@@ -26,9 +28,27 @@ const executeLive = process.argv.includes("--execute");
 const retryFailed = process.argv.includes("--retry-failed");
 const resetPaidState = process.argv.includes("--reset-paid-state");
 const allowSampleTranscript = process.argv.includes("--allow-sample-transcript");
-const root = resolve(process.cwd(), ".workshoplm", "live-operator");
+function flagValue(name: string): string | undefined {
+  const index = process.argv.indexOf(name);
+  if (index < 0) return undefined;
+  const value = process.argv[index + 1];
+  if (!value || value.startsWith("--")) throw new Error(`${name} requires a value.`);
+  return value;
+}
+function shellQuote(value: string): string { return `'${value.replaceAll("'", `'\\''`)}'`; }
+const repository = process.cwd();
+const localDataRoot = resolve(repository, ".workshoplm");
+const requestedRoot = resolve(repository, flagValue("--root") ?? join(".workshoplm", "live-operator"));
+const rootRelative = relative(localDataRoot, requestedRoot);
+if (!rootRelative || rootRelative.startsWith("..") || isAbsolute(rootRelative)) throw new Error("Live operator root must be a dedicated directory inside the repository .workshoplm directory.");
+const root = requestedRoot;
+const founderRecordingPath = flagValue("--founder-recording");
+const founderTranscriptPath = flagValue("--founder-transcript");
+const stageFilmInputs = process.argv.includes("--stage-film-inputs");
+if (Boolean(founderRecordingPath) !== Boolean(founderTranscriptPath)) throw new Error("--founder-recording and --founder-transcript must be provided together.");
+if (stageFilmInputs && (!founderRecordingPath || !founderTranscriptPath)) throw new Error("--stage-film-inputs requires a founder recording and transcript.");
 const liveOperatorPaidRequestCount = 12;
-const runArtifactPath = resolve(process.cwd(), ".workshoplm", "live-operator-run.json");
+const runArtifactPath = resolve(dirname(root), `${basename(root)}-run.json`);
 
 async function writeRunArtifact(value: Record<string, unknown>): Promise<void> {
   await writeFile(runArtifactPath, `${JSON.stringify({ schemaVersion: 1, ...value }, null, 2)}\n`);
@@ -60,14 +80,19 @@ function liveConfig(requiredRequests: number): { media: OpenAiMediaConfig; budge
   };
 }
 
-async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: ProviderRequestBudget }, onRootReady?: () => Promise<void>, preserveVoice = true, allowSample = false): Promise<void> {
+type FounderCapture = Awaited<ReturnType<typeof inspectFounderCapture>>;
+
+async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: ProviderRequestBudget }, onRootReady?: () => Promise<void>, preserveVoice = true, allowSample = false, founderCapture?: FounderCapture): Promise<FounderCaptureManifest | undefined> {
   const preservedCaptures = preserveVoice && await operatorStateExists() ? verifiedRealtimeCaptures(readWorkshopState(root)) : [];
-  if (config && !preservedCaptures.length && !allowSample) throw new Error('Refusing paid provider calls without a verified Realtime voice turn. Run the preflight, open its viewCommand, use "Record voice" and "Add transcript", or rerun with --allow-sample-transcript only after explicit sample-script authorization.');
+  if (config && !preservedCaptures.length && !allowSample && !founderCapture) throw new Error('Refusing paid provider calls without a verified Realtime voice turn. Run the preflight, open its viewCommand, use "Record voice" and "Add transcript", supply a validated founder recording and transcript, or rerun with --allow-sample-transcript only after explicit sample-script authorization.');
   await rm(root, { recursive: true, force: true });
   await mkdir(root, { recursive: true });
   await onRootReady?.();
+  const founderManifest = founderCapture ? await stageFounderCapture(founderCapture, root) : undefined;
+  if (founderCapture && stageFilmInputs) await stageFounderFilmInputs(founderCapture, resolve(repository, "outputs", "demo-film-inputs"));
   if (preservedCaptures.length) for (const capture of preservedCaptures) await captureFallbackTranscript(capture.text, root, capture.evidence);
-  else await captureFallbackTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved brief, coherent visuals, an editable storyboard, and the final Build Week demo video.", root);
+  if (founderCapture) await captureImportedTranscript(founderCapture.transcript, { title: "Founder brainstorm", origin: "Founder-provided recording", permission: "private" }, root);
+  else if (!preservedCaptures.length) await captureFallbackTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved brief, coherent visuals, an editable storyboard, and the final Build Week demo video.", root);
   await ingestSource({
     title: "Build Week judge path",
     origin: "Sanitized operator fixture",
@@ -105,6 +130,7 @@ async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: Prov
   await generateOutput("infographic", root);
   createImageBatch(root);
   generateStoryboard(root);
+  return founderManifest;
 }
 
 async function main(): Promise<void> {
@@ -116,6 +142,8 @@ async function main(): Promise<void> {
     if (process.argv.includes("--keep")) throw new Error("--keep was removed because it could duplicate sources and provider work. Use --retry-failed for a state-preserving retry.");
     if (retryFailed && resetPaidState) throw new Error("--retry-failed and --reset-paid-state cannot be used together.");
     const priorRun = await readRunArtifact();
+    const founderCapture = founderRecordingPath && founderTranscriptPath ? await inspectFounderCapture(founderRecordingPath, founderTranscriptPath) : undefined;
+    if (founderCapture && (founderCapture.recordingPath === root || founderCapture.recordingPath.startsWith(`${root}/`) || founderCapture.transcriptPath === root || founderCapture.transcriptPath.startsWith(`${root}/`))) throw new Error("Founder input files must stay outside the operator root so reset cannot delete them.");
     const stateExists = await operatorStateExists();
     const existingState = stateExists ? readWorkshopState(root) : undefined;
     if (retryFailed) {
@@ -142,7 +170,8 @@ async function main(): Promise<void> {
       runStarted = true;
     };
     failedStage = "grounded-map-and-preparation";
-    if (!retryFailed) await prepareWorkshop(config, executeLive ? startRun : undefined, !resetPaidState, allowSampleTranscript);
+    let founderManifest: FounderCaptureManifest | undefined;
+    if (!retryFailed) founderManifest = await prepareWorkshop(config, executeLive ? startRun : undefined, !resetPaidState, allowSampleTranscript, founderCapture);
     else if (executeLive) await startRun();
     const prepared = readWorkshopState(root);
     const imageReadiness = await validateImageBatchCoherence(root, prepared);
@@ -162,10 +191,12 @@ async function main(): Promise<void> {
       requestCeiling: config?.budget.maxRequests ?? null,
       providerVoiceReady: providerVoiceTurns > 0,
       providerVoiceTurns,
-      sampleTranscriptAuthorized: allowSampleTranscript && providerVoiceTurns === 0,
-      captureEvidence: providerVoiceTurns > 0 ? "provider-verified-realtime" : "authorized-sample-script",
+      sampleTranscriptAuthorized: allowSampleTranscript && providerVoiceTurns === 0 && !founderManifest,
+      founderCapture: founderManifest ?? null,
+      founderFilmInputs: founderManifest && stageFilmInputs ? resolve(repository, "outputs", "demo-film-inputs") : null,
+      captureEvidence: providerVoiceTurns > 0 ? (founderManifest ? "provider-verified-realtime-and-founder-recording" : "provider-verified-realtime") : founderManifest ? "founder-provided-recording-and-transcript" : "authorized-sample-script",
       approvals: { brief: prepared.briefApproved, storyboard: prepared.storyboardApproved },
-      sources: prepared.sourceItems.filter((source) => source.origin === "Sanitized operator fixture" || source.origin.includes("capture-only fallback")).map((source) => ({ title: source.title, permission: source.permission })),
+      sources: prepared.sourceItems.filter((source) => source.origin === "Sanitized operator fixture" || source.origin.includes("capture-only fallback") || source.origin === "Founder-provided recording").map((source) => ({ title: source.title, origin: source.origin, permission: source.permission })),
       outputs: prepared.outputs.map((output) => ({ type: output.type, relativePath: output.relativePath, claims: output.claimIds.length })),
       imageReadiness,
       narrationReadiness,
@@ -176,15 +207,15 @@ async function main(): Promise<void> {
         "Each panel communicates its grounded idea without readable text, invented quantities, logos, or UI chrome.",
         "Hero, systems diagram, evidence chain, decision visual, storyboard sequence, and section art are visibly distinct jobs.",
       ],
-      nextCommand: !retryFailed && providerVoiceTurns === 0 && !allowSampleTranscript
+      nextCommand: !retryFailed && providerVoiceTurns === 0 && !allowSampleTranscript && !founderManifest
         ? null
         : retryFailed
         ? (requiredRequests > 0
-            ? `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${requiredRequests} OPENAI_API_KEY=... pnpm demo:live -- --execute --retry-failed`
-            : "pnpm demo:live -- --execute --retry-failed")
-        : `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${liveOperatorPaidRequestCount} OPENAI_API_KEY=... pnpm demo:live -- --execute${allowSampleTranscript && providerVoiceTurns === 0 ? " --allow-sample-transcript" : ""}`,
-      nextAction: !retryFailed && providerVoiceTurns === 0 && !allowSampleTranscript ? 'Open the viewCommand, choose "Add source", record a Realtime voice turn, add its transcript, or rerun with --allow-sample-transcript after explicit sample-script authorization.' : "Run nextCommand after explicit spend authorization.",
-      viewCommand: 'WORKSHOPLM_DATA_ROOT="$PWD/.workshoplm/live-operator" pnpm dev',
+            ? `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${requiredRequests} OPENAI_API_KEY=... pnpm demo:live -- --execute --retry-failed --root ${shellQuote(relative(repository, root))}`
+            : `pnpm demo:live -- --execute --retry-failed --root ${shellQuote(relative(repository, root))}`)
+        : `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${liveOperatorPaidRequestCount} OPENAI_API_KEY=... pnpm demo:live -- --execute --root ${shellQuote(relative(repository, root))}${founderRecordingPath && founderTranscriptPath ? ` --founder-recording ${shellQuote(founderRecordingPath)} --founder-transcript ${shellQuote(founderTranscriptPath)}${stageFilmInputs ? " --stage-film-inputs" : ""}` : allowSampleTranscript && providerVoiceTurns === 0 ? " --allow-sample-transcript" : ""}`,
+      nextAction: !retryFailed && providerVoiceTurns === 0 && !allowSampleTranscript && !founderManifest ? 'Open the viewCommand, choose "Add source", record a Realtime voice turn, add its transcript, supply a validated founder recording and transcript, or rerun with --allow-sample-transcript after explicit sample-script authorization.' : "Run nextCommand after explicit spend authorization.",
+      viewCommand: `WORKSHOPLM_DATA_ROOT=${shellQuote(root)} pnpm dev`,
     };
     await writeFile(resolve(root, "live-operator-plan.json"), `${JSON.stringify(plan, null, 2)}\n`);
     if (!executeLive) {
@@ -250,7 +281,7 @@ async function main(): Promise<void> {
         paidRequests: { used: config?.budget.usedRequests() ?? 0, ceiling: config?.budget.maxRequests ?? 0 },
         stateFingerprint: operatorStateFingerprint(state),
         retrySelection: retry.selection,
-        retryCommand: retry.command,
+        retryCommand: `${retry.command} --root ${shellQuote(relative(repository, root))}`,
         ...operatorRunEvidence(state),
       });
     }

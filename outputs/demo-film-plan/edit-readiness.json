@@ -39,6 +39,7 @@
       "shotId": "capture-and-shape",
       "label": "Honestly dated founder-brainstorm recording",
       "path": "outputs/demo-film-inputs/founder-brainstorm.mov",
+      "validator": "founder-capture",
       "exists": false,
       "satisfied": false,
       "issue": "Evidence file is missing or empty."
@@ -47,6 +48,7 @@
       "shotId": "capture-and-shape",
       "label": "Founder-brainstorm transcript used by the recorded Workshop",
       "path": "outputs/demo-film-inputs/founder-brainstorm.txt",
+      "validator": "founder-capture",
       "exists": false,
       "satisfied": false,
       "issue": "Evidence file is missing or empty."

@@ -2720,6 +2720,42 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-16 03:27 CT — Founder capture became a one-command, hash-bound final handoff
+
+**Area:** Final demo input / Grounding / Provenance / Operator recovery
+
+### Changed
+
+- Added `pnpm demo:founder -- --founder-recording <video> --founder-transcript <text>` as the isolated final-Workshop entry point. It targets `.workshoplm/final-operator`; the existing paid `.workshoplm/live-operator` run is never reset or overwritten.
+- The command now requires a paired recording and transcript, inspects the recording with `ffprobe`, requires video plus audio and at least three seconds, normalizes and bounds transcript content, and rejects inputs inside the reset target.
+- Valid input is staged twice: private evidence under the final Workshop root and exact film inputs under `outputs/demo-film-inputs`. Both copies receive SHA-256, byte-count, duration, codec, and provenance manifests.
+- Added an honest `manual_import` transcript path. A founder recording becomes a private grounded voice Source and Conversation turn without acquiring WebRTC provider fields or satisfying `verifiedRealtimeCaptures`.
+- The live operator accepts a custom root only inside repository `.workshoplm`, preserves custom-root paid retry commands, and carries the founder file arguments into the paid execution command.
+- The demo-film verifier now requires the founder recording and transcript to match `founder-capture.json`, re-probes playable audio/video, and rejects altered bytes or an overstated Realtime claim.
+
+### Verified
+
+- A real command-level preflight used a temporary 3.2-second H.264/AAC MOV and 182-character transcript. `demo:founder` returned `ready`, recorded `captureEvidence: founder-provided-recording-and-transcript`, kept `providerVoiceReady: false`, staged matching hashes, and emitted the isolated twelve-request paid command with the same founder inputs and film-staging flag.
+- With those temporary files present, `pnpm demo:film:verify` accepted both founder evidence items and reduced the remaining missing list to the eligible Session record, ready final submission manifest, and final edited MP4. The temporary files were then removed; a second verifier run restored the honest current state of eight ready shots, two blocked shots, and five missing or unsatisfied items.
+- Unit coverage now includes valid hash-bound staging, separate film staging, short-transcript rejection, missing-audio rejection, and private manual-import provenance. Worker coverage is 114 passing tests.
+- `pnpm check` passed lint, typecheck, and tests across all 13 packages. `pnpm demo:e2e`, `pnpm submission:build`, and `pnpm submission:verify` passed; the deterministic acceptance submission remains correctly `partial`. `pnpm demo:film:verify` passed in draft mode and still refuses finality. `git diff --check` passed excluding the preserved unrelated `PLAN-2026-07-13.md` modification.
+
+### Decisions
+
+- A founder-provided recording is acceptable authentic meta-demo evidence and a grounded private voice Source. It is not OpenAI Realtime evidence unless the product actually records the provider item/event IDs over WebRTC.
+- The final operator gets a separate durable root because replacing reusable paid sample evidence would add cost and destroy a useful recovery point.
+- The film gate verifies content hashes and playable streams, not file existence. Tomorrow's recording should remove wiring work, not weaken the evidence standard.
+
+### Open items
+
+- Record and transcribe the real founder brainstorm, then run the one-command handoff. If the in-app browser microphone is available, prefer the genuine Realtime capture; otherwise keep the imported-file provenance label.
+- Selectively execute the final Source-dependent provider run, build the ready final submission Output set, replace the two pending rough-cut shots, and export the final under-three-minute MP4.
+- External professional deck review, public link verification, and an eligible Session ID remain open. `/feedback` is still intentionally deferred.
+- No provider requests were made in this milestone. The evidence ledger remains 97 HTTP operations, with no unsupported exact-dollar claim.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-16 03:05 CT — Provider-backed film inputs and two-blocker rough cut verified
 
 **Area:** Meta-demo / Evidence integrity / Film assembly
@@ -7390,3 +7426,9 @@ The final acceptance sequence also proved that `pnpm demo:e2e` intentionally res
 
 - Founder physical-microphone capture and transcript, final Source-derived Output set, eligible Session ID record, final edited export, external deck review, and public link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 03:28 CT — Founder-handoff milestone placement correction
+
+The 03:27 CT founder-capture and final-operator milestone was inserted after an earlier matching `Codex Session ID` marker instead of the physical end of this append-only file. Its implementation, tests, and evidence remain correct. This later note restores the chronological boundary without rewriting history. The current state is unchanged: the one-command founder handoff is verified and ready, while the real founder files, final Source-derived Output set, final MP4, eligible Session record, external review, and public links remain open.
