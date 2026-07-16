@@ -8285,3 +8285,36 @@ The 04:41 CT verification entry was inserted before the 04:38 implementation ent
 - Founder-Source dogfood and the intended-audience `Send`/`Revise` decision remain necessary before closing the continuous language, last-10-percent, and send-it gates.
 - The founder recording, final ready package, public Video, eligible `/feedback` Session ID, release tag, Devpost fields, and final submitted-link checks remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 09:08 CT — Public packaging now fails closed on private Sources
+
+**Area:** Submission privacy / founder handoff / acceptance
+
+### Changed
+
+- Traced the newly corrected private pasted-note boundary through submission export and found a downstream leak: the exporter copied active Source metadata, claims, transcript-derived locators, and the complete build trace without enforcing Source permissions.
+- Made public submission packaging refuse to run while any active Source is `private`, before reading or copying its shareable evidence. The error names the private Source so the operator can resolve the scope deliberately.
+- Kept founder recording imports private by default and added `--share-founder-source` as the explicit local consent switch for the public meta-demo. The paid follow-up command preserves that choice; the flag never uploads or publishes material.
+- Added narrow Git ignore rules for the staged raw founder recording and transcript while retaining the existing sanitized demo-film inputs in version control.
+- Documented the private-default and explicit-share commands in the README and reconciled the current handoff in `GOAL.md`.
+
+### Verified
+
+- `pnpm --filter @workshoplm/worker test` passed all 119 worker tests, including a new regression that adds a private client transcript to an otherwise buildable Workshop and requires submission packaging to reject it.
+- `pnpm --filter @workshoplm/worker typecheck` passed.
+- `pnpm demo:e2e` passed the sanitized recorded Capture → Map → Brief → Style → Outputs → Storyboard → rendered Video seam, proving the new guard does not block authorized shareable fixture content.
+- `pnpm submission:packet:verify` passed with Terra, six GPT Image 2 panels, five product Cedar clips, the 2:20 editorial rough cut, sixteen UI screens, eight ready shots, two blocked shots, and four honest founder/final-package gaps.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages. No provider call ran; the evidence ledger remains 98 OpenAI HTTP operations and no dollar debit is inferred.
+
+### Decisions
+
+- Local capture and public packaging are separate permissions. Private is the default for professional and founder material; `sanitized` or explicitly `shareable` is required for a public Output set.
+- The founder transcript reveal remains available as the demo's climax, but it requires an operator choice that is visible in the command and preserved across the paid handoff.
+- The partially stale, user-owned `PLAN-2026-07-13.md` modification remained untouched and excluded from staging.
+
+### Open items
+
+- Founder recording, deliberate public-share decision, final provider regeneration, final ready package, under-three-minute public Video, intended-audience `Send`/`Revise`, eligible `/feedback` Session ID, release tag, Devpost fields, and logged-out link checks remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

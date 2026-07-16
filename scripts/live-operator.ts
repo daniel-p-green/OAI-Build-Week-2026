@@ -46,8 +46,10 @@ if (!rootRelative || rootRelative.startsWith("..") || isAbsolute(rootRelative)) 
 const root = requestedRoot;
 const founderRecordingPath = flagValue("--founder-recording");
 const founderTranscriptPath = flagValue("--founder-transcript");
+const shareFounderSource = process.argv.includes("--share-founder-source");
 const stageFilmInputs = process.argv.includes("--stage-film-inputs");
 if (Boolean(founderRecordingPath) !== Boolean(founderTranscriptPath)) throw new Error("--founder-recording and --founder-transcript must be provided together.");
+if (shareFounderSource && (!founderRecordingPath || !founderTranscriptPath)) throw new Error("--share-founder-source requires a founder recording and transcript.");
 if (stageFilmInputs && (!founderRecordingPath || !founderTranscriptPath)) throw new Error("--stage-film-inputs requires a founder recording and transcript.");
 const liveOperatorPaidRequestCount = 13;
 const runArtifactPath = resolve(dirname(root), `${basename(root)}-run.json`);
@@ -93,7 +95,7 @@ async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: Prov
   const founderManifest = founderCapture ? await stageFounderCapture(founderCapture, root) : undefined;
   if (founderCapture && stageFilmInputs) await stageFounderFilmInputs(founderCapture, resolve(repository, "outputs", "demo-film-inputs"));
   if (preservedCaptures.length) for (const capture of preservedCaptures) await captureFallbackTranscript(capture.text, root, capture.evidence);
-  if (founderCapture) await captureImportedTranscript(founderCapture.transcript, { title: "Founder brainstorm", origin: "Founder-provided recording", permission: "private" }, root);
+  if (founderCapture) await captureImportedTranscript(founderCapture.transcript, { title: "Founder brainstorm", origin: "Founder-provided recording", permission: shareFounderSource ? "shareable" : "private" }, root);
   else if (!preservedCaptures.length) await captureFallbackTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved brief, coherent visuals, an editable storyboard, and the final Build Week demo video.", root);
   await ingestSource({
     title: "Build Week judge path",
@@ -218,7 +220,7 @@ async function main(): Promise<void> {
         ? (requiredRequests > 0
             ? `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${requiredRequests} OPENAI_API_KEY=... pnpm demo:live -- --execute --retry-failed --root ${shellQuote(relative(repository, root))}`
             : `pnpm demo:live -- --execute --retry-failed --root ${shellQuote(relative(repository, root))}`)
-        : `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${liveOperatorPaidRequestCount} OPENAI_API_KEY=... pnpm demo:live -- --execute --root ${shellQuote(relative(repository, root))}${founderRecordingPath && founderTranscriptPath ? ` --founder-recording ${shellQuote(founderRecordingPath)} --founder-transcript ${shellQuote(founderTranscriptPath)}${stageFilmInputs ? " --stage-film-inputs" : ""}` : allowSampleTranscript && providerVoiceTurns === 0 ? " --allow-sample-transcript" : ""}`,
+        : `WORKSHOPLM_LIVE_OPENAI=1 WORKSHOPLM_MAX_PAID_REQUESTS=${liveOperatorPaidRequestCount} OPENAI_API_KEY=... pnpm demo:live -- --execute --root ${shellQuote(relative(repository, root))}${founderRecordingPath && founderTranscriptPath ? ` --founder-recording ${shellQuote(founderRecordingPath)} --founder-transcript ${shellQuote(founderTranscriptPath)}${shareFounderSource ? " --share-founder-source" : ""}${stageFilmInputs ? " --stage-film-inputs" : ""}` : allowSampleTranscript && providerVoiceTurns === 0 ? " --allow-sample-transcript" : ""}`,
       nextAction: !retryFailed && providerVoiceTurns === 0 && !allowSampleTranscript && !founderManifest ? 'Open the viewCommand, choose "Add source", record a Realtime voice turn, add its transcript, supply a validated founder recording and transcript, or rerun with --allow-sample-transcript after explicit sample-script authorization.' : "Run nextCommand after explicit spend authorization.",
       viewCommand: `WORKSHOPLM_DATA_ROOT=${shellQuote(root)} pnpm dev`,
     };

@@ -18,6 +18,8 @@ workshoplm-desktop.png
 .env.local
 outputs/workshoplm-current-ui.zip
 outputs/workshoplm-project-overview.pdf
+outputs/demo-film-inputs/founder-brainstorm.mov
+outputs/demo-film-inputs/founder-brainstorm.txt
 artifacts/spikes/**/*.json
 artifacts/spikes/**/*.mp4
 artifacts/spikes/**/*.png

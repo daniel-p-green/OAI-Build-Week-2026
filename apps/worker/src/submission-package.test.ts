@@ -47,6 +47,12 @@ describe("submission Output set", () => {
     await expect(buildSubmissionOutputSet(root, { renderThumbnail: fakeThumbnail })).rejects.toThrow(/approved current brief/);
   });
 
+  it("refuses to copy private Source content into a public submission package", async () => {
+    const root = await buildableWorkshop();
+    await ingestSource({ title: "Confidential client transcript", origin: "Pasted notes", text: "This client material must remain private.", permission: "private" }, root);
+    await expect(buildSubmissionOutputSet(root, { renderThumbnail: fakeThumbnail })).rejects.toThrow("every active Source to be sanitized or explicitly shareable");
+  });
+
   it("builds and verifies one honest traced package from the current Workshop", async () => {
     const root = await buildableWorkshop();
     const built = await buildSubmissionOutputSet(root, { renderThumbnail: fakeThumbnail });

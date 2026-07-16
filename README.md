@@ -68,6 +68,22 @@ The live command fails closed when either opt-in flag or credential is absent. T
 
 The inspected authorized-sample run is recorded in [`artifacts/live/provider-run.json`](artifacts/live/provider-run.json). Visual review artifacts include the [GPT Image 2 contact sheet](artifacts/live-review/gpt-image-2-contact-sheet.png), [HyperFrames Video review](artifacts/live-review/hyperframes-v4/README.md), and [Realtime grounded-conversation record](artifacts/live-review/realtime-grounded-conversation.json). These prove provider behavior without implying that the final founder Source or public submission is complete.
 
+### Replace the sample with the founder brainstorm
+
+The founder handoff validates a recording and transcript, stages private local film inputs, and prepares the isolated final Workshop without paid calls:
+
+```bash
+pnpm demo:founder -- --founder-recording /absolute/path/founder.mov --founder-transcript /absolute/path/founder.txt
+```
+
+Founder material is private by default. WorkshopLM refuses to build a public submission package while any active Source is private, and the staged raw founder files are ignored by Git. Only use the explicit consent flag when the recording and transcript are intentionally part of the public meta-demo:
+
+```bash
+pnpm demo:founder -- --founder-recording /absolute/path/founder.mov --founder-transcript /absolute/path/founder.txt --share-founder-source
+```
+
+`--share-founder-source` marks that local Source as shareable so it may appear in the generated submission evidence and build trace; it does not upload or publish anything. The paid follow-up command printed by the preflight preserves the choice.
+
 ## Checks
 
 ```bash

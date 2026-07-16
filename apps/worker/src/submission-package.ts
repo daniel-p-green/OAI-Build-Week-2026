@@ -64,6 +64,8 @@ function currentAudioOverview(state: WorkshopState) {
 }
 
 function assertBuildable(state: WorkshopState, root: string): SubmissionInputSnapshot {
+  const privateSources = state.sourceItems.filter((source) => state.activeSourceIds.includes(source.id) && source.permission === "private");
+  if (privateSources.length) throw new Error(`Submission packaging requires every active Source to be sanitized or explicitly shareable. Private Sources: ${privateSources.map((source) => source.title).join(", ")}.`);
   if (!state.briefApproved || !state.frame || state.frame.stale) throw new Error("Submission packaging requires an approved current brief.");
   if (!state.style || state.style.stale) throw new Error("Submission packaging requires a current Style.");
   if (!state.assetPlan || state.assetPlan.stale) throw new Error("Submission packaging requires a current output plan.");
