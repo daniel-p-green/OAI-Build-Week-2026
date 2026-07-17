@@ -10308,3 +10308,37 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Current visual proof is in `artifacts/ui-review/focus-canvas-desktop-2026-07-16.png`, `editorial-brief-desktop-2026-07-16.png`, `created-work-gallery-*`, and `storyboard-cinema-*`.
 - No OpenAI provider request ran. The product provider-operation ledger remains 115. The authentic founder Workshop remains the next external gate.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 23:16 CT — Redesigned product footage and stable HyperFrames sample film verified
+
+### Changed
+
+- Updated the automated 12-beat browser recorder to use the new Sources sheet and Browse navigation instead of the removed persistent rails.
+- Made recorder teardown unconditional. Browser assertion failures now close Playwright and the recording server instead of leaving orphan processes; 62 stale recorder processes and the old port holder were removed before the clean run.
+- Recorded a new 61.88-second fixture walkthrough of the Focus Canvas, exact Source trace, Editorial Brief, Style, Created Work Gallery, Storyboard Cinema, local Video render, and original-thought reveal.
+- Rebuilt the 2:20 sample editorial film from that footage with the pinned local HyperFrames 0.7.60 compositor and existing hash-bound OpenAI Cedar narration.
+- Film review found an internal `normalized:` source locator in the Sources sheet. The product now renders that implementation locator as `Source material` while retaining exact claim-level chunk locators; browser regression coverage prevents provider and normalization language from leaking back into the professional surface.
+
+### Verified
+
+- `pnpm demo:capture-draft` completed with 12 beats, a 61.88-second WebM, contact sheet, original reveal, and SHA-256 `507ebb859594f7dca3f990600fd6ff8f5e672bce0449322b412f6b2d54fa359f`.
+- The regenerated film passed HyperFrames lint, transition checks, and local render. Its manifest records no jitter-prone zoom/pan, no spatial transforms, and neutral dip transitions.
+- `pnpm demo:film:verify-sample` verified a 140.010667-second H.264/AAC film, ten review frames, complete authorized sample transcript, Cedar narration, DESIGN/FRAME hashes, and film SHA-256 `7cf670e39e9b39508412c4724ae8568d13308a2abfde598475554cb760a79c10`.
+- The film contact sheet and representative Source, Presentation, Storyboard, and meta-reveal frames were visually inspected. The exposed `normalized:` locator was removed in the rebuilt frame.
+- The focused voice-Source browser regression passed against a fresh production build; `pnpm --filter @workshoplm/web test` passed 30/30; `pnpm check` passed all thirteen packages.
+- No recorder, Playwright capture, or port 3104 server remained after the successful run.
+
+### Decisions
+
+- Recording automation must exercise the current professional interaction model. Deleted rails will not be restored to accommodate stale capture scripts.
+- Film QA is a product-language gate. Internal locators, provider transport terms, IDs, and implementation state found in captured footage are repaired at the UI layer before editorial assembly.
+- The stable local HyperFrames sample remains a truthful review artifact, not the public submission Video. Its manifest still marks the founder-dependent capture and meta-reveal shots as blocked final evidence.
+- No OpenAI provider request ran during this milestone. Existing Cedar audio was reused by hash; the product provider-operation ledger remains 115.
+
+### Open items
+
+- Record and run the authentic founder Workshop, then replace the two blocked sample beats through the existing fail-closed final-film command.
+- Complete intended-audience review, publish the under-three-minute founder-derived Video, verify public links, and submit.
+- Codex Session ID: unavailable on this surface; not inferred.

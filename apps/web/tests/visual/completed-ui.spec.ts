@@ -1170,7 +1170,7 @@ test("voice Sources keep provider transport language out of the professional sur
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   const readyState = await (await page.request.get("/api/workshop")).json();
-  const voiceSource = { ...readyState.sourceItems[0], title: "Voice capture-only fallback transcript 2026-07-16T05:48:00Z", origin: "gpt-realtime-2.1 capture-only fallback", locator: "gpt-realtime-2.1 capture-only fallback · chunk 01" };
+  const voiceSource = { ...readyState.sourceItems[0], title: "Voice capture-only fallback transcript 2026-07-16T05:48:00Z", origin: "gpt-realtime-2.1 capture-only fallback", locator: "gpt-realtime-2.1 capture-only fallback · normalized:21960f8a7bf7" };
   const state = { ...readyState, sourceItems: [voiceSource, ...readyState.sourceItems.slice(1)] };
   await page.route("**/api/workshop", async (route) => route.request().method() === "GET" ? route.fulfill({ json: state }) : route.continue());
   await page.goto("/");
@@ -1178,9 +1178,10 @@ test("voice Sources keep provider transport language out of the professional sur
   const sources = page.getByRole("dialog", { name: "Sources" });
   await expect(sources.getByText("Voice brainstorm", { exact: true }).first()).toBeVisible();
   await expect(sources).toContainText("Voice · 5 claims");
-  await expect(sources).toContainText("Voice brainstorm · chunk 01");
+  await expect(sources).toContainText("Voice brainstorm · Source material");
   await expect(sources).not.toContainText("gpt-realtime-2.1");
   await expect(sources).not.toContainText("capture-only fallback");
+  await expect(sources).not.toContainText("normalized:");
   await sources.getByRole("button", { name: /Voice brainstorm/ }).click();
   await sources.getByRole("button", { name: "Show on map" }).click();
   await page.locator(".claim-inspector").getByRole("button", { name: "Show source" }).click();

@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { execFileSync, spawn, type ChildProcess } from "node:child_process";
 import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { chromium, expect, type Page } from "@playwright/test";
+import { chromium, expect, type Browser, type Page } from "@playwright/test";
 import { executeOne } from "../../worker/src/executor.ts";
 import { approveVisualDna, captureFallbackTranscript, createVisualDna, generateOutput, readWorkshopState } from "../../worker/src/workshop-service.ts";
 import { seedJudgeProviderImages } from "../../../scripts/seed-judge-images.ts";
@@ -53,10 +53,11 @@ async function main(): Promise<void> {
   let serverOutput = "";
   server.stdout?.on("data", (chunk) => { serverOutput += String(chunk); });
   server.stderr?.on("data", (chunk) => { serverOutput += String(chunk); });
+  let browser: Browser | undefined;
 
   try {
     await waitForServer(server);
-    const browser = await chromium.launch({ channel: "chrome", headless: true });
+    browser = await chromium.launch({ channel: "chrome", headless: true });
     const context = await browser.newContext({
       viewport: { width: 1200, height: 800 },
       colorScheme: "light",
@@ -67,6 +68,12 @@ async function main(): Promise<void> {
     });
     const page = await context.newPage();
     const video = page.video();
+    const openCreatedWork = async () => {
+      await page.getByRole("button", { name: "Browse", exact: true }).click();
+      const views = page.getByRole("dialog", { name: "Workshop views" });
+      await views.getByRole("button", { name: "View created work", exact: true }).click();
+      await expect(views).toBeHidden();
+    };
     const startedAt = performance.now();
     const beats: Beat[] = [];
     const beat = async (id: string, label: string, action: () => Promise<void>, holdMs = 1400) => {
@@ -85,11 +92,18 @@ async function main(): Promise<void> {
     await beat("map", "Grounded editable Map", async () => undefined, 2200);
 
     await beat("sources", "Contemporaneous fixture brainstorm and source scope", async () => {
-      await expect(page.locator('[aria-label="Sources"]')).toContainText("Voice brainstorm");
+      await page.getByRole("button", { name: /^\d+ sources?$/ }).click();
+      const sources = page.getByRole("dialog", { name: "Sources" });
+      await expect(sources).toBeVisible();
+      await expect(sources).toContainText("Voice brainstorm");
     }, 2200);
 
     await beat("source-trace", "Map claim to exact source excerpt", async () => {
-      await page.getByRole("button", { name: /Voice brainstorm/ }).click();
+      const sources = page.getByRole("dialog", { name: "Sources" });
+      await sources.getByRole("button", { name: /Voice brainstorm/ }).click();
+      await sources.getByRole("button", { name: "Show on map" }).click();
+      await expect(page.getByRole("button", { name: "Show source", exact: true })).toBeVisible();
+      await page.getByRole("button", { name: "Show source", exact: true }).click();
       await expect(page.getByRole("dialog", { name: "Source" })).toBeVisible();
     }, 1800);
     await page.getByRole("button", { name: "Show on map" }).click();
@@ -125,7 +139,6 @@ async function main(): Promise<void> {
       approveVisualDna(dataRoot);
     }, 1800);
 
-    await page.getByRole("button", { name: "View created work" }).click();
     await beat("create-outputs", "Create connected professional knowledge work", async () => {
       await page.getByRole("button", { name: "Create work" }).click();
       await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
@@ -133,7 +146,7 @@ async function main(): Promise<void> {
       await seedJudgeProviderImages(dataRoot);
       await generateOutput("deck", dataRoot);
       await page.reload();
-      await page.getByRole("button", { name: "View created work" }).click();
+      await openCreatedWork();
       await expect(page.locator('img[src*="image-panel-"]').first()).toBeVisible();
     }, 2600);
 
@@ -214,6 +227,7 @@ async function main(): Promise<void> {
   } catch (error) {
     throw new Error(`${error instanceof Error ? error.message : String(error)}\nRecording server output:\n${serverOutput.slice(-4000)}`);
   } finally {
+    if (browser?.isConnected()) await browser.close();
     if (server.exitCode === null) server.kill("SIGTERM");
   }
 }

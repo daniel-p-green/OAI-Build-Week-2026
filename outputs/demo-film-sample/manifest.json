@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance created-work set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-17T02:35:14.012Z",
+  "builtAt": "2026-07-17T04:13:55.871Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "compositor": {
@@ -14,7 +14,7 @@
     "spatialTransforms": false,
     "transition": "neutral-dip",
     "design": {
-      "sha256": "cb8b3f2165c68fe1112e1f254c90a62a6d61ba9db1cde08373eb4b4642f11bc9",
+      "sha256": "a4db30066bc5efd35bd32a8c5f7bcdc733fabe5d113a4ea25812ffd5997c620d",
       "source": ".workshoplm/acceptance/generated/DESIGN-v1.md"
     },
     "frame": {
@@ -33,7 +33,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "5e668b5e6e221f31a58ba0ec1502c9c647aac57ed4838018e6dab893e23631c9",
+    "sha256": "7cf670e39e9b39508412c4724ae8568d13308a2abfde598475554cb760a79c10",
     "durationSeconds": 140.010667,
     "streams": [
       {
@@ -51,7 +51,7 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "291b1bb0bd033f21440059083175d981545d1cfd160336c2727e637533d34e6d"
+    "sha256": "89a2ac0a09f22fd6ae221ad89247684a792c1946d61dca8296c7c719161bc7cc"
   },
   "openingProofFrame": {
     "relativePath": "review/opening-proof.jpg",
@@ -61,7 +61,7 @@
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "73fe8fa6e67a4b52418a07ca23bbd9194496cad782fa0020e978539b1552130f"
+      "sha256": "d0d072d0a09b64e2a56641dadd52a0747cbb266579ca9c96b48a21770709c3ca"
     },
     {
       "relativePath": "review/02.jpg",
@@ -69,27 +69,27 @@
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "ef24774232d4aa6e2c32b5a5650c0694f6e28867502d90f678ee4a8d63ed78a8"
+      "sha256": "844f0abd1bc4c40a8a1d115fbd40ec4f16add162d68a8ecef6b1a44b32f0ca84"
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "c407dc79af0fdc0d2a65ab65ef60dd066de79a471ed29beef55d966d0b7d74ff"
+      "sha256": "d308a412b921325a8a593f4b74b31ed90014557f3937979c24ec4231a3ccff99"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "fdd9b43b5f5d0c9d4b50a5beec948d793fc073d8710634617bcd2930738a4eef"
+      "sha256": "c51995d4818f35b906990e67737d524c1df17a34162118e79a31ae58b53fa87e"
     },
     {
       "relativePath": "review/06.jpg",
-      "sha256": "2b82e51ee7c4da3ced002f70f516c667e4a41caa26ee51743670c6fff6337990"
+      "sha256": "ee6697ce06e8dc67afeeda97a864b8256945825797bd3ecbdf42644a535277a1"
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "ceefd98c7ce3323072cbb2d75b9c766ead144d0cf352af98eee51e2525d659b1"
+      "sha256": "2df4a0d8306281e802d0caf682a2b142cfa30b2c7dcddcb3e79cdb56e8dd85f7"
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "d12bc991e92b669fc8e864b317ea626a8b8daef74ebb24580b1620036654e4f0"
+      "sha256": "d8b989abdc86dc322a644ce6b0c2f11629312f4f2a31954fc569fb75e7fb8af2"
     },
     {
       "relativePath": "review/09.jpg",
@@ -114,11 +114,11 @@
     },
     "submissionManifest": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
-      "sha256": "674eef1af540601964ea1287d606845908e7acdf048213c0a14bc0897848e112"
+      "sha256": "60ba3978b1a4a205aaf2950f046fc193fd7150a6b19c9c329175dc2fcd4a0796"
     },
     "buildTrace": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/BUILD-TRACE.json",
-      "sha256": "e7b8dc3ce5890f4bb8e57173fba24ebd5ddb07ce4dc3723d1171d953af1d8457"
+      "sha256": "0766d227a3c3cef07cdb9c17c159730e789bad46f0a233d7d0ec5f2fc660e2a1"
     }
   },
   "shots": [
@@ -135,8 +135,8 @@
       "sourceBeats": [
         "map"
       ],
-      "sourceStartSeconds": 0.656,
-      "sourceEndSeconds": 2.358,
+      "sourceStartSeconds": 0.613,
+      "sourceEndSeconds": 2.313,
       "openingProof": {
         "type": "finished-work-to-map",
         "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/thumbnail-opening.png",
@@ -185,8 +185,8 @@
       "sourceBeats": [
         "sources"
       ],
-      "sourceStartSeconds": 2.858,
-      "sourceEndSeconds": 4.363,
+      "sourceStartSeconds": 2.813,
+      "sourceEndSeconds": 4.343,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "neutral-dip",
@@ -217,8 +217,8 @@
         "source-trace",
         "map-edit"
       ],
-      "sourceStartSeconds": 5.063,
-      "sourceEndSeconds": 7.585,
+      "sourceStartSeconds": 5.043,
+      "sourceEndSeconds": 7.561,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "neutral-dip",
@@ -239,8 +239,8 @@
       "sourceBeats": [
         "brief-approval"
       ],
-      "sourceStartSeconds": 8.519,
-      "sourceEndSeconds": 9.869,
+      "sourceStartSeconds": 8.497,
+      "sourceEndSeconds": 9.841,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "neutral-dip",
@@ -261,8 +261,8 @@
       "sourceBeats": [
         "style"
       ],
-      "sourceStartSeconds": 10.769,
-      "sourceEndSeconds": 11.772,
+      "sourceStartSeconds": 10.741,
+      "sourceEndSeconds": 11.743,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "neutral-dip",
@@ -284,8 +284,8 @@
         "create-outputs",
         "output-evidence"
       ],
-      "sourceStartSeconds": 12.691,
-      "sourceEndSeconds": 18.349,
+      "sourceStartSeconds": 12.643,
+      "sourceEndSeconds": 18.35,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "neutral-dip",
@@ -307,8 +307,8 @@
         "storyboard-edit",
         "storyboard-approval"
       ],
-      "sourceStartSeconds": 18.523,
-      "sourceEndSeconds": 21.637,
+      "sourceStartSeconds": 18.528,
+      "sourceEndSeconds": 21.642,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "neutral-dip",

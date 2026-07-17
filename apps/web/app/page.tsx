@@ -101,14 +101,18 @@ const sourceDisplayTitle = (source: SourceItem) => source.origin === "Founder-pr
 const sourceDisplayOrigin = (source: SourceItem) => source.origin === "Founder-provided recording"
   ? "Recording"
   : isVoiceSource(source) ? "Voice" : source.origin;
+const locatorPosition = (locator: string) => {
+  const position = locator.split(" · ").at(-1) ?? "";
+  return /^normalized:[a-f0-9]+$/i.test(position) ? "Source material" : position;
+};
 const sourceEvidenceLocator = (source: SourceItem, locator: string) => {
   if (!isVoiceSource(source) && source.origin !== "Founder-provided recording") return locator;
-  const position = locator.split(" · ").at(-1);
+  const position = locatorPosition(locator);
   return [sourceDisplayTitle(source), position].filter(Boolean).join(" · ");
 };
 const claimDisplayLocator = (claim: { sourceId: string; locator: string }, state: Pick<PersistedWorkshop, "sourceItems"> | null) => {
   const source = state?.sourceItems.find((candidate) => candidate.id === claim.sourceId);
-  const position = claim.locator.split(" · ").at(-1);
+  const position = locatorPosition(claim.locator);
   return [source ? sourceDisplayTitle(source) : "Source", position].filter(Boolean).join(" · ");
 };
 
