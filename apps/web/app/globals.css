@@ -311,23 +311,18 @@ button { -webkit-tap-highlight-color: transparent; }
 .visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
 .outputs-view > .oai-state-message[data-state="partial"], .outputs-view > .oai-state-message[data-state="needs-update"] { margin: 0 auto 20px; }
 .output-grid { max-width: 1180px; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-auto-flow: dense; gap: 16px; margin: 0 auto; }
-.output-card { grid-column: span 4; overflow: hidden; border-color: rgba(13,13,13,.08); border-radius: 18px; box-shadow: 0 3px 12px rgba(0,0,0,.035); }
+.output-card { grid-column: span 3; overflow: hidden; border-color: rgba(13,13,13,.08); border-radius: 18px; box-shadow: 0 3px 12px rgba(0,0,0,.035); }
 .output-card:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(0,0,0,.08); }
-.output-card--presentation { grid-column: span 8; }
-.output-card--images { grid-column: span 8; }
-.output-card--storyboard, .output-card--video { grid-column: span 6; }
-.output-card--presentation .artifact-preview, .output-card--images .artifact-preview { height: 356px; }
-.output-card--storyboard .artifact-preview, .output-card--video .artifact-preview { height: 300px; }
 .output-card.needs-update { opacity: .7; }
-.artifact-preview { height: 250px; overflow: hidden; border-bottom: 1px solid rgba(13,13,13,.05); background: #ededed; }
+.artifact-preview { height: auto; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 1px solid rgba(13,13,13,.05); background: #ededed; }
 .artifact-preview iframe { width: 200%; height: 200%; border: 0; transform: scale(.5); transform-origin: top left; pointer-events: none; }
 .artifact-preview video { width: 100%; height: 100%; object-fit: cover; background: #0d0d0d; }
 .sketch-preview { display: grid; place-items: center; background: #f4f2ec; }
-.sketch-preview img { width: 100%; height: 100%; object-fit: cover; }
+.sketch-preview img { width: 100%; height: 100%; object-fit: contain; }
 .audio-overview-preview { display: grid; place-content: center; gap: 18px; color: #fff; background: #0d0d0d; }
 .audio-overview-preview > span { justify-self: center; color: #b4b4b4; font-size: 12px; line-height: 16px; }
-.audio-wave { height: 88px; display: flex; align-items: center; gap: 7px; }
-.audio-wave i { width: 6px; min-height: 12px; border-radius: 99px; background: #fff; }
+.audio-wave { height: 58px; display: flex; align-items: center; gap: 5px; }
+.audio-wave i { width: 5px; min-height: 10px; border-radius: 99px; background: #fff; }
 .output-card-body { min-height: 88px; padding: 16px 18px 18px; background: #fff; }
 .output-card-body h2 { margin: 0 0 6px; font-size: 18px; line-height: 26px; letter-spacing: -.45px; }
 .output-card-body p { margin: 0; color: #5d5d5d; font-size: 12px; line-height: 16px; }
@@ -498,8 +493,6 @@ button { -webkit-tap-highlight-color: transparent; }
   .brief-editorial-side { padding: 30px 42px 38px; border-top: 1px solid rgba(13,13,13,.08); border-left: 0; }
   .output-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .output-card, .output-card--presentation, .output-card--images, .output-card--storyboard, .output-card--video { grid-column: span 1; }
-  .output-card--presentation { grid-column: 1 / -1; }
-  .output-card--presentation .artifact-preview { height: 300px; }
   .panel-editor { grid-template-columns: 1fr; }
   .panel-visual { min-height: 300px; }
   .panel-fields { grid-template-columns: 1fr; align-items: stretch; }
@@ -556,9 +549,17 @@ button { -webkit-tap-highlight-color: transparent; }
   .map-source-shelf { position: static; right: auto; bottom: auto; left: auto; margin: 0 10px 10px; grid-template-columns: minmax(0, 1fr) auto; }
   .map-source-shelf-heading { border-right: 0; }
   .map-source-items { display: none; }
-  .output-grid { grid-template-columns: 1fr; }
+  .output-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .output-card--presentation { grid-column: span 1; }
-  .artifact-preview { height: 220px; }
+  .output-card { border-radius: 16px; }
+  .output-card-body { min-height: 100px; padding: 12px 13px 14px; }
+  .output-card-body h2 { margin-bottom: 4px; font-size: 15px; line-height: 21px; letter-spacing: -.2px; }
+  .output-meta { gap: 3px 7px; font-size: 11px; line-height: 15px; }
+  .audio-overview-preview { gap: 8px; }
+  .audio-wave { height: 42px; gap: 3px; }
+  .audio-wave i { width: 3px; min-height: 7px; }
+  .storyboard-card-preview { padding: 7px; gap: 4px; }
+  .storyboard-card-frame { gap: 3px; padding: 6px; }
   .panel-visual { min-height: 240px; padding: 24px; }
   .panel-visual:not(.has-image)::before { width: 170px; height: 170px; right: -48px; top: -82px; }
   .panel-visual:not(.has-image)::after { left: 24px; right: 24px; top: 24px; }

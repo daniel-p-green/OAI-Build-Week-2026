@@ -323,7 +323,7 @@ test("an empty Workshop reaches an editable Presentation through one obvious pat
     await expect(page.getByRole("button", { name: "Create work" })).toBeVisible();
     await page.getByRole("button", { name: "Create work" }).click();
 
-    await expect(page.getByText("Your Presentation is ready.")).toBeVisible();
+    await expect(page.getByText("Your created work is ready.")).toBeVisible();
     await page.waitForTimeout(200);
     await expect.poll(() => page.locator(".outputs-view").evaluate((element) => element.scrollTop)).toBe(0);
     await page.getByRole("button", { name: "Got it" }).click();
@@ -591,6 +591,13 @@ test.describe("completed Workshop judge path", () => {
       await expectPreviewFramesReady(page);
       await expect(page.locator('.output-card iframe[aria-hidden="true"][scrolling="no"]')).toHaveCount(2);
       await expect(page.locator(".output-card--images img")).toHaveCount(6);
+      const discoverableCards = await outputCards.evaluateAll((cards) => cards.slice(0, 4).map((card) => {
+        const bounds = card.getBoundingClientRect();
+        return { top: bounds.top, width: bounds.width };
+      }));
+      expect(discoverableCards).toHaveLength(4);
+      expect(discoverableCards.every((card) => card.top < viewport.height)).toBeTruthy();
+      expect(discoverableCards.every((card) => card.width >= 160)).toBeTruthy();
       await expectScreen(page, `${viewport.name}-outputs`);
 
       await page.getByRole("button", { name: "Open Presentation" }).click();

@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import { applyWorkshopAction, approveVisualDna, createImageBatch, createSketch, createVisualDna, generateAssetPlan, generateOutput, generateStoryboard, lockManualStyle, readWorkshopState } from "../../../worker/src/workshop-service.ts";
+import { applyWorkshopAction, approveVisualDna, createImageBatch, createSketch, createVisualDna, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, lockManualStyle, readWorkshopState } from "../../../worker/src/workshop-service.ts";
 import { seedJudgeProviderImages } from "../../../../scripts/seed-judge-images.ts";
 
 async function main() {
@@ -18,6 +18,7 @@ async function main() {
   }
   if (!state.outputs.some((output) => output.type === "deck" && !output.stale)) state = await generateOutput("deck", root);
   if (!state.outputs.some((output) => output.type === "infographic" && !output.stale)) state = await generateOutput("infographic", root);
+  if (!state.audioOverviews.some((overview) => !overview.stale)) state = generateAudioOverview(root);
   if (!state.storyboard.panels.length || state.storyboard.stale || state.storyboard.panels.length !== state.assetPlan?.items.length || state.storyboard.panels.some((panel) => !panel.id.startsWith("storyboard-v") || !panel.imageRelativePath)) generateStoryboard(root);
 }
 

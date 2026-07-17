@@ -11038,3 +11038,38 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 04:55 CT — Create shows one Workshop across every format
+
+### Changed
+
+- Replaced the Presentation-dominant masonry hierarchy with a compact equal-weight gallery. Presentation, Infographic, Audio Overview, Sketch, Image set, Storyboard, and post-approval Video now use the same card geometry; selecting one still opens its large focused review surface.
+- Changed the first-use message from `Your Presentation is ready` to `Your created work is ready` and removed the Presentation-specific shortcut. The orientation now explains that every format shares the Workshop's Sources and Style.
+- Made the mobile gallery a restrained two-column index. The complete six-format pre-Video family now fits within the first screen instead of hiding most capability beneath two oversized cards.
+- Brought the canonical completed fixture back in line with the real `Create work` path by including a grounded Audio Overview script. Video remains contextual and appears only after Storyboard approval and local rendering.
+- Preserved the existing hero semantic marker for keyboard and focused-presentation tests without giving that card a larger visual footprint.
+
+### Verified
+
+- Inspected the refreshed desktop, compact, and mobile Created work views at original resolution. Six current expressions are simultaneously recognizable before Video; the rendered state shows all seven and keeps Video downstream of the approved Storyboard.
+- Inspected partial and `Needs update` variants. Source coverage, readiness, stale state, and the single recovery action remain legible with the denser layout.
+- Added responsive geometry assertions proving that the first four cards begin inside the visible viewport and remain at least 160 pixels wide at every canonical width.
+- The production build succeeded and the complete production-browser suite passed all 32 scenarios after only the intentionally affected Created work, partial, `Needs update`, and Video-state baselines were refreshed.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 32 web tests and 129 worker tests.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Repository hygiene decision
+
+- Audited root authorities, ignore rules, tracked generated-looking paths, largest tracked files, and current object-store size. `GOAL.md` is 221 lines, the dated plan remains advisory, local runtime/build/test paths are ignored, and the only tracked `dist` exception is the intentionally installable plugin server.
+- Retained the tracked media and provider artifacts because they are current hackathon proof, not disposable caches. Historical Git pack size cannot be reduced without destructive history rewriting and is not a product-quality blocker.
+- Left all pre-existing local plan, recording, demo-film, and design-audit changes untouched.
+
+### Decisions and open items
+
+- The Created work page is an index, not a hero landing page. Format equality belongs here; large visual hierarchy belongs inside the selected object.
+- Keep Video contextual to the Storyboard approval gate rather than showing a permanent empty Video card.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- Codex Session ID: unavailable on this surface; not inferred.
