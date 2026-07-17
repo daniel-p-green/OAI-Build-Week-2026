@@ -14,6 +14,7 @@ WorkshopLM runs locally in the Codex in-app browser as one focused workbench. Co
 - [DESIGN.md](DESIGN.md) is the current interface and visual-system contract.
 - [log.md](log.md) is the append-only implementation and verification record.
 - [PLAN-2026-07-13.md](PLAN-2026-07-13.md) is a dated architecture, safety, spike, and acceptance reference—not the active checklist. `GOAL.md`, current implementation evidence, and newer user direction take precedence.
+- [docs/REPOSITORY-MAP.md](docs/REPOSITORY-MAP.md) distinguishes product source, current proof, dated review material, and local-only state.
 
 ## The professional path
 

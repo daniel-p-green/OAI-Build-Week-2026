@@ -11182,3 +11182,34 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - Demo-film work remains paused. User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 05:47 CT — Repository roles and hygiene are now executable
+
+### Changed
+
+- Audited all 688 tracked files, root authority documents, ignore rules, package commands, proof directories, and the current untracked work before changing repository policy.
+- Added `docs/REPOSITORY-MAP.md` to distinguish product source, active authority, deterministic fixtures, inspected provider evidence, visual baselines, dated review outputs, submission material, and local-only runtime state.
+- Added `pnpm repo:hygiene` and made it the first step of `pnpm check`. It rejects tracked caches/runtime paths, broken local links in active documents, missing privacy/runtime ignore boundaries, and newly tracked files above a 10 MiB review threshold.
+- Added binary Git attributes for images, audio, video, PowerPoint, PDF, Figma, and archives so large proof artifacts are not treated as text diffs.
+- Preserved every tracked evidence artifact and every current user-owned draft. No history rewrite, generated-media deletion, preview ignore, or speculative cleanup occurred.
+
+### Verified
+
+- `pnpm repo:hygiene` passed with 688 tracked files before this change, five active documents checked, zero tracked transient paths, and a largest tracked file of 7.9 MiB.
+- `pnpm install --frozen-lockfile --offline` passed across all fourteen workspace projects and confirmed that the lockfile is current.
+- A cold-cache `pnpm check` passed the hygiene guard, lint, typecheck, and tests across all thirteen packages, including 19 production-renderer tests, 34 web tests, and 129 worker tests.
+- `pnpm demo:e2e` passed the deterministic Capture-to-Video seam after the repository-policy change.
+- The first standalone `pnpm submission:verify` correctly failed because `demo:e2e` does not materialize the separate local submission manifest. `pnpm submission:build` then produced the honest 25-asset `partial` fixture package, and `pnpm submission:verify` passed it as valid, current, and untampered with the two fixture limitations preserved.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- The 10 MiB threshold is a review gate, not a blanket ban on evidence media. A larger file may be added deliberately only after its role and distribution cost are considered.
+- The 696 MiB `.git` directory is mostly historical Build Week media and cannot be reduced by routine cleanup without rewriting shared history. No destructive history operation is justified.
+- `outputs/demo-recording-final-preview/`, `outputs/demo-film-plan/final-readiness.json`, and `product-design-audit/` remain visible, untracked user work. They were neither deleted nor silently ignored.
+- The normal submission verifier remains strict: missing local output is failure, not an implicit instruction to rebuild or a reason to weaken proof requirements.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- Demo-film work remains paused.
+- Codex Session ID: unavailable on this surface; not inferred.
