@@ -12067,3 +12067,13 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Update the GitHub About description before submission, then verify the new wording anonymously. The stale About copy must not be reused in Devpost.
 - No OpenAI provider request ran; the cumulative recorded provider-operation count remains 119. Demo-film work remains paused.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 13:02 CT — Public repository description aligned to the product
+
+- Replaced the retired GitHub About description `Capture to Shape to Deliver workflow` with `WorkshopLM — source-grounded professional workspace: Capture → Map → Brief → Create presentations, graphics, audio, storyboards, and video.`
+- An anonymous cache-busted GitHub API read returned the exact new description together with `private: false`, `visibility: public`, `default_branch: main`, and `license: MIT`.
+- Checked the repository metadata gate in the submission checklist. This reversible public correction changed no product file, release tag, submission form, or Video.
+- No OpenAI provider request ran; the cumulative recorded provider-operation count remains 119. Demo-film work remains paused.
+- Codex Session ID: unavailable on this surface; not inferred.

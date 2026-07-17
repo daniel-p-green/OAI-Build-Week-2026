@@ -30,7 +30,7 @@
 
 - [x] Public repository has an appropriate license, or private repository is shared with `testing@devpost.com` and `build-week-event@openai.com`
 - [x] Anonymous cache-busted GitHub and raw-file reads expose current `main`, the README, MIT license, and third-party notice without authentication
-- [ ] Update the public GitHub About description from the retired `Capture to Shape to Deliver` wording to the locked `Capture → Map → Brief → Create` model, then verify it anonymously
+- [x] Public GitHub About description uses the locked `Capture → Map → Brief → Create` model and broad created-work family; anonymous API verification passed
 - [x] README contains installation and run instructions
 - [x] README contains sample-data instructions when needed
 - [x] README explains how we collaborated with Codex
