@@ -95,6 +95,7 @@ async function selectProductPromise(page: Page, viewport: typeof viewports[numbe
     await outlineNode.click();
     return;
   }
+  if (await outlineNode.count() === 0) await page.getByRole("button", { name: /^Show \d+ more$/ }).click();
   await outlineNode.evaluate((button: HTMLButtonElement) => button.click());
 }
 
@@ -148,7 +149,7 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
   await expectMapReady(page, viewports[0]);
-  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("2 Evidence");
+  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("1 key evidence");
   await expect(page.getByRole("region", { name: "Map overview" })).toContainText("1 Synthesis");
   await expect(page.getByRole("region", { name: "Map overview" })).toContainText("1 Direction");
   const mapOverview = page.getByRole("region", { name: "Map overview" });
@@ -766,8 +767,8 @@ test.describe("completed Workshop judge path", () => {
       await page.locator(".storyboard-strip button").nth(2).click();
       await page.getByRole("button", { name: "Show source" }).click();
       const storyboardSource = page.getByRole("dialog", { name: "Source" });
-      await expect(storyboardSource).toContainText("Build Week brief");
-      await expect(storyboardSource).toContainText("Build notes · §2");
+      await expect(storyboardSource).toContainText("WorkshopLM direction");
+      await expect(storyboardSource).toContainText("Design · Map");
       await closeDialog(page, "Source");
       const titleField = page.getByRole("textbox", { name: "Panel title" });
       const originalTitle = await titleField.inputValue();
@@ -1518,7 +1519,7 @@ test("a new professional reaches the real Map through the durable first-use path
   await expectScreen(page, "desktop-onboarding-source-ready");
   await page.getByRole("button", { name: "Build my Map" }).click();
 
-  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Evidence");
+  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("key evidence");
   await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Recommended direction");
   await expect(page.getByRole("button", { name: /Recommended direction: Create work a consultant can refine and present without/ })).toBeVisible();
   await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();

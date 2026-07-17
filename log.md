@@ -11478,3 +11478,31 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
 - User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded. The ignored local `.workshoplm` data root remains intact; only the transient browser artifact created by this tranche was removed.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 08:35 CT — The Map opens on the argument, not the claim dump
+
+### Changed
+
+- Audited the current Map against the locked bar: hierarchy, clusters, evidence, and a recommended path should be understandable immediately. The canvas still gave every extracted statement equal visual weight, which made a source-rich Workshop read like a collection of boxes rather than a professional argument.
+- Added a bounded presentation layer that opens on at most three evidence items actually connected to the derived synthesis. When the same grounded statement is already the recommended Direction, its duplicate Evidence card is suppressed. One quiet `Show more` action reveals the remaining non-duplicate evidence without adding navigation or a generic whiteboard mode.
+- Kept the complete editable graph available: expanded desktop view restores secondary evidence, and the mobile Direction → Synthesis → Evidence outline always includes the full non-duplicate set. The constrained Excalidraw canvas, Source sheet, node editing, approval gate, and version history remain intact.
+- Tightened the deterministic fallback synthesis for fragmentation-and-traceability Sources so it names the actual professional insight instead of echoing the first evidence sentence.
+- Reconciled visual baselines to the current product after inspecting the Map change and previously landed semantic, poster, and Audio Overview improvements. No user-owned demo-film, planning, capture, final-preview, or product-design-audit work was included.
+
+### Verified
+
+- In the ChatGPT/Codex in-app browser, a genuinely empty temporary Workshop built from sample professional context opened on two key evidence items, `Client-ready work needs source traceability`, and one recommended Direction. `Show 2 more` revealed the two secondary findings; the 390×844 outline retained Direction, Synthesis, and all four non-duplicate Evidence items.
+- Visually inspected the focused Map and its Source disclosure at realistic desktop, 1024×768 compact, and 390×844 mobile widths. The current object, Source support, and next action remained identifiable without exposing Excalidraw tools.
+- The complete Playwright visual suite passed all 35 scenarios, including reset, first use, accessibility, Style, source tracing, created-work viewers, and desktop/compact/mobile paths. One earlier targeted attempt was terminated while Chrome launched before a page opened; its clean retry passed without skipping assertions.
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 37 web tests and 130 worker tests. Repository hygiene reported 691 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam through Capture, Map, Brief, Style, six images, Cedar Audio Overview, approved Storyboard, local Video, and build trace.
+- No OpenAI provider request ran; the append-only cumulative request count remains 118.
+
+### Decisions and open items
+
+- Map excellence means a constrained, auto-organized professional argument—not a broader Excalidraw feature surface. Evidence priority is progressive disclosure; it does not delete knowledge or weaken editability.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

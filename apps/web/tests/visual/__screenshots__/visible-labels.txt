@@ -1,12 +1,12 @@
 010203040506Image set6 imagesUp to date3 sources
-01The opportunity02The evidence03The proof04The direction05What changes nextStoryboard5 panelsReady for review3 sources
+01The opportunity02The friction03The proof04The evidence05The directionStoryboard5 panelsReady for review3 sources
 01The opportunity4s
-02The evidence4s
-03The proof5s
-04The direction5s
-05What changes next4s
+02The friction5s
+03The proof4s
+04The evidence4s
+05The direction5s
 3 sources
-42 wordsAudio Overview3 sourced pointsReady for review
+43 wordsAudio Overview3 sourced pointsReady for review
 Approve
 Approved direction
 Ask sources
@@ -15,7 +15,6 @@ Back to Brief
 Back to Created work
 Back to Map
 BriefReady
-Build notes · §2
 CaptureReady
 CreateReady
 Created work
@@ -31,6 +30,7 @@ PDFBuild Week brief3 claims
 Presentation
 Presentation3 sources4 source linksUp to date
 Review storyboard
+Show 1 more
 Show source
 Sketch
 Sketch4 ideasUp to date3 sources

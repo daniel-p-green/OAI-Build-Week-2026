@@ -183,8 +183,9 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
   return [...clusterFrames, ...evidenceSynthesisLinks, ...graphLinks, ...clusterLabels, ...nodeShapes, ...sourceCaptions];
 }
 
-export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, onSelectNode, onShowSource, onSync }: {
+export function ExcalidrawMap({ nodes, outlineNodes, sources, edges, style, selectedNodeId, onSelectNode, onShowSource, onSync }: {
   nodes: ExcalidrawMapNode[];
+  outlineNodes?: ExcalidrawMapNode[];
   sources: Source[];
   edges: MapEdge[];
   style?: MapStyle;
@@ -264,7 +265,7 @@ export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, on
     }, 500);
   }
 
-  const mobileNodes = [...nodes].sort((left, right) => ({ creative: 0, derived: 1, grounded: 2 })[left.kind] - ({ creative: 0, derived: 1, grounded: 2 })[right.kind]);
+  const mobileNodes = [...(outlineNodes ?? nodes)].sort((left, right) => ({ creative: 0, derived: 1, grounded: 2 })[left.kind] - ({ creative: 0, derived: 1, grounded: 2 })[right.kind]);
 
   return <div className="semantic-map" data-domain-ui="excalidraw-map">
     <div ref={containerRef} className="excalidraw-map" aria-label="Editable Map" onContextMenu={(event) => event.preventDefault()}>

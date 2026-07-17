@@ -500,7 +500,12 @@ function mapSynthesis(claims: WorkshopClaim[], direction: WorkshopClaim) {
   const lead = prose(evidence[0]!.text)
     .replace(/^(?:our|the)\s+(?:leadership\s+)?team\s+(?:needs?|requires?)\s+(?:a|an|the)\s+/i, "")
     .replace(/^we\s+(?:need|require)\s+(?:a|an|the)\s+/i, "");
-  const title = mapNodeTitle(lead);
+  const fragmentedSubject = evidence.length > 1 && /\b(?:slow|fragmented|disconnected)\b/i.test(evidence[0]!.text)
+    ? prose(evidence[0]!.text).match(/^(?:creating\s+)?(.+?)\s+(?:is|are)\s+(?:slow|fragmented|disconnected)\b/i)?.[1]
+    : undefined;
+  const traceability = evidence.slice(1).some((claim) => /\b(?:source locator|source trail|traceab(?:le|ility)|traced?|evidence)\b/i.test(claim.text));
+  const synthesizedTitle = fragmentedSubject && traceability ? `${fragmentedSubject} needs source traceability` : lead;
+  const title = mapNodeTitle(synthesizedTitle);
   return { body, title: title ? `${title[0]!.toUpperCase()}${title.slice(1)}` : "Source synthesis" };
 }
 export function assertStoryboardGrounding(state: WorkshopState): void {

@@ -31,6 +31,7 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNod
 import { RealtimeCapture } from "./realtime-capture";
 import { ExcalidrawMap } from "./excalidraw-map";
 import { claimsForArtifact } from "./artifact-evidence";
+import { prioritizeMapEvidence } from "./map-presentation";
 import { sourceInputKind, sourceTitleFromText } from "./source-input";
 import { realtimeFunctionOutput } from "./realtime-transcript";
 
@@ -758,6 +759,7 @@ function organizedMapNodes(nodes: MapNode[], _edges: MapEdge[]) {
 }
 
 function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShowSource, onOpenSources, onOpenConversation, onReviewStyle, onRetryStyle, onUseDefaultStyle }: { state: PersistedWorkshop | null; selectedNode?: MapNode; busy: boolean; onSelect: (id: string) => void; onSync: (nodes: Pick<MapNode, "id" | "title" | "x" | "y" | "width" | "height">[]) => void; onUndo: () => void; onShowSource: (target?: EvidenceTarget) => void; onOpenSources: () => void; onOpenConversation: () => void; onReviewStyle: () => void; onRetryStyle: (url: string) => void; onUseDefaultStyle: () => void }) {
+  const [showAllEvidence, setShowAllEvidence] = useState(false);
   const sources = (state?.sourceItems ?? []).filter((source) => state?.activeSourceIds.includes(source.id));
   const nodes = (state?.mapNodes ?? []).filter((node) => !node.sourceId || state?.activeSourceIds.includes(node.sourceId));
   const relatedSourceId = (node: MapNode, index: number) => node.sourceId ?? sources[index % Math.max(1, sources.length)]?.id;
@@ -767,7 +769,11 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
   const analysis = state?.onboarding.styleAnalysis;
   const analysisDomain = analysis ? new URL(analysis.url).hostname : "";
   const shouldOrganize = !state?.graphState?.includes("operation-canvas-");
-  const displayedNodes = useMemo(() => shouldOrganize ? organizedMapNodes(nodes, state?.mapEdges ?? []) : nodes, [nodes, state?.mapEdges, shouldOrganize]);
+  const keyPresentation = useMemo(() => prioritizeMapEvidence(nodes, state?.mapEdges ?? []), [nodes, state?.mapEdges]);
+  const expandedPresentation = useMemo(() => prioritizeMapEvidence(nodes, state?.mapEdges ?? [], Number.MAX_SAFE_INTEGER, false), [nodes, state?.mapEdges]);
+  const presentation = shouldOrganize ? (showAllEvidence ? expandedPresentation : keyPresentation) : { nodes, hiddenEvidenceCount: 0 };
+  const extraEvidenceCount = Math.max(0, expandedPresentation.nodes.filter((node) => node.kind === "grounded").length - keyPresentation.nodes.filter((node) => node.kind === "grounded").length);
+  const displayedNodes = useMemo(() => shouldOrganize ? organizedMapNodes(presentation.nodes, state?.mapEdges ?? []) : presentation.nodes, [presentation.nodes, state?.mapEdges, shouldOrganize]);
   const path = recommendedMapPath(nodes, state?.mapEdges ?? []);
   const recommendation = path[path.length - 1] ?? nodes[0];
   const directionLabel = state?.briefApproved && !state.frame?.stale ? "Approved direction" : "Recommended direction";
@@ -781,12 +787,12 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
 
   return <div className="map-canvas" data-domain-ui="map-canvas">
     <section className="map-insight-bar" aria-label="Map overview">
-      <div className="map-clusters"><span><b>{clusterCounts.evidence}</b> Evidence</span>{clusterCounts.synthesis > 0 && <span><b>{clusterCounts.synthesis}</b> Synthesis</span>}{clusterCounts.direction > 0 && <span><b>{clusterCounts.direction}</b> Direction</span>}</div>
+      <div className="map-clusters"><span><b>{clusterCounts.evidence}</b> {showAllEvidence ? "Evidence" : "key evidence"}</span>{shouldOrganize && extraEvidenceCount > 0 && <Button variant="secondary" size="small" className="map-more-evidence" onClick={() => setShowAllEvidence((visible) => !visible)}>{showAllEvidence ? "Show key evidence" : `Show ${extraEvidenceCount} more`}</Button>}{clusterCounts.synthesis > 0 && <span><b>{clusterCounts.synthesis}</b> Synthesis</span>}{clusterCounts.direction > 0 && <span><b>{clusterCounts.direction}</b> Direction</span>}</div>
       {recommendation && <div className="map-path"><small>{directionLabel}</small><Button variant="secondary" size="small" data-compact-label={directionLabel} aria-label={`${directionLabel}: ${recommendation.title}`} onClick={() => onSelect(recommendation.id)}>{recommendation.title}</Button></div>}
       {canUndo && <Button variant="secondary" size="small" disabled={busy} onClick={onUndo}>Undo</Button>}
     </section>
     {!state?.style && analysis && <Card className="style-analysis-status" role="status"><div><strong>{analysis.status === "reviewing" ? `Reviewing ${analysisDomain}…` : analysis.status === "ready" ? "Company style ready to review" : "Couldn't review this website"}</strong><p>{analysis.status === "reviewing" ? "Keep shaping the Map while WorkshopLM checks the public visual foundation." : analysis.status === "ready" ? "Review the suggested colors, type, and brand assets before creating work." : analysis.error ?? "Try again or continue with a clean professional Style."}</p></div><div className="button-row">{analysis.status === "ready" && <Button variant="secondary" size="small" onClick={onReviewStyle}>Review style</Button>}{analysis.status === "error" && <><Button variant="secondary" size="small" disabled={busy} onClick={() => onRetryStyle(analysis.url)}>Try again</Button><Button variant="secondary" size="small" onClick={onReviewStyle}>Set manually</Button><Button variant="secondary" size="small" disabled={busy} onClick={onUseDefaultStyle}>Use a clean default</Button></>}</div></Card>}
-    <ExcalidrawMap nodes={displayedNodes} sources={sources} edges={state?.mapEdges ?? []} style={state?.style ? { accent: state.style.accent, ink: state.style.ink, paper: state.style.paper } : undefined} selectedNodeId={selectedNode?.id} onSelectNode={onSelect} onShowSource={(sourceId) => onShowSource({ sourceId })} onSync={onSync} />
+    <ExcalidrawMap nodes={displayedNodes} outlineNodes={expandedPresentation.nodes} sources={sources} edges={state?.mapEdges ?? []} style={state?.style ? { accent: state.style.accent, ink: state.style.ink, paper: state.style.paper } : undefined} selectedNodeId={selectedNode?.id} onSelectNode={onSelect} onShowSource={(sourceId) => onShowSource({ sourceId })} onSync={onSync} />
     <section className="map-source-shelf" aria-label="Selected Sources"><div className="map-source-shelf-heading"><div><strong>Sources</strong><span>{sources.length} selected</span></div><Button variant="secondary" size="small" onClick={onOpenSources}>Manage</Button></div><div className="map-source-items">{sources.slice(0, 4).map((item) => <ListRowAction className="map-source-chip" key={item.id} onClick={() => onShowSource({ sourceId: item.id })}><FileIcon label={item.type} /><span><strong>{sourceDisplayTitle(item)}</strong><small>{item.claimCount} claims</small></span></ListRowAction>)}</div><Button variant="secondary" size="small" onClick={onOpenConversation}>Ask sources</Button></section>
     {selectedNode && <ClaimInspector node={selectedNode} source={source} busy={busy} onClose={() => onSelect("")} onSave={(title) => onSync([{ id: selectedNode.id, title, x: selectedNode.x, y: selectedNode.y, width: selectedNode.width, height: selectedNode.height }])} onShowSource={() => onShowSource({ sourceId: selectedSourceId, claimId: selectedNode.id, locator: selectedNode.locator })} />}
   </div>;

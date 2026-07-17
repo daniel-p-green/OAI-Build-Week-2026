@@ -123,6 +123,8 @@ button { -webkit-tap-highlight-color: transparent; }
 .map-clusters { display: flex; align-items: center; gap: 12px; }
 .map-clusters span { color: #6b6b6b; font-size: 11px; line-height: 15px; white-space: nowrap; }
 .map-clusters b { color: #0d0d0d; font-weight: 650; }
+.map-more-evidence.oai-button { min-height: 0; height: auto; padding: 2px 0; border: 0; border-bottom: 1px solid rgba(13,13,13,.28); border-radius: 0; background: transparent; color: #5d5d5d; font: 500 11px/15px inherit; white-space: nowrap; box-shadow: none; }
+.map-more-evidence:hover { color: #0d0d0d; border-bottom-color: #0d0d0d; }
 .map-path { min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
 .map-path > small { flex: 0 0 auto; color: #8f8f8f; font-size: 10px; font-weight: 600; line-height: 14px; text-transform: uppercase; }
 .map-path button { min-width: 0; max-width: min(420px, 100%); height: auto; display: block; overflow: hidden; padding: 5px 10px; border: 0; border-radius: 999px; background: #f3f3f3; font: 600 11px/15px inherit; text-align: left; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }

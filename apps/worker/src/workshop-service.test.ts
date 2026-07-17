@@ -132,7 +132,7 @@ it("organizes grounded claims into an honest deterministic evidence-to-direction
     const organized = organizeGroundedMap(root);
     expect(organized.mapNodes.filter((node) => node.kind === "grounded")).toHaveLength(3);
     expect(organized.mapNodes).toEqual(expect.arrayContaining([
-      expect.objectContaining({ id: "map-synthesis", kind: "derived", title: "Client work is fragmented across tools", body: "Client work is fragmented across tools. Every factual claim needs a source locator." }),
+      expect.objectContaining({ id: "map-synthesis", kind: "derived", title: "Client work needs source traceability", body: "Client work is fragmented across tools. Every factual claim needs a source locator." }),
       expect.objectContaining({ id: "map-direction", kind: "creative", title: "Approve direction before creating work", body: "The team should approve direction before creating work" }),
     ]));
     expect(organized.mapEdges.filter((edge) => edge.to === "map-synthesis")).toHaveLength(3);
