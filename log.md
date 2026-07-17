@@ -10386,3 +10386,40 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The verified result is unchanged: `Capture → Map → Brief → Create`, nested Conversation/Sources and Style, constrained semantic Map organization, 31/31 production-browser scenarios, and passing web typecheck.
 - No OpenAI provider request ran. The provider-operation ledger remains 115. The interrupted demo-film changes and user-owned plan/audit work remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 00:12 CT — Created-work source trust and four-stage UI contract verified
+
+### Changed
+
+- Added exact source-link counts to Presentation and Infographic cards so Created work communicates both Source coverage and trace depth before the professional opens an artifact.
+- Added source-link counts and a contextual `View source links` action beside the export controls in focused Presentation and Sketch views. The action moves directly to the artifact's claim-to-source trail without adding navigation or another persistent panel.
+- Replaced the remaining ordinary raw Map-path and Workshop-spine controls with official `Button` primitives while preserving the constrained semantic presentation.
+- Updated the `How WorkshopLM works` sheet to the locked primary model: Capture, Map, Brief, Create. Removed the obsolete visible `Shape` stage.
+- Reconciled the source-level official-component contract tests with the implemented Workshop index, four-stage spine, and simplified first-use flow instead of restoring deleted `Browse` and `Workshop views` language.
+- Regenerated the affected desktop, compact, and mobile Created work, focused-output, Sketch, and Map baselines. Removed regenerated Next and Turbo caches after verification.
+
+### Verified
+
+- The focused production-browser run regenerated and passed the intentional source-trust screenshots.
+- The complete update run passed all 31 production-browser scenarios in 1.5 minutes; the following no-update run passed all 31 again in 1.4 minutes.
+- Desktop Created work, mobile Created work, mobile Presentation, and mobile Sketch screenshots were visually inspected. Each now exposes current object, Source scope, source-link depth, next action, and the exact Source trail without horizontal page overflow.
+- `pnpm --filter @workshoplm/web test` passed all 30 web unit and contract tests.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 124 worker tests.
+- `pnpm demo:e2e` passed the recorded Source-to-Video seam: transcript, approved board, Brief, Style, Presentation, Infographic, Sketch, Audio Overview, six-image set, approved five-panel Storyboard, and rendered Video.
+
+### Decisions
+
+- Source trust should appear as lightweight context on created work, not as another rail, tab, badge system, or required detour.
+- `View source links` is artifact-specific and therefore complements rather than duplicates the Workshop-level Sources control.
+- The official component contract must protect the current product model. Tests that prescribe retired navigation are regressions in the test, not reasons to restore obsolete UI.
+- The connected product-quality item remains open for founder visual acceptance; passing tests and internal inspection do not substitute for that judgment.
+- No OpenAI provider request ran. The provider-operation ledger remains 115.
+
+### Open items
+
+- Obtain founder visual judgment on the current first-use, Map, Created work, and focused artifact surfaces. Repair only concrete visible blockers found in that review.
+- Then record and run the authentic founder Workshop through the verified path.
+- The user-owned plan/audit files and interrupted demo-film changes remain excluded from this tranche.
+- Codex Session ID: unavailable on this surface; not inferred.

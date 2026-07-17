@@ -248,7 +248,8 @@ test("dismissed guidance remains quietly available from the Workshop sheet", asy
     const help = page.getByRole("dialog", { name: "How WorkshopLM works" });
     await expect(help).toBeVisible();
     await expect(help.getByText("Capture", { exact: true })).toBeVisible();
-    await expect(help.getByText("Shape", { exact: true })).toBeVisible();
+    await expect(help.getByText("Map", { exact: true })).toBeVisible();
+    await expect(help.getByText("Brief", { exact: true })).toBeVisible();
     await expect(help.getByText("Create", { exact: true })).toBeVisible();
     await expect(help.getByText(/Brief and Storyboard are the only two sign-offs/)).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
@@ -590,7 +591,7 @@ test.describe("completed Workshop judge path", () => {
 
       await page.getByRole("button", { name: "Open Presentation" }).click();
       await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
-      await expect(page.getByText("Presentation · Version 1 · 3 sources", { exact: true })).toBeVisible();
+      await expect(page.getByText("Presentation · Version 1 · 3 sources · 4 source links", { exact: true })).toBeVisible();
       await expect(page.getByRole("button", { name: "3 sources" })).toBeVisible();
       await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveCount(0);
       await expect(page.getByRole("link", { name: "Download PowerPoint" })).toHaveClass(/oai-button--primary/);
@@ -608,6 +609,8 @@ test.describe("completed Workshop judge path", () => {
         };
       })).toEqual({ slideFits: true, titleFits: true });
       await expectScreen(page, `${viewport.name}-output-viewer`);
+      await page.getByRole("button", { name: "View source links" }).click();
+      await expect.poll(() => page.locator(".focused-output").evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
       await page.getByRole("button", { name: "Back to Created work" }).click();
 
       await page.getByRole("button", { name: "Open Image set" }).click();
@@ -759,7 +762,7 @@ test("Outputs preserve recognizable version history and source coverage", async 
   await expect(page.locator(".output-card").first()).toContainText(/\d+ sources?/);
   await expect(page.locator('.output-card iframe[title$="preview"]')).toHaveCount(2);
   await page.getByRole("button", { name: "Open Presentation, version 2" }).click();
-  await expect(page.getByText("Presentation · Version 2 · 3 sources", { exact: true })).toBeVisible();
+  await expect(page.getByText(/Presentation · Version 2 · 3 sources · \d+ source links/, { exact: true })).toBeVisible();
   const history = page.getByRole("region", { name: "Version history" });
   await expect(history.getByRole("button", { name: "Open Presentation, version 2" })).toContainText("Current view");
   await expect(history.getByRole("button", { name: "Open Presentation, version 1" })).toContainText("Needs update");

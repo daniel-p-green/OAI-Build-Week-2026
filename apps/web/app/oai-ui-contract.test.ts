@@ -60,12 +60,14 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(page).toContain('label="New Workshop"');
     expect(page).toContain('action: "selectWorkshop"');
     expect(page).toContain('action: "createWorkshop"');
-    expect(page).not.toMatch(/role="tab(list)?"|<nav\b/);
+    expect(page).not.toMatch(/role="tab(list)?"/);
+    expect(page).toContain('<nav className="workshop-spine" aria-label="Workshop progress">');
   });
 
   it("starts with material before asking for production Style", () => {
-    expect(page).toContain('title: title.trim(), outcome, onboardingStep: "sources"');
-    expect(page).toContain("Choose the look after the thinking is clear.");
+    expect(page).toContain('title: title.trim() || "New Workshop", outcome, onboardingStep: "sources"');
+    expect(page).toContain("Start with what you know.");
+    expect(page).toContain("WorkshopLM will organize it into a grounded Map.");
     expect(page.match(/origin: "Pasted notes", text: value, permission: "private"/g)).toHaveLength(2);
     expect(page).not.toContain('permission: "sanitized"');
     expect(page).not.toContain('title: title.trim(), outcome, onboardingStep: "style"');
@@ -83,8 +85,11 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(page).not.toContain('{loadState === "ready" && <SourcesRail');
     expect(page).not.toContain('{loadState === "ready" && <ProductionRail');
     expect(page).toContain('<Button className="header-source-trigger" variant="secondary" size="small" onClick={() => openSheet("sources")}');
-    expect(page).toContain('<Button className="header-browse-trigger" aria-label="Browse" variant="secondary" size="small" onClick={() => openSheet("objects")}');
-    expect(page).toContain('<SideSheet title="Workshop views" onClose={onClose}>');
+    expect(page).toContain('<Button className="header-browse-trigger" aria-label="Open Workshop index" variant="secondary" size="small" onClick={() => openSheet("objects")}');
+    expect(page).toContain('<SideSheet title="Workshop" onClose={onClose}>');
+    expect(page).toContain('type WorkshopStage = "capture" | "map" | "brief" | "create"');
+    expect(page).toContain('{ target: "conversation", title: "Conversation"');
+    expect(page).toContain('{ target: "sources", title: "Sources"');
     expect(page).not.toContain('mobile-object-switcher');
     expect(page).toContain('<ConversationSurface className="conversation-view" aria-label="WorkshopLM Conversation"');
     expect(page).toContain('className="map-source-shelf" aria-label="Selected Sources"');

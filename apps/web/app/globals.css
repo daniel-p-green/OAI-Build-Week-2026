@@ -122,7 +122,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .map-path > div { min-width: 0; display: flex; align-items: center; overflow: hidden; }
 .map-path span { min-width: 0; display: flex; align-items: center; }
 .map-path i { flex: 0 0 auto; margin: 0 5px; color: #b4b4b4; font-style: normal; font-size: 11px; }
-.map-path button { min-width: 0; max-width: 190px; overflow: hidden; padding: 3px 5px; border: 0; border-radius: 6px; background: transparent; font: 600 11px/15px inherit; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.map-path button { min-width: 0; max-width: 190px; height: auto; overflow: hidden; padding: 3px 5px; border: 0; border-radius: 6px; background: transparent; font: 600 11px/15px inherit; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
 .map-path button:hover { background: #f3f3f3; }
 .map-source-shelf { position: absolute; z-index: 7; right: 24px; bottom: 20px; left: 24px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 10px 12px; border: 1px solid rgba(13,13,13,.1); border-radius: 16px; background: rgba(255,255,255,.96); box-shadow: 0 12px 38px rgba(0,0,0,.08); backdrop-filter: blur(18px); }
 .map-source-shelf-heading { display: flex; align-items: center; gap: 10px; padding-right: 12px; border-right: 1px solid rgba(13,13,13,.08); }
