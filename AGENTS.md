@@ -73,7 +73,7 @@ For browser testing or page inspection, prefer the Codex in-app Browser plugin (
 - This project is being built for **OpenAI Build Week**.
 - The exact Devpost category is **Work & Productivity**.
 - Treat [GOAL.md](./GOAL.md) as the editable source of truth for the current objective, locked decisions, phase, and remaining work.
-- Treat [PLAN-2026-07-13.md](./PLAN-2026-07-13.md) as the execution schedule, integration-spike definition, and daily quality gate.
+- Treat [PLAN-2026-07-13.md](./PLAN-2026-07-13.md) as a dated architecture, safety, spike, and acceptance reference. It is not the active execution queue. Where it conflicts with `GOAL.md`, implemented product state, newer verified evidence, or the latest user direction, the newer source wins.
 - Treat [research/hackathon/README.md](./research/hackathon/README.md) as the local routing page for rules, judging criteria, submission requirements, and build-week notes.
 - The official rules at https://openai.devpost.com/rules remain authoritative if local notes or plugin output conflict.
 
@@ -81,7 +81,7 @@ For browser testing or page inspection, prefer the Codex in-app Browser plugin (
 
 Work autonomously from the locked product vision:
 
-1. Read `GOAL.md`, `PLAN-2026-07-13.md`, and the latest `log.md` entries.
+1. Read `GOAL.md` and the latest `log.md` entries. Consult `PLAN-2026-07-13.md` only when its enduring architecture, safety, spike, or acceptance principles are relevant.
 2. Take the highest-priority unchecked item owned by the current lane.
 3. Implement the smallest complete increment.
 4. Verify it with the narrowest real command, test, or live run. Never check a `GOAL.md` box without evidence that proves the exact claim.

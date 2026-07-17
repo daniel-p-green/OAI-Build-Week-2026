@@ -2720,6 +2720,32 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-17 02:44 CT — Repository authority and generated-state boundaries reconciled
+
+### Changed
+
+- Audited the live worktree, ignore rules, tracked binary footprint, generated output roots, current repository routing documents, and dated planning references before making cleanup changes.
+- Corrected `AGENTS.md` so `GOAL.md` and current evidence drive execution. `PLAN-2026-07-13.md` is now explicitly a dated architecture, safety, spike, and acceptance reference rather than an active checklist.
+- Added a concise `Start here` map to the public README and corrected its build-evidence section to use the same authority chain.
+- Added a status boundary to the approved technical specification: its architecture and invariants remain useful, while current vocabulary, experience hierarchy, scope, and priority come from `GOAL.md` and `DESIGN.md`.
+- Preserved the user-owned in-progress plan, video capture scripts, film-plan artifacts, final-preview outputs, and design-audit screenshots without staging, deleting, ignoring, or rewriting them.
+
+### Verified
+
+- `git status --short --ignored` confirms dependency trees, build caches, local Workshop data, test output, recording drafts, and OS metadata are ignored; no generated cache is accidentally tracked.
+- The tracked-media audit identified repository size as intentional evidence/history rather than a live cache leak. No Git history rewrite, LFS migration, garbage pruning, or destructive cleanup was attempted during the active hackathon build.
+- A focused search confirms active `AGENTS.md` and README routing no longer call the dated plan the execution schedule or active implementation plan.
+- `git diff --check` passes for the authority-chain changes.
+
+### Decisions and open items
+
+- Repository hygiene means unambiguous authority and clean generated-state boundaries, not deleting valuable evidence or rewriting history during the build.
+- The untracked final-preview and product-design-audit directories remain intentionally unclassified until their owning in-progress tranche decides whether they are evidence to preserve or disposable generated review output.
+- The product-quality critical-path item remains open. Founder visual acceptance and the authentic founder Workshop are still the next proof gates.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-17 01:26 CT — Infographic upgraded from generic flow to semantic decision graphic
 
 ### Changed
@@ -10753,4 +10779,14 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Judge the Map by semantic clarity and useful direction. Direct manipulation remains available only where it improves the professional's thinking.
 - Founder visual acceptance and the authentic founder Workshop remain the next proof gates.
 - User-owned `PLAN-2026-07-13.md`, interrupted founder/final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 02:46 CT — Log-order correction and repository verification
+
+- The full `02:44 CT` repository-authority entry was appended earlier in this file because its patch matched a repeated Session-ID footer. It remains unchanged there to preserve append-only history; this correction establishes its intended current chronology.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 128 worker tests, 30 web tests, and the official UI contract checks.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam after the authority-chain cleanup.
+- No OpenAI provider request ran; the provider-operation ledger remains 117. The separate user-owned plan and video tranche remains untouched.
 - Codex Session ID: unavailable on this surface; not inferred.

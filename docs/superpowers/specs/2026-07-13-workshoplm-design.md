@@ -1,5 +1,7 @@
 # WorkshopLM technical design
 
+> **Status, 2026-07-17:** This is the approved architecture and invariant reference. Product vocabulary, experience hierarchy, current scope, and execution priority are governed by root [`GOAL.md`](../../../GOAL.md) and [`DESIGN.md`](../../../DESIGN.md). The primary experience is `Capture → Map → Brief → Create`; older presentation-first or generic-whiteboard language below is historical implementation context rather than current UX direction.
+
 Status: approved and execution-reconciled
 Date: 2026-07-13
 Owner: WorkshopLM Build Week team

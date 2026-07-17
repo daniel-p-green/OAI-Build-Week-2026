@@ -8,6 +8,13 @@ Notebook-style tools help people learn from Sources. WorkshopLM helps profession
 
 WorkshopLM runs locally in the Codex in-app browser as one focused workbench. Conversation, Sources, Map, Brief, Style, created work, and Storyboard stay in one product surface; contextual views and sheets preserve the full workflow without a persistent tab maze. Codex desktop/CLI is the verified plugin host and build environment. ChatGPT Work support is not claimed.
 
+## Start here
+
+- [GOAL.md](GOAL.md) is the current product compass and execution queue.
+- [DESIGN.md](DESIGN.md) is the current interface and visual-system contract.
+- [log.md](log.md) is the append-only implementation and verification record.
+- [PLAN-2026-07-13.md](PLAN-2026-07-13.md) is a dated architecture, safety, spike, and acceptance reference—not the active checklist. `GOAL.md`, current implementation evidence, and newer user direction take precedence.
+
 ## The professional path
 
 ```text
@@ -146,7 +153,7 @@ The default fixture is sanitized and local. No account system, hosted storage, o
 
 ## Build evidence
 
-The project is built in dated commits during Build Week. Product decisions and verification results are recorded append-only in [log.md](log.md). The implementation plan is [PLAN-2026-07-13.md](PLAN-2026-07-13.md), and the UI contract is [DESIGN.md](DESIGN.md).
+The project is built in dated commits during Build Week. Product decisions and verification results are recorded append-only in [log.md](log.md). The current execution path is maintained in [GOAL.md](GOAL.md); the dated [PLAN-2026-07-13.md](PLAN-2026-07-13.md) remains useful for enduring architecture and acceptance principles, and the UI contract is [DESIGN.md](DESIGN.md).
 
 ## How we built it
 
