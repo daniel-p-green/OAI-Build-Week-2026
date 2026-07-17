@@ -78,32 +78,30 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(map).toContain("viewportZoomFactor: 0.88");
   });
 
-  it("keeps desktop context persistent and moves compact navigation into one sheet", () => {
-    expect(page).toContain('<Workbench className={`workbench ${leftRailOpen ? "" : "left-rail-collapsed"} ${rightRailOpen ? "" : "right-rail-collapsed"}`}>');
-    expect(page).toContain('<WorkbenchRail side="left" className="sources-rail" aria-label="Sources"');
-    expect(page).toContain('<WorkbenchRail side="right" className="production-rail" aria-label="Create"');
-    expect(page).toContain('<Button className="mobile-object-trigger" variant="secondary" size="small" onClick={() => openSheet("objects")}>Views</Button>');
+  it("keeps one dominant desktop object and moves Sources and navigation into contextual sheets", () => {
+    expect(page).toContain('<Workbench className="workbench">');
+    expect(page).not.toContain('{loadState === "ready" && <SourcesRail');
+    expect(page).not.toContain('{loadState === "ready" && <ProductionRail');
+    expect(page).toContain('<Button className="header-source-trigger" variant="secondary" size="small" onClick={() => openSheet("sources")}');
+    expect(page).toContain('<Button className="header-browse-trigger" aria-label="Browse" variant="secondary" size="small" onClick={() => openSheet("objects")}');
     expect(page).toContain('<SideSheet title="Workshop views" onClose={onClose}>');
     expect(page).not.toContain('mobile-object-switcher');
     expect(page).toContain('<ConversationSurface className="conversation-view" aria-label="WorkshopLM Conversation"');
-    expect(page).toContain('className="next-action" aria-label="Next action"');
-    expect(page).toContain('<ProductionItem title="Created work"');
+    expect(page).toContain('className="map-source-shelf" aria-label="Selected Sources"');
     expect(page).not.toContain('className="stage-progress"');
-    expect(appCss).toContain("grid-template-columns: 216px minmax(0, 1fr) 220px");
-    expect(appCss).toContain(".mobile-sources-trigger, .mobile-object-trigger { display: none; }");
-    expect(appCss).toContain(".mobile-workflow-action { display: block; }");
+    expect(appCss).toContain(".workbench { min-width: 0; min-height: 0; height: 100%; overflow: hidden; padding: 0;");
+    expect(appCss).toContain(".header-source-trigger, .header-browse-trigger, .workflow-action { display: flex; }");
   });
 
-  it("lets the canvas reclaim rail space without hiding source-scope consequences", () => {
-    for (const label of ["Collapse Sources", "Expand Sources", "Collapse Create", "Expand Create"]) expect(page).toContain(label);
+  it("lets the canvas own the screen without hiding source-scope consequences", () => {
     expect(page).toContain('aria-label="Source change impact"');
     expect(page).toContain('pending.affected.join(", ")');
     expect(page).toContain("will need an update. Your Style stays the same.");
     expect(page).toContain(">Update sources</Button>");
     expect(page).toContain("Keep at least one Source selected.");
     expect(page).toContain('action: "setActiveSourceScope", sourceIds: pendingSourceScope.sourceIds');
-    expect(appCss).toContain(".workbench.left-rail-collapsed.right-rail-collapsed");
-    expect(appCss).toContain("grid-template-columns: 48px minmax(0, 1fr) 48px");
+    expect(appCss).toContain(".map-source-shelf");
+    expect(appCss).toContain("backdrop-filter: blur(18px)");
   });
 
   it("keeps partial and failed production recovery inside the focused workflow", () => {

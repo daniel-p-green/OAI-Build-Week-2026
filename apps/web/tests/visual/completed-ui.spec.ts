@@ -20,18 +20,17 @@ async function closeDialog(page: Page, name: string) {
 }
 
 async function openWorkshopView(page: Page, view: "chat" | "brief" | "outputs" | "storyboard") {
-  const directName = view === "chat" ? "Chat" : view === "outputs" ? "View created work" : `View ${view}`;
-  const railName = view === "chat" ? "Sources" : "Create";
-  const direct = page.getByRole("complementary", { name: railName }).getByRole("button", { name: directName, exact: true });
-  if ((page.viewportSize()?.width ?? 0) > 900) {
-    if (!await direct.isVisible()) await page.getByRole("button", { name: `Expand ${railName}` }).click();
-    await direct.click();
-    return;
-  }
-  await page.getByRole("button", { name: "Views", exact: true }).click();
+  await page.getByRole("button", { name: "Browse", exact: true }).click();
   const sheet = page.getByRole("dialog", { name: "Workshop views" });
   await sheet.getByRole("button", { name: view === "outputs" ? "View created work" : `View ${view}`, exact: true }).click();
   await expect(sheet).toBeHidden();
+}
+
+async function openSources(page: Page) {
+  await page.getByRole("button", { name: /^\d+ sources?$/ }).click();
+  const sheet = page.getByRole("dialog", { name: "Sources" });
+  await expect(sheet).toBeVisible();
+  return sheet;
 }
 
 async function expectPrimaryActions(page: Page, count: 0 | 1) {
@@ -78,7 +77,7 @@ async function expectMapReady(page: Page, viewport: typeof viewports[number]) {
   if (viewport.name === "mobile") return;
   await expect(page.locator(".excalidraw-map .excalidraw")).toBeVisible();
   await expect(page.locator(".excalidraw-map canvas").first()).toBeVisible();
-  await page.waitForTimeout(250);
+  await page.waitForTimeout(1_000);
 }
 
 async function selectProductPromise(page: Page, viewport: typeof viewports[number]) {
@@ -117,39 +116,33 @@ test("reset fixture is calm and responsive", async ({ page }) => {
     await expectMapReady(page, viewport);
     await expectScreen(page, `${viewport.name}-reset-map`);
     if (viewport.width <= 900) {
-      const views = page.getByRole("button", { name: "Views", exact: true });
+      const views = page.getByRole("button", { name: "Browse", exact: true });
       await views.click();
       const viewSheet = page.getByRole("dialog", { name: "Workshop views" });
-      await expect(viewSheet.getByRole("button")).toHaveCount(6);
+      await expect(viewSheet.getByRole("button")).toHaveCount(7);
       await expect(viewSheet.getByRole("button", { name: "View map" })).toBeDisabled();
       await expect(viewSheet.getByRole("button", { name: "View brief" })).toBeDisabled();
       if (viewport.name === "mobile") await expectScreen(page, "mobile-workshop-views");
       await closeDialog(page, "Workshop views");
       await expect(views).toBeFocused();
     }
-    if (viewport.width > 900) {
-      await expect(page.getByRole("complementary", { name: "Sources" })).toBeVisible();
-      await expectScreen(page, `${viewport.name}-reset-sources`);
-      await page.getByRole("complementary", { name: "Sources" }).getByRole("button", { name: "Add material" }).click();
-    } else {
-      await page.getByRole("button", { name: /sources$/ }).click();
-      await expectScreen(page, `${viewport.name}-reset-sources`);
-      await page.getByRole("button", { name: "Add source" }).click();
-    }
+    const sourceSheet = await openSources(page);
+    await expectScreen(page, `${viewport.name}-reset-sources`);
+    await sourceSheet.getByRole("button", { name: "Add source" }).click();
     await expect(page.getByRole("dialog", { name: "Add source" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Record voice" })).toBeVisible();
     await expectScreen(page, `${viewport.name}-add-source`);
     await closeDialog(page, "Add source");
-    if (viewport.width <= 900) await closeDialog(page, "Sources");
+    await closeDialog(page, "Sources");
   }
 
-  await expect(page.getByRole("button", { name: /sources$/ })).toBeFocused();
+  await expect(page.getByRole("button", { name: /^\d+ sources?$/ })).toBeFocused();
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
   await expectMapReady(page, viewports[0]);
   const map = await page.locator(".excalidraw-map").boundingBox();
   if (!map) throw new Error("Editable Map did not expose a canvas boundary");
-  const promisePoint = { x: map.x + 303, y: map.y + 275 };
+  const promisePoint = { x: map.x + (map.width * 0.415), y: map.y + (map.height * 0.275) };
   await page.mouse.click(promisePoint.x, promisePoint.y);
   const claimEditor = page.getByRole("textbox", { name: "Claim" });
   await expect(claimEditor).toBeVisible();
@@ -172,7 +165,7 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   // Begin at the control immediately before the contextual next action. The Map
   // canvas intentionally owns many keyboard stops, so starting in Sources would
   // test Excalidraw's internal tab order rather than WorkshopLM's workflow.
-  await page.getByRole("button", { name: "Expand Create" }).focus();
+  await page.getByRole("button", { name: "Browse", exact: true }).focus();
   await pressTabUntil(page, "Approve brief");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("The product promise");
@@ -193,7 +186,8 @@ test("voice capture is bounded inside Add source and fails closed without live o
   let posted: Record<string, unknown> | undefined;
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
-  await page.getByRole("complementary", { name: "Sources" }).getByRole("button", { name: "Add material" }).click();
+  const sourceSheet = await openSources(page);
+  await sourceSheet.getByRole("button", { name: "Add source" }).click();
   await page.getByRole("button", { name: "Record voice" }).click();
   await expect(page.locator(".capture-error")).toContainText("Live OpenAI capture is disabled");
   await expect(page.getByRole("dialog", { name: "Add source" })).toBeVisible();
@@ -221,17 +215,14 @@ test("grounded Conversation preserves source scope, citations, and responsive wo
   for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/");
-    if (viewport.width > 900) await page.getByRole("complementary", { name: "Sources" }).getByRole("button", { name: "Chat" }).click();
-    else await openWorkshopView(page, "chat");
+    await openWorkshopView(page, "chat");
     const surface = page.getByRole("region", { name: "WorkshopLM Conversation" });
     await expect(surface).toBeVisible();
     await expect(surface.getByText("What should lead the presentation?")).toBeVisible();
     await expect(surface.getByRole("button", { name: source.title })).toBeVisible();
     await expect(surface.getByRole("textbox", { name: "Message WorkshopLM" })).toBeVisible();
-    if (viewport.width > 900) {
-      await expect(page.getByRole("complementary", { name: "Sources" })).toBeVisible();
-      await expect(page.getByRole("complementary", { name: "Create" })).toBeVisible();
-    }
+    await expect(page.getByRole("button", { name: /^\d+ sources?$/ })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Browse", exact: true })).toBeVisible();
     await expect(surface).toHaveScreenshot(`${viewport.name}-conversation.png`, { animations: "disabled", caret: "hide", maxDiffPixelRatio: viewport.name === "mobile" ? 0.004 : 0.001 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
     await surface.getByRole("button", { name: source.title }).click();
@@ -248,7 +239,9 @@ test("dismissed guidance remains quietly available from the Workshop sheet", asy
   for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/");
-    await page.getByRole("button", { name: "Switch Workshop" }).click();
+    const browse = page.getByRole("button", { name: "Browse" });
+    await browse.click();
+    await page.getByRole("button", { name: "Workshops" }).click();
     await page.getByRole("button", { name: "How WorkshopLM works" }).click();
     const help = page.getByRole("dialog", { name: "How WorkshopLM works" });
     await expect(help).toBeVisible();
@@ -258,14 +251,14 @@ test("dismissed guidance remains quietly available from the Workshop sheet", asy
     await expect(help.getByText(/Brief and Storyboard are the only two sign-offs/)).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
     await closeDialog(page, "How WorkshopLM works");
-    await expect(page.getByRole("button", { name: "Switch Workshop" })).toBeFocused();
+    await expect(browse).toBeFocused();
   }
 });
 
 test("transient sheets contain keyboard focus, close with Escape, and restore the trigger", async ({ page }) => {
   await page.setViewportSize({ width: 600, height: 800 });
   await page.goto("/");
-  const trigger = page.getByRole("button", { name: /sources$/ });
+  const trigger = page.getByRole("button", { name: /^\d+ sources?$/ });
   await trigger.focus();
   await page.keyboard.press("Enter");
   const sheet = page.getByRole("dialog", { name: "Sources" });
@@ -289,10 +282,11 @@ test("failed actions announce an error without removing the current work", async
     return route.continue();
   });
   await page.goto("/");
-  await page.getByRole("checkbox").first().click();
+  const sources = await openSources(page);
+  await sources.getByRole("checkbox").first().click();
   await page.getByRole("button", { name: "Update sources" }).click();
   await expect(page.locator(".notice[role='alert']")).toContainText("The source could not be added. Try again.");
-  await expect(page.getByRole("complementary", { name: "Sources" })).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Sources" })).toBeVisible();
   await expect(page.locator(".object-canvas[aria-label='Map']")).toBeVisible();
 });
 
@@ -554,18 +548,12 @@ test.describe("completed Workshop judge path", () => {
       await expectPrimaryActions(page, 1);
       await expectScreen(page, `${viewport.name}-map`);
 
-      if (viewport.width > 900) {
-        await expect(page.getByRole("complementary", { name: "Sources" })).toBeVisible();
-        await expectPrimaryActions(page, 1);
-        await expectScreen(page, `${viewport.name}-sources`);
-      } else {
-        const sourceTrigger = page.getByRole("button", { name: /sources$/ });
-        await sourceTrigger.click();
-        await expectPrimaryActions(page, 0);
-        await expectScreen(page, `${viewport.name}-sources`);
-        await closeDialog(page, "Sources");
-        await expect(sourceTrigger).toBeFocused();
-      }
+      const sourceTrigger = page.getByRole("button", { name: /^\d+ sources?$/ });
+      await sourceTrigger.click();
+      await expectPrimaryActions(page, 0);
+      await expectScreen(page, `${viewport.name}-sources`);
+      await closeDialog(page, "Sources");
+      await expect(sourceTrigger).toBeFocused();
 
       await selectProductPromise(page, viewport);
       await expect(page.getByRole("button", { name: "Show source" })).toBeVisible();
@@ -604,8 +592,7 @@ test.describe("completed Workshop judge path", () => {
       await page.getByRole("button", { name: "Open Presentation" }).click();
       await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
       await expect(page.getByText("Presentation · Version 1 · 3 sources", { exact: true })).toBeVisible();
-      if (viewport.width > 900) await expect(page.getByRole("complementary", { name: "Sources" })).toBeVisible();
-      else await expect(page.getByRole("button", { name: "3 sources" })).toBeVisible();
+      await expect(page.getByRole("button", { name: "3 sources" })).toBeVisible();
       await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveCount(0);
       await expect(page.getByRole("link", { name: "Download PowerPoint" })).toHaveClass(/oai-button--primary/);
       await expect(page.getByRole("region", { name: "Sources in this work" })).toBeVisible();
@@ -987,8 +974,7 @@ test("Video history preserves prior versions without adding another navigation s
 test("core primitive computed styles and states match the official reference", async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
-  await page.getByRole("button", { name: "Expand Create" }).click();
-  const button = page.locator(".next-action .oai-button");
+  const button = page.locator(".workflow-action .oai-button");
 
   await expect(button).toHaveCSS("height", "36px");
   await expect(button).toHaveCSS("padding", "8px 16px");
@@ -1001,7 +987,8 @@ test("core primitive computed styles and states match the official reference", a
   await expect(button).toHaveCSS("outline-width", "2px");
   await expect(button).toHaveCSS("outline-color", "rgb(2, 133, 255)");
 
-  const checkbox = page.getByRole("complementary", { name: "Sources" }).getByRole("checkbox").first();
+  const sourceSheet = await openSources(page);
+  const checkbox = sourceSheet.getByRole("checkbox").first();
   await expect(checkbox).toHaveCSS("appearance", "none");
   await expect(checkbox).toHaveCSS("width", "18px");
   await expect(checkbox).toHaveCSS("height", "18px");
@@ -1164,7 +1151,7 @@ test("visible copy stays plain and stable", async ({ page }) => {
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   await page.goto("/");
-  await expect(page.getByRole("complementary", { name: "Sources" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^\d+ sources?$/ })).toBeVisible();
   const labels = new Set<string>();
   for (const next of ["Map", "Brief", "Created work", "Storyboard"]) {
     if (next === "Brief") await openWorkshopView(page, "brief");
@@ -1232,8 +1219,8 @@ test("reduced motion, contrast, and 200 percent logical zoom remain usable", asy
   await page.goto("/");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(600);
   await expect(page.getByRole("region", { name: "Map" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Views", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: /sources$/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Browse", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: /^\d+ sources?$/ })).toBeVisible();
   await expect(page.locator(".oai-button").first()).toHaveCSS("transition-duration", "0s");
 
   const luminance = (hex: string) => {
@@ -1355,7 +1342,7 @@ test("a new professional reaches the real Map through the durable first-use path
   await expect(page.getByText("Your Map is ready.")).toBeVisible();
   await expect(page.getByText("6 ideas · Drag to organize · Double-click to edit")).toBeVisible();
   await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
-  await expect(page.getByRole("complementary", { name: "Sources" })).toContainText("1 of 1 selected");
+  await expect(page.locator(".map-source-shelf")).toContainText("1 selected");
   await expectMapReady(page, viewports[0]);
   await expectScreen(page, "desktop-onboarding-map");
   await page.getByRole("button", { name: "Got it" }).click();

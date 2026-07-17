@@ -197,8 +197,8 @@ Use these locations to verify current state. Do not copy their chronology back i
 - **Current product design system:** [`DESIGN.md`](DESIGN.md)
 - **Current product and architecture specification:** [`docs/superpowers/specs/2026-07-13-workshoplm-design.md`](docs/superpowers/specs/2026-07-13-workshoplm-design.md)
 - **Live OpenAI provider evidence:** [`artifacts/live/provider-run.json`](artifacts/live/provider-run.json) and [`artifacts/live-review/`](artifacts/live-review/)
-- **Current responsive UI proof:** [`artifacts/ui-review/`](artifacts/ui-review/) and [`outputs/workshoplm-current-ui/README.md`](outputs/workshoplm-current-ui/README.md)
-- **Current UI redesign target:** [`artifacts/ui-concepts/README.md`](artifacts/ui-concepts/README.md) and the two ten-direction concept boards in that folder; these are targets, not implementation evidence
+- **Current responsive UI proof:** the implemented Focus Canvas, Editorial Brief, Created Work Gallery, and Storyboard Cinema screenshots in [`artifacts/ui-review/`](artifacts/ui-review/), plus the complete browser baselines in [`apps/web/tests/visual/__screenshots__/`](apps/web/tests/visual/__screenshots__/)
+- **UI concept exploration:** [`artifacts/ui-concepts/README.md`](artifacts/ui-concepts/README.md) and the two ten-direction concept boards that established the implemented visual grammar
 - **Current created-work proof:** [`artifacts/live-review/presentation-v7/`](artifacts/live-review/presentation-v7/), [`artifacts/live-review/infographic-v6/`](artifacts/live-review/infographic-v6/), [`artifacts/live-review/audio-overview.png`](artifacts/live-review/audio-overview.png), and [`artifacts/live-review/gpt-image-2-contact-sheet.png`](artifacts/live-review/gpt-image-2-contact-sheet.png)
 - **Current stable HyperFrames proof:** [`artifacts/live-review/hyperframes-stable-motion-2026-07-16/`](artifacts/live-review/hyperframes-stable-motion-2026-07-16/)
 - **Current sample video proof:** [`outputs/demo-film-sample/manifest.json`](outputs/demo-film-sample/manifest.json) and [`outputs/demo-film-sample/workshoplm-demo-sample.mp4`](outputs/demo-film-sample/workshoplm-demo-sample.mp4)

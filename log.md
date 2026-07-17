@@ -2720,6 +2720,40 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-16 22:56 CT — High-fidelity focused-object UI implemented and accepted locally
+
+### Changed
+
+- Rebuilt the real Workshop shell around one dominant object instead of persistent Sources and creation rails. Sources and Workshop views now open from quiet header actions; the primary header action always reflects the next consequential workflow step.
+- Implemented the selected visual grammar from the ten-concept exploration: a full-width Focus Canvas with a contextual Source shelf, an editorial two-column Brief, an asymmetric Created Work Gallery, and a large-format Storyboard Cinema with its editing controls attached to the current panel.
+- Preserved the complete implemented capability through progressive disclosure. Sources, Conversation, Map, Brief, Style, created-work formats, Storyboard, Video, history, evidence, replacement, stale states, and responsive behavior remain reachable without a persistent tab maze.
+- Simplified compact and mobile navigation to a Source count, one Browse menu, and one workflow action. The Storyboard approval label is now short enough to remain clear at phone width.
+- Replaced every browser baseline and copied six current review proofs to `artifacts/ui-review/` for direct desktop and mobile inspection.
+
+### Verified
+
+- `pnpm --filter @workshoplm/web test` passed 30/30 unit and contract tests.
+- `pnpm --filter @workshoplm/web typecheck` passed.
+- `pnpm exec playwright test --config playwright.config.ts --update-snapshots=all` passed all 31 production-browser scenarios across desktop, compact, and mobile widths after the new baselines were visually inspected.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 124 worker tests, 30 web tests, 19 production tests, and 16 domain tests.
+- `pnpm demo:e2e` passed the deterministic Source-to-Video seam with cited grounding, current approval gates, six hash-bound image panels, Cedar Audio Overview fixture, five Storyboard panels, and a rendered local Video plus build trace.
+- `git diff --check` passed.
+
+### Decisions
+
+- The product now uses one coherent system rather than ten themes: Focus Canvas for thinking, Editorial Workspace for Brief and Style, Created Work Gallery for output browsing, Source-Led Studio for trust, and Storyboard Cinema for Video planning.
+- The former screenshots remain historical implementation evidence. The new `focus-canvas-*`, `editorial-brief-*`, `created-work-gallery-*`, and `storyboard-cinema-*` files are the current visual-quality proof.
+- This milestone fixes a visible blocker under `Review and refine the resulting knowledge work`; it does not add another format or expand the five-item critical path.
+- No OpenAI provider request ran during implementation or verification. The product provider-operation ledger remains 115.
+
+### Open items
+
+- Record and run the authentic founder Workshop, then judge these surfaces with founder-derived content rather than the sanitized fixture.
+- Intended-audience review, final founder-derived public Video, public links, and submission verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-16 22:24 CT — Focused workbench and professional Infographic pass are visually green
 
 ### Changed
@@ -10263,4 +10297,14 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Implement the selected visual system in the real product and replace the current screenshot set only after desktop and compact visual review clears the new bar.
 - Preserve all existing Source, approval, Style, Created work, Storyboard, and Video behavior through progressive disclosure.
 - Authentic founder Workshop, public Video review, intended-audience judgment, publication links, and final submission verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 22:58 CT — Log-order correction for the high-fidelity UI milestone
+
+- The full `22:56 CT` implementation and verification entry was appended earlier in this file because its patch matched a repeated Session ID line instead of the physical end. It remains unchanged there to preserve append-only history; this correction establishes its intended current chronology.
+- The verified result is unchanged: focused-object UI implemented, 31/31 production-browser scenarios, all thirteen package checks, and the deterministic Source-to-Video seam pass.
+- Current visual proof is in `artifacts/ui-review/focus-canvas-desktop-2026-07-16.png`, `editorial-brief-desktop-2026-07-16.png`, `created-work-gallery-*`, and `storyboard-cinema-*`.
+- No OpenAI provider request ran. The product provider-operation ledger remains 115. The authentic founder Workshop remains the next external gate.
 - Codex Session ID: unavailable on this surface; not inferred.
