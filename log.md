@@ -11126,3 +11126,31 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - Demo-film work remains paused. User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 05:33 CT — Website Style is now a decision before it is a form
+
+### Changed
+
+- Replaced the post-analysis website Style form with an overview-first review state grounded in the existing official Apps in ChatGPT primitives.
+- The review now shows the source website, Style name, intended use, palette, typography and safe fallback, website findings, available brand assets, and a quiet `Ready to use` state.
+- Made `Use this style` the single primary action. Exact colors, fonts, usage confirmation, logo selection, references, and negative rules remain available under `Edit details`; manual Style and saved-Style version editing keep their existing detailed paths.
+- Simplified the website-derived save label from the implementation-oriented `Save company style` to `Use this style`.
+
+### Verified
+
+- Inspected the regenerated `desktop-website-style.png`, `compact-website-style.png`, and `mobile-website-style.png` at original resolution. Each begins at the Style title and preserves the current Brief behind the sheet; no setup fields or internal details dominate the first decision.
+- Verified both the one-click safe-default path and the detailed-edit path. The latter still submits exact colors, confirmed fonts, selected brand assets, references, negative rules, and the intended-use profile.
+- The complete production-browser suite passed all 32 scenarios, including official-component computed states, responsive and reduced-motion coverage, Style failure fallbacks, saved-Style versioning, and the end-to-end first-use path.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 19 production-renderer tests, 34 web tests, and 129 worker tests.
+- `pnpm demo:e2e` passed the complete deterministic Capture-to-Video seam with both approval gates and current created work.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Website analysis is a recommendation, so its first surface should support a confident decision. Editing remains available but is no longer the default task.
+- Unconfirmed website fonts continue to use the system fallback until the professional explicitly confirms usage rights. Brand assets remain unselected by default.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- Demo-film work remains paused. User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
