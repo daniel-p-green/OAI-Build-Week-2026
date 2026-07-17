@@ -11368,3 +11368,33 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages after the Video-poster change.
 - `pnpm demo:e2e` passed the complete recorded-fixture seam through both approvals, six images, Cedar Audio Overview, Storyboard, local Video, and build trace.
 - The first isolated production-browser attempt was killed during Chrome launch before a page opened. The clean retry passed the real local Video scenario in 40.3 seconds; no product assertion was weakened or skipped.
+
+---
+
+## 2026-07-17 07:06 CT — A fresh Workshop promotes the decision, not the word “recommendation”
+
+### Changed
+
+- Opened WorkshopLM against a genuinely empty temporary data root and walked the first five minutes without fixture state. The Capture surface exposed voice, notes or website, local PDF, and one dominant `Build my Map` action; pasted notes reached a two-evidence, one-synthesis, one-direction Map in one action.
+- The live Map exposed a semantic ranking defect: descriptive context containing `every recommendation` tied with the actual decision sentence `The team should prioritize…`, so the earlier sentence won by source order.
+- Tightened deterministic direction ranking so `recommendation` as a noun is not treated as a directive, while an explicit professional `should` or `must` statement receives additional decision weight. The concise title still removes conversational scaffolding and keeps the complete source sentence underneath.
+
+### Verified
+
+- Added a no-fixture worker regression using the exact meeting text. The organizer now selects `Prioritize a two-week pilot, confirm ownership, and show…` with the complete sourced decision as its body; all 130 worker tests passed.
+- Repeated the full fresh-data-root interaction in the in-app browser. The corrected recommendation appeared in the Map overview and Direction node at desktop width, then remained first and legible in the 390×844 Direction → Synthesis → Evidence outline.
+- The isolated production first-use browser scenario passed and now asserts that its recommended direction is the professional outcome rather than a navigation or evidence sentence.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Direction ranking is a bounded deterministic fallback heuristic, not a new semantic engine. The live GPT-5.6 Terra organizer remains the preferred enabled path; both must produce the same professional object contract.
+- This proves the real empty-product path, not uncoached external-human usability. The independent human gate remains open and is not promoted by an agent-run interaction.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+### Final repository verification
+
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 130 worker tests and 34 web tests.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam through both approvals, six images, Cedar Audio Overview, Storyboard, local Video, and build trace.

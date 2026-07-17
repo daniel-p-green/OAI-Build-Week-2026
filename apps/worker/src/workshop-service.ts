@@ -458,7 +458,8 @@ function mapDirectionClaim(claims: WorkshopClaim[]) {
   const score = (claim: WorkshopClaim) => {
     const text = prose(claim.text);
     let value = 0;
-    if (/\b(should|must|recommend(?:ed|ation)?|prioriti[sz]e|focus|start|begin|use|adopt|next)\b/i.test(text)) value += 20;
+    if (/\b(should|must|recommend(?:ed)?|prioriti[sz]e|focus|start|begin|use|adopt|next)\b/i.test(text)) value += 20;
+    if (/\b(?:team|teams|professionals?|users?)\s+(?:should|must)\b/i.test(text)) value += 8;
     if (/\b(client|leadership|professional|decision|outcome|goal|launch|pilot|create|present|approve)\b/i.test(text)) value += 8;
     if (/\b(goal|outcome|promise)\b/i.test(text)) value += 8;
     if (/\b(source|evidence|trace|grounded|style|brand|trust)\b/i.test(text)) value += 4;

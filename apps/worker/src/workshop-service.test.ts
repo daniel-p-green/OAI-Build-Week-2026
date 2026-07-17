@@ -144,6 +144,27 @@ it("organizes grounded claims into an honest deterministic evidence-to-direction
     await rm(root, { recursive: true, force: true });
   }
 });
+it("promotes the proposed decision instead of prose that merely mentions recommendations", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-map-direction-rank-"));
+  const priorFixtureMode = process.env.WORKSHOPLM_SEEDED_FIXTURE;
+  delete process.env.WORKSHOPLM_SEEDED_FIXTURE;
+  try {
+    await ingestSource({
+      title: "Launch notes",
+      origin: "Meeting",
+      text: "We need a client-ready launch plan that keeps every recommendation tied to the meeting notes. The team should prioritize a two-week pilot, confirm ownership, and show leadership the decision path.",
+    }, root);
+    const organized = organizeGroundedMap(root);
+    expect(organized.mapNodes.find((node) => node.id === "map-direction")).toMatchObject({
+      title: "Prioritize a two-week pilot, confirm ownership, and show…",
+      body: "The team should prioritize a two-week pilot, confirm ownership, and show leadership the decision path",
+    });
+  } finally {
+    if (priorFixtureMode === undefined) delete process.env.WORKSHOPLM_SEEDED_FIXTURE;
+    else process.env.WORKSHOPLM_SEEDED_FIXTURE = priorFixtureMode;
+    await rm(root, { recursive: true, force: true });
+  }
+});
 it("turns realistic meeting notes into a six-idea grounded Map and a concise executable Brief", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-professional-shape-"));
   const priorFixtureMode = process.env.WORKSHOPLM_SEEDED_FIXTURE;

@@ -1520,6 +1520,7 @@ test("a new professional reaches the real Map through the durable first-use path
 
   await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Evidence");
   await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Recommended direction");
+  await expect(page.getByRole("button", { name: /Recommended direction: Create work a consultant can refine and present without/ })).toBeVisible();
   await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
   await expect(page.locator(".map-source-shelf")).toContainText("1 selected");
   await expectMapReady(page, viewports[0]);
