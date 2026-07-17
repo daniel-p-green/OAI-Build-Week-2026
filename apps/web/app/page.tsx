@@ -191,6 +191,7 @@ export default function WorkshopPage() {
   const [selectedOutputId, setSelectedOutputId] = useState("");
   const [notice, setNotice] = useState<{ message: string; tone: "status" | "error" } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [creationProgress, setCreationProgress] = useState<{ label: string; completed: number; total: number } | null>(null);
   const [streamingReply, setStreamingReply] = useState("");
   const [realtimeContinuation, setRealtimeContinuation] = useState<Record<string, unknown> | undefined>();
   const [pendingSourceScope, setPendingSourceScope] = useState<PendingSourceScope | null>(null);
@@ -446,15 +447,27 @@ export default function WorkshopPage() {
   async function createOutputs() {
     let complete = true;
     const run = async (body: Record<string, unknown>) => { const next = await post(body); complete = Boolean(next) && complete; return next; };
-    if (state?.outputRecovery?.deck || !state?.outputs.some((output) => output.type === "deck" && !output.stale)) await run({ action: "generateOutput", outputType: "deck" });
-    if (state?.outputRecovery?.infographic || !state?.outputs.some((output) => output.type === "infographic" && !output.stale)) await run({ action: "generateOutput", outputType: "infographic" });
-    if (!state?.sketch || state.sketch.stale) await run({ action: "createSketch" });
-    if (!state?.audioOverviews.some((overview) => !overview.stale)) await run({ action: "generateAudioOverview" });
-    await run({ action: "generateAssetPlan" });
-    if (!state?.imageBatch || state.imageBatch.stale || state.imageBatch.panels.some((panel) => panel.state === "failed" || panel.state === "selected_for_regeneration")) await run({ action: "createImageBatch" });
-    await run({ action: "generateStoryboard" });
-    setNotice(complete ? { message: "Created work is ready from your Brief, Style, and Sources.", tone: "status" } : { message: "Some work needs attention. Your current work is still available.", tone: "error" });
     openView("outputs");
+    const tasks: Array<{ label: string; create: () => Promise<unknown> }> = [];
+    if (state?.outputRecovery?.deck || !state?.outputs.some((output) => output.type === "deck" && !output.stale)) tasks.push({ label: "Presentation", create: () => run({ action: "generateOutput", outputType: "deck" }) });
+    if (state?.outputRecovery?.infographic || !state?.outputs.some((output) => output.type === "infographic" && !output.stale)) tasks.push({ label: "Infographic", create: () => run({ action: "generateOutput", outputType: "infographic" }) });
+    if (!state?.sketch || state.sketch.stale) tasks.push({ label: "Sketch", create: () => run({ action: "createSketch" }) });
+    if (!state?.audioOverviews.some((overview) => !overview.stale)) tasks.push({ label: "Audio Overview", create: () => run({ action: "generateAudioOverview" }) });
+    tasks.push({ label: "Image set", create: async () => {
+      await run({ action: "generateAssetPlan" });
+      if (!state?.imageBatch || state.imageBatch.stale || state.imageBatch.panels.some((panel) => panel.state === "failed" || panel.state === "selected_for_regeneration")) await run({ action: "createImageBatch" });
+    } });
+    tasks.push({ label: "Storyboard", create: () => run({ action: "generateStoryboard" }) });
+    try {
+      for (const [index, task] of tasks.entries()) {
+        setCreationProgress({ label: task.label, completed: index, total: tasks.length });
+        await task.create();
+      }
+      if (!complete) setNotice({ message: "Some work needs attention. Your current work is still available.", tone: "error" });
+      else if (state?.onboarding.outputsOrientationDismissed) setNotice({ message: "Created work is ready from your Brief, Style, and Sources.", tone: "status" });
+    } finally {
+      setCreationProgress(null);
+    }
   }
 
   function requestSourceScopeChange(sourceId: string) {
@@ -488,7 +501,9 @@ export default function WorkshopPage() {
   const currentTitle = view === "output" ? (selectedOutput ? outputTitle(selectedOutput.type) : selectedOutputId?.startsWith("audio-overview-") ? "Audio Overview" : selectedOutputId?.startsWith("sketch") ? "Sketch" : selectedOutputId === "images" ? "Image set" : "Demo video") : VIEW_TITLES[view];
   const currentStage = stageForView(view);
   const backTarget: ObjectView | null = view === "conversation" || view === "map" ? null : view === "brief" ? "map" : view === "outputs" ? "brief" : "outputs";
-  const workflowAction = !state?.mapNodes.length
+  const workflowAction = creationProgress
+    ? <Button variant="secondary" disabled>Creating {creationProgress.label}…</Button>
+    : !state?.mapNodes.length
     ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => openSheet("add-source")}>Add source</Button>
     : !state.briefApproved || state.frame?.stale
       ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => { void post({ action: "approveBrief" }).then((next) => next && openView("brief")); }}>Approve brief</Button>
@@ -543,7 +558,7 @@ export default function WorkshopPage() {
           {loadState === "ready" && view === "conversation" && <ConversationView state={state} busy={busy} streamingReply={streamingReply} realtimeContinuation={realtimeContinuation} onRealtimeContinuationSent={() => setRealtimeContinuation(undefined)} onSend={sendConversation} onVoiceSave={async (text, capture) => Boolean(await post({ action: "captureFallbackTranscript", text, capture }))} onVoiceToolEvent={handleRealtimeToolEvent} onConfirmTool={confirmToolCall} onShowSource={showSource} />}
           {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onOpenSources={() => openSheet("sources")} onOpenConversation={() => openView("conversation")} onReviewStyle={() => openSheet("style")} onRetryStyle={(url) => { void post({ action: "beginWebsiteStyleAnalysis", url }); }} onUseDefaultStyle={() => { void post({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: state?.onboarding.outcome } }); }} />}
           {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
-          {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
+          {loadState === "ready" && view === "outputs" && <OutputsView state={state} creationProgress={creationProgress} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
           {loadState === "ready" && view === "storyboard" && <StoryboardView storyboard={state?.storyboard} storyboardHistory={state?.storyboardHistory ?? []} imageBatch={state?.imageBatch} style={state?.style} approved={Boolean(state?.storyboardApproved)} panel={selectedPanel} busy={busy} onSelect={setSelectedPanelId} onPost={post} onShowSource={showSource} />}
           {loadState === "ready" && view === "output" && <FocusedOutputView state={state} outputId={selectedOutputId} busy={busy} onPost={post} onOpenOutput={openOutput} onShowSource={showSource} onShowOriginal={() => openSheet("original")} onEditStoryboard={() => openView("storyboard")} onRequestReplacement={(panelId) => { setSelectedImagePanelId(panelId); openSheet("image-replacement"); }} />}
         </section>
@@ -817,7 +832,7 @@ function StyleSheet({ style, analysisSuggestion, defaultIntent, library, busy, o
   </SideSheet>;
 }
 
-function OutputsView({ state, onOpenOutput, onOpenStoryboard, onDismissOrientation }: { state: PersistedWorkshop | null; onOpenOutput: (id: string) => void; onOpenStoryboard: () => void; onDismissOrientation: () => void }) {
+function OutputsView({ state, creationProgress, onOpenOutput, onOpenStoryboard, onDismissOrientation }: { state: PersistedWorkshop | null; creationProgress: { label: string; completed: number; total: number } | null; onOpenOutput: (id: string) => void; onOpenStoryboard: () => void; onDismissOrientation: () => void }) {
   const allOutputs = [...(state?.outputs ?? [])].sort((left, right) => left.type === right.type
     ? right.createdAt.localeCompare(left.createdAt)
     : left.type === "deck" ? -1 : 1);
@@ -834,10 +849,11 @@ function OutputsView({ state, onOpenOutput, onOpenStoryboard, onDismissOrientati
   return <article className="outputs-view">
     <header className="object-page-header"><div><h1>Created work</h1><p>One Workshop, expressed in every format.</p></div><span>{[outputs.length, audioOverviews.length, state?.sketch ? 1 : 0, state?.imageBatch ? 1 : 0, state?.storyboard.panels.length ? 1 : 0, videos.length].reduce((sum, count) => sum + count, 0)} current</span></header>
     {!ready ? <StateMessage state="empty" title="Choose a Style">Your Brief is ready. Add a Style to create professional work.</StateMessage> : <>
-      {!state?.onboarding.outputsOrientationDismissed && heroDeckId && <Card className="outputs-orientation"><div><strong>Your created work is ready.</strong><p>Every format shares this Workshop's Sources and Style. Open any item to review or refine it.</p></div><div className="button-row"><Button variant="secondary" size="small" onClick={onDismissOrientation}>Got it</Button></div></Card>}
-      {(state?.outputs.length ?? 0) === 0 && !state?.sketch && !state?.imageBatch && !state?.audioOverviews.length && <StateMessage state="empty" title="Create your first work">Turn this Brief into a Presentation, hand-drawn Sketch, Infographic, Audio Overview, Graphics, and Storyboard.</StateMessage>}
-      {partial && !needsUpdate && <StateMessage state="partial" title="Some work is ready">Review what is ready, then update the rest of the set.</StateMessage>}
-      {needsUpdate && <StateMessage state="needs-update" title="Created work needs an update">Your Sources, Brief, or Style changed. Update the work before sharing it.</StateMessage>}
+      {creationProgress && <Card className="creation-progress" role="status" aria-live="polite"><div><strong>Creating your work</strong><p>{creationProgress.label}</p></div><span>{Math.min(creationProgress.completed + 1, creationProgress.total)} of {creationProgress.total}</span></Card>}
+      {!creationProgress && !state?.onboarding.outputsOrientationDismissed && heroDeckId && <Card className="outputs-orientation"><div><strong>Your created work is ready.</strong><p>Every format shares this Workshop's Sources and Style. Open any item to review or refine it.</p></div><div className="button-row"><Button variant="secondary" size="small" onClick={onDismissOrientation}>Got it</Button></div></Card>}
+      {!creationProgress && (state?.outputs.length ?? 0) === 0 && !state?.sketch && !state?.imageBatch && !state?.audioOverviews.length && <StateMessage state="empty" title="Create your first work">Turn this Brief into a Presentation, hand-drawn Sketch, Infographic, Audio Overview, Graphics, and Storyboard.</StateMessage>}
+      {!creationProgress && partial && !needsUpdate && <StateMessage state="partial" title="Some work is ready">Review what is ready, then update the rest of the set.</StateMessage>}
+      {!creationProgress && needsUpdate && <StateMessage state="needs-update" title="Created work needs an update">Your Sources, Brief, or Style changed. Update the work before sharing it.</StateMessage>}
       <section className="output-grid">{outputs.map((output) => {
         const versions = allOutputs.filter((item) => item.type === output.type).length;
         const version = outputVersion(output, state?.outputs ?? []);

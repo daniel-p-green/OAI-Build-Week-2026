@@ -342,6 +342,72 @@ test("an empty Workshop reaches an editable Presentation through one obvious pat
   }
 });
 
+test("Create opens immediately and reports progress at every responsive width", async ({ page }) => {
+  const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
+  execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
+  const current = await (await page.request.get("/api/workshop")).json();
+  const readyStyle = current.style ?? { name: "Clean professional", accent: "#2D5BDB", ink: "#0D0D0D", paper: "#FFFFFF", version: 1 };
+  const readyState = {
+    ...current,
+    briefApproved: true,
+    frame: current.frame ? { ...current.frame, stale: false } : current.frame,
+    style: { ...readyStyle, stale: false },
+    outputs: [],
+    audioOverviews: [],
+    sketch: undefined,
+    sketchHistory: [],
+    assetPlan: undefined,
+    imageBatch: undefined,
+    storyboard: { ...current.storyboard, panels: [], stale: false },
+    storyboardApproved: false,
+    videos: [],
+    videoState: "not_started",
+    outputRecovery: {},
+  };
+  const outputFixtures = current.outputs as Array<{ id: string; type: string }>;
+  expect(outputFixtures.some((output) => output.type === "deck")).toBeTruthy();
+  let createdOutputs: Array<{ id: string; type: string }> = [];
+  let holdInfographic = false;
+  let releaseInfographic: (() => void) | null = null;
+  await page.route("**/api/workshop*", async (route) => {
+    if (route.request().method() === "GET" && route.request().url().includes("view=styles")) return route.fulfill({ json: { styles: [] } });
+    if (route.request().method() === "GET") {
+      if (!route.request().url().includes("view=")) createdOutputs = [];
+      return route.fulfill({ json: readyState });
+    }
+    const body = route.request().postDataJSON() as { action?: string; outputType?: string };
+    if (body.action === "generateOutput" && body.outputType === "infographic" && holdInfographic) {
+      await new Promise<void>((resolve) => { releaseInfographic = resolve; });
+      holdInfographic = false;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 60));
+    if (body.action === "generateOutput") {
+      const output = outputFixtures.find((candidate) => candidate.type === body.outputType);
+      if (output && !createdOutputs.some((candidate) => candidate.id === output.id)) createdOutputs = [...createdOutputs, output];
+    }
+    return route.fulfill({ json: { ...readyState, outputs: createdOutputs } });
+  });
+
+  for (const viewport of viewports) {
+    createdOutputs = [];
+    holdInfographic = true;
+    releaseInfographic = null;
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto("/");
+    await expect(page.getByRole("button", { name: "Create work" })).toBeVisible();
+    await page.getByRole("button", { name: "Create work" }).click();
+    await expect(page.getByRole("heading", { name: "Created work" })).toBeVisible();
+    const progress = page.getByRole("status").filter({ hasText: "Creating your work" });
+    await expect(progress).toContainText("Presentation");
+    await expect(page.getByRole("button", { name: /Creating Presentation/ })).toBeDisabled();
+    await expect(progress).toContainText("Infographic");
+    await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
+    await expectScreen(page, `${viewport.name}-creating-work`);
+    releaseInfographic?.();
+    await expect(progress).toHaveCount(0, { timeout: 5000 });
+  }
+});
+
 test("the approved Map becomes a focused hand-drawn Sketch without another navigation mode", async ({ page }) => {
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });

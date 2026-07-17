@@ -11154,3 +11154,31 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - Demo-film work remains paused. User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 05:40 CT — Create now reveals work as it becomes ready
+
+### Changed
+
+- Repaired the invisible wait between `Create work` and the completed-work view. The app now opens Create immediately before beginning the multi-format run.
+- Added one quiet, live status that names the current format and reports its position in the bounded creation sequence. Presentation, Infographic, Sketch, Audio Overview, Image set, and Storyboard retain their existing generation and grounding paths.
+- Finished formats now appear in the grid as soon as their existing action completes, so a professional can see and use current work while later formats continue.
+- Kept the global next action aligned with the same current format and disabled it during the run. First creation uses the existing orientation card after completion; later updates retain the quiet completion notice without showing both messages at once.
+
+### Verified
+
+- Added a production-browser scenario that holds the Infographic step, proves the Presentation is already visible, and inspects the live Create state at desktop, compact, and mobile widths.
+- Inspected `desktop-creating-work.png`, `compact-creating-work.png`, and `mobile-creating-work.png` at original resolution. Each shows one current format, one bounded status, one finished piece of work, Source scope, and no new navigation or configuration surface.
+- The production build succeeded and the complete production-browser suite passed all 33 scenarios, including the full first-use path, partial and failure states, accessibility checks, official-component contracts, and all focused created-work views.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 19 production-renderer tests, 34 web tests, and 129 worker tests.
+- `pnpm demo:e2e` passed the complete deterministic Capture-to-Video seam with both approval gates and current created work.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Creation progress is contextual UI state, not a new persisted product object or navigation mode. Durable job and artifact status remain authoritative after reload or failure.
+- The format sequence follows the existing dependencies. Image planning remains hidden inside `Image set`; professionals do not learn an internal asset-plan concept.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- Demo-film work remains paused. User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
