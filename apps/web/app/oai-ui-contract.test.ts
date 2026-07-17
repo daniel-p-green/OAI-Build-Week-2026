@@ -86,7 +86,11 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(map).toContain("api.scrollToContent(elements");
     expect(map).toContain("new ResizeObserver(() => fitScene())");
     expect(map).toContain("fitToViewport: true");
-    expect(map).toContain("viewportZoomFactor: 0.88");
+    expect(map).toContain("viewportZoomFactor: 0.94");
+    expect(map).toContain("NODE_OFFSET_X = 0");
+    expect(map).toContain("compactSourceTitle");
+    expect(map).toContain("sourceCaptions");
+    expect(map).not.toContain("sourceShapeId");
   });
 
   it("keeps one dominant desktop object and moves Sources and navigation into contextual sheets", () => {

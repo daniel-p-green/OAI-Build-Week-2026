@@ -10954,3 +10954,31 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 04:27 CT — The Map reads as a professional reasoning system
+
+### Changed
+
+- Reframed the desktop and compact Excalidraw scene around three auto-fitted semantic lanes: Evidence, Synthesis, and one emphasized Direction. The content now uses the full canvas instead of reserving a large left rail for duplicate Source boxes.
+- Replaced large Source nodes and Source-to-evidence arrows with compact Source annotations attached to evidence cards. Exact source text remains available through the claim inspector and the persistent Sources shelf.
+- Strengthened the hierarchy with larger idea typography, quiet white evidence and synthesis cards, a restrained product-accent Direction, softer convergence links, and clearer cluster boundaries.
+- Expanded organized card proportions and horizontal spacing so both the two-evidence judge fixture and a real six-claim first-use Map remain readable without manual whiteboard arrangement.
+- Kept mobile intentionally non-canvas: Direction → Synthesis → Evidence remains the focused professional outline rather than a miniature Excalidraw surface.
+
+### Verified
+
+- Inspected the refreshed desktop and compact judge Map, reset Map, website-Style handoff, Sources sheet, evidence sheet, and six-claim first-use Map at original resolution. The simple fixture has one visible reasoning chain; the dense first-use case retains six distinct evidence cards, one synthesis, one recommended direction, and compact Source annotations.
+- The production build succeeded and the complete production-browser suite passed all 32 scenarios without snapshot updates after the intentional baselines were refreshed.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 32 web tests and 129 worker tests.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam with both approval gates, current rendered outputs, Sketch, Cedar Audio Overview, six provider-backed image panels, five Storyboard panels, local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- The Map's excellence bar is fast comprehension of hierarchy, clusters, evidence, and direction—not parity with a generic whiteboard. Source annotations and direct inspection outrank standalone Source shapes when those shapes weaken the reasoning hierarchy.
+- Preserve Excalidraw editing, resize, movement, selection, and undo beneath the constrained composition; do not expose another toolbar or drawing mode.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

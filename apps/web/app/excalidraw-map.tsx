@@ -10,7 +10,7 @@ const Excalidraw = dynamic(() => import("@excalidraw/excalidraw").then((module) 
 
 const SCENE_WIDTH = 1000;
 const SCENE_HEIGHT = 650;
-const NODE_OFFSET_X = 205;
+const NODE_OFFSET_X = 0;
 const NODE_SCALE_X = 7.45;
 
 export type ExcalidrawMapNode = {
@@ -44,7 +44,6 @@ type SceneElement = MapSceneElement & {
 type SceneAppState = { selectedElementIds: Record<string, boolean> };
 
 const shapeId = (nodeId: string) => `map-node-${nodeId}`;
-const sourceShapeId = (sourceId: string) => `map-source-${sourceId}`;
 const toSceneX = (value: number) => NODE_OFFSET_X + value * NODE_SCALE_X;
 const toSceneY = (value: number) => value * (SCENE_HEIGHT / 100);
 const toSceneWidth = (value: number) => value * (SCENE_WIDTH / 100);
@@ -56,11 +55,14 @@ const sourceTitle = (source: Source) => isVoiceSource(source)
   ? source.origin === "Founder-provided recording" ? "Founder brainstorm" : "Voice brainstorm"
   : source.title;
 const sourceType = (source: Source) => isVoiceSource(source) ? "VOICE" : source.type;
+const compactSourceTitle = (source: Source) => {
+  const title = sourceTitle(source);
+  return title.length > 26 ? `${title.slice(0, 25).trimEnd()}…` : title;
+};
 
 function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: MapEdge[], style?: MapStyle) {
   const accent = style?.accent ?? "#0285ff";
   const ink = style?.ink ?? "#171816";
-  const activeSourceIds = new Set(sources.map((source) => source.id));
   const nodeIds = new Set(nodes.map((node) => node.id));
   const nodeById = new Map(nodes.map((node) => [node.id, node]));
   const groundedNodes = nodes.filter((node) => node.kind === "grounded");
@@ -68,14 +70,11 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     const sourceId = node.sourceId ?? sources[index % Math.max(1, sources.length)]?.id;
     return sourceId ? [[node.id, sourceId] as const] : [];
   }));
-  const canvasSourceIds = new Set(sourceForNode.values());
-  const canvasSources = sources.filter((source) => canvasSourceIds.has(source.id));
-  const sourceGeometry = new Map(canvasSources.map((source, index) => [source.id, { x: 24, y: 70 + index * 180, width: 184, height: 108 }]));
   const nodeGeometry = new Map(nodes.map((node) => [node.id, { x: toSceneX(node.x), y: toSceneY(node.y), width: toSceneWidth(node.width), height: toSceneY(node.height) }]));
   const clusterDescriptors = ([
-    { id: "map-cluster-evidence", text: "EVIDENCE", kind: "grounded", fill: "#eef8f1", stroke: "#008635" },
-    { id: "map-cluster-synthesis", text: "SYNTHESIS", kind: "derived", fill: "#f3f3f3", stroke: ink },
-    { id: "map-cluster-direction", text: "DIRECTION", kind: "creative", fill: `${accent}12`, stroke: accent },
+    { id: "map-cluster-evidence", text: "EVIDENCE", kind: "grounded", fill: "#f7fbf8", stroke: "#008635" },
+    { id: "map-cluster-synthesis", text: "SYNTHESIS", kind: "derived", fill: "#fafafa", stroke: ink },
+    { id: "map-cluster-direction", text: "DIRECTION", kind: "creative", fill: `${accent}0b`, stroke: accent },
   ] as const).flatMap((descriptor) => {
     const members = nodes.filter((node) => node.kind === descriptor.kind).map((node) => nodeGeometry.get(node.id)).filter((geometry): geometry is NonNullable<typeof geometry> => Boolean(geometry));
     if (!members.length) return [];
@@ -93,7 +92,7 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     width: cluster.width,
     height: cluster.height,
     backgroundColor: cluster.fill,
-    strokeColor: `${cluster.stroke}28`,
+    strokeColor: `${cluster.stroke}22`,
     strokeWidth: 1,
     fillStyle: "solid" as const,
     roughness: 0,
@@ -106,27 +105,11 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     x: cluster.x + 14,
     y: cluster.y + 12,
     text: cluster.text,
-    fontSize: 11,
+    fontSize: 12,
     fontFamily: 2 as const,
     strokeColor: `${cluster.stroke}c4`,
     locked: true,
   }));
-  const sourceShapes = canvasSources.map((source) => {
-    const geometry = sourceGeometry.get(source.id)!;
-    return {
-      type: "rectangle" as const,
-      id: sourceShapeId(source.id),
-      ...geometry,
-      label: { text: `${sourceType(source)}  ${sourceTitle(source)}\n${source.claimCount} ${source.claimCount === 1 ? "claim" : "claims"}`, fontSize: 13, fontFamily: 2 as const, textAlign: "left" as const },
-      customData: { sourceId: source.id },
-      backgroundColor: `${ink}08`,
-      strokeColor: `${ink}85`,
-      strokeWidth: 1.25,
-      fillStyle: "solid" as const,
-      roughness: 0,
-      roundness: { type: 3 as const },
-    };
-  });
   const nodeShapes = nodes.map((node) => ({
     type: "rectangle" as const,
     id: shapeId(node.id),
@@ -134,35 +117,29 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     y: toSceneY(node.y),
     width: toSceneWidth(node.width),
     height: toSceneY(node.height),
-    label: { text: node.title, fontSize: 17, fontFamily: 2 as const, textAlign: "left" as const, verticalAlign: "middle" as const },
+    label: { text: node.title, fontSize: node.kind === "creative" ? 19 : 18, fontFamily: 2 as const, textAlign: "left" as const, verticalAlign: "middle" as const },
     customData: { nodeId: node.id },
-    backgroundColor: node.kind === "grounded" ? "#eef8f1" : node.kind === "derived" ? "#f3f3f3" : `${accent}12`,
+    backgroundColor: node.kind === "grounded" || node.kind === "derived" ? "#ffffff" : `${accent}14`,
     strokeColor: node.kind === "grounded" ? "#008635" : node.kind === "derived" ? `${ink}9a` : accent,
-    strokeWidth: node.kind === "creative" ? 2.25 : 1.5,
+    strokeWidth: node.kind === "creative" ? 2.25 : 1.25,
     fillStyle: "solid" as const,
     roughness: 0,
     roundness: { type: 3 as const },
   }));
-
-  const linkedSourceIds = new Set<string>();
-  const sourceLinks = groundedNodes.flatMap((node) => {
+  const sourceCaptions = groundedNodes.flatMap((node) => {
     const sourceId = sourceForNode.get(node.id);
-    if (!sourceId || !activeSourceIds.has(sourceId) || linkedSourceIds.has(sourceId)) return [];
-    const start = sourceGeometry.get(sourceId);
-    const end = nodeGeometry.get(node.id);
-    if (!start || !end) return [];
-    linkedSourceIds.add(sourceId);
-    const connection = connectionBetween(start, end);
+    const source = sources.find((item) => item.id === sourceId);
+    const geometry = nodeGeometry.get(node.id);
+    if (!source || !geometry) return [];
     return [{
-      type: "arrow" as const,
-      id: `source-edge-${sourceId}-${node.id}`,
-      ...connection,
-      start: { id: sourceShapeId(sourceId) },
-      end: { id: shapeId(node.id) },
-      strokeColor: `${ink}54`,
-      strokeWidth: 1.4,
-      roughness: 0,
-      endArrowhead: "arrow" as const,
+      type: "text" as const,
+      id: `map-source-caption-${node.id}`,
+      x: geometry.x + 18,
+      y: geometry.y + geometry.height + 7,
+      text: `${sourceType(source)} · ${compactSourceTitle(source)}`,
+      fontSize: 11,
+      fontFamily: 2 as const,
+      strokeColor: "#477259",
       locked: true,
     }];
   });
@@ -176,15 +153,15 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
       type: "arrow" as const,
       id: `graph-edge-${edge.id}`,
       ...connection,
-      strokeColor: edge.kind === "contradicts" ? "#e02e2a" : nodeById.get(edge.to)?.kind === "creative" ? accent : `${ink}88`,
-      strokeWidth: nodeById.get(edge.to)?.kind === "creative" ? 2.5 : 1.5,
+      strokeColor: edge.kind === "contradicts" ? "#e02e2a" : nodeById.get(edge.to)?.kind === "creative" ? accent : `${ink}52`,
+      strokeWidth: nodeById.get(edge.to)?.kind === "creative" ? 2.5 : 1.15,
       roughness: 0,
       endArrowhead: "arrow" as const,
       locked: true,
     }];
   });
 
-  return [...clusterFrames, ...sourceLinks, ...graphLinks, ...clusterLabels, ...sourceShapes, ...nodeShapes];
+  return [...clusterFrames, ...graphLinks, ...clusterLabels, ...nodeShapes, ...sourceCaptions];
 }
 
 export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, onSelectNode, onShowSource, onSync }: {
@@ -235,7 +212,7 @@ export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, on
     fitFrame.current = requestAnimationFrame(() => {
       fitFrame.current = requestAnimationFrame(() => {
         const elements = api.getSceneElements();
-        if (elements.length) api.scrollToContent(elements, { fitToViewport: true, viewportZoomFactor: 0.88, minZoom: 0.35, maxZoom: 1, animate: false });
+        if (elements.length) api.scrollToContent(elements, { fitToViewport: true, viewportZoomFactor: 0.94, minZoom: 0.35, maxZoom: 1, animate: false });
         fitFrame.current = null;
       });
     });

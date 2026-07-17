@@ -693,10 +693,10 @@ function organizedMapNodes(nodes: MapNode[], _edges: MapEdge[]) {
       const step = rows <= 1 ? 0 : Math.min(26, 58 / (rows - 1));
       return layer.map((node, index) => ({ ...node, x: index % 2 === 0 ? 2 : 29, y: Math.round((14 + Math.floor(index / 2) * step) * 10) / 10, width: 20, height: 16 }));
     }
-    const x = [6, 61, 92];
+    const x = [4, 58, 101];
     const step = layer.length <= 1 ? 0 : Math.min(23, 72 / (layer.length - 1));
     const start = layer.length <= 1 ? 41 : 10;
-    return layer.map((node, index) => ({ ...node, x: x[layerIndex]!, y: Math.round((start + index * step) * 10) / 10, width: layerIndex === 0 ? 22 : 20, height: 16 }));
+    return layer.map((node, index) => ({ ...node, x: x[layerIndex]!, y: Math.round((start + index * step) * 10) / 10, width: layerIndex === 0 ? 26 : layerIndex === 1 ? 23 : 24, height: layerIndex === 2 ? 20 : 18 }));
   });
 }
 
