@@ -1,14 +1,14 @@
 # Live provider authorization runbook
 
-Status: ready, not authorized, zero provider generation calls made.
+Status: current founder-run procedure, updated 2026-07-16. The authorized sample provider run has completed; the founder-derived run remains pending.
 
 WorkshopLM has two separate spend-gated runs. Request ceilings are enforced in code, but they are not dollar estimates. The dated [provider cost envelope](./2026-07-15-provider-cost-envelope.md) converts the current fixed fixture into a reviewable estimate and records the remaining TTS pricing uncertainty.
 
-Recommended boundary: set a **$5 OpenAI project budget or alert**, authorize exactly nine benchmark requests plus exactly twelve initial live-operator requests, and authorize at most one 60-second capture-only Realtime turn. Treat the project setting as an operating envelope, not as proof of a hard per-command cutoff. Retries require a new explicit ceiling after the zero-spend retry preflight.
+Current boundary: Daniel has authorized up to **$50 of OpenAI API spend** for WorkshopLM. The executable still fails closed unless the founder run supplies an explicit ceiling of exactly thirteen planned requests: one grounded Map, six images, five Storyboard narration clips, and one Audio Overview. Treat the project setting as an operating envelope, not as proof of a hard per-command cutoff. Retries require a new explicit ceiling after the zero-spend retry preflight.
 
 Suggested authorization statement:
 
-> Authorize the nine-request GPT-5.6 benchmark, the twelve-request WorkshopLM live operator, and one capture-only Realtime turn up to 60 seconds, under a $5 OpenAI project budget or alert. Do not run retries without a new explicit request ceiling.
+> Run the reviewed founder Workshop with an explicit thirteen-request ceiling under the already authorized $50 project envelope. Do not run retries until the zero-spend retry preflight reports the exact missing requests.
 
 ## 1. GPT-5.6 routing benchmark
 
@@ -25,34 +25,37 @@ The command refuses to start when the ceiling is missing or below nine. Inspect 
 
 ## 2. Live thought-to-delivery run
 
-This run makes exactly twelve planned OpenAI requests:
+This run makes exactly thirteen planned OpenAI requests:
 
 - one GPT-5.6 grounded Map request;
 - six GPT Image 2 requests;
-- five `gpt-4o-mini-tts` narration requests.
+- five `gpt-4o-mini-tts` Storyboard narration requests; and
+- one `gpt-4o-mini-tts` Audio Overview request.
 
 ```bash
 WORKSHOPLM_LIVE_OPENAI=1 \
-WORKSHOPLM_MAX_PAID_REQUESTS=12 \
+WORKSHOPLM_MAX_PAID_REQUESTS=13 \
 OPENAI_API_KEY=... \
 pnpm demo:live -- --execute
 ```
 
-The command refuses to start when the ceiling is missing or below twelve. One shared counter reserves requests before dispatch, including concurrent image requests, and counts failed provider attempts. It cannot silently exceed the supplied ceiling.
+The command refuses to start when the ceiling is missing or below thirteen. One shared counter reserves requests before dispatch, including concurrent image requests, and counts failed provider attempts. It cannot silently exceed the supplied ceiling.
 
 Every authorized attempt writes a terminal record to `.workshoplm/live-operator-run.json`. A passed record includes request usage and provider evidence. A partial or failed record includes the failed stage, sanitized error, completed panel hashes and request IDs, recorded panel failures, and the exact recovery command. The record lives outside the operator root. If it proves reusable paid results, both normal preflight and normal execution refuse to reset the corresponding local state.
 
-Before authorization, run the zero-spend plan:
+For the authentic founder run, keep the recording and transcript outside `.workshoplm/`, then run the private zero-spend preflight:
 
 ```bash
-pnpm demo:live
+pnpm demo:founder -- --founder-recording /absolute/path/founder.mov --founder-transcript /absolute/path/founder.txt
 ```
 
-The first preflight intentionally reports `providerVoiceReady: false` and no executable `nextCommand`. Start the printed `viewCommand`, open **Add source**, use **Record voice**, and choose **Add transcript** after the provider transcript appears. Then rerun `pnpm demo:live`. The operator preserves that exact verified WebRTC transcript and provider item/event IDs while rebuilding the clean Workshop. Only then does preflight report `providerVoiceReady: true` and print the twelve-request command.
+The first preflight imports the recording transcript as a private Source, prints `viewCommand`, withholds paid execution, and does not stage founder evidence into the public film-input directory. Review that Workshop locally. If and only if those exact files are intended for the public meta-demo, run the printed `shareablePreflightCommand`. That second zero-spend preflight marks the founder Source shareable, stages hash-bound film inputs, and prints the exact thirteen-request `nextCommand`. A founder recording and transcript satisfy the capture-evidence gate without pretending the import was a provider Realtime turn.
 
-Preflight also validates the complete media contract before the first paid request: six unique current image panels with exact active-source edges and an untampered shared reference, plus every Storyboard narration's title, text, positive duration, active claim/source/chunk/locator edge, and 4,096-character Speech API limit. The report prints panel and character counts. A defect in either plan blocks execution before GPT-5.6 or media spend.
+The alternative Realtime capture path remains available for non-founder operation: run `pnpm demo:live`, open its `viewCommand`, use **Record voice**, choose **Add transcript**, and rerun the preflight. The operator preserves the verified WebRTC transcript and provider IDs. Do not combine that optional path with claims about the founder recording unless both evidence sources actually exist.
 
-Live execution refuses before any paid GPT-5.6, Image, or Speech request when verified voice evidence is absent. This prevents a successful media run from remaining permanently `partial` at submission packaging time.
+Preflight also validates the complete media contract before the first paid request: six unique current image panels with exact active-source edges and an untampered shared reference, every Storyboard narration's title, text, positive duration, active claim/source/chunk/locator edge, and 4,096-character Speech API limit, plus the grounded Audio Overview plan. The report prints panel and character counts. A defect blocks execution before GPT-5.6 or media spend.
+
+Live execution refuses before any paid GPT-5.6, Image, or Speech request when neither verified Realtime voice evidence nor a validated founder recording/transcript exists. This prevents a successful media run from remaining permanently `partial` at submission packaging time.
 
 ## Inspection gate
 

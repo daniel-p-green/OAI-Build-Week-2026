@@ -9752,3 +9752,35 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The five-item critical path in `GOAL.md` remains unchanged. Founder recording is still the next required external input; the public video, `/feedback` Session ID, release tag, and submitted Devpost links remain final-gate work.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 19:40 CT — Founder runbook reconciled to the executable thirteen-request path
+
+### Changed
+
+- Corrected the judge README's stale Audio Overview duration from 35.7 seconds to the current verified 33.5-second Cedar artifact.
+- Rewrote the active founder/provider runbook around the actual private-review workflow: founder recording and transcript stay outside `.workshoplm/`; the first preflight imports them as a private Source and withholds spend; the reviewed shareable preflight stages hash-bound film evidence and prints the paid command.
+- Updated the clean founder-run ceiling from twelve to thirteen requests: one Terra Map, six GPT Image 2 panels, five Cedar Storyboard clips, and one Cedar Audio Overview. The runbook now distinguishes validated founder-file import from optional provider Realtime capture instead of conflating their provenance.
+- Updated the dated cost-envelope note to acknowledge the authorized $50 project envelope, the completed sample provider work, the separate Audio Overview request, and the current thirteen-request executable boundary. It remains an estimate rather than an account invoice.
+- Extended the submission-packet verifier so it fails when the README duration drifts from the current Audio Overview provenance or the founder runbook regresses from the thirteen-request private-review path.
+
+### Verified
+
+- `pnpm submission:packet:verify` passes with the 140.010667-second sample editorial film, eight ready shots, two founder-blocked shots, six provider images, and the 33.5-second Cedar Audio Overview.
+- `WORKSHOPLM_SEEDED_FIXTURE=1 pnpm --filter @workshoplm/worker exec vitest run src/founder-capture.test.ts src/live-operator-evidence.test.ts` passes 10/10 focused founder capture, privacy, retry, request-ceiling, and evidence-fingerprint tests.
+- A broader worker invocation ran all 121 tests rather than the requested subset: 114 passed and seven website tests failed because the restricted environment could not resolve `example.com`. A direct two-file run without `WORKSHOPLM_SEEDED_FIXTURE=1` also exposed two expected fixture-grounding failures; the exact package test environment above passed. No source code was changed to hide either environment boundary.
+- The active README, founder runbook, cost envelope, and executable now agree on thirteen initial provider requests and one separate Audio Overview request. `git diff --check` passes.
+
+### Decisions
+
+- The founder runbook is operational current truth despite its dated filename because `GOAL.md` links it directly. Historical spike evidence retains its original twelve-request wording rather than being rewritten.
+- Founder source sharing remains an explicit privacy action. Existing spend authorization does not authorize making private founder evidence shareable.
+- No OpenAI provider request ran. The provider-operation ledger remains 114.
+- `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+### Open items
+
+- The critical path remains founder-gated: record the authentic brainstorm, run its private preflight, review the Source, deliberately execute the shareable preflight, and only then run the printed thirteen-request command.
+- The public video, intended-audience review, `/feedback` Session ID, release tag, and submitted links remain final-gate work.
+- Codex Session ID: unavailable on this surface; not inferred.

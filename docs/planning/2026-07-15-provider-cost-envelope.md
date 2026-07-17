@@ -1,15 +1,15 @@
 # Provider cost envelope
 
-Status: pricing snapshot captured 2026-07-15; no paid provider call has run.
+Status: historical pricing snapshot captured 2026-07-15; operational request counts updated 2026-07-16. Authorized sample provider calls have since run, while exact account debit remains unavailable.
 
 This document converts WorkshopLM's enforced request ceilings into a reviewable spend envelope. It is an estimate, not an invoice and not a replacement for checking the OpenAI usage dashboard after each authorized run. Prices can change, so recheck the linked official pages before a later run.
 
-## Recommended authorization
+## Current authorization
 
-Set a **$5 project budget or alert**, then explicitly authorize:
+Daniel has authorized a **$50 OpenAI API envelope** for WorkshopLM. Within that envelope, the executable requires an explicit command-level ceiling for:
 
 - exactly nine benchmark requests;
-- exactly twelve initial thought-to-delivery requests;
+- exactly thirteen initial thought-to-delivery requests;
 - one capture-only Realtime transcription turn of at most 60 seconds;
 - no automatic retry allowance. A retry receives its own request ceiling after the zero-spend retry preflight reports the missing panels.
 
@@ -17,7 +17,7 @@ The application request ceilings and GPT-5.6 `max_output_tokens` values are enfo
 
 Suggested authorization statement:
 
-> Authorize the nine-request GPT-5.6 benchmark, the twelve-request WorkshopLM live operator, and one capture-only Realtime turn up to 60 seconds, under a $5 OpenAI project budget or alert. Do not run retries without a new explicit request ceiling.
+> Run the reviewed founder Workshop with an explicit thirteen-request ceiling under the already authorized $50 project envelope. Do not run retries until the zero-spend retry preflight reports the exact missing requests.
 
 ## Current official rates used
 
@@ -52,16 +52,17 @@ Official sources:
 | GPT-5.6 grounded Map | 1 request; `max_output_tokens: 2200` | **At most $0.066 of Sol output.** Input depends on the current selected claims; the fixture is compact, but input dollars are estimated rather than hard-capped. |
 | GPT Image 2 batch | 6 requests; one medium 1024×1024 image each | **$0.318 image-output estimate**, plus small prompt-input charges. |
 | Narration | 5 requests; one Storyboard panel each; 4,096 characters maximum per request | **Dollar rate not published on the current pricing page.** Usage is bounded by request count and input length, but the dollar component remains an explicit uncertainty until the live account reports usage or OpenAI publishes the rate. |
+| Audio Overview | 1 request; one grounded reviewed script; 4,096 characters maximum | **Dollar rate not published on the captured pricing page.** The request is bounded and recorded separately from Storyboard narration. |
 | Capture-only Realtime | 1 bounded transcription turn; no assistant Response | **$0.017 per minute**: $0.0085 for 30 seconds or $0.017 for 60 seconds. |
 
-The known-priced portion of the initial benchmark, Map, image batch, and one 60-second capture remains comfortably below $1. The recommended $5 envelope leaves room for the currently unpublished TTS charge and one or more separately authorized selective retries without pretending the unknown rate is zero.
+The known-priced portion of the initial benchmark, Map, image batch, and one 60-second capture remained comfortably below $1 under this dated pricing snapshot. The authorized $50 envelope leaves ample room for the unpublished TTS component and separately bounded founder run without pretending the unknown rate is zero; exact account debit still requires the provider usage surface.
 
 ## Hard boundaries versus estimates
 
 Hard in WorkshopLM:
 
 - benchmark refuses a ceiling below nine;
-- live operator refuses a ceiling below twelve;
+- live operator refuses a ceiling below thirteen for a clean founder run;
 - every attempted provider request consumes the shared counter, including failed requests;
 - retries select only missing media and require a fresh exact ceiling;
 - GPT-5.6 output tokens are capped in each request;
@@ -78,4 +79,4 @@ Unknown from the current public pricing page:
 
 - the dollar rate for `gpt-4o-mini-tts`.
 
-No command in this document authorizes spend by itself. The run remains blocked until Daniel supplies explicit authorization matching the statement above.
+No command in this document authorizes spend by itself. The founder run remains gated on reviewed founder evidence, explicit Source-sharing intent, the existing $50 envelope, and the exact command-level request ceiling printed by the current preflight.

@@ -9,6 +9,8 @@ const readJson = async (path) => JSON.parse(await readText(path));
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
 const paths = {
+  readme: "README.md",
+  founderRunbook: "docs/planning/2026-07-15-live-provider-authorization.md",
   devpost: "submission/DEVPOST-DRAFT.md",
   script: "submission/DEMO-SCRIPT.md",
   ledger: "submission/CLAIM-LEDGER.md",
@@ -31,7 +33,9 @@ const paths = {
   package: "package.json",
 };
 
-const [devpost, script, ledger, audit, checklist, roughReadme, sampleReadme, provider, narration, roughCut, sampleCut, filmPlan, thumbnailManifest, uiGallery, judgeImages, judgeAudio, acceptanceManifest, packageJson] = await Promise.all([
+const [readme, founderRunbook, devpost, script, ledger, audit, checklist, roughReadme, sampleReadme, provider, narration, roughCut, sampleCut, filmPlan, thumbnailManifest, uiGallery, judgeImages, judgeAudio, acceptanceManifest, packageJson] = await Promise.all([
+  readText(paths.readme),
+  readText(paths.founderRunbook),
   readText(paths.devpost),
   readText(paths.script),
   readText(paths.ledger),
@@ -77,6 +81,7 @@ assert(roughReadme.includes("Replace shot 10 only after the final non-partial su
 assert(sampleReadme.includes("It is intentionally not founder footage or the public submission video.") && sampleReadme.includes("pnpm demo:film:verify-sample"), "Sample-film handoff does not preserve its truth boundary or verifier.");
 assert(packageJson.scripts?.["judge:start"] === "pnpm demo:e2e && pnpm demo:serve", "The one-command judge fixture path is missing or no longer serves the acceptance root.");
 assert(devpost.includes("pnpm install --frozen-lockfile") && devpost.includes("pnpm judge:start") && !devpost.includes("pnpm demo:e2e && pnpm dev"), "Devpost judge instructions do not use the verified one-command fixture path.");
+assert(founderRunbook.includes("exactly thirteen planned OpenAI requests") && founderRunbook.includes("pnpm demo:founder -- --founder-recording") && founderRunbook.includes("shareablePreflightCommand") && !/twelve-request|MAX_PAID_REQUESTS=12|below twelve/.test(founderRunbook), "Founder runbook has drifted from the current thirteen-request private-review workflow.");
 assert(ledger.includes("Last reconciled: 2026-07-16 CT") && audit.includes("Audit date: 2026-07-16 CT"), "Submission truth files are not dated to the current reconciliation.");
 
 assert(provider.sourceMode === "authorized-sample" && provider.founderSource === false, "Provider evidence no longer records the authorized-sample boundary.");
@@ -141,6 +146,7 @@ for (const panel of judgeImages.panels) {
 }
 const judgeAudioBytes = await readFile(resolve(repository, paths.judgeAudioFile));
 assert(judgeAudio.audio?.model === "gpt-4o-mini-tts" && judgeAudio.audio.voice === "cedar" && judgeAudio.audio.durationSeconds > 0 && judgeAudio.audio.sha256 === judgeAudio.downloadedSha256, "Judge Audio Overview provider provenance is incomplete.");
+assert(readme.includes(`a playable ${judgeAudio.audio.durationSeconds.toFixed(1)}-second Cedar Audio Overview`), "README Audio Overview duration has drifted from the verified provider artifact.");
 assert(createHash("sha256").update(judgeAudioBytes).digest("hex") === judgeAudio.audio.sha256 && judgeAudioBytes.length === judgeAudio.audio.byteCount, "Judge Audio Overview fixture hash mismatch.");
 const packagedAudio = acceptanceManifest.assets?.find((asset) => asset.type === "audio_overview" && asset.provenance === "narration");
 assert(packagedAudio?.relativePath === "audio-overview.wav" && packagedAudio.sha256 === judgeAudio.audio.sha256 && packagedAudio.byteCount === judgeAudio.audio.byteCount, "Acceptance package does not contain the verified Cedar Audio Overview.");
