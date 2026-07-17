@@ -11570,3 +11570,28 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The complete `09:06 CT — Founder preflight now completes the connected work set` milestone was appended above the later `08:00`, `08:35`, and `08:57` entries because its patch anchor matched an older repeated footer. Its implementation and verification evidence remain valid; this append-only correction establishes that it occurred after the `08:57` milestone.
 - No historical entry was moved or rewritten to conceal the ordering error.
+
+---
+
+## 2026-07-17 09:15 CT — Mobile Map opens on the Direction, not a duplicate label
+
+### Changed
+
+- Inspected the current desktop, compact, and mobile product baselines rather than treating the green visual suite as a taste judgment. The phone Map still placed a large `Recommended direction` summary pill above the actual Direction card, repeating the concept without showing additional knowledge and making the first content region look unfinished.
+- Removed that redundant overview at phone width. Mobile now starts immediately with the Direction object, then Synthesis and Evidence, which is the intended professional hierarchy and the smallest expression of the compact Workshop model.
+- Preserved editing control without restoring permanent chrome: after a real Map edit, the overview region returns as an Undo-only contextual surface. Desktop and compact still show evidence counts, the recommended-direction summary, and the constrained Excalidraw canvas.
+
+### Verified
+
+- Visually inspected refreshed 390×844 screenshots for both the pre-approval and approved Map. In each state, Direction is the first content card directly below the compact `Map · Sources · next action` header; Synthesis, Evidence, and the quiet Source shelf follow without horizontal overflow.
+- Added production-browser assertions that the redundant mobile overview is hidden, the first semantic object is Direction, and an actual Map edit restores an Undo-only mobile control without restoring the duplicate summary. The complete Playwright suite passed all 35 desktop, compact, mobile, accessibility, first-use, source-tracing, and created-work scenarios; the edited-Map assertion also passed again in isolation after it was added.
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 37 web tests and 130 worker tests. Repository hygiene reported 693 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam through the grounded Map, both approvals, Style, Sketch, Presentation, Infographic, Audio Overview, six-image set, Storyboard, local Video, and build trace.
+- No OpenAI provider request ran; the append-only cumulative request count remains 118.
+
+### Decisions and open items
+
+- Responsive simplification is not desktop compression. At phone width, the semantic outline itself is the Map summary, so repeating its Direction in a second strip adds UI without adding meaning.
+- The connected product-quality item remains open until founder visual acceptance. The authentic founder recording, paid run, and human review remain the next proof gate; demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -164,6 +164,11 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await page.getByRole("button", { name: "Save" }).click();
   await expect.poll(async () => (await (await page.request.get("/api/workshop")).json()).mapNodes.find((node: { id: string }) => node.id === "promise")?.title).toBe("The product promise revised");
   await page.getByRole("button", { name: "Close claim" }).click();
+  await page.setViewportSize({ width: 390, height: 844 });
+  await expect(page.locator(".map-insight-bar")).toBeVisible();
+  await expect(page.locator(".map-insight-bar .map-path")).toBeHidden();
+  await expect(page.getByRole("button", { name: "Undo" })).toBeVisible();
+  await page.setViewportSize({ width: 1200, height: 800 });
   await page.getByRole("button", { name: "Undo" }).click();
   await expect.poll(async () => (await (await page.request.get("/api/workshop")).json()).mapNodes.find((node: { id: string }) => node.id === "promise")?.title).toBe("The product promise");
 
@@ -641,9 +646,14 @@ test.describe("completed Workshop judge path", () => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await page.goto("/");
       await expect(page.getByRole("region", { name: "Map", exact: true })).toBeVisible();
-      await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Approved direction");
-      await expect(page.getByRole("region", { name: "Map overview" })).not.toContainText("Turn this evidence into an approved Brief");
       await expectMapReady(page, viewport);
+      if (viewport.name === "mobile") {
+        await expect(page.locator(".map-insight-bar")).toBeHidden();
+        await expect(page.locator(".map-mobile-outline > button").first()).toContainText("Direction");
+      } else {
+        await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Approved direction");
+        await expect(page.getByRole("region", { name: "Map overview" })).not.toContainText("Turn this evidence into an approved Brief");
+      }
       await expectPrimaryActions(page, 1);
       await expectScreen(page, `${viewport.name}-map`);
 

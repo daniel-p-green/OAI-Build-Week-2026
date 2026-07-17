@@ -788,7 +788,7 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
 
   if (!nodes.length) return <div className="state-surface"><StateMessage state="empty" title="Start with a source">Create professional knowledge work, with every factual claim traced to its Source.</StateMessage></div>;
 
-  return <div className="map-canvas" data-domain-ui="map-canvas">
+  return <div className={`map-canvas ${canUndo ? "has-map-undo" : ""}`} data-domain-ui="map-canvas">
     <section className="map-insight-bar" aria-label="Map overview">
       <div className="map-clusters"><span><b>{clusterCounts.evidence}</b> {showAllEvidence ? "Evidence" : "key evidence"}</span>{shouldOrganize && extraEvidenceCount > 0 && <Button variant="secondary" size="small" className="map-more-evidence" onClick={() => setShowAllEvidence((visible) => !visible)}>{showAllEvidence ? "Show key evidence" : `Show ${extraEvidenceCount} more`}</Button>}{clusterCounts.synthesis > 0 && <span><b>{clusterCounts.synthesis}</b> Synthesis</span>}{clusterCounts.direction > 0 && <span><b>{clusterCounts.direction}</b> Direction</span>}</div>
       {recommendation && <div className="map-path"><small>{directionLabel}</small><Button variant="secondary" size="small" data-compact-label={directionLabel} aria-label={`${directionLabel}: ${recommendation.title}`} onClick={() => onSelect(recommendation.id)}>{recommendation.title}</Button></div>}

@@ -552,13 +552,11 @@ button { -webkit-tap-highlight-color: transparent; }
   .workshop-identity { max-width: 78px; font-size: 13px; }
   .workshop-identity { display: none; }
   .header-browse-trigger { display: none; }
-  .map-canvas { padding: 76px 0 12px; overflow: auto; background: #f3f3f3; }
-  .map-insight-bar { top: 8px; right: 12px; left: 12px; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; padding: 8px 9px; }
-  .map-clusters { display: none; }
-  .map-path { min-width: 0; justify-content: flex-start; gap: 6px; overflow: hidden; }
-  .map-path > small { display: none; }
-  .map-path button { width: 100%; max-width: none; display: block; font-size: 0; text-align: left; }
-  .map-path button::after { content: attr(data-compact-label); font: 600 11px/15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .map-canvas { padding: 12px 0; overflow: auto; background: #f3f3f3; }
+  .map-insight-bar { display: none; }
+  .map-canvas.has-map-undo { padding-top: 64px; }
+  .has-map-undo .map-insight-bar { top: 8px; right: 12px; left: 12px; display: flex; justify-content: flex-end; padding: 8px 9px; }
+  .has-map-undo .map-clusters, .has-map-undo .map-path { display: none; }
   .excalidraw-map { display: none; }
   .map-canvas > .semantic-map { height: auto; padding: 12px; }
   .map-mobile-outline { display: grid; gap: 10px; }
