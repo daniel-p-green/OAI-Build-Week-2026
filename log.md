@@ -10899,3 +10899,29 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 03:46 CT — Created work previews are clean at every width
+
+### Changed
+
+- Inspected the completed Map, approved Brief, and Created work gallery in the live Codex in-app browser at desktop and mobile widths. The four-stage navigation and Brief remained clear, but embedded Presentation and Infographic previews exposed their own browser scrollbars on narrow cards.
+- Made gallery preview frames decorative, non-interactive views: internal scrollbars are suppressed, keyboard focus stays on the named artifact card, and preview-document content no longer duplicates the card's accessible name, Source coverage, and freshness state.
+- Refreshed only the desktop, compact, and mobile Created work baselines. No artifact renderer, Source relationship, focused editor, or created-work capability changed.
+
+### Verified
+
+- Visually inspected the live Created work gallery at 1280×720 and 390×844. Presentation and Infographic previews remain recognizable, cards retain clear metadata and the `Review storyboard` next action, and no nested horizontal or vertical scrollbar remains visible.
+- Inspected the three refreshed current-product screenshots at original resolution. Desktop, compact, and mobile all preserve the same hierarchy; mobile retains full-width artifact cards without preview chrome or horizontal overflow.
+- Added unit-contract and production-browser assertions for hidden, non-focusable, no-scroll preview frames. The complete production-browser suite passed all 32 scenarios.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 32 web tests and 129 worker tests.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam with both approval gates, current rendered outputs, Sketch, Cedar Audio Overview, six image panels, five Storyboard panels, local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Keep the focused Presentation and Infographic views scrollable and interactive; only gallery previews are decorative summaries.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

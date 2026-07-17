@@ -76,6 +76,7 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(page).toContain('state.sourceItems.length === 0 && !source.trim()');
     expect(page).toContain('const captured = await onPost({ action: "captureFallbackTranscript", text: transcript, capture });');
     expect(page).toContain('return Boolean(await onPost({ action: "buildMap", title: title.trim() || undefined, outcome }));');
+    expect(page).toContain('aria-hidden="true" tabIndex={-1} scrolling="no" title={`${name} preview`}');
     expect(workshopRoute).toContain("generateGroundedMapWithGpt56(workshopDataRoot()");
     expect(workshopRoute).toContain('model: "gpt-5.6-terra", reasoningEffort: "medium"');
   });

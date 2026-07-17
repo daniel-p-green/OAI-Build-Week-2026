@@ -589,6 +589,7 @@ test.describe("completed Workshop judge path", () => {
       await expect(page.locator(".output-grid")).not.toContainText("Version");
       if (viewport.width > 900) await expect(page.locator(".object-page-header")).toContainText(/\d+ current/);
       await expectPreviewFramesReady(page);
+      await expect(page.locator('.output-card iframe[aria-hidden="true"][scrolling="no"]')).toHaveCount(2);
       await expectScreen(page, `${viewport.name}-outputs`);
 
       await page.getByRole("button", { name: "Open Presentation" }).click();
