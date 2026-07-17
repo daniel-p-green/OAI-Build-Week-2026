@@ -10233,3 +10233,34 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The verified result is unchanged: 31/31 production-browser scenarios, all thirteen package checks, and the recorded Source-to-Video seam pass; the inspected current proofs are `artifacts/ui-review/polish-*-2026-07-16.png` and `artifacts/live-review/infographic-v6/`.
 - No OpenAI provider request ran. The provider-operation ledger remains 115. The five-item critical path is unchanged, and the authentic founder Workshop remains the next external gate.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 22:30 CT — Current UI rejected; ten high-fidelity redesign directions created
+
+### Changed
+
+- Accepted the founder's visual-quality judgment: the current screenshots remain wireframe-grade despite the earlier spacing and shell polish. They are valid implementation evidence, not an acceptable professional design target.
+- Generated ten materially different high-fidelity WorkshopLM directions on the real product skeleton: Focus Canvas, Editorial Workspace, Object Spotlight, Command Workbench, Studio Timeline, Storyboard Cinema, Created Work Gallery, Conversation to Canvas, Source-Led Studio, and Unified Workshop.
+- Preserved the concept boards in `artifacts/ui-concepts/` and added an explicit design synthesis instead of asking the founder to choose among ten disconnected themes.
+- Selected a coherent implementation system: Focus Canvas for thinking, Editorial Workspace for Brief and Style, Created Work Gallery for outputs, Source-Led Studio for provenance, and Storyboard Cinema for video planning.
+
+### Verified
+
+- Both concept boards are 1536×1024 PNGs and were visually inspected after generation.
+- The concepts preserve the current functional skeleton while removing the failed patterns: permanent side-control walls, undirected empty canvas, dashboard-card dominance, and undersized professional work.
+- The current critical path remains intact; this is a visible blocker repair inside `Review and refine the resulting knowledge work`, not a new product feature family.
+
+### Decisions
+
+- Do not implement any concept literally or mix all ten. One visual grammar will use the strongest compatible patterns from concepts 1, 2, 6, 7, and 9.
+- The existing UI screenshots must no longer be presented as polished. They remain historical proof of working behavior only.
+- The next pass must rebuild hierarchy and composition before micro-styling. A screen fails if it reads as a component arrangement rather than a finished professional tool.
+- No OpenAI provider request ran. Image generation was used only for private design exploration; the provider-operation ledger for the product remains 115.
+
+### Open items
+
+- Implement the selected visual system in the real product and replace the current screenshot set only after desktop and compact visual review clears the new bar.
+- Preserve all existing Source, approval, Style, Created work, Storyboard, and Video behavior through progressive disclosure.
+- Authentic founder Workshop, public Video review, intended-audience judgment, publication links, and final submission verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
