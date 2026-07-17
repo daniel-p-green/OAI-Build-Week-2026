@@ -763,7 +763,7 @@ test.describe("completed Workshop judge path", () => {
       await expect(page.locator('[data-domain-ui="image-review-grid"] [data-domain-ui="image-tile"]')).toHaveCount(6);
       await expect(page.locator('[data-domain-ui="image-review-grid"] img')).toHaveCount(6);
       await expect(page.getByText("6 images · 3 sources · One shared Style", { exact: true })).toBeVisible();
-      await expect(page.getByText("Hero concept", { exact: true })).toBeVisible();
+      await expect(page.getByText("Primary visual", { exact: true })).toBeVisible();
       await expect(page.getByRole("button", { name: "Show source" })).toHaveCount(6);
       if (viewport.name === "mobile") expect(await page.locator(".focused-image-card").evaluateAll((cards) => cards.every((card) => {
         const boundary = card.getBoundingClientRect();
@@ -868,7 +868,7 @@ test("empty, loading, partial, error, and needs-update states stay calm and acti
     await expectPrimaryActions(page, 1);
     await expectScreen(page, `${viewport.name}-state-partial`);
     await page.getByRole("button", { name: "Review image", exact: true }).click();
-    await page.getByRole("region", { name: "Hero concept" }).getByRole("button", { name: "Request replacement" }).click();
+    await page.getByRole("region", { name: "Primary visual" }).getByRole("button", { name: "Request replacement" }).click();
     const replacementSheet = page.getByRole("dialog", { name: "Replace image" });
     await replacementSheet.getByRole("textbox", { name: "What should change?" }).fill("Use fewer objects and leave more headline space.");
     await replacementSheet.getByRole("button", { name: "Create replacement" }).click();
@@ -1032,7 +1032,7 @@ test("Image set review exposes each visual job, exact source, and selective repl
   await openWorkshopView(page, "outputs");
   await page.getByRole("button", { name: "Open Image set" }).click();
 
-  const hero = page.getByRole("region", { name: "Hero concept" });
+  const hero = page.getByRole("region", { name: "Primary visual" });
   await expect(hero).toContainText("Ready");
   await expect(hero).toContainText(/professional|WorkshopLM|source|meeting/i);
   await hero.getByRole("button", { name: "Show source" }).click();

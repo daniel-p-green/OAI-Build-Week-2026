@@ -1759,7 +1759,7 @@ export function createImageBatch(root?: string): WorkshopState {
     return { idea: outputBody(prose(current.title)), evidence: [] };
   };
   const roles = [
-    ["Hero concept", "Turn the approved idea into one memorable object-led transformation metaphor. Place the focal object in the lower-right and preserve generous upper-left negative space for a presentation headline.", ["start", "turn", "become", "outcome", "promise", "professional", "client", "leadership"]],
+    ["Primary visual", "Turn the approved idea into one memorable object-led transformation metaphor. Place the focal object in the lower-right and preserve generous upper-left negative space for a presentation headline.", ["start", "turn", "become", "outcome", "promise", "professional", "client", "leadership"]],
     ["Systems diagram", "Translate the approved idea into an unlabeled systems diagram made from geometric nodes, layers, and connectors. Show relationships without implying invented quantities.", ["system", "map", "process", "workflow", "chain", "connect", "brief", "organize", "relationship"]],
     ["Evidence chain", "Show source-like paper forms progressing through connected proof points into one polished decision artifact. Make provenance visually legible without words or interface chrome.", ["evidence", "source", "claim", "trace", "provenance", "locator", "citation", "grounded", "defend"]],
     ["Decision visual", "Build a clear tension-to-resolution composition with two contrasting fields joined by one accent-colored bridge. Do not invent data, scales, or labels.", ["approve", "only", "must", "should", "decision", "gate", "review", "sign-off", "recommend"]],

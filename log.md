@@ -11692,3 +11692,35 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages after the navigation-drift guard landed. The suite includes 38 web tests, 130 worker tests, the constrained Map presentation and geometry checks, and the new exact four-stage/nested-object contract.
 - Repository hygiene reported 693 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file. No OpenAI provider request ran; the cumulative request count remains 118.
 - The connected product-quality goal remains active pending founder visual acceptance; demo-film work remains paused.
+
+---
+
+## 2026-07-17 09:43 CT — Image-set language describes the work, not creative jargon
+
+### Changed
+
+- Replaced the first image role's visible `Hero concept` label with `Primary visual` across generation, review, selective replacement, and version history.
+- Preserved the actual art direction: the panel still turns the approved idea into a memorable focal composition with presentation-safe negative space, uses the shared Style reference, and retains its exact Source evidence edge.
+- Updated only the six affected image-review baselines after a force-refresh exposed that the normal pixel tolerance had accepted the stale text-only screenshots. Unrelated force-refreshed baselines were returned to their verified prior state.
+
+### Verified
+
+- All 130 worker tests passed, including the six-role grounded image-batch contract and selective replacement/version behavior.
+- The optimized web build succeeded and the complete 35-scenario Playwright suite passed across desktop, compact, mobile, accessibility, first-use, source-tracing, history, and created-work states.
+- A focused five-scenario forced refresh passed and the desktop, compact, mobile, replacement, and history screenshots were visually inspected with `Primary visual` visible in context.
+- Repository search found no remaining `Hero concept` product or test copy. No OpenAI provider request ran; the cumulative request count remains 118.
+
+### Decisions and open items
+
+- `Primary visual` names the professional job directly; internal implementation terms such as a hero image may remain where they do not leak into the product.
+- The connected product-quality item remains open until founder visual acceptance. Demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 09:44 CT — Primary-visual milestone clears the complete local seam
+
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages after the image-role and visual-baseline changes.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam through the grounded Map, both approvals, Style, Sketch, Presentation, Infographic, Audio Overview, six-image set, Storyboard, local Video, and build trace.
+- No provider request ran. The connected product-quality goal remains active pending founder visual acceptance; demo-film work remains paused.
