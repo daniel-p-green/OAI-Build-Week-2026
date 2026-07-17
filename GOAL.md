@@ -22,7 +22,7 @@ WorkshopLM wins when a professional can move from messy material to coherent pro
 
 The current phase is **product freeze and final proof**. The core product exists. Work now concentrates on the authentic founder Workshop, professional-quality review, the public demonstration video, and submission verification.
 
-The hackathon category is **Work & Productivity**. Education mode, general-purpose design-tool scope, and unsupported production claims remain outside the product direction.
+The hackathon category is **Work & Productivity**. Education mode, general-purpose design-tool scope, and unsupported public claims remain outside the product direction.
 
 ## 2. Locked product contract
 
@@ -58,7 +58,7 @@ The hackathon category is **Work & Productivity**. Education mode, general-purpo
 - Sketch is a hand-drawn expression of the same semantic Map, not a second independent whiteboard engine.
 - The Map becomes the Brief only through an explicit professional approval.
 - Brief approval is the first of exactly two consequential sign-offs.
-- Approval creates an inspectable, versioned `FRAME.md` that defines the intended outcome, audience, claims, and production direction.
+- Approval creates an inspectable, versioned `FRAME.md` that defines the intended outcome, audience, claims, and creation direction.
 - Created work cannot silently use an unapproved or stale Brief.
 
 ### Style and visual identity
