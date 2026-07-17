@@ -90,7 +90,7 @@ async function expectMapReady(page: Page, viewport: typeof viewports[number]) {
 }
 
 async function selectProductPromise(page: Page, viewport: typeof viewports[number]) {
-  const outlineNode = page.locator(".map-mobile-outline button", { hasText: "The product promise" });
+  const outlineNode = page.locator('.map-mobile-outline button[aria-label="Evidence: The product promise"]');
   if (viewport.name === "mobile") {
     await outlineNode.click();
     return;
@@ -999,7 +999,7 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
   await expectScreen(page, "desktop-storyboard-timing");
   await timing.fill("4");
   await expect(preview.locator("img")).toHaveAttribute("src", "/api/workshop/artifacts/image-panel-1");
-  await expect(preview.getByText("Image", { exact: true })).toBeVisible();
+  await expect(preview.getByText("Scene 01", { exact: true })).toBeVisible();
   await expectScreen(page, "desktop-storyboard-bound-image");
   await page.locator(".storyboard-strip button").nth(1).click();
   await expect(preview.locator("img")).toHaveAttribute("src", "/api/workshop/artifacts/image-panel-2");
@@ -1558,6 +1558,8 @@ test("a new professional reaches the real Map through the durable first-use path
   const mobileDirection = page.locator(".map-outline-node").filter({ hasText: "Direction" });
   await expect(mobileDirection).toContainText("Create work a consultant can refine and present");
   await expect(page.locator(".map-outline-node").first()).toContainText("Direction");
+  await expect(page.locator(".spine-stage.current")).toContainText("2 of 4");
+  await expect(page.locator(".map-outline-node").filter({ hasText: "The professional reviews the Brief before output creation and reviews the Storyboard before video rendering" })).toBeVisible();
   await expectScreen(page, "mobile-onboarding-map");
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.reload();
@@ -1574,7 +1576,12 @@ test("a new professional reaches the real Map through the durable first-use path
   await expect(page.locator(".brief-evidence-item")).toHaveCount(3);
   const problemEvidence = page.locator(".brief-evidence-item").filter({ hasText: "Professional teams lose hours turning meeting notes into client-ready work" });
   await problemEvidence.getByRole("button", { name: "Pasted notes · chunk 01" }).click();
-  await expect(page.getByRole("dialog", { name: "Source" })).toContainText("Professional teams lose hours turning meeting notes into client-ready work");
+  const sourceInspector = page.getByRole("dialog", { name: "Source" });
+  await expect(sourceInspector).toContainText("Professional teams lose hours turning meeting notes into client-ready work");
+  await expect(page.getByRole("heading", { level: 1, name: "Client-ready work needs source traceability" })).toBeVisible();
+  const [workbenchBox, inspectorBox] = await Promise.all([page.locator(".workbench").boundingBox(), sourceInspector.boundingBox()]);
+  expect(workbenchBox && inspectorBox && workbenchBox.x + workbenchBox.width <= inspectorBox.x + 1).toBeTruthy();
+  await expectScreen(page, "desktop-onboarding-source-inspection");
   await closeDialog(page, "Source");
   await page.getByRole("button", { name: "Choose style" }).click();
   await expect(page.getByRole("dialog", { name: "Style" })).toContainText("For Client pitch");

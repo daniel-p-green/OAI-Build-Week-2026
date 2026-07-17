@@ -157,6 +157,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .map-outline-node span { color: #008635; font-weight: 600; text-transform: uppercase; }
 .map-outline-node strong { font-size: 15px; line-height: 20px; }
 .map-outline-node.selected { outline: 2px solid #0285ff; outline-offset: 1px; }
+.spine-position { display: none; }
 
 .claim-inspector { position: absolute; z-index: 8; top: 24px; right: 24px; width: min(380px, calc(100vw - 48px)); display: grid; gap: 16px; padding: 20px; }
 .claim-inspector header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
@@ -164,6 +165,10 @@ button { -webkit-tap-highlight-color: transparent; }
 .claim-inspector header small, .source-locator { color: #8f8f8f; font-size: 12px; line-height: 16px; }
 .claim-inspector blockquote { margin: 0; padding: 14px; border-radius: 12px; background: #f3f3f3; font-size: 14px; line-height: 20px; }
 .source-locator { margin: -8px 0 0; }
+
+@media (min-width: 901px) {
+  .workshop-shell:has(> .evidence-sheet) .workbench { margin-right: 440px; }
+}
 
 .sheet-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
 .sheet-heading p, .sheet-intro { margin: 0; color: #5d5d5d; font-size: 14px; line-height: 20px; }
@@ -550,6 +555,7 @@ button { -webkit-tap-highlight-color: transparent; }
   .spine-step:has(.spine-stage.current) { display: flex; }
   .spine-step:has(.spine-stage.current) .spine-arrow { display: none; }
   .spine-stage { height: 30px; padding-inline: 9px; border: 1px solid rgba(13,13,13,.1); border-radius: 999px; background: #fff; }
+  .spine-stage .spine-position { display: inline; color: #6b6b6b; font-size: 11px; font-style: normal; font-weight: 500; }
   .header-actions { gap: 4px; }
   .header-identity { gap: 4px; }
   .workshop-identity { max-width: 78px; font-size: 13px; }

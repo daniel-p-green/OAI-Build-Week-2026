@@ -183,6 +183,8 @@ it("promotes the proposed decision instead of prose that merely mentions recomme
     expect(infographicRecommendation).not.toContain("Every recommendation must remain traceable");
     const audio = generateAudioOverview(root).audioOverviews.at(-1)!;
     expect(audio.sections.at(-1)?.text).toContain("The team recommends a two-week pilot, confirmed ownership, and a visible leadership decision path");
+    expect(audio.sections.map((section) => section.title)).toEqual(["The opportunity", "Evidence to trust", "Recommended direction"]);
+    expect(audio.script).not.toMatch(/central finding is this|adds an important point|practical decision is how to act/i);
     const imageBatch = createImageBatch(root).imageBatch!;
     expect(imageBatch.panels[3]?.prompt).toContain("Approved idea to communicate: The team recommends a two-week pilot, confirmed ownership, and a visible leadership decision path");
     generateAssetPlan(root);

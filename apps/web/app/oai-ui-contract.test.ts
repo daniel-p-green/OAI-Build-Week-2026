@@ -119,6 +119,7 @@ describe("official Apps in ChatGPT UI implementation", () => {
 
     expect(spine.match(/label: "(Capture|Map|Brief|Create)"/g)).toHaveLength(4);
     for (const stage of ["Capture", "Map", "Brief", "Create"]) expect(spine).toContain(`label: "${stage}"`);
+    expect(spine).toContain('className="spine-position"');
     for (const nestedObject of ["Conversation", "Sources", "Style", "Created work", "Storyboard"]) expect(spine).not.toContain(`label: "${nestedObject}"`);
 
     expect(index).toContain('{ stage: "capture", title: "Capture", items: [');

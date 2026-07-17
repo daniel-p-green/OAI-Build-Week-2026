@@ -1673,9 +1673,9 @@ export function generateAudioOverview(root?: string): WorkshopState {
   const points = [pointFor("statement"), pointFor("proof", "split"), pointFor("recommendation")];
   const pointAt = (index: number) => points[index]!;
   const definitions = [
-    ["Executive summary", `The central finding is this: ${pointAt(0).text}`],
-    ["What the evidence shows", `The evidence adds an important point: ${pointAt(1).text}`],
-    ["Decision review", `The practical decision is how to act on this: ${pointAt(2).text}`],
+    ["The opportunity", pointAt(0).text],
+    ["Evidence to trust", pointAt(1).text],
+    ["Recommended direction", pointAt(2).text],
   ] as const;
   const sections = definitions.map(([title, text], index): WorkshopAudioOverviewSection => ({ id: `audio-section-${index + 1}`, title, text, evidence: [audioEvidence(pointAt(index).claim)], edited: false }));
   const version = current.audioOverviews.reduce((highest, item) => Math.max(highest, item.version), 0) + 1;

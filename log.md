@@ -11905,3 +11905,30 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The complete `11:34 CT — Concise Brief clears repository and complete seam checks` verification entry was appended earlier in the file because its patch anchor matched a repeated milestone footer. Its repository and end-to-end evidence remain valid; this append-only correction establishes that those checks occurred after the `11:30 CT` Brief milestone.
 - No historical entry was moved or rewritten. No provider request ran; the cumulative request count remains 118. The connected product-quality goal remains active, and demo-film work remains paused.
+
+---
+
+## 2026-07-17 11:56 CT — Concentrated product-quality pass closes the visible prototype gap
+
+### Changed
+
+- Tightened the auto-organized desktop Map from widely separated lanes into one composed Evidence → Synthesis → Direction argument while preserving the constrained Excalidraw canvas, editing, Source shelf, and semantic edges.
+- Compact and mobile headers now name the current position in the four-stage Workshop (`Map · 2 of 4`, `Create · 4 of 4`). Mobile Evidence cards render the complete sourced statement rather than the shortened canvas headline, so professional review no longer ends in an ellipsis.
+- Source inspection now reserves a 440-pixel evidence area beside the desktop workbench. The selected claim, surrounding Brief or Map, exact source quote, locator, origin, and access state remain visible together instead of one context covering the other.
+- Rewrote the deterministic Audio Overview chapters as direct editorial sections—`The opportunity`, `Evidence to trust`, and `Recommended direction`—and removed filler such as `The central finding is this`. Storyboard review now identifies the selected Scene and retains its source locator beside timing and refinement controls.
+- Refreshed the hash-bound Cedar judge Audio Overview with exactly one paid Speech API request because the improved script correctly invalidated the previous recording. The new artifact is 29.25 seconds, uses `gpt-4o-mini-tts` with Cedar, and is bound to SHA-256 `74056890e6e17ad95d8a2c60fab6672440333abcf53c0b9f90db62dc9b4c4cab`.
+
+### Verified
+
+- Visually inspected the current first-use desktop and mobile Map, side-by-side Brief/Source inspection, and desktop/mobile Audio Overview. The Map is denser without becoming a generic whiteboard, mobile retains full evidence and stage context, the claim remains visible during Source inspection, and the Audio Overview reads like a briefing rather than generated scaffolding.
+- All 35 production-browser scenarios passed across desktop, compact, and mobile after two test repairs: the Map-selection helper now uses the node's stable accessible label after mobile began showing full evidence bodies, and the Storyboard assertion now expects `Scene 01` instead of the retired `Image` label.
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including all 130 worker tests and 38 web tests. Repository hygiene reported 696 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file.
+- `pnpm demo:e2e` initially failed closed because the prior Cedar bytes no longer matched the improved grounded script. After the single bounded refresh, the complete recorded seam passed through local retrieval, Map, both approvals, Style, Presentation, Infographic, Sketch, six-image provider fixture, three-section provider-backed Audio Overview, five-panel Storyboard, local Video, and build trace.
+
+### Decisions and open items
+
+- Source inspection is contextual workbench state, not a navigation destination. At desktop, the work should reflow beside the Source rather than remain hidden beneath it.
+- Audio and Storyboard editorial quality comes from direct language, visible sequence, and source context—not another decorative surface or output type.
+- One OpenAI provider request ran. The cumulative recorded provider-operation count is now 119. The authentic founder-derived Workshop remains the only product-quality proof gate; demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

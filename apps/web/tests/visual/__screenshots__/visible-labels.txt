@@ -5,8 +5,8 @@
 03The proof4s
 04The evidence4s
 05The direction5s
+23 wordsAudio Overview3 sourced pointsReady for review
 3 sources
-43 wordsAudio Overview3 sourced pointsReady for review
 Approve
 Approved direction
 Ask sources
@@ -14,9 +14,9 @@ Audio Overview
 Back to Brief
 Back to Created work
 Back to Map
-BriefReady
-CaptureReady
-CreateReady
+Brief3 of 4Ready
+Capture1 of 4Ready
+Create4 of 4Ready
 Created work
 Edit
 Edit panel
@@ -25,7 +25,7 @@ Image set
 Infographic
 Infographic3 sources4 source linksUp to date
 Manage
-MapReady
+Map2 of 4Ready
 Meeting · 12:41
 PDFBuild Week brief3 claims
 Presentation
