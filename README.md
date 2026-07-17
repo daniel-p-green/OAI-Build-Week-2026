@@ -4,18 +4,20 @@
 
 WorkshopLM is the professional knowledge workspace that turns conversations and source material into presentations, graphics, Audio Overviews, visual Maps, Storyboards, and Videos. Every expression shares the same knowledge, visual identity, and connection to its Sources.
 
-Notebook-style tools help people learn from Sources. WorkshopLM helps professionals create from them: speak or type in Conversation, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create a polished Presentation that remains editable in PowerPoint. A shareable hand-drawn Sketch with immutable versions, Infographic, Graphics, Audio Overview, Storyboard, and Video are first-class expressions of the same Workshop.
+Notebook-style tools help people learn from Sources. WorkshopLM helps professionals create from them: speak or type in Conversation, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create connected professional knowledge work. Presentations, Graphics and Infographics, Audio Overviews, Maps and Sketches, image sets, Storyboards, and Videos are first-class expressions of the same Workshop; no single format is the destination.
 
-WorkshopLM runs locally in the Codex in-app browser as one focused workbench. Conversation, Sources, Map, Brief, Style, Outputs, and Storyboard stay in one product surface; contextual views and sheets preserve the full workflow without a persistent tab maze. Codex desktop/CLI is the verified plugin host and build environment. ChatGPT Work support is not claimed.
+WorkshopLM runs locally in the Codex in-app browser as one focused workbench. Conversation, Sources, Map, Brief, Style, created work, and Storyboard stay in one product surface; contextual views and sheets preserve the full workflow without a persistent tab maze. Codex desktop/CLI is the verified plugin host and build environment. ChatGPT Work support is not claimed.
 
 ## The professional path
 
 ```text
-Meeting or documents → grounded Map → approved Brief + reusable Style
-  → coherent professional knowledge work → approved Storyboard → Video
+Conversation + Sources → grounded Map → approved Brief + reusable Style
+  → connected professional knowledge work
+    → Presentation · Graphic · Infographic · Audio Overview · Map or Sketch
+    → Storyboard → approved Storyboard → Video
 ```
 
-Two approvals carry visible consequence: `Approve brief` freezes the production direction, and `Approve storyboard` authorizes Video. Source or Style changes preserve history while marking dependent work `Needs update`.
+Two approvals carry visible consequence: `Approve brief` freezes the creative direction, and `Approve storyboard` authorizes Video. Source or Style changes preserve history while marking dependent work `Needs update`.
 
 ## Current, verified slice
 
@@ -34,7 +36,7 @@ The repository currently provides a local-first deterministic seam with:
 
 This is active Build Week work, not a claim that every locked capability is complete. The authorized sample run has now proven a grounded `gpt-5.6-terra` Map, six accepted GPT Image 2 panels, a live grounded Realtime conversation, OpenAI Cedar narration, and a local HyperFrames Video. The no-credential recorded fixture remains a separate deterministic path: it replays six hash-bound sanitized GPT Image 2 files and one hash-bound Cedar Audio Overview while clearly labeling the Video's fallback narration. Native ChatGPT durable voice synchronization is not supported, and the founder-derived final package and public demo remain open. See [GOAL.md](GOAL.md) for the exact completion definition, [log.md](log.md) for dated evidence, and the [public claim ledger](submission/CLAIM-LEDGER.md) for the allowed wording and proof boundary.
 
-The [current clean 2:20 editorial review cut](outputs/demo-film-sample/workshoplm-demo-sample.mp4) uses the authorized sample transcript, verified Cedar narration, and acceptance Output set. It is visibly and structurally labeled as a sample and is not the founder-derived public demo; its manifest and all ten review frames are verified by `pnpm demo:film:verify-sample`.
+The [current clean 2:20 editorial review cut](outputs/demo-film-sample/workshoplm-demo-sample.mp4) uses the authorized sample transcript, verified Cedar narration, and acceptance created-work set. It is visibly and structurally labeled as a sample and is not the founder-derived public demo; its manifest and all ten review frames are verified by `pnpm demo:film:verify-sample`.
 
 ## Run the recorded fixture
 
@@ -45,7 +47,7 @@ pnpm install --frozen-lockfile
 pnpm judge:start
 ```
 
-`pnpm judge:start` recreates the no-credential acceptance Workshop and serves that exact data root in one command. It does not require OpenAI credentials or paid model calls. The fixture completes first-use onboarding, dismisses tutorial cues, and opens directly on the grounded Map. `pnpm demo:render` can independently rerun the approved sanitized fixture through the local HyperFrames worker, and `pnpm demo:thumbnail` builds a hash-bound 1280×720 product thumbnail from the rendered Video, locked film plan, and current Outputs proof. Ordinary `pnpm dev` intentionally opens the default product workspace rather than the judge fixture.
+`pnpm judge:start` recreates the no-credential acceptance Workshop and serves that exact data root in one command. It does not require OpenAI credentials or paid model calls. The fixture completes first-use onboarding, dismisses tutorial cues, and opens directly on the grounded Map. `pnpm demo:render` can independently rerun the approved sanitized fixture through the local HyperFrames worker, and `pnpm demo:thumbnail` builds a hash-bound 1280×720 product thumbnail from the rendered Video, locked film plan, and current created-work proof. Ordinary `pnpm dev` intentionally opens the default product workspace rather than the judge fixture.
 
 After `pnpm judge:start` starts the server, open the printed local URL in the Codex in-app browser. The sanitized Workshop opens on its grounded Map; the same fixture includes the approved Brief, reusable Style, a source-traced hand-drawn Sketch, real Presentation and Infographic previews, editable PowerPoint files, six hash-bound GPT Image 2 visuals, a playable 33.5-second Cedar Audio Overview, an editable image-bound Storyboard, and the local Video rendered from those reviewed frames. Judges do not need OpenAI credentials or their own API spend to understand the recorded path.
 
@@ -125,14 +127,14 @@ Verified installation surface: Codex CLI/Desktop on macOS with the local in-app 
 
 ```text
 Capture sources → normalized evidence → grounded Map → approved brief
-      → traceable outputs → approved storyboard → local HyperFrames video
+      → traceable created work → approved storyboard → local HyperFrames video
 ```
 
-- `apps/web` — focused Map, Brief, Outputs, Storyboard, and source-evidence workspace.
+- `apps/web` — focused Map, Brief, created work, Storyboard, and source-evidence workspace.
 - `apps/worker` — SQLite state, queue, artifact store, and render executor.
 - `packages/domain` — schemas, approvals, dependencies, graph operations, and provenance contracts.
 - `packages/plugin-mcp` — unified skill and stdio MCP entry point for grounded reads and version-gated local workflow writes.
-- `packages/production` — traceable production artifacts.
+- `packages/production` — traceable created-work renderers and exports.
 - `spikes/` — deterministic evidence for host sync, grounding, image manifests, and HyperFrames.
 - `.agents/plugins/marketplace.json` — public Codex marketplace descriptor for the unified plugin.
 

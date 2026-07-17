@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance created-work set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-17T01:27:14.750Z",
+  "builtAt": "2026-07-17T01:34:07.833Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "compositor": {
@@ -33,7 +33,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "31db6dae2d78c152ca7c0b93b930384e91bc68b4db825625c823ab29e6bb9498",
+    "sha256": "855fe02c4ef0cbce68a8b4a04f400e2c354a9197278992c9aaac1be81914ca51",
     "durationSeconds": 140.010667,
     "streams": [
       {
@@ -51,7 +51,7 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "0543a876003ae031a9e96dac3798386a2b2b29809e50257d68023d51431b65e3"
+    "sha256": "a6889282f3e053aa4bc1c451ea007be723d6986e606ba32aa7a9efb939a721e7"
   },
   "openingProofFrame": {
     "relativePath": "review/opening-proof.jpg",
@@ -65,7 +65,7 @@
     },
     {
       "relativePath": "review/02.jpg",
-      "sha256": "ddfc5662ed6e7029f034d037df866ee39ce44b406e11729595049bf7290d9b93"
+      "sha256": "58cfb2bb59eaf5a99349f8fbeaa4ce20d3bc9608e27988f891cf83a9c7c4d044"
     },
     {
       "relativePath": "review/03.jpg",

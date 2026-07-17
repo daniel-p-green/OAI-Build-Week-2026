@@ -53,7 +53,7 @@ Two things make this different from disconnected chat, presentation, and creativ
 
 It is built for the weekly rhythm, not the one-off demo: add Monday's new meeting to an existing Workshop and the Map expands, dependent work marks itself `Needs update`, and the saved Style carries over. After deliberate reapproval, WorkshopLM creates the next version of the affected work. New material stays traced to the new Source while earlier versions remain available in history.
 
-### The product proof is its production record
+### The product proof is its creation record
 
 Codex built WorkshopLM from a goal file. WorkshopLM then used the same provenance model on its own recorded submission fixture.
 

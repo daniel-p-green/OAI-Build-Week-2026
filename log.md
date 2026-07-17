@@ -9962,3 +9962,38 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The `20:28 CT` milestone titled `Realtime proof is now visible in the film without rewriting founder provenance` was accidentally inserted earlier in this append-only file rather than at its chronological tail.
 - That entry remains the authoritative implementation and verification evidence. It is intentionally not deleted or relocated so this correction preserves the log's append-only rule.
 - No implementation, verification result, provider-operation count, or critical-path status changed in this correction.
+
+---
+
+## 2026-07-16 20:34 CT — Public story now treats every created format as a first-class expression
+
+### Changed
+
+- Audited the active README, Devpost draft, demo script, film plan, claim ledger, evidence audit, and submission checklist against the compact `GOAL.md` vocabulary contract.
+- Confirmed that the active judge-facing files contain none of the deprecated `ship`, `deck`, `deliverable`, `production kit`, `send-it bar`, `wedge deliverable`, or presentation-as-destination language.
+- Rewrote the README's opening and workflow diagram so connected professional knowledge work is the destination, with Presentation, Graphic, Infographic, Audio Overview, Map or Sketch, Storyboard, and Video presented as sibling expressions of one Workshop.
+- Replaced remaining public-facing `Outputs` and `production` shorthand with `created work`, `creative direction`, `creation record`, or concrete renderer language where appropriate. Internal paths and immutable historical evidence remain unchanged.
+- Synchronized the demo script's Codex and Capture-and-Shape narration with the actual film plan, including the separate Realtime/founder proof boundary.
+- Updated the public claim ledger's verification floor from 121 to the currently proven 124 worker tests.
+
+### Verified
+
+- Rebuilt the full sample film through pinned local HyperFrames 0.7.60 after changing the judge-visible Codex doorway caption to `One plugin keeps conversation and created work together`. HyperFrames lint, transition checks, and render passed.
+- Inspected the native 1280×720 doorway frame. The new caption is legible, balanced, and consistent with the quiet editorial overlay. Review frame 02 hashes to `58cfb2bb59eaf5a99349f8fbeaa4ce20d3bc9608e27988f891cf83a9c7c4d044`.
+- The rebuilt 140.010667-second H.264/AAC film hashes to `855fe02c4ef0cbce68a8b4a04f400e2c354a9197278992c9aaac1be81914ca51`; its ten-shot contact sheet hashes to `a6889282f3e053aa4bc1c451ea007be723d6986e606ba32aa7a9efb939a721e7`.
+- `pnpm demo:film:verify` passes at 140 seconds, 278 words, and 119.1 words per minute while honestly retaining the two founder-evidence blocks. `pnpm demo:film:verify-sample` and `pnpm submission:packet:verify` pass.
+- `pnpm check` passes lint, typecheck, and tests across all thirteen packages, including 124 worker, 30 web, and 19 production tests.
+- `git diff --check` passes.
+
+### Decisions
+
+- Presentation remains a first-class professional format, not the product's wedge, hero destination, or boundary.
+- Technical package names and historical test titles remain unchanged when renaming them would create churn or falsify evidence; primary product and judge-facing language uses the locked vocabulary.
+- No OpenAI provider request ran. The provider-operation ledger remains 115.
+- The five-item critical path in `GOAL.md` remains unchanged. This milestone strengthens the final demonstration and public explanation rather than adding scope.
+- `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+### Open items
+
+- Founder recording and authentic Workshop generation remain the next external gate.
+- Codex Session ID: unavailable on this surface; not inferred.

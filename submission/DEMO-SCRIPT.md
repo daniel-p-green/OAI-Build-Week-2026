@@ -20,8 +20,8 @@ Every answer must point to an inspected artifact in `log.md`. A missing or ambig
 | Time | Screen action | Narration |
 | --- | --- | --- |
 | 0:00–0:13 | Open the connected Presentation, Infographic, Audio Overview, and Video, then pull back to their WorkshopLM Map. | “WorkshopLM turns conversations and Sources into professional knowledge work—every expression sharing one Style and one source trail.” |
-| 0:13–0:26 | Show the captured Codex-side WorkshopLM doorway and use it to open the Workshop. | “WorkshopLM is one unified plugin: Codex stays the conversation surface and opens the visual production workspace.” |
-| 0:26–0:44 | Open Sources and the dated founder brainstorm, then show the provider-backed Terra Map result. | “GPT-5.6 turns this source into a grounded graph while retaining chunk and source locators.” |
+| 0:13–0:26 | Show the captured Codex-side WorkshopLM doorway and use it to open the Workshop. | “WorkshopLM is one unified plugin. Codex stays the conversation surface, uses the project's grounded tools, and opens the visual Workshop only when spatial editing is useful.” |
+| 0:26–0:44 | Open Sources and the dated founder brainstorm, then show the provider-backed Terra Map result and separate Realtime proof cue. | “I begin with an honestly dated, unstructured recording, imported as a grounded Source—not relabeled as Realtime. Live OpenAI Realtime voice is proven separately. GPT-5.6 then shapes the founder transcript and selected Sources into a semantic Map, with every factual node retaining its exact locator.” |
 | 0:44–0:58 | Open a source locator, then move or rename one Map node. | “The Map stays editable, and a meaningful change makes dependent work stale.” |
 | 0:58–1:10 | Choose `Approve brief`, then show the readable Brief. | “The first approval turns the current Map into an inspectable executable Brief.” |
 | 1:10–1:22 | Show the Style summary with palette, type, layout, and negative rules. | “Style is set once and stays reviewable, so every created format follows the same visual rules.” |
