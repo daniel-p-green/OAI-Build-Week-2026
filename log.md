@@ -10095,3 +10095,33 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Record and run the authentic founder Workshop. It remains the next external gate and will prove the corrected FRAME generation with founder-derived material.
 - Public Video review, intended-audience judgment, publication links, and submission verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 21:05 CT — Fresh zero-spend founder-path rehearsal proves the corrected operator contract
+
+### Changed
+
+- Compared the existing isolated founder-path rehearsal records with current code. The older persisted plans predated the active vocabulary migration and still contained `Output role`, `deck-ready`, and `Capture to Shape to Deliver`, so they were not sufficient proof for the current authentic path.
+- Ran a fresh shareable-source preflight in the ignored `.workshoplm/founder-rehearsal-current` root using the authorized sample transcript and sample media. This root is rehearsal evidence only: it is not `.workshoplm/final-operator`, it did not stage `outputs/demo-film-inputs`, and it must not be described as the authentic founder run.
+
+### Verified
+
+- The current operator returned `status: ready`, `mode: preflight`, `paidCallsMade: false`, `publicPackageEligible: true`, no private Sources, and no staged founder film inputs.
+- The media contract validates six unique image jobs and five Storyboard narration sections. All six prompts begin with `Visual role`, use `presentation-ready 1:1 visual`, retain exact claim/source/chunk/locator edges, and contain none of the retired prompt language.
+- The rehearsal created the corrected `FRAME-v1.md` with `## Success looks like` and `Show the approved Map, source locators, and connected professional knowledge work in one continuous path.` The plan hashes to `a007504a45409fc8e7ab96aa7b0b0395fb474724393d272ba5b07478f0c42f3d`; the Markdown frame hashes to `684e3578cf32c46eba2d009472fee87f6b2848b59b1c9b1998bbaf44d78adc61`; the executable frame hashes to `12b600aa85010cd0b0c56c836d69fd44cf80015714754dd079199ceec9ae19f0`.
+- The printed paid command preserves the explicit thirteen-request ceiling: one GPT-5.6 grounded Map, six GPT Image 2 jobs, five Storyboard speech clips, and one Audio Overview speech request.
+- `pnpm submission:packet:verify` still passes with the correct four unresolved founder slots. The rehearsal did not alter the judge packet.
+
+### Decisions
+
+- A rehearsal may prove operator mechanics but cannot satisfy founder evidence. Only Daniel's authentic recording and transcript, reviewed first as private and explicitly approved as shareable, can advance the first critical-path item.
+- No code change was warranted after the fresh preflight. The current operator already fails closed, preserves privacy state, validates media before spend, and prints the exact next command.
+- No OpenAI provider request ran. The provider-operation ledger remains 115.
+- The five-item critical path in `GOAL.md` remains unchanged. `PLAN-2026-07-13.md` and `product-design-audit/` remain untouched.
+
+### Open items
+
+- Record Daniel's authentic founder brainstorm and exact transcript outside `.workshoplm/`, then run the private preflight before making any sharing or paid-run decision.
+- Public Video review, intended-audience judgment, publication links, and submission verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
