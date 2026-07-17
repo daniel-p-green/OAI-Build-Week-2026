@@ -253,6 +253,11 @@ async function main() {
     const finalManifestEvidence = plan.shots.flatMap((shot) => shot.requiredEvidence).find((item) => item.validator === "ready-submission-manifest");
     if (!finalManifestEvidence) throw new Error("The film plan does not name the final submission manifest.");
     finalSubmissionManifestPath = resolve(repository, finalManifestEvidence.path);
+    if (!plan.finalCaptureManifest) throw new Error("The film plan does not name the founder-derived final browser capture.");
+    const finalCapture = JSON.parse(await readFile(resolve(repository, plan.finalCaptureManifest), "utf8"));
+    if (finalCapture.status !== "founder-final-candidate" || finalCapture.founderSource !== true || finalCapture.limitations?.length) throw new Error("Final film requires a limitation-free founder-derived browser capture.");
+    if (finalCapture.founderSourceEvidence?.origin !== "Founder-provided recording" || finalCapture.founderSourceEvidence.permission !== "shareable") throw new Error("Final browser capture does not preserve explicit founder Source sharing evidence.");
+    if (finalCapture.submission?.relativePath !== finalManifestEvidence.path || finalCapture.submission.sha256 !== sha256(await readFile(finalSubmissionManifestPath))) throw new Error("Final browser capture is not bound to the current founder submission package.");
   } else if (sampleEditorialBuild) {
     finalSubmissionManifestPath = resolve(repository, ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json");
     if (!existsSync(finalSubmissionManifestPath)) throw new Error("The acceptance submission package is required for the sample editorial cut.");
@@ -272,7 +277,7 @@ async function main() {
       if (shot.narrationSha256 !== sha256(Buffer.from(planShot.narration))) throw new Error(`Provider narration ${shot.id} was generated from stale film copy.`);
     }
   }
-  const captureManifestPath = resolve(repository, plan.captureManifest);
+  const captureManifestPath = resolve(repository, finalBuild ? plan.finalCaptureManifest : plan.captureManifest);
   const capture = JSON.parse(await readFile(captureManifestPath, "utf8"));
   const sourceVideo = resolve(dirname(captureManifestPath), capture.video.relativePath);
   const beatsById = new Map(capture.beats.map((beat) => [beat.id, beat]));

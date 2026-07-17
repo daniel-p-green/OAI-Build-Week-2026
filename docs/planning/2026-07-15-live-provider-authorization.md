@@ -57,6 +57,18 @@ Preflight also validates the complete media contract before the first paid reque
 
 Live execution refuses before any paid GPT-5.6, Image, or Speech request when neither verified Realtime voice evidence nor a validated founder recording/transcript exists. This prevents a successful media run from remaining permanently `partial` at submission packaging time.
 
+## 3. Promote the reviewed Workshop into the final film
+
+After the paid command passes and `.workshoplm/final-operator/generated/submission-output-set-v1/manifest.json` is `ready` without limitations, record the authentic product surface and build the final candidate:
+
+```bash
+pnpm demo:capture-final
+pnpm demo:film:final
+pnpm demo:film:verify-final
+```
+
+The capture command copies the founder Workshop into a disposable local root before interacting with the UI, so its editable-Map demonstration cannot stale or mutate the paid source of truth. It fails unless the founder Source is explicitly shareable, the Brief and Storyboard remain approved and current, the Video is rendered, and the submission package is ready. Final HyperFrames assembly uses this founder-derived browser capture; `demo:film:sample` remains bound to the sanitized fixture.
+
 ## Inspection gate
 
 Do not upgrade any public claim until a person inspects:

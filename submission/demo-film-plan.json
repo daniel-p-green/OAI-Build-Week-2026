@@ -6,6 +6,7 @@
   "targetDurationSeconds": 140,
   "maxDurationSeconds": 175,
   "captureManifest": "outputs/demo-recording-draft/manifest.json",
+  "finalCaptureManifest": "outputs/demo-recording-final/manifest.json",
   "finalVideoPath": "outputs/demo-film-final/workshoplm-demo.mp4",
   "shots": [
     {
@@ -166,6 +167,7 @@
       "startSeconds": 109,
       "endSeconds": 124,
       "state": "ready",
+      "preferCapture": true,
       "captureBeats": ["video-render"],
       "narration": "The local HyperFrames worker accepts only that approved current Storyboard, synchronizes the OpenAI narration, and renders the Video. Show source still follows a factual claim through the Brief and Map to evidence.",
       "requiredMoments": ["provider-narration"],

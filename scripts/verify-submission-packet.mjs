@@ -80,6 +80,7 @@ assert(script.includes("Target: 2:20") && script.includes("**No.** Dated recordi
 assert(roughReadme.includes("Replace shot 10 only after the final non-partial submission Output set exists.") && roughReadme.includes("`/feedback` remains a separate Devpost submission requirement, not a film-content gate."), "Rough-cut handoff incorrectly treats /feedback as film evidence.");
 assert(sampleReadme.includes("It is intentionally not founder footage or the public submission video.") && sampleReadme.includes("pnpm demo:film:verify-sample"), "Sample-film handoff does not preserve its truth boundary or verifier.");
 assert(packageJson.scripts?.["judge:start"] === "pnpm demo:e2e && pnpm demo:serve", "The one-command judge fixture path is missing or no longer serves the acceptance root.");
+assert(packageJson.scripts?.["demo:capture-final"] === "pnpm --filter @workshoplm/web capture:final", "The founder-derived final browser capture command is missing.");
 assert(devpost.includes("pnpm install --frozen-lockfile") && devpost.includes("pnpm judge:start") && !devpost.includes("pnpm demo:e2e && pnpm dev"), "Devpost judge instructions do not use the verified one-command fixture path.");
 assert(founderRunbook.includes("exactly thirteen planned OpenAI requests") && founderRunbook.includes("pnpm demo:founder -- --founder-recording") && founderRunbook.includes("shareablePreflightCommand") && !/twelve-request|MAX_PAID_REQUESTS=12|below twelve/.test(founderRunbook), "Founder runbook has drifted from the current thirteen-request private-review workflow.");
 assert(ledger.includes("Last reconciled: 2026-07-16 CT") && audit.includes("Audit date: 2026-07-16 CT"), "Submission truth files are not dated to the current reconciliation.");
@@ -120,6 +121,7 @@ for (const evidence of [sampleCut.metaRevealEvidence.submissionManifest, sampleC
   assert(createHash("sha256").update(bytes).digest("hex") === evidence.sha256, `Clean review trace hash mismatch: ${evidence.relativePath}`);
 }
 assert(filmPlan.shots.at(-1)?.endSeconds === 140 && filmPlan.shots.filter((shot) => shot.state === "ready").length === 8 && filmPlan.shots.filter((shot) => shot.state === "blocked").length === 2, "Film plan is not at the eight-ready/two-blocked truth state.");
+assert(filmPlan.finalCaptureManifest === "outputs/demo-recording-final/manifest.json" && filmPlan.shots.find((shot) => shot.id === "render-and-trace")?.preferCapture === true, "Final film is not bound to the founder-derived browser capture and its played Video beat.");
 
 const thumbnailBytes = await readFile(resolve(repository, paths.thumbnail));
 const thumbnailProofBytes = await readFile(resolve(repository, thumbnailManifest.productProof));

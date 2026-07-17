@@ -1,0 +1,212 @@
+import { createHash } from "node:crypto";
+import { execFileSync, spawn, type ChildProcess } from "node:child_process";
+import { copyFile, cp, mkdir, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+import { chromium, expect, type Page } from "@playwright/test";
+import { readWorkshopState } from "../../worker/src/workshop-service.ts";
+
+const repository = resolve(process.cwd(), "../..");
+const preview = process.argv.includes("--preview");
+const sourceRoot = resolve(repository, process.env.WORKSHOPLM_FINAL_CAPTURE_SOURCE_ROOT ?? (preview ? ".workshoplm/acceptance" : ".workshoplm/final-operator"));
+const dataRoot = resolve(repository, ".workshoplm-final-recording-copy");
+const outputRoot = resolve(repository, preview ? "outputs/demo-recording-final-preview" : "outputs/demo-recording-final");
+const workingRoot = resolve(repository, preview ? "outputs/demo-recording-final-preview.building" : "outputs/demo-recording-final.building");
+const temporaryVideoRoot = resolve(workingRoot, ".playwright-video");
+const port = 3105;
+const baseUrl = `http://127.0.0.1:${port}`;
+
+type Beat = { id: string; label: string; startMs: number; endMs: number };
+
+async function waitForServer(server: ChildProcess): Promise<void> {
+  const deadline = Date.now() + 30_000;
+  while (Date.now() < deadline) {
+    if (server.exitCode !== null) throw new Error(`Next server exited before final capture with code ${server.exitCode}.`);
+    try { if ((await fetch(baseUrl)).ok) return; } catch { /* still starting */ }
+    await new Promise((resolveWait) => setTimeout(resolveWait, 250));
+  }
+  throw new Error("Timed out waiting for the final-capture server.");
+}
+
+async function hold(milliseconds: number): Promise<void> {
+  await new Promise((resolveHold) => setTimeout(resolveHold, milliseconds));
+}
+
+async function failCapture(message: string): Promise<never> {
+  await rm(dataRoot, { recursive: true, force: true });
+  throw new Error(message);
+}
+
+async function openView(page: Page, view: "brief" | "outputs" | "storyboard"): Promise<void> {
+  const name = view === "outputs" ? "View created work" : `View ${view}`;
+  await page.getByRole("complementary", { name: "Create" }).getByRole("button", { name, exact: true }).click();
+}
+
+async function main(): Promise<void> {
+  await rm(dataRoot, { recursive: true, force: true });
+  await rm(workingRoot, { recursive: true, force: true });
+  await cp(sourceRoot, dataRoot, { recursive: true });
+  await mkdir(temporaryVideoRoot, { recursive: true });
+
+  let sourceState: ReturnType<typeof readWorkshopState>;
+  try { sourceState = readWorkshopState(dataRoot); }
+  catch { await failCapture("Final capture could not read the copied Workshop state."); }
+  if (!sourceState.briefApproved || sourceState.frame?.stale || !sourceState.storyboardApproved || sourceState.storyboard.stale || sourceState.videoState !== "rendered") {
+    await failCapture("Final capture requires a current approved Brief, approved Storyboard, and rendered Video.");
+  }
+  const founderSource = sourceState.sourceItems.find((source) => source.origin === "Founder-provided recording");
+  if (!preview && (!founderSource || founderSource.permission !== "shareable")) {
+    await failCapture("Final capture requires an explicitly shareable founder recording Source.");
+  }
+  const submissionManifestPath = resolve(dataRoot, "generated/submission-output-set-v1/manifest.json");
+  let submission: { status?: string; limitations?: unknown[] };
+  let submissionBytes: Buffer;
+  try { submissionBytes = await readFile(submissionManifestPath); submission = JSON.parse(submissionBytes.toString("utf8")) as typeof submission; }
+  catch { await failCapture("Final capture could not read the copied submission package."); }
+  if (!preview && (submission.status !== "ready" || !Array.isArray(submission.limitations) || submission.limitations.length)) {
+    await failCapture("Final capture requires the verified ready founder submission package without limitations.");
+  }
+  const captureSourceLabel = founderSource ? /Voice brainstorm/ : new RegExp(sourceState.sourceItems[0]?.title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") ?? "Source");
+
+  execFileSync("pnpm", ["exec", "next", "build"], { cwd: process.cwd(), stdio: "inherit" });
+  const server = spawn("pnpm", ["exec", "next", "start", "-H", "127.0.0.1", "-p", String(port)], {
+    cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_DATA_ROOT: dataRoot }, stdio: ["ignore", "pipe", "pipe"],
+  });
+  let serverOutput = "";
+  server.stdout?.on("data", (chunk) => { serverOutput += String(chunk); });
+  server.stderr?.on("data", (chunk) => { serverOutput += String(chunk); });
+
+  try {
+    await waitForServer(server);
+    const browser = await chromium.launch({ channel: "chrome", headless: true });
+    const context = await browser.newContext({
+      viewport: { width: 1200, height: 800 }, colorScheme: "light", locale: "en-US", timezoneId: "America/Chicago", reducedMotion: "reduce",
+      recordVideo: { dir: temporaryVideoRoot, size: { width: 1200, height: 800 } },
+    });
+    const page = await context.newPage();
+    const video = page.video();
+    const startedAt = performance.now();
+    const beats: Beat[] = [];
+    const beat = async (id: string, label: string, action: () => Promise<void>, holdMs = 1500) => {
+      const startMs = Math.round(performance.now() - startedAt);
+      await action();
+      await hold(holdMs);
+      beats.push({ id, label, startMs, endMs: Math.round(performance.now() - startedAt) });
+    };
+
+    await page.goto(baseUrl);
+    await expect(page.getByRole("region", { name: "Map" })).toBeVisible();
+    await expect(page.locator(".excalidraw-map canvas").first()).toBeVisible();
+    await beat("map", "Founder-derived grounded Map", async () => undefined, 2200);
+
+    await beat("sources", "Founder brainstorm and selected Sources", async () => {
+      const sources = page.getByRole("complementary", { name: "Sources" });
+      await expect(sources).toBeVisible();
+      await expect(sources).toContainText(captureSourceLabel);
+    }, 2200);
+
+    await beat("source-trace", "Exact founder Source excerpt", async () => {
+      await page.getByRole("complementary", { name: "Sources" }).getByRole("button", { name: captureSourceLabel }).first().click();
+      await expect(page.getByRole("dialog", { name: "Source" })).toBeVisible();
+    }, 1800);
+    await page.getByRole("button", { name: "Show on map" }).click();
+
+    await beat("map-edit", "Semantic Map remains directly editable", async () => {
+      const claim = page.getByRole("textbox", { name: "Claim" });
+      await claim.fill(`${await claim.inputValue()} — editable`);
+      await expect(page.getByRole("button", { name: "Save" })).toBeVisible();
+    }, 1500);
+    const closeClaim = page.getByRole("button", { name: "Close claim" });
+    if (await closeClaim.isVisible()) await closeClaim.click();
+
+    await beat("brief-approval", "Approved founder Brief", async () => {
+      await openView(page, "brief");
+      await expect(page.getByText("Approved", { exact: true }).first()).toBeVisible();
+    }, 2000);
+
+    await beat("style", "Reusable Style applied across the Workshop", async () => {
+      await page.getByRole("button", { name: "Edit", exact: true }).click();
+      await expect(page.getByRole("dialog", { name: "Style" })).toBeVisible();
+    }, 1700);
+    await page.getByRole("button", { name: "Close Style" }).click();
+
+    await beat("create-outputs", "Connected founder-derived professional knowledge work", async () => {
+      await openView(page, "outputs");
+      await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Image set" })).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Audio Overview" })).toBeVisible();
+    }, 2400);
+
+    await beat("output-evidence", "Created work traces to its exact Source", async () => {
+      await page.locator('.output-grid [data-output-role="hero"]').click();
+      await page.getByRole("button", { name: /^Show source for / }).first().click();
+      await expect(page.getByRole("dialog", { name: "Source" })).toBeVisible();
+    }, 1700);
+    await page.getByRole("button", { name: "Close Source" }).click();
+    await page.getByRole("button", { name: "Back to Created work" }).click();
+
+    await beat("storyboard-edit", "Editable Storyboard with bound images and narration", async () => {
+      await openView(page, "storyboard");
+      const title = page.getByRole("textbox", { name: "Panel title" });
+      await title.fill(await title.inputValue());
+      await expect(title).toBeVisible();
+    }, 1900);
+
+    await beat("storyboard-approval", "Approved Storyboard controls Video", async () => {
+      await expect(page.getByText("Approved", { exact: true }).first()).toBeVisible();
+    }, 1600);
+
+    await beat("video-render", "Rendered founder Video and build trace", async () => {
+      await page.getByRole("button", { name: "Back to Created work" }).click();
+      await page.getByRole("button", { name: "View video" }).click();
+      const renderedVideo = page.locator(".focused-output-preview video");
+      await expect(renderedVideo).toBeVisible();
+      await renderedVideo.evaluate(async (element: HTMLVideoElement) => { element.muted = true; await element.play(); });
+      await expect.poll(() => renderedVideo.evaluate((element: HTMLVideoElement) => element.currentTime)).toBeGreaterThan(0);
+    }, 2600);
+
+    await beat("original-reveal", "Founder brainstorm beside the connected work", async () => {
+      await page.getByRole("button", { name: "Show original" }).click();
+      await expect(page.getByRole("dialog", { name: "Original brainstorm" })).toContainText("Became professional knowledge work");
+    }, 3000);
+
+    await context.close();
+    await browser.close();
+    if (!video) throw new Error("Playwright did not create the final recording video.");
+    const temporaryVideo = await video.path();
+    const destination = resolve(workingRoot, preview ? "workshoplm-final-preview.webm" : "workshoplm-founder-walkthrough.webm");
+    await copyFile(temporaryVideo, destination);
+    const bytes = await readFile(destination);
+    const probe = JSON.parse(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-show_entries", "stream=codec_type,codec_name,width,height", "-of", "json", destination], { encoding: "utf8" })) as { format?: { duration?: string }; streams?: unknown[] };
+    const durationSeconds = Number(probe.format?.duration ?? 0);
+    const contactSheet = resolve(workingRoot, "contact-sheet.png");
+    execFileSync("ffmpeg", ["-y", "-i", destination, "-vf", "fps=1/3,scale=480:-1,tile=4x3", "-frames:v", "1", "-update", "1", contactSheet], { stdio: "ignore" });
+    const contactSheetBytes = await readFile(contactSheet);
+    const manifest = {
+      schemaVersion: 1,
+      status: preview ? "founder-capture-preview" : "founder-final-candidate",
+      disclosure: preview ? "Acceptance fixture used only to verify final-capture mechanics." : "Hash-bound browser capture of the reviewed founder-derived Workshop. No provider calls occur during capture.",
+      capturedAt: new Date().toISOString(), sourceRoot: preview ? "acceptance-preview" : ".workshoplm/final-operator", founderSource: !preview,
+      founderSourceEvidence: founderSource ? { id: founderSource.id, origin: founderSource.origin, permission: founderSource.permission } : null,
+      submission: { relativePath: preview ? ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json" : ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json", status: submission.status, sha256: createHash("sha256").update(submissionBytes).digest("hex") },
+      viewport: { width: 1200, height: 800 },
+      video: { relativePath: preview ? "workshoplm-final-preview.webm" : "workshoplm-founder-walkthrough.webm", sha256: createHash("sha256").update(bytes).digest("hex"), durationSeconds, streams: probe.streams ?? [] },
+      reviewImages: [{ relativePath: "contact-sheet.png", sha256: createHash("sha256").update(contactSheetBytes).digest("hex") }],
+      beats,
+      finalState: { briefApproved: sourceState.briefApproved, storyboardApproved: sourceState.storyboardApproved, videoState: sourceState.videoState, sources: sourceState.activeSourceIds.length, outputs: sourceState.outputs.length, imagePanels: sourceState.imageBatch?.panels.length ?? 0, storyboardPanels: sourceState.storyboard.panels.length },
+      limitations: preview ? ["This preview is not founder evidence and cannot satisfy final film verification."] : [],
+    };
+    await writeFile(resolve(workingRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
+    await rm(temporaryVideoRoot, { recursive: true, force: true });
+    await rm(outputRoot, { recursive: true, force: true });
+    await rename(workingRoot, outputRoot);
+    process.stdout.write(`${JSON.stringify({ status: manifest.status, video: resolve(outputRoot, manifest.video.relativePath), durationSeconds, beats: beats.length, sha256: manifest.video.sha256 }, null, 2)}\n`);
+  } catch (error) {
+    throw new Error(`${error instanceof Error ? error.message : String(error)}\nFinal-capture server output:\n${serverOutput.slice(-4000)}`);
+  } finally {
+    if (server.exitCode === null) server.kill("SIGTERM");
+    await rm(dataRoot, { recursive: true, force: true });
+    await rm(workingRoot, { recursive: true, force: true });
+  }
+}
+
+main().catch((error: unknown) => { console.error(error); process.exitCode = 1; });

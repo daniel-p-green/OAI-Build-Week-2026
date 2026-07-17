@@ -6,7 +6,7 @@ Status: **draft**
 - Hard ceiling: 175s
 - Shots: 10
 - Narration words: 268 (114.9 words per minute)
-- Source walkthrough: 61.6s, fixture-draft, hash verified
+- Source walkthrough: 60.76s, fixture-draft, hash verified
 - Ready shots: 8
 - Blocked shots: 2
 

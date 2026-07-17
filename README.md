@@ -64,6 +64,16 @@ WORKSHOPLM_DATA_ROOT="$PWD/.workshoplm/live-operator" pnpm dev
 
 The live command fails closed when either opt-in flag or credential is absent. The GPT-5.6 Map rejects any node that cites a claim outside the active source scope and records the model, request ID, input claim IDs, and output hash. Every image and narration clip is likewise stored locally with model, request, version, and SHA-256 provenance. A partial image batch retains completed panels and marks only failed panels for retry.
 
+After the reviewed founder command succeeds and its submission manifest is `ready`, promote that exact Workshop into the public-film candidate without mutating the paid operator state:
+
+```bash
+pnpm demo:capture-final
+pnpm demo:film:final
+pnpm demo:film:verify-final
+```
+
+`demo:capture-final` copies the founder Workshop into a disposable recording root, records all twelve browser beats, and refuses fixture, private-Source, stale-approval, incomplete-package, or unrendered-Video state. Final film mode consumes that founder capture; the sample film continues to use the sanitized fixture capture.
+
 The inspected authorized-sample run is recorded in [`artifacts/live/provider-run.json`](artifacts/live/provider-run.json). Visual review artifacts include the [GPT Image 2 contact sheet](artifacts/live-review/gpt-image-2-contact-sheet.png), [HyperFrames Video review](artifacts/live-review/hyperframes-v4/README.md), and [Realtime grounded-conversation record](artifacts/live-review/realtime-grounded-conversation.json). These prove provider behavior without implying that the final founder Source or public submission is complete.
 
 ### Replace the sample with the founder brainstorm

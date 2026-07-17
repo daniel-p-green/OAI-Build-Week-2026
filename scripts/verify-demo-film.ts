@@ -27,11 +27,16 @@ type FilmPlan = {
   targetDurationSeconds: number;
   maxDurationSeconds: number;
   captureManifest: string;
+  finalCaptureManifest: string;
   finalVideoPath: string;
   shots: FilmShot[];
 };
 type CaptureManifest = {
   status: string;
+  founderSource?: boolean;
+  founderSourceEvidence?: { origin?: string; permission?: string } | null;
+  submission?: { relativePath?: string; sha256?: string };
+  limitations?: unknown[];
   capturedAt: string;
   video: { relativePath: string; sha256: string; durationSeconds: number };
   beats: Array<{ id: string; startMs: number; endMs: number }>;
@@ -184,8 +189,16 @@ async function main(): Promise<void> {
   assert(plan.shots[0]?.openingSequence?.type === "finished-work-to-map", "The demo must open on finished work before revealing the grounded Map.");
   for (const moment of requiredMomentIds) assert(seenMoments.has(moment), `Required judge moment is absent: ${moment}`);
 
-  const captureManifestPath = resolve(repository, plan.captureManifest);
+  const captureManifestPath = resolve(repository, finalMode ? plan.finalCaptureManifest : plan.captureManifest);
   const capture = JSON.parse(await readFile(captureManifestPath, "utf8")) as CaptureManifest;
+  if (finalMode) {
+    assert(capture.status === "founder-final-candidate" && capture.founderSource === true, "Final verification requires the founder-derived browser capture.");
+    assert(Array.isArray(capture.limitations) && capture.limitations.length === 0, "Final browser capture still records limitations.");
+    assert(capture.founderSourceEvidence?.origin === "Founder-provided recording" && capture.founderSourceEvidence.permission === "shareable", "Final browser capture lacks explicit founder Source sharing evidence.");
+    assert(Boolean(capture.submission?.relativePath && capture.submission.sha256), "Final browser capture is not bound to its founder submission package.");
+    const capturedSubmissionHash = createHash("sha256").update(await readFile(resolve(repository, capture.submission!.relativePath!))).digest("hex");
+    assert(capturedSubmissionHash === capture.submission!.sha256, "Final browser capture references a different founder submission package version.");
+  }
   const captureBeatIds = new Set(capture.beats.map((beat) => beat.id));
   for (const shot of plan.shots) for (const beat of shot.captureBeats) assert(captureBeatIds.has(beat), `Shot ${shot.id} references missing capture beat ${beat}.`);
   const captureVideoPath = resolve(dirname(captureManifestPath), capture.video.relativePath);

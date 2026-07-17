@@ -9784,3 +9784,40 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The critical path remains founder-gated: record the authentic brainstorm, run its private preflight, review the Source, deliberately execute the shareable preflight, and only then run the printed thirteen-request command.
 - The public video, intended-audience review, `/feedback` Session ID, release tag, and submitted links remain final-gate work.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 19:55 CT — Authentic Workshop can now promote into the final film without fixture substitution
+
+### Changed
+
+- Audited the handoff after a successful founder operator run and found a material truth defect: final HyperFrames assembly still consumed the sanitized fixture browser walkthrough even when founder recording evidence and a ready founder package existed.
+- Added `pnpm demo:capture-final`, a production-route browser capture that copies `.workshoplm/final-operator` into a disposable recording root, records twelve named product beats, and removes the copy afterward. The paid founder Workshop is never mutated while the capture demonstrates Map editability.
+- Final capture fails closed unless the founder Source is explicitly `shareable`, the Brief and Storyboard are approved and current, the Video is rendered, and the founder submission manifest is `ready` without limitations. Its manifest binds the browser video, founder Source permission, and exact founder submission-manifest SHA-256.
+- Added a preview-only command that exercises the same browser path against the acceptance fixture while permanently labeling the result non-founder and limited. Preview output cannot satisfy final verification.
+- Split film capture inputs: sample editorial mode remains bound to the sanitized fixture, while final mode requires `outputs/demo-recording-final/manifest.json`. The final Video shot now uses the played founder Video inside that authentic browser capture rather than the earlier sample provider render.
+- Final HyperFrames assembly and final-film verification now reject a missing, limited, private, fixture-derived, or submission-hash-mismatched browser capture. Updated the README, founder runbook, package scripts, film plan, and packet verifier with the exact promotion sequence.
+
+### Verified
+
+- `pnpm demo:capture-final-preview` passed the production Next build and recorded all twelve beats into a 27.32-second 1200×800 VP8 walkthrough with SHA-256 `0fab6f3f63beadcea0cf06a255abd5b75d4e92a6584e622b473d21a3633c5adb` after atomic output staging landed.
+- The preview manifest remained explicitly `founder-capture-preview`, `founderSource: false`, and limited. Its submission hash `764f526983a8aec79074e47bb26215c0a54e19e8bf01e5a8f8a96dce63ca3713` exactly matched the acceptance manifest. The disposable 57 MB Workshop copy was absent after capture.
+- Visual inspection of the final preview contact sheet confirmed Map, Source, unsaved editable claim, approved Brief, Style, created work, exact Source trace, editable approved Storyboard, actively playing Video, and original-thought reveal. The first preview exposed a paused black Video frame; the capture was repaired to start playback and re-inspected before acceptance.
+- An intentional invalid-source rerun failed before browser startup and preserved the prior valid preview hash exactly. Both the `.building` output root and the 57 MB disposable Workshop copy were absent afterward, proving failed reruns do not destroy the last reviewed capture or retain copied Source data.
+- `pnpm --filter @workshoplm/web typecheck` and `lint` passed. `pnpm submission:packet:verify` passed with the existing eight-ready/two-founder-blocked truth state. `pnpm demo:film:verify-sample` still verifies the unchanged 140.010667-second local HyperFrames sample film at SHA-256 `de02ab4b324af1824248e3093b5b32e0928dc63222d0e0cb7e7769f4cd72179b`.
+- `pnpm check` passed lint, typecheck, and every test suite across all thirteen packages, including 121 worker, 30 web, and 19 production tests. The escalated run also proved the seven website tests that could not resolve DNS in the restricted shell; all 121 worker tests passed in the normal environment.
+- Draft edit readiness remains honest: 60.76-second sanitized source capture, eight ready shots, two founder-blocked shots, and no final export. `git diff --check` passes.
+
+### Decisions
+
+- Authentic final footage must come from the founder-derived Workshop, not merely coexist with founder evidence elsewhere in the package.
+- The Map edit shown during final capture is intentionally unsaved inside a disposable copy. It proves direct manipulation without staling the reviewed founder package or triggering hidden regeneration.
+- The founder browser capture contains intentionally shareable public-demo material; its temporary working copy is deleted after success or failure. The final capture artifact remains local until an explicit publication action.
+- No OpenAI provider request ran. The provider-operation ledger remains 114.
+- `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+### Open items
+
+- After the authentic founder operator passes, run `pnpm demo:capture-final`, inspect its contact sheet and Video beat, then run `pnpm demo:film:final` and `pnpm demo:film:verify-final`.
+- The founder recording, intended-audience review, public YouTube upload, `/feedback` Session ID, release tag, Devpost completion, and logged-out link verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
