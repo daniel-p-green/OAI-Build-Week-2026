@@ -10632,3 +10632,31 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The verified result is unchanged: the Infographic now communicates Key insight, Context, Evidence, Recommendation, and Path through one constrained semantic composition in HTML and editable PowerPoint; all 31 visual scenarios, all thirteen package checks, and the complete recorded-fixture seam pass.
 - No OpenAI provider request ran; the provider-operation ledger remains 117. Founder visual acceptance and the authentic founder Workshop remain the next gates.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 02:00 CT — The Map now explains the evidence instead of displaying a node dump
+
+### Changed
+
+- Live inspection in the Codex in-app browser found that the recorded-fixture Map still rendered six grounded claims as a flat evidence dump. It exposed Excalidraw mechanics without giving a professional hierarchy, synthesis, or a clear path forward.
+- Added an honest deterministic organizer for the offline and failed-provider paths. It derives one source-connected synthesis and one recommended direction from the active grounded claims, records the graph operations, invalidates downstream work when appropriate, and deliberately records no AI run.
+- Reworked the constrained canvas around three semantic lanes: Evidence → Synthesis → Direction. Evidence uses a compact two-column cluster, the recommended direction is visually dominant, source links are deduplicated, and nonessential compact Excalidraw controls are hidden.
+- Reordered the narrow mobile view to present Direction, Synthesis, then Evidence so the professional sees the conclusion and path before the supporting detail.
+
+### Verified
+
+- Visually inspected the real Map at 1440×900, 900×700, and 390×844 in the Codex in-app browser. Each view now exposes the same hierarchy, source grounding, and recommended path without requiring manual canvas arrangement.
+- `pnpm --filter @workshoplm/worker test` passed all 127 worker tests, including deterministic organization, evidence links, operation history, zero false provider runs, and idempotence.
+- `pnpm --filter @workshoplm/web test` passed all 30 web tests; worker and web typechecks passed.
+- The full production-browser suite passed all 31 scenarios without snapshot updates after the reviewed baselines were refreshed.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam with eight Map ideas, the approved Brief and Style, six images, Cedar Audio Overview, five-panel Storyboard, current Video, and claim trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Keep the Map constrained and opinionated. The professional value is immediate hierarchy, clusters, evidence, and direction—not generic whiteboard power.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- User-owned `PLAN-2026-07-13.md`, interrupted founder/final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -8,7 +8,7 @@ import { renderDeck, renderInfographic } from "../packages/production/src/render
 import { openLocalDatabase } from "../apps/worker/src/db/client.ts";
 import { migrate } from "../apps/worker/src/db/migrate.ts";
 import { executeOne } from "../apps/worker/src/executor.ts";
-import { applyWorkshopAction, approveVisualDna, createImageBatch, createSketch, createVisualDna, dismissWorkshopOrientation, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, lockManualStyle, readWorkshopState, resolveWorkshopArtifact, updateWorkshopOnboarding } from "../apps/worker/src/workshop-service.ts";
+import { applyWorkshopAction, approveVisualDna, createImageBatch, createSketch, createVisualDna, dismissWorkshopOrientation, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, lockManualStyle, organizeGroundedMap, readWorkshopState, resolveWorkshopArtifact, updateWorkshopOnboarding } from "../apps/worker/src/workshop-service.ts";
 import { seedJudgeProviderImages } from "./seed-judge-images.ts";
 import { seedJudgeProviderAudio } from "./seed-judge-audio.ts";
 
@@ -41,6 +41,8 @@ await ingestSource({ title: "Recorded fixture brainstorm", origin: "Sanitized fi
   "The OpenAI Build Week submission uses WorkshopLM to create its own presentation, image set, Storyboard, and demo Video from this raw brainstorm.",
   "The product promise is faster creation without weaker work: one source-traceable body of work that remains editable in the tools teams already use.",
 ].join("\n\n") }, root);
+const organizedMap = organizeGroundedMap(root);
+if (!organizedMap.mapNodes.some((node) => node.kind === "derived") || !organizedMap.mapNodes.some((node) => node.kind === "creative") || organizedMap.mapEdges.length < 2) throw new Error("recorded fixture did not produce evidence, synthesis, and direction");
 updateWorkshopOnboarding({ outcome: "client_facing_pitch", step: "complete" }, root);
 dismissWorkshopOrientation("map", root);
 dismissWorkshopOrientation("outputs", root);

@@ -586,6 +586,72 @@ export function repairBenignCanvasNormalization(root?: string): WorkshopState {
     updatedAt: new Date().toISOString(),
   }, root);
 }
+export function organizeGroundedMap(root?: string): WorkshopState {
+  const current = readWorkshopState(root);
+  const claims = activeClaimsFor(current);
+  if (claims.length < 2) return current;
+  const snapshot = graphFor(current);
+  const currentIds = new Set<string>(snapshot.graph.nodes.map((node) => node.id));
+  const synthesisId = "node-map-synthesis";
+  const directionId = "node-map-direction";
+  if (currentIds.has(synthesisId) && currentIds.has(directionId)) return current;
+  let graph = snapshot.graph;
+  let history = snapshot.history;
+  const createdAt = new Date().toISOString();
+  const evidenceClaimIds = claims.map((claim) => claim.id);
+  const primary = claims[0]!;
+  const append = (operation: Parameters<typeof appendGraphOperation>[2], id: string) => {
+    const applied = appendGraphOperation(graph, history, operation, { id, actor: "assistant", createdAt });
+    graph = applied.graph;
+    history = applied.history;
+  };
+  if (!currentIds.has(synthesisId)) append(GraphOperation.parse({ type: "add_node", node: {
+    id: synthesisId,
+    kind: "idea",
+    label: "What the Sources show",
+    evidenceState: "derived",
+    priority: 1,
+    unresolved: false,
+    locked: false,
+    metadata: { body: "The selected Sources converge on a shared problem, a professional outcome, and the controls needed to move forward.", locator: "Derived from selected Sources", evidenceClaimIds, x: 40, y: 36, width: 24, height: 18 },
+  } }), `operation-map-organizer-${Date.now()}-synthesis`);
+  if (!currentIds.has(directionId)) append(GraphOperation.parse({ type: "add_node", node: {
+    id: directionId,
+    kind: "goal",
+    label: "Turn this evidence into an approved Brief",
+    claimId: primary.id,
+    evidenceState: "creative",
+    priority: 2,
+    unresolved: false,
+    locked: false,
+    metadata: { body: "Review the strongest evidence and synthesis, then approve the direction before creating work.", locator: primary.locator, sourceId: primary.sourceId, evidenceClaimIds, x: 74, y: 36, width: 24, height: 18 },
+  } }), `operation-map-organizer-${Date.now()}-direction`);
+  for (const [index, claim] of claims.slice(0, 3).entries()) {
+    const from = `node-${claim.id}`;
+    if (!graph.nodes.some((node) => node.id === from)) continue;
+    append(GraphOperation.parse({ type: "add_edge", edge: { id: `edge-map-evidence-${index + 1}`, from, to: synthesisId, kind: "supports", label: "informs" } }), `operation-map-organizer-${Date.now()}-evidence-${index + 1}`);
+  }
+  append(GraphOperation.parse({ type: "add_edge", edge: { id: "edge-map-synthesis-direction", from: synthesisId, to: directionId, kind: "depends_on", label: "recommends" } }), `operation-map-organizer-${Date.now()}-direction-edge`);
+  return write({
+    ...current,
+    graphState: serializeGraphState(graph, history),
+    mapNodes: mapNodesFor(graph, current.mapNodes),
+    mapEdges: mapEdgesFor(graph),
+    frame: current.frame ? { ...current.frame, stale: true } : undefined,
+    sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined,
+    assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined,
+    imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined,
+    narration: current.narration ? { ...current.narration, stale: true } : undefined,
+    storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) },
+    audioOverviews: staleAudioOverviews(current),
+    outputs: current.outputs.map((output) => ({ ...output, stale: true })),
+    videos: staleVideos(current),
+    briefApproved: false,
+    storyboardApproved: false,
+    videoState: "blocked",
+    updatedAt: createdAt,
+  }, root);
+}
 export function applyGroundedMapProposal(proposal: GroundedMapProposal, run: Omit<WorkshopAiRun, "id" | "operation" | "inputClaimIds" | "createdAt">, root?: string): WorkshopState {
   const current = readWorkshopState(root);
   const activeClaims = activeClaimsFor(current);

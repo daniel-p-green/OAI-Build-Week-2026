@@ -664,11 +664,16 @@ function organizedMapNodes(nodes: MapNode[], _edges: MapEdge[]) {
     const step = rows <= 1 ? 0 : Math.min(26, 62 / (rows - 1));
     return nodes.map((node, index) => ({ ...node, x: x[index % columns]!, y: Math.round((18 + Math.floor(index / columns) * step) * 10) / 10, width: 26, height: 18 }));
   }
-  const x = [6, 40, 74];
   return layers.flatMap((layer, layerIndex) => {
+    if (layerIndex === 0 && layer.length > 3) {
+      const rows = Math.ceil(layer.length / 2);
+      const step = rows <= 1 ? 0 : Math.min(26, 58 / (rows - 1));
+      return layer.map((node, index) => ({ ...node, x: index % 2 === 0 ? 2 : 29, y: Math.round((14 + Math.floor(index / 2) * step) * 10) / 10, width: 20, height: 16 }));
+    }
+    const x = [6, 61, 92];
     const step = layer.length <= 1 ? 0 : Math.min(23, 72 / (layer.length - 1));
     const start = layer.length <= 1 ? 41 : 10;
-    return layer.map((node, index) => ({ ...node, x: x[layerIndex], y: Math.round((start + index * step) * 10) / 10, width: 22, height: 16 }));
+    return layer.map((node, index) => ({ ...node, x: x[layerIndex]!, y: Math.round((start + index * step) * 10) / 10, width: layerIndex === 0 ? 22 : 20, height: 16 }));
   });
 }
 

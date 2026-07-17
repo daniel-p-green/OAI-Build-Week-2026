@@ -61,25 +61,46 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
   const ink = style?.ink ?? "#171816";
   const activeSourceIds = new Set(sources.map((source) => source.id));
   const nodeIds = new Set(nodes.map((node) => node.id));
+  const nodeById = new Map(nodes.map((node) => [node.id, node]));
   const sourceGeometry = new Map(sources.map((source, index) => [source.id, { x: 24, y: 70 + index * 180, width: 184, height: 108 }]));
   const nodeGeometry = new Map(nodes.map((node) => [node.id, { x: toSceneX(node.x), y: toSceneY(node.y), width: toSceneWidth(node.width), height: toSceneY(node.height) }]));
-  const clusterLabels = ([
-    { id: "map-cluster-evidence", text: "EVIDENCE", kind: "grounded" },
-    { id: "map-cluster-synthesis", text: "SYNTHESIS", kind: "derived" },
-    { id: "map-cluster-direction", text: "DIRECTION", kind: "creative" },
-  ] as const).flatMap((label) => {
-    const members = nodes.filter((node) => node.kind === label.kind);
+  const clusterDescriptors = ([
+    { id: "map-cluster-evidence", text: "EVIDENCE", kind: "grounded", fill: "#eef8f1", stroke: "#008635" },
+    { id: "map-cluster-synthesis", text: "SYNTHESIS", kind: "derived", fill: "#f3f3f3", stroke: ink },
+    { id: "map-cluster-direction", text: "DIRECTION", kind: "creative", fill: `${accent}12`, stroke: accent },
+  ] as const).flatMap((descriptor) => {
+    const members = nodes.filter((node) => node.kind === descriptor.kind).map((node) => nodeGeometry.get(node.id)).filter((geometry): geometry is NonNullable<typeof geometry> => Boolean(geometry));
     if (!members.length) return [];
-    return [{ ...label, x: toSceneX(Math.min(...members.map((node) => node.x))) }];
-  }).map((label) => ({
+    const x = Math.min(...members.map((member) => member.x)) - 18;
+    const y = Math.min(...members.map((member) => member.y)) - 38;
+    const right = Math.max(...members.map((member) => member.x + member.width)) + 18;
+    const bottom = Math.max(...members.map((member) => member.y + member.height)) + 24;
+    return [{ ...descriptor, x, y, width: right - x, height: bottom - y }];
+  });
+  const clusterFrames = clusterDescriptors.map((cluster) => ({
+    type: "rectangle" as const,
+    id: `${cluster.id}-frame`,
+    x: cluster.x,
+    y: cluster.y,
+    width: cluster.width,
+    height: cluster.height,
+    backgroundColor: cluster.fill,
+    strokeColor: `${cluster.stroke}28`,
+    strokeWidth: 1,
+    fillStyle: "solid" as const,
+    roughness: 0,
+    roundness: { type: 3 as const },
+    locked: true,
+  }));
+  const clusterLabels = clusterDescriptors.map((cluster) => ({
     type: "text" as const,
-    id: label.id,
-    x: label.x,
-    y: 46,
-    text: label.text,
+    id: cluster.id,
+    x: cluster.x + 14,
+    y: cluster.y + 12,
+    text: cluster.text,
     fontSize: 11,
     fontFamily: 2 as const,
-    strokeColor: `${ink}72`,
+    strokeColor: `${cluster.stroke}c4`,
     locked: true,
   }));
   const sourceShapes = sources.map((source) => {
@@ -109,18 +130,20 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     customData: { nodeId: node.id },
     backgroundColor: node.kind === "grounded" ? "#eef8f1" : node.kind === "derived" ? "#f3f3f3" : `${accent}12`,
     strokeColor: node.kind === "grounded" ? "#008635" : node.kind === "derived" ? `${ink}9a` : accent,
-    strokeWidth: 1.5,
+    strokeWidth: node.kind === "creative" ? 2.25 : 1.5,
     fillStyle: "solid" as const,
     roughness: 0,
     roundness: { type: 3 as const },
   }));
 
+  const linkedSourceIds = new Set<string>();
   const sourceLinks = nodes.flatMap((node, index) => {
     const sourceId = node.sourceId ?? (node.kind === "grounded" ? sources[index % Math.max(1, sources.length)]?.id : undefined);
-    if (!sourceId || !activeSourceIds.has(sourceId)) return [];
+    if (!sourceId || !activeSourceIds.has(sourceId) || linkedSourceIds.has(sourceId)) return [];
     const start = sourceGeometry.get(sourceId);
     const end = nodeGeometry.get(node.id);
     if (!start || !end) return [];
+    linkedSourceIds.add(sourceId);
     const x = start.x + start.width;
     const y = start.y + start.height / 2;
     return [{
@@ -132,7 +155,7 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
       height: end.y + end.height / 2 - y,
       start: { id: sourceShapeId(sourceId) },
       end: { id: shapeId(node.id) },
-      strokeColor: `${ink}68`,
+      strokeColor: `${ink}54`,
       strokeWidth: 1.4,
       roughness: 0,
       endArrowhead: "arrow" as const,
@@ -155,15 +178,15 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
       height: end.y + end.height / 2 - y,
       start: { id: shapeId(edge.from) },
       end: { id: shapeId(edge.to) },
-      strokeColor: edge.kind === "contradicts" ? "#e02e2a" : `${ink}88`,
-      strokeWidth: 1.5,
+      strokeColor: edge.kind === "contradicts" ? "#e02e2a" : nodeById.get(edge.to)?.kind === "creative" ? accent : `${ink}88`,
+      strokeWidth: nodeById.get(edge.to)?.kind === "creative" ? 2.5 : 1.5,
       roughness: 0,
       endArrowhead: "arrow" as const,
       locked: true,
     }];
   });
 
-  return [...sourceLinks, ...graphLinks, ...clusterLabels, ...sourceShapes, ...nodeShapes];
+  return [...clusterFrames, ...sourceLinks, ...graphLinks, ...clusterLabels, ...sourceShapes, ...nodeShapes];
 }
 
 export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, onSelectNode, onShowSource, onSync }: {
@@ -239,6 +262,8 @@ export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, on
     }, 500);
   }
 
+  const mobileNodes = [...nodes].sort((left, right) => ({ creative: 0, derived: 1, grounded: 2 })[left.kind] - ({ creative: 0, derived: 1, grounded: 2 })[right.kind]);
+
   return <div className="semantic-map" data-domain-ui="excalidraw-map">
     <div className="excalidraw-map" aria-label="Editable Map" onContextMenu={(event) => event.preventDefault()}>
       <Excalidraw
@@ -252,7 +277,7 @@ export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, on
       />
     </div>
     <div className="map-mobile-outline" aria-label="Map ideas">
-      {nodes.map((node) => <button type="button" key={node.id} className={`map-outline-node ${selectedNodeId === node.id ? "selected" : ""}`} onClick={() => onSelectNode(selectedNodeId === node.id ? "" : node.id)}><span>{node.kind === "grounded" ? "Sourced" : node.kind === "derived" ? "Derived" : "Idea"}</span><strong>{node.title}</strong><small>{node.locator}</small></button>)}
+      {mobileNodes.map((node) => <button type="button" key={node.id} className={`map-outline-node ${selectedNodeId === node.id ? "selected" : ""}`} onClick={() => onSelectNode(selectedNodeId === node.id ? "" : node.id)}><span>{node.kind === "grounded" ? "Evidence" : node.kind === "derived" ? "Synthesis" : "Direction"}</span><strong>{node.title}</strong><small>{node.locator}</small></button>)}
     </div>
   </div>;
 }

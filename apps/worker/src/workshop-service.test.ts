@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { DatabaseSync } from "node:sqlite";
 import { describe, expect, it } from "vitest";
-import { analyzeWebsiteStyle, applyMapOperation, applyStyleLibrary, applyWorkshopAction, approveSketch, approveVisualDna, assertStoryboardGrounding, beginWebsiteStyleAnalysis, captureFallbackTranscript, captureImportedTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, dismissWorkshopOrientation, extractWorkshopCandidates, fetchWebsiteBrandAsset, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, ingestUrl, listStyleLibrary, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, markImagePanelFailed, normalizePdfLayoutText, readWorkshopState, recordGeneratedImagePanel, recordOutputFailure, repairBenignCanvasNormalization, resolveWorkshopArtifact, runWebsiteStyleAnalysis, searchWorkshopSources, selectImagePanelForRegeneration, selectWorkshop, sendConversationMessage, setActiveSourceScope, syncMapCanvas, undoMapOperation, updateAudioOverview, updateStoryboardPanel, updateWorkshopOnboarding } from "./workshop-service.js";
+import { analyzeWebsiteStyle, applyMapOperation, applyStyleLibrary, applyWorkshopAction, approveSketch, approveVisualDna, assertStoryboardGrounding, beginWebsiteStyleAnalysis, captureFallbackTranscript, captureImportedTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, dismissWorkshopOrientation, extractWorkshopCandidates, fetchWebsiteBrandAsset, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, ingestUrl, listStyleLibrary, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, markImagePanelFailed, normalizePdfLayoutText, organizeGroundedMap, readWorkshopState, recordGeneratedImagePanel, recordOutputFailure, repairBenignCanvasNormalization, resolveWorkshopArtifact, runWebsiteStyleAnalysis, searchWorkshopSources, selectImagePanelForRegeneration, selectWorkshop, sendConversationMessage, setActiveSourceScope, syncMapCanvas, undoMapOperation, updateAudioOverview, updateStoryboardPanel, updateWorkshopOnboarding } from "./workshop-service.js";
 describe("Workshop service", () => { it("persists brief/style/storyboard gates and blocks video until the storyboard is approved", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-service-")); expect(() => applyWorkshopAction("renderVideo", root)).toThrow(/storyboard/); const brief = applyWorkshopAction("approveBrief", root); expect(brief.frame).toMatchObject({ markdownPath: "generated/FRAME-v1.md", executablePath: "generated/FRAME-v1.json" }); const frameMarkdown = await readFile(join(root, brief.frame!.markdownPath), "utf8"); expect(frameMarkdown).toContain("# FRAME.md"); expect(frameMarkdown).toContain("## Success looks like"); expect(frameMarkdown).toContain("connected professional knowledge work"); expect(frameMarkdown).not.toMatch(/Production proof|finished output/i); expect(JSON.parse(await readFile(join(root, brief.frame!.executablePath), "utf8"))).toMatchObject({ frameVersion: 1, schemaVersion: 1, evidence: expect.any(Array), productionProof: expect.stringContaining("connected professional knowledge work") }); applyWorkshopAction("lockManualStyle", root); expect(applyWorkshopAction("approveStoryboard", root).storyboardApproved).toBe(true); expect(applyWorkshopAction("renderVideo", root).videoState).toBe("queued"); expect(readWorkshopState(root).briefApproved).toBe(true); await rm(root, { recursive: true, force: true }); });
 it("opens a genuinely fresh data root in durable onboarding and preserves outcome, name, and orientation state", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-onboarding-"));
@@ -91,6 +91,29 @@ it("creates, lists, selects, and isolates durable Workshops", async () => {
   await rm(root, { recursive: true, force: true });
 });
 it("normalizes a sanitized source into durable chunks, claims, permissions, and typed grounded Map records", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-ingest-")); const ingested = await ingestSource({ title: "Sanitized meeting", origin: "Local fixture", text: "  Judges need a visible trail.\r\n\r\nThe Map must remain editable.  " }, root); const sourceId = ingested.sourceItems.at(-1)!.id; expect(ingested.sources).toBe(4); expect(ingested.sourceItems.at(-1)).toMatchObject({ title: "Sanitized meeting", origin: "Local fixture", type: "TXT", permission: "sanitized" }); expect(ingested.sourceChunks.filter((chunk) => chunk.sourceId === sourceId).at(-1)).toMatchObject({ sourceId, locator: "Local fixture · chunk 02" }); const claims = ingested.claims.filter((claim) => claim.sourceId === sourceId); expect(claims).toHaveLength(2); expect(searchWorkshopSources("editable Map", root).filter((chunk) => chunk.sourceId === sourceId)).toHaveLength(1); expect(ingested.mapNodes.filter((node) => node.sourceId === sourceId)).toMatchObject([{ id: claims[0]!.id, title: "Judges need a visible trail", body: "Judges need a visible trail", kind: "grounded" }, { id: claims[1]!.id, title: "The Map must remain editable", body: "The Map must remain editable", kind: "grounded" }]); expect(ingested.graphState).toContain("operation-source-"); expect(ingested.graphState).toContain('"actor":"system"'); const repeated = await ingestSource({ title: "Sanitized meeting", origin: "Local fixture", text: "Judges need a visible trail.\n\nThe Map must remain editable." }, root); expect(repeated.sources).toBe(4); await rm(root, { recursive: true, force: true }); });
+it("organizes grounded claims into an honest deterministic evidence-to-direction Map without recording an AI run", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-map-organizer-"));
+  const priorFixtureMode = process.env.WORKSHOPLM_SEEDED_FIXTURE;
+  delete process.env.WORKSHOPLM_SEEDED_FIXTURE;
+  try {
+    await ingestSource({ title: "Strategy notes", origin: "Pasted notes", text: "Client work is fragmented across tools.\n\nEvery factual claim needs a source locator.\n\nThe team should approve direction before creating work." }, root);
+    const organized = organizeGroundedMap(root);
+    expect(organized.mapNodes.filter((node) => node.kind === "grounded")).toHaveLength(3);
+    expect(organized.mapNodes).toEqual(expect.arrayContaining([
+      expect.objectContaining({ id: "map-synthesis", kind: "derived", title: "What the Sources show" }),
+      expect.objectContaining({ id: "map-direction", kind: "creative", title: "Turn this evidence into an approved Brief" }),
+    ]));
+    expect(organized.mapEdges.filter((edge) => edge.to === "map-synthesis")).toHaveLength(3);
+    expect(organized.mapEdges).toContainEqual(expect.objectContaining({ from: "map-synthesis", to: "map-direction", kind: "depends_on" }));
+    expect(organized.aiRuns).toHaveLength(0);
+    expect(organized.graphState).toContain("operation-map-organizer-");
+    expect(organizeGroundedMap(root).mapNodes).toEqual(organized.mapNodes);
+  } finally {
+    if (priorFixtureMode === undefined) delete process.env.WORKSHOPLM_SEEDED_FIXTURE;
+    else process.env.WORKSHOPLM_SEEDED_FIXTURE = priorFixtureMode;
+    await rm(root, { recursive: true, force: true });
+  }
+});
 it("turns realistic meeting notes into a six-idea grounded Map and a concise executable Brief", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-professional-shape-"));
   const priorFixtureMode = process.env.WORKSHOPLM_SEEDED_FIXTURE;

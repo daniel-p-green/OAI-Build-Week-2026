@@ -140,6 +140,8 @@ button { -webkit-tap-highlight-color: transparent; }
 .map-canvas > .semantic-map { padding: 66px 12px 94px; }
 .excalidraw-map .excalidraw { width: 100%; height: 100%; --color-primary: #0285ff; --color-primary-darker: #0077e6; --color-primary-light: #eaf3ff; }
 .excalidraw-map .App-toolbar,
+.excalidraw-map .App-toolbar-container,
+.excalidraw-map .mobile-misc-tools-container,
 .excalidraw-map .App-menu,
 .excalidraw-map .layer-ui__wrapper__footer,
 .excalidraw-map .layer-ui__wrapper__top-right { display: none !important; }

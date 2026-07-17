@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { analyzeWebsiteStyle, applyMapOperation, applyStyleLibrary, applyWorkshopAction, approveSketch, approveVisualDna, beginWebsiteStyleAnalysis, cancelVideoRender, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, dismissWorkshopOrientation, extractWorkshopCandidates, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestPdfFile, ingestSource, ingestUrl, listStyleLibrary, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, readWorkshopState, recordOutputFailure, resetSeededFixture, runWebsiteStyleAnalysis, selectImagePanelForRegeneration, selectWorkshop, sendConversationMessage, setActiveSourceScope, syncMapCanvas, type CanvasNodePatch, type ManualStyleInput, type RealtimeCaptureEvidence, type SourceIngestion, type WorkshopOnboarding, type WorkshopOutcome, undoMapOperation, updateAudioOverview, updateStoryboardPanel, updateWorkshopOnboarding, workshopDataRoot } from "../../../../worker/src/workshop-service";
+import { analyzeWebsiteStyle, applyMapOperation, applyStyleLibrary, applyWorkshopAction, approveSketch, approveVisualDna, beginWebsiteStyleAnalysis, cancelVideoRender, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, dismissWorkshopOrientation, extractWorkshopCandidates, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestPdfFile, ingestSource, ingestUrl, listStyleLibrary, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, organizeGroundedMap, readWorkshopState, recordOutputFailure, resetSeededFixture, runWebsiteStyleAnalysis, selectImagePanelForRegeneration, selectWorkshop, sendConversationMessage, setActiveSourceScope, syncMapCanvas, type CanvasNodePatch, type ManualStyleInput, type RealtimeCaptureEvidence, type SourceIngestion, type WorkshopOnboarding, type WorkshopOutcome, undoMapOperation, updateAudioOverview, updateStoryboardPanel, updateWorkshopOnboarding, workshopDataRoot } from "../../../../worker/src/workshop-service";
 import { defaultOpenAiMediaConfig, generateOpenAiAudioOverview } from "../../../../worker/src/openai-media";
 import { generateGroundedMapWithGpt56 } from "../../../../worker/src/openai-reasoning";
 import { executeWorkshopTool, type ExecuteWorkshopToolInput } from "../../../../worker/src/workshop-tools";
@@ -41,9 +41,10 @@ export async function POST(request: NextRequest) {
     if (body.action === "buildMap") {
       const fallback = updateWorkshopOnboarding({ title: body.title, outcome: body.outcome, step: "complete" });
       const apiKey = process.env.OPENAI_API_KEY?.trim();
-      if (process.env.WORKSHOPLM_LIVE_OPENAI !== "1" || !apiKey || fallback.claims.filter((claim) => fallback.activeSourceIds.includes(claim.sourceId)).length < 2) return NextResponse.json(fallback);
+      if (fallback.claims.filter((claim) => fallback.activeSourceIds.includes(claim.sourceId)).length < 2) return NextResponse.json(fallback);
+      if (process.env.WORKSHOPLM_LIVE_OPENAI !== "1" || !apiKey) return NextResponse.json(organizeGroundedMap());
       try { return NextResponse.json(await generateGroundedMapWithGpt56(workshopDataRoot(), { apiKey, model: "gpt-5.6-terra", reasoningEffort: "medium" })); }
-      catch { return NextResponse.json(fallback); }
+      catch { return NextResponse.json(organizeGroundedMap()); }
     }
     if (body.action === "dismissOrientation") { if (!body.orientation) return NextResponse.json({ error: "orientation is required" }, { status: 400 }); return NextResponse.json(dismissWorkshopOrientation(body.orientation)); }
     if (body.action === "beginWebsiteStyleAnalysis") {
