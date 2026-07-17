@@ -7,6 +7,9 @@
 - [x] Product runs consistently on its intended platform
 - [ ] Live/testable experience matches the submitted description and video
 - [ ] Third-party SDKs, APIs, data, fonts, images, music, and integrations are licensed or authorized
+  - [x] Current runtime dependencies and design references are inventoried in `THIRD_PARTY_NOTICES.md`; direct production licenses and the installed dependency distribution were reviewed.
+  - [x] The sanitized judge fixture uses locally authored or sanitized Sources, GPT Image 2 visuals, disclosed Cedar speech, system fonts, and no music.
+  - [ ] Re-run the hash-level inventory against the exact founder-derived public package and final Video before checking the parent requirement.
 - [x] Sample data and a privacy-safe, repeatable demo fixture are available
 
 ## Devpost entry

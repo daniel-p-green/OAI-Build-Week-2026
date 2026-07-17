@@ -30,6 +30,7 @@ Audit date: 2026-07-17 CT. This is a current-state audit, not a completion claim
 | Public video and YouTube | The under-three-minute local rough cut, manifest, review frames, and contact sheet exist; no final public upload. | Open |
 | Devpost form and `/feedback` Session ID | Draft copy exists; external form and session ID unavailable on this surface. | Open |
 | Repository license | Root `LICENSE` contains MIT; public `main` was verified with GitHub CLI. | Proven |
+| Dependency and media authorization | `THIRD_PARTY_NOTICES.md` records the direct production dependencies, current installed-license distribution, OpenAI/Figma design-reference attribution, generated-media provenance, no-music boundary, and exclusions for research screenshots and external dogfood branding. | Runtime and sanitized fixture reviewed; exact founder/public package inventory open |
 
 ## Completion decision
 

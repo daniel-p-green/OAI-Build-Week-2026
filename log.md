@@ -11993,3 +11993,29 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Film verification is not part of the current-floor claim while demo-film work is paused. The final film must earn a new verification claim from its own inspected candidate.
 - No OpenAI provider request ran; the cumulative recorded provider-operation count remains 119. Authentic founder evidence and external professional judgment remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 12:36 CT — Dependency and media authorization boundary made inspectable
+
+### Changed
+
+- Added `THIRD_PARTY_NOTICES.md` as the repository's current dependency, design-reference, generated-media, and exclusion inventory. The README now links it from the authoritative start-here list.
+- Recorded the current direct production dependencies and their installed versions/licenses: Excalidraw 0.18.1 MIT, GSAP 3.14.2 under its standard no-charge license, HyperFrames 0.7.60 Apache-2.0, Next.js 15.5.20 MIT, React/React DOM 19.2.7 MIT, PptxGenJS 4.0.1 MIT, and Zod 3.25.76 MIT.
+- Added explicit attribution for the OpenAI Apps in ChatGPT community UI kit as a design-system reference, while recording that WorkshopLM does not redistribute the `.fig` file or OpenAI trademark artwork.
+- Split the submission authorization gate into proven dependency/fixture subchecks and one still-open hash-level review of the exact founder-derived public package. Research screenshots, external dogfood branding, third-party music, and unlicensed fonts are explicitly excluded from the public package.
+
+### Verified
+
+- Inspected 317 unique installed package/version records: 226 MIT, 47 ISC, 20 Apache-2.0, 13 BSD-3-Clause, and eleven other permissive or dual-license records. The sole missing SPDX field was `khroma@2.1.0`; its installed `license` file contains the MIT license.
+- Verified Excalidraw's official repository license as MIT and confirmed that its Assistant font files are bundled inside the installed Excalidraw distribution rather than copied into WorkshopLM source.
+- Verified GSAP's official standard license permits website, web-application, and digital-interface use, including commercial projects at no charge, while prohibiting competing visual-animation builders. WorkshopLM uses GSAP for local composition motion and is not such a builder.
+- Confirmed the judge-image manifest contains six GPT Image 2 request IDs, hashes, and timestamps; the current Audio Overview and Storyboard speech retain OpenAI model/voice provenance and AI-voice disclosure. The sample Video manifest identifies Cedar narration and no music asset; `ffprobe` confirms one H.264 video stream and one AAC audio stream at 140.01 seconds.
+- `pnpm repo:hygiene` passed with 697 tracked files, five active documents checked, zero tracked transient paths, and a 7.9 MiB largest tracked file. `git diff --check` passed.
+
+### Decisions and open items
+
+- The parent third-party-authorization checkbox remains open until the exact founder-derived public package and final Video exist and pass the recorded hash-level inventory. Dependency review is not being inflated into final-media clearance.
+- The AI Collective dogfood logo and NotebookLM/Figma research captures remain excluded from the judge package unless a separate publication right is documented.
+- No OpenAI provider request ran; the cumulative recorded provider-operation count remains 119. Demo-film work remains paused.
+- Codex Session ID: unavailable on this surface; not inferred.
