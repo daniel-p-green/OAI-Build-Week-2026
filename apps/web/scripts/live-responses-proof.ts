@@ -21,7 +21,7 @@ async function main() {
     await page.getByRole("button", { name: "Send", exact: true }).click();
 
     const assistant = page.locator(".conversation-turn--assistant").last();
-    await expect(assistant).toContainText(/three minutes|source|Capture.+Deliver/i, { timeout: 90_000 });
+    await expect(assistant).toContainText(/three minutes|source|Capture.+Create/i, { timeout: 90_000 });
     let state: Record<string, any> = {};
     await expect.poll(async () => {
       state = await (await page.request.get("http://127.0.0.1:3000/api/workshop")).json() as Record<string, any>;

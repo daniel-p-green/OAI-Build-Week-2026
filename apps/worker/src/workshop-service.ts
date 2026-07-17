@@ -110,20 +110,20 @@ const activeWorkshopSetting = "active_workshop_id";
 export function workshopGeneratedPath(workshopId: string, ...parts: string[]) { return join("generated", ...(workshopId === defaultWorkshopId ? [] : [workshopId]), ...parts); }
 const seedChunks: WorkshopChunk[] = [
   { id: "chunk-seed-raw", sourceId: "source-raw", text: "The judge should see the messy original thought become a cited Map, a real Brief, and finished work without losing the trail back to source material.", locator: "ChatGPT task · 12:41 · chunk 04", ordinal: 1 },
-  { id: "chunk-seed-brief", sourceId: "source-brief", text: "One visible chain links capture, the editable Map, approved work, Storyboard review, and finished delivery.", locator: "Build notes · §2", ordinal: 1 },
+  { id: "chunk-seed-brief", sourceId: "source-brief", text: "One visible chain links Capture, the editable Map, approved work, Storyboard review, and created work.", locator: "Build notes · §2", ordinal: 1 },
   { id: "chunk-seed-design", sourceId: "source-design", text: "Evidence first becomes an editable production system, not a static report.", locator: "Design · Map", ordinal: 1 },
 ];
 const seedClaims: WorkshopClaim[] = [
   { id: "claim-seed-raw-outcome", sourceId: "source-raw", chunkId: "chunk-seed-raw", text: "Raw thinking becomes finished work.", evidenceState: "verified", locator: "ChatGPT task · 12:41 · chunk 04" },
   { id: "claim-seed-raw-trace", sourceId: "source-raw", chunkId: "chunk-seed-raw", text: "The source trail remains attached.", evidenceState: "verified", locator: "ChatGPT task · 12:41 · chunk 04" },
-  { id: "claim-seed-brief-chain", sourceId: "source-brief", chunkId: "chunk-seed-brief", text: "One visible chain connects capture to delivery.", evidenceState: "verified", locator: "Build notes · §2" },
-  { id: "claim-seed-brief-review", sourceId: "source-brief", chunkId: "chunk-seed-brief", text: "The Map and Storyboard remain reviewable before delivery.", evidenceState: "verified", locator: "Build notes · §2" },
+  { id: "claim-seed-brief-chain", sourceId: "source-brief", chunkId: "chunk-seed-brief", text: "One visible chain connects Capture to created work.", evidenceState: "verified", locator: "Build notes · §2" },
+  { id: "claim-seed-brief-review", sourceId: "source-brief", chunkId: "chunk-seed-brief", text: "The Map and Storyboard remain reviewable before creation.", evidenceState: "verified", locator: "Build notes · §2" },
   { id: "claim-seed-design-system", sourceId: "source-design", chunkId: "chunk-seed-design", text: "Evidence becomes an editable production system.", evidenceState: "verified", locator: "Design · Map" },
 ];
 const emptyStoryboard = (): WorkshopStoryboard => ({ version: 0, stale: false, approved: false, panels: [] });
 const defaultState = (id = defaultWorkshopId, title = defaultWorkshopTitle, seeded = false): WorkshopState => ({ id, title, onboarding: { step: seeded ? "complete" : "welcome", outcome: seeded ? "client_facing_pitch" : undefined, mapOrientationDismissed: seeded, outputsOrientationDismissed: seeded, completedAt: seeded ? new Date().toISOString() : undefined }, briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: seeded ? 3 : 0, groundedClaims: seeded ? 5 : 0, sourceItems: seeded ? [
   { id: "source-raw", type: "TXT", title: "Raw voice brainstorm", origin: "ChatGPT task", claimCount: 5, excerpt: "The judge should be able to see the messy original thought become a cited map, a real brief, and a finished piece of work.", locator: "ChatGPT task · 12:41 · chunk 04", permission: "sanitized" },
-  { id: "source-brief", type: "PDF", title: "Build Week brief", origin: "Local", claimCount: 3, excerpt: "One visible chain links capture, approved work, and finished delivery.", locator: "Build notes · §2", permission: "sanitized" },
+  { id: "source-brief", type: "PDF", title: "Build Week brief", origin: "Local", claimCount: 3, excerpt: "One visible chain links Capture, approved work, and created work.", locator: "Build notes · §2", permission: "sanitized" },
   { id: "source-design", type: "WEB", title: "WorkshopLM direction", origin: "Local", claimCount: 2, excerpt: "Evidence first becomes an editable production system, not a static report.", locator: "Design · Map", permission: "sanitized" },
 ] : [], activeSourceIds: seeded ? ["source-raw", "source-brief", "source-design"] : [], transcriptSegments: [], conversationTurns: [], toolCalls: [], sourceChunks: seeded ? seedChunks : [], claims: seeded ? seedClaims : [], candidates: [], mapEdges: seeded ? [
   { id: "edge-promise-proof", from: "promise", to: "proof", kind: "supports" },

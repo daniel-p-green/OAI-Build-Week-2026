@@ -25,7 +25,7 @@ if (answer.status !== "verified" || answer.citations.length === 0) throw new Err
 const gates = deriveGates({ transcriptSegments: 2, boardApprovedCurrent: true, briefCurrent: true, styleLockedCurrent: true, storyboardApprovedCurrent: true, videoRenderedCurrent: false });
 assertEligible("create_output", gates); assertEligible("approve_storyboard", gates); assertEligible("render_video", gates);
 
-const storyboard = Storyboard.parse({ id: "storyboard-v1", versionId: "story-version-v1", workshopId: "workshop-build-week", approvedAt: "2026-07-13T23:00:00.000Z", staleState: "current", panels: [{ id: "panel-1", purpose: "Show proof", claimIds: ["claim-1"], evidence: [{ claimId: "claim-1", sourceId: "source-1", chunkId: "chunk-1", locator: "Fixture · chunk 01" }], voiceover: "AI-generated narration: raw thinking becomes grounded work.", onScreenText: "Capture → Shape → Deliver", durationSeconds: 4, composition: "editorial evidence map", visualDnaVersionId: "dna-v1", transition: "cut", approved: true, staleState: "current" }] });
+const storyboard = Storyboard.parse({ id: "storyboard-v1", versionId: "story-version-v1", workshopId: "workshop-build-week", approvedAt: "2026-07-13T23:00:00.000Z", staleState: "current", panels: [{ id: "panel-1", purpose: "Show proof", claimIds: ["claim-1"], evidence: [{ claimId: "claim-1", sourceId: "source-1", chunkId: "chunk-1", locator: "Fixture · chunk 01" }], voiceover: "AI-generated narration: raw thinking becomes grounded work.", onScreenText: "Capture → Shape → Create", durationSeconds: 4, composition: "editorial evidence map", visualDnaVersionId: "dna-v1", transition: "cut", approved: true, staleState: "current" }] });
 
 const brief = { workshopTitle: "WorkshopLM Build Week", version: "brief-v1", style: { accent: "#1668E3", ink: "#171816", paper: "#F4F2EC" }, blocks: [{ id: "claim-1", heading: "Judges see the complete trail", body: answer.answer, citations: answer.citations.map((citation) => citation.nativeLocator?.value ?? citation.chunkId) }] };
 if (!renderDeck(brief).includes("Judges see") || !renderInfographic(brief).includes("Source-defensible")) throw new Error("production render missing content");
@@ -34,12 +34,12 @@ const db = openLocalDatabase(resolve(root, "workshoplm.sqlite")); migrate(db);
 db.prepare("INSERT INTO workshop VALUES (?, ?, ?)").run("workshop-build-week", "WorkshopLM Build Week", new Date().toISOString());
 
 await ingestSource({ title: "Recorded fixture brainstorm", origin: "Sanitized fixture", text: [
-  "WorkshopLM turns messy meetings into a deck professionals can defend, with grounded source documents and brand rules preserving their standards.",
-  "Producing a client-ready deliverable is slow and fragmented, because understanding, design, and production live in disconnected tools.",
+  "WorkshopLM turns messy meetings into professional knowledge work teams can defend, with grounded source documents and brand rules preserving their standards.",
+  "Creating client-ready work is slow and fragmented, because understanding, design, and production live in disconnected tools.",
   "Every factual claim retains an exact source locator, so evidence stays inspectable from the editable Map through the final presentation and Storyboard.",
-  "Teams should use two deliberate sign-offs: approve the grounded Brief before creating Outputs, then approve the Storyboard before rendering Video.",
+  "Teams should use two deliberate sign-offs: approve the grounded Brief before creating professional knowledge work, then approve the Storyboard before rendering Video.",
   "The OpenAI Build Week submission uses WorkshopLM to create its own presentation, image set, Storyboard, and demo Video from this raw brainstorm.",
-  "The product promise is faster delivery without weaker work: one source-traceable package that remains editable in the tools teams already use.",
+  "The product promise is faster creation without weaker work: one source-traceable body of work that remains editable in the tools teams already use.",
 ].join("\n\n") }, root);
 updateWorkshopOnboarding({ outcome: "client_facing_pitch", step: "complete" }, root);
 dismissWorkshopOrientation("map", root);
@@ -63,8 +63,8 @@ if (!deckOutput || deckOutput.claimIds.length !== 4) throw new Error("recorded f
 const deckHtml = await readFile(resolve(root, deckOutput.relativePath), "utf8");
 for (const layout of ["statement", "split", "proof", "recommendation"]) if (!deckHtml.includes(`class="slide ${layout}`)) throw new Error(`recorded fixture deck is missing the ${layout} layout`);
 for (const narrativeBeat of [
-  "WorkshopLM turns messy meetings into a deck professionals can defend",
-  "Producing a client-ready deliverable is slow and fragmented",
+  "WorkshopLM turns messy meetings into professional knowledge work teams can defend",
+  "Creating client-ready work is slow and fragmented",
   "Every factual claim retains an exact source locator",
   "Teams should use two deliberate sign-offs",
 ]) if (!deckHtml.includes(narrativeBeat)) throw new Error(`recorded fixture deck is missing its narrative beat: ${narrativeBeat}`);
@@ -88,9 +88,9 @@ if (!buildTrace || !(await stat(resolve(root, buildTrace.htmlPath))).isFile() ||
 if (resolveWorkshopArtifact("build-trace-data-v1", root)?.contentType !== "application/json; charset=utf-8") throw new Error("recorded fixture did not expose its exact trace data");
 const buildTraceData = JSON.parse(await readFile(resolve(root, buildTrace.dataPath), "utf8")) as { outputs: Array<{ label: string; status: string; sha256?: string }> };
 const expectedTraceOutputs = ["Presentation", "Infographic", "Sketch", "Image set", "Audio Overview", "Storyboard", "Video"];
-if (buildTraceData.outputs.map((output) => output.label).join("|") !== expectedTraceOutputs.join("|") || buildTraceData.outputs.some((output) => !output.status || !output.sha256)) throw new Error("recorded fixture build trace did not preserve the complete connected Output set");
+if (buildTraceData.outputs.map((output) => output.label).join("|") !== expectedTraceOutputs.join("|") || buildTraceData.outputs.some((output) => !output.status || !output.sha256)) throw new Error("recorded fixture build trace did not preserve the complete connected professional knowledge work");
 const buildTraceHtml = await readFile(resolve(root, buildTrace.htmlPath), "utf8");
-if (!buildTraceHtml.includes("Raw thinking became a finished submission") || !buildTraceHtml.includes("7 connected Outputs") || buildTraceHtml.includes("image-batch-v1")) throw new Error("recorded fixture build trace did not present the complete professional narrative");
+if (!buildTraceHtml.includes("One thought became the Build Week submission") || !buildTraceHtml.includes("7 connected pieces of work") || buildTraceHtml.includes("image-batch-v1")) throw new Error("recorded fixture build trace did not present the complete professional narrative");
 const finalGates = deriveGates({ transcriptSegments: 2, boardApprovedCurrent: true, briefCurrent: finalState.briefApproved, styleLockedCurrent: Boolean(finalState.style && !finalState.style.stale), storyboardApprovedCurrent: finalState.storyboardApproved, videoRenderedCurrent: finalState.videoState === "rendered" });
 if (!finalGates.video_rendered) throw new Error("video-rendered gate was not recorded");
 

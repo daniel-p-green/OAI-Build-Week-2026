@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance created-work set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-17T00:02:00.703Z",
+  "builtAt": "2026-07-17T00:19:33.917Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "compositor": {
@@ -14,12 +14,12 @@
     "spatialTransforms": false,
     "transition": "design-accent-dip",
     "design": {
-      "sha256": "f5a5c0006372b453fe41d60fee112e6ba144ec4d86d4513f3c399bc9fbeb3e12",
+      "sha256": "03fb3f1f6e4c277c02088cfd4d92e1ad624e655fe8475ac5e7db5bb8568b8672",
       "source": ".workshoplm/acceptance/generated/DESIGN-v1.md"
     },
     "frame": {
       "version": 1,
-      "sha256": "e004093353699f3b15335e5e45ebf810db9bc80214860ddc431efaf2c8ad679e",
+      "sha256": "c6430ce7e24054736c7cd19c92bdf1fabc356e1ad5e992f04e9e9c3d742061cf",
       "source": ".workshoplm/acceptance/generated/FRAME-v1.md"
     }
   },
@@ -33,7 +33,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "5eb6a29f97539991cea0391b47bd414d658755f1ff84611a98bfc2f9b16848da",
+    "sha256": "de02ab4b324af1824248e3093b5b32e0928dc63222d0e0cb7e7769f4cd72179b",
     "durationSeconds": 140.010667,
     "streams": [
       {
@@ -51,7 +51,7 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "03011d6fa17d40ad673a1f50246eee209ca776dfffd404fbb8376c158ee88e8e"
+    "sha256": "249dd3cfb0daf5b0d667ef8d10509a07aa22dcbebb3f8cd243bbd2cb28ca64cc"
   },
   "openingProofFrame": {
     "relativePath": "review/opening-proof.jpg",
@@ -61,7 +61,7 @@
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "042f07fd4de165656be7b8ed394783b965bcca78d578ac84e393b55c76baf6f4"
+      "sha256": "cd459a56b66180cd14170573c355a2e977f31e95a8178f7122c57e722fde615c"
     },
     {
       "relativePath": "review/02.jpg",
@@ -69,27 +69,27 @@
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "e85a6892aa93703a2bfcee9cc2c92a407c01367a9da23b0be094c206e4a06b8b"
+      "sha256": "a5286c5f99e6eb4a2e29a4ce577e28781ba4725321f92d8324bbc84395c2c918"
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "c13d2031175c02c444e4933db0001d28bca670314441befd7c54ba5ee0f1ea72"
+      "sha256": "8c1e655843944b02221db4953e3616c9535cc4df9b19c43aaecb5ae484ecee4d"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "22c3358bb9ee077be09f1ad8acfa75011254d93b8c2a9fb3e5fa36816b3757e5"
+      "sha256": "0b28308ce940dfc9dc45807293b6daeb8ce3216de101ff237e11b21b805b2217"
     },
     {
       "relativePath": "review/06.jpg",
-      "sha256": "eb40ef14c3724a64123b19847b7edef6db7e319a8e615ef015b9267d560f86a8"
+      "sha256": "a081626809aa8fc59b0e2da883193e83245d632c8591b1462c530a64633b8832"
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "2d44ea08a44a446232bfdb17bb693f73bf27547c2fa53db71c9b76e940a3847b"
+      "sha256": "ae2e00a590068cfbbb66ed6582eacfbdf88bb004c55099414be587b91ef9960a"
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "bfcc6c7136f4136a09b82abd16679d63d0bc5acb76bebc32c0675934debc9420"
+      "sha256": "32921b9f0d37459f4622fbc770a27546e392fad63ffc369419d3e39bcb53bf9d"
     },
     {
       "relativePath": "review/09.jpg",
@@ -114,11 +114,11 @@
     },
     "submissionManifest": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
-      "sha256": "abd340863d0e7ddf843b183d69ddbb8c5949130bf1a2cbc6cd80c37ecc64a6d7"
+      "sha256": "764f526983a8aec79074e47bb26215c0a54e19e8bf01e5a8f8a96dce63ca3713"
     },
     "buildTrace": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/BUILD-TRACE.json",
-      "sha256": "8416bfbcd4645891637bcc1a143e4f3b0ed351f48e876c0fbc9f1640dbac4284"
+      "sha256": "027433edee54c337f0bc590224bab5a7c9d9a0afbdb9bd7357dd2f6ea778cf6e"
     }
   },
   "shots": [
@@ -135,8 +135,8 @@
       "sourceBeats": [
         "map"
       ],
-      "sourceStartSeconds": 0.684,
-      "sourceEndSeconds": 2.386,
+      "sourceStartSeconds": 0.656,
+      "sourceEndSeconds": 2.358,
       "openingProof": {
         "type": "finished-work-to-map",
         "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/thumbnail-opening.png",
@@ -186,8 +186,8 @@
       "sourceBeats": [
         "sources"
       ],
-      "sourceStartSeconds": 2.886,
-      "sourceEndSeconds": 4.392,
+      "sourceStartSeconds": 2.858,
+      "sourceEndSeconds": 4.363,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "design-accent-dip",
@@ -209,8 +209,8 @@
         "source-trace",
         "map-edit"
       ],
-      "sourceStartSeconds": 5.092,
-      "sourceEndSeconds": 7.599,
+      "sourceStartSeconds": 5.063,
+      "sourceEndSeconds": 7.585,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "design-accent-dip",
@@ -231,8 +231,8 @@
       "sourceBeats": [
         "brief-approval"
       ],
-      "sourceStartSeconds": 8.531,
-      "sourceEndSeconds": 9.882,
+      "sourceStartSeconds": 8.519,
+      "sourceEndSeconds": 9.869,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "design-accent-dip",
@@ -253,8 +253,8 @@
       "sourceBeats": [
         "style"
       ],
-      "sourceStartSeconds": 10.782,
-      "sourceEndSeconds": 11.786,
+      "sourceStartSeconds": 10.769,
+      "sourceEndSeconds": 11.772,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "design-accent-dip",
@@ -276,8 +276,8 @@
         "create-outputs",
         "output-evidence"
       ],
-      "sourceStartSeconds": 12.711,
-      "sourceEndSeconds": 18.411,
+      "sourceStartSeconds": 12.691,
+      "sourceEndSeconds": 18.349,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "design-accent-dip",
@@ -299,8 +299,8 @@
         "storyboard-edit",
         "storyboard-approval"
       ],
-      "sourceStartSeconds": 18.586,
-      "sourceEndSeconds": 21.707,
+      "sourceStartSeconds": 18.523,
+      "sourceEndSeconds": 21.637,
       "motion": {
         "type": "hyperframes-stable-media",
         "transition": "design-accent-dip",

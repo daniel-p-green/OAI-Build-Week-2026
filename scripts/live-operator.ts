@@ -103,7 +103,7 @@ async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: Prov
     title: "Build Week judge path",
     origin: "Sanitized operator fixture",
     permission: "sanitized",
-    text: "Judges need one continuous Capture to Shape to Deliver path. Every factual claim must retain a visible source locator. The public demo video must remain under three minutes.",
+    text: "Judges need one continuous Capture to Shape to Create path. Every factual claim must retain a visible source locator. The public demo video must remain under three minutes.",
   }, root);
   await ingestSource({
     title: "WorkshopLM product direction",

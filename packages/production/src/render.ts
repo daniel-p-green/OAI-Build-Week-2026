@@ -84,6 +84,7 @@ const sequenceStepDetail = (item: string) => {
   const normalized = item.trim().toLowerCase();
   if (normalized === "capture") return "Gather the raw material.";
   if (normalized === "shape") return "Organize what matters.";
+  if (normalized === "create") return "Create the professional work.";
   if (normalized === "deliver") return "Create the finished work.";
   return undefined;
 };

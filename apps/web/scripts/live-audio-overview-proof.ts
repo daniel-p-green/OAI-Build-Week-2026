@@ -14,10 +14,11 @@ async function main() {
     const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: "light", reducedMotion: "reduce" });
     const page = await context.newPage();
     await page.goto("http://127.0.0.1:3000/");
-    await page.getByRole("button", { name: "View outputs" }).click();
+    await page.getByRole("button", { name: "View created work" }).click();
     await page.getByRole("button", { name: /Open Audio Overview, version/ }).first().click();
-    await page.getByRole("button", { name: "Create audio" }).click();
+    if (!(await page.locator(".audio-player audio").isVisible())) await page.getByRole("button", { name: "Create audio" }).click();
     await expect(page.locator(".audio-player audio")).toBeVisible({ timeout: 90_000 });
+    await expect.poll(() => page.locator(".audio-player audio").evaluate((audio) => (audio as HTMLAudioElement).duration), { timeout: 30_000 }).toBeGreaterThan(0);
 
     const state = await (await page.request.get("http://127.0.0.1:3000/api/workshop")).json() as Record<string, any>;
     const overview = [...(state.audioOverviews ?? [])].reverse().find((item: Record<string, any>) => item.status === "audio_ready" && item.audio && !item.stale);

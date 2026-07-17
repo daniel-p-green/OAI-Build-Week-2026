@@ -9686,3 +9686,41 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The five-item critical path in `GOAL.md` remains current: record the founder brainstorm, run the authentic Workshop, review and refine the resulting knowledge work, complete the public video, then verify and submit.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 19:28 CT — Current created work and Audio Overview now follow the product compass
+
+### Changed
+
+- Audited the actual sample-film frames and current created-work evidence after the product-compass rewrite. The film narrative was current, but the generated Presentation, Infographic, Audio Overview, live-operator seed, and Video build-record page still carried the retired `Capture → Shape → Deliver`, `deck`, `deliverable`, and `Output set` story.
+- Replaced those active user-facing inputs and generated-proof labels with `Capture → Shape → Create`, `Presentation`, `professional knowledge work`, and `created work`. Internal `deck`, `outputs`, persisted types, and the backward-compatible renderer fallback remain unchanged.
+- Updated the build-record meta proof to show `Capture → Shape → Create`, seven connected pieces of work, time to first created work, and `Connected professional knowledge work`.
+- Added an exact one-request, environment-gated Audio Overview refresh command. The existing provider WAV was correctly rejected because its grounded script narrated the retired story; one new Cedar request produced the current source-linked script. The helper refuses any ceiling other than one.
+- Hardened the Audio Overview proof capture to reuse already-generated audio instead of silently spending again, follow the simplified `View created work` navigation, and wait for playable media metadata before capture.
+- Added a deterministic created-work proof capture that renders the current acceptance Presentation and Infographic, preserves editable PowerPoint exports, rejects retired active terminology, and records exact hashes without provider calls.
+- Rebuilt the browser walkthrough, acceptance submission package, and local HyperFrames sample film. Updated the current evidence pointers in `GOAL.md` to Presentation v7, Infographic v5, and the refreshed Audio Overview.
+
+### Verified
+
+- The bounded Audio Overview refresh made exactly one `gpt-4o-mini-tts` Cedar request. The resulting 33.5-second WAV is 1,608,044 bytes; persisted, downloaded, and review evidence all hash to `f485bf1515df165205f9a3b2bcdd9640214063e77a60ec1019dc6b3080fb7b33`.
+- Visual inspection of `artifacts/live-review/audio-overview.png` confirms the current 83-word, three-source-point script, AI-voice disclosure, source actions, and quiet focused-object layout.
+- The current Presentation proof contains five visually distinct slides with editable PowerPoint SHA-256 `23a28b7c7e1fe6f5840af0df8bfddd20fabb203fa43572e5d470c25a3828d304`. The current Infographic proof has editable PowerPoint SHA-256 `4dfaa6d3e8cf7e628d6d0d689399a36b161b516c1e97fa7c8933d41f0af6faa9`. Visual inspection found no retired active terminology or design-system break.
+- `pnpm demo:e2e` passed the complete recorded fixture with Presentation, Infographic, Sketch, six replayed GPT Image 2 visuals, current Audio Overview, Storyboard, local Video, and the seven-item build trace.
+- `pnpm demo:capture-draft` passed a 60.76-second, twelve-beat browser capture with SHA-256 `5084c86ab2329e10dde5a78da73bab373cc83f157160cc466071c99a4977a9cd`.
+- Local HyperFrames `0.7.60` lint, transition check, and render passed. `pnpm demo:film:verify-sample` verified the 140.010667-second H264/AAC sample film with SHA-256 `de02ab4b324af1824248e3093b5b32e0928dc63222d0e0cb7e7769f4cd72179b`; spatial transforms and jitter-prone zoom/pan remain disabled.
+- `pnpm submission:verify` reports the 25-asset partial package valid, current, and untampered. `pnpm submission:packet:verify` passes with eight ready film shots, two founder-blocked shots, six provider images, the 33.5-second Cedar Audio Overview, and four unresolved founder slots.
+- `pnpm check` passed lint, typecheck, and every suite across thirteen packages: 121 worker tests, 30 web tests, 19 production tests, and the remaining package suites. `git diff --check` passes.
+
+### Decisions
+
+- A provider-backed replay artifact must be regenerated when its exact grounded script changes; silently pairing old audio with current source edges is prohibited even when the semantic difference appears small.
+- Historical Presentation v6, Infographic v4, and prior log evidence remain intact. New v7/v5 proof directories carry current truth instead of rewriting old artifacts.
+- The provider-operation ledger advances from 113 to 114 for the one bounded Cedar request. The first helper invocation failed at TypeScript transformation before any provider request; subsequent proof captures made no provider calls. Exact provider debit is unavailable.
+- The current acceptance and sample-film runs remain founder-independent rehearsal evidence. They do not satisfy the authentic founder run or the two final founder-derived film shots.
+- `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+### Open items
+
+- The five-item critical path in `GOAL.md` remains unchanged. The next required external input is still the authentic founder recording and transcript; all founder-independent work in this milestone was limited to visible blockers on that path.
+- Codex Session ID: unavailable on this surface; not inferred.

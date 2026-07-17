@@ -112,23 +112,23 @@ describe("production renderers", () => {
     expect(deck).toContain("03 · Decision required");
   });
   it("renders a professional process as an editable sequence instead of a numbered statement", async () => {
-    const sequenceBrief = { ...brief, blocks: [{ id: "path", heading: "One continuous path from Capture to Deliver", body: "", items: ["Capture", "Shape", "Deliver"], citations: ["approved brief"], layout: "sequence" as const }] };
+    const sequenceBrief = { ...brief, blocks: [{ id: "path", heading: "One continuous path from Capture to Create", body: "", items: ["Capture", "Shape", "Create"], citations: ["approved brief"], layout: "sequence" as const }] };
     const deck = renderDeck(sequenceBrief);
     expect(deck).toContain('class="slide sequence"');
     expect(deck).toContain("02 · How it works");
     expect(deck).toContain('<div class="sequence-step"><span>Capture</span><small>Gather the raw material.</small></div>');
-    expect(deck).toContain('<div class="sequence-step"><span>Deliver</span><small>Create the finished work.</small></div>');
+    expect(deck).toContain('<div class="sequence-step"><span>Create</span><small>Create the professional work.</small></div>');
     const root = await mkdtemp(join(tmpdir(), "workshoplm-sequence-"));
     const artifact = await writeRenderedArtifact(root, "sequence", "deck", sequenceBrief);
     expect((await readFile(join(root, artifact.editableRelativePath!))).byteLength).toBeGreaterThan(10_000);
     await rm(root, { recursive: true, force: true });
   });
   it("turns a professional process into a visual sequence inside the editable infographic", async () => {
-    const sequenceBrief = { ...brief, blocks: [{ id: "path", heading: "One continuous path from Capture to Deliver", body: "", items: ["Capture", "Shape", "Deliver"], citations: ["approved brief"], layout: "sequence" as const }] };
+    const sequenceBrief = { ...brief, blocks: [{ id: "path", heading: "One continuous path from Capture to Create", body: "", items: ["Capture", "Shape", "Create"], citations: ["approved brief"], layout: "sequence" as const }] };
     const infographic = renderInfographic(sequenceBrief);
     expect(infographic).toContain('class="block" data-layout="sequence"');
     expect(infographic).toContain('class="infographic-sequence"');
-    expect(infographic).toContain("<span>Capture</span><span>Shape</span><span>Deliver</span>");
+    expect(infographic).toContain("<span>Capture</span><span>Shape</span><span>Create</span>");
     const root = await mkdtemp(join(tmpdir(), "workshoplm-infographic-sequence-"));
     const artifact = await writeRenderedArtifact(root, "sequence", "infographic", sequenceBrief);
     expect((await readFile(join(root, artifact.editableRelativePath!))).byteLength).toBeGreaterThan(10_000);

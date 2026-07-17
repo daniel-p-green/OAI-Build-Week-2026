@@ -90,7 +90,7 @@ async function main() {
       liveState = await (await page.request.get("http://127.0.0.1:3000/api/workshop")).json() as Record<string, any>;
       return (liveState.toolCalls ?? []).filter((call: Record<string, unknown>) => !baselineToolCallIds.has(String(call.id ?? "")) && call.channel === "realtime" && call.result && !(call.result as Record<string, unknown>).isError).length;
     }, { timeout: 30_000 }).toBeGreaterThan(0);
-    if (!writeProof) await expect(assistant).toContainText(/three minutes|visible source|source locator|Capture.+Deliver/i, { timeout: 75_000 });
+    if (!writeProof) await expect(assistant).toContainText(/three minutes|visible source|source locator|Capture.+Create/i, { timeout: 75_000 });
 
     await expect(capture.getByRole("button", { name: "Save conversation" })).toBeEnabled({ timeout: 15_000 });
     const transcriptText = (await transcript.textContent())?.trim() ?? "";
