@@ -77,6 +77,7 @@ type PersistedWorkshop = {
   claims?: { id: string; sourceId: string; chunkId: string; text: string; locator: string }[];
   mapNodes: MapNode[];
   mapEdges: MapEdge[];
+  mapInputClaimIds: string[];
   graphState?: string;
   frame?: { version: number; markdown: string; stale: boolean };
   sketch?: { version: number; graphRevision: number; styleVersion?: number; nodes: Pick<MapNode, "id" | "title" | "body" | "kind" | "locator">[]; edges: MapEdge[]; claimIds: string[]; relativePath: string; sha256: string; stale: boolean; approved: boolean; createdAt: string };
@@ -144,6 +145,14 @@ function outputSetStatus(state: PersistedWorkshop | null) {
     || (state.storyboard.stale && !replacementOnlyStoryboardStale)
   );
   return { incomplete, stale, actionRequired: incomplete || stale };
+}
+
+function workshopMapNeedsUpdate(state: PersistedWorkshop | null) {
+  if (!state?.mapNodes.length) return false;
+  const activeClaimIds = (state.claims ?? []).filter((claim) => state.activeSourceIds.includes(claim.sourceId)).map((claim) => claim.id);
+  if (activeClaimIds.length !== state.mapInputClaimIds.length) return true;
+  const included = new Set(state.mapInputClaimIds);
+  return activeClaimIds.some((claimId) => !included.has(claimId));
 }
 
 function outputVersion(output: PersistedWorkshop["outputs"][number], outputs: PersistedWorkshop["outputs"]) {
@@ -524,10 +533,13 @@ export default function WorkshopPage() {
   const currentTitle = view === "output" ? (selectedOutput ? outputTitle(selectedOutput.type) : selectedOutputId?.startsWith("audio-overview-") ? "Audio Overview" : selectedOutputId?.startsWith("sketch") ? "Sketch" : selectedOutputId === "images" ? "Image set" : "Demo video") : VIEW_TITLES[view];
   const currentStage = stageForView(view);
   const backTarget: ObjectView | null = view === "conversation" || view === "map" ? null : view === "brief" ? "map" : view === "outputs" ? "brief" : "outputs";
+  const mapUpdateRequired = workshopMapNeedsUpdate(state);
   const workflowAction = creationProgress
     ? <Button variant="secondary" disabled>Creating {creationProgress.label}…</Button>
     : !state?.mapNodes.length
     ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => openSheet("add-source")}>Add source</Button>
+    : mapUpdateRequired
+      ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => { void post({ action: "buildMap" }).then((next) => next && openView("map")); }}>Update Map</Button>
     : !state.briefApproved || state.frame?.stale
       ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => { void post({ action: "approveBrief" }).then((next) => next && openView("brief")); }}>Approve brief</Button>
       : !canDeliver
@@ -564,7 +576,7 @@ export default function WorkshopPage() {
         {loadState === "ready" && <WorkshopSpine current={currentStage} state={state} onOpenIndex={() => openSheet("objects")} onSelect={(stage) => {
           if (stage === "capture") return openView("conversation");
           if (stage === "map") return state?.mapNodes.length ? openView("map") : openSheet("sources");
-          if (stage === "brief") return state?.briefApproved ? openView("brief") : openView("map");
+          if (stage === "brief") return state?.briefApproved && !mapUpdateRequired ? openView("brief") : openView("map");
           if (state?.outputs.length || state?.imageBatch) return openView("outputs");
           if (state?.briefApproved) return openSheet("style");
           openView("map");
@@ -684,16 +696,17 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost, onUploadPdf
 
 function WorkshopSpine({ current, state, onSelect, onOpenIndex }: { current: WorkshopStage; state: PersistedWorkshop | null; onSelect: (stage: WorkshopStage) => void; onOpenIndex: () => void }) {
   const created = Boolean(state?.outputs.length || state?.imageBatch || state?.audioOverviews.length || state?.sketch);
+  const mapUpdateRequired = workshopMapNeedsUpdate(state);
   const stages: Array<{ id: WorkshopStage; label: string; ready: boolean; needsUpdate: boolean }> = [
     { id: "capture", label: "Capture", ready: Boolean(state?.activeSourceIds.length), needsUpdate: false },
-    { id: "map", label: "Map", ready: Boolean(state?.mapNodes.length), needsUpdate: Boolean(state?.frame?.stale) },
-    { id: "brief", label: "Brief", ready: Boolean(state?.briefApproved && !state.frame?.stale), needsUpdate: Boolean(state?.frame?.stale) },
+    { id: "map", label: "Map", ready: Boolean(state?.mapNodes.length) && !mapUpdateRequired, needsUpdate: mapUpdateRequired },
+    { id: "brief", label: "Brief", ready: Boolean(state?.briefApproved && !state.frame?.stale && !mapUpdateRequired), needsUpdate: Boolean(state?.frame?.stale || mapUpdateRequired) },
     { id: "create", label: "Create", ready: created, needsUpdate: created && outputSetStatus(state).actionRequired },
   ];
   return <nav className="workshop-spine" aria-label="Workshop progress">
     {stages.map((stage, index) => <div className="spine-step" key={stage.id}>
       {index > 0 && <span className="spine-arrow" aria-hidden="true">→</span>}
-      <Button variant="secondary" size="small" className={`spine-stage ${current === stage.id ? "current" : ""} ${stage.ready ? "ready" : ""} ${stage.needsUpdate ? "needs-update" : ""}`} aria-current={current === stage.id ? "step" : undefined} aria-label={current === stage.id ? `Open Workshop index, ${stage.label}` : `${stage.label}${stage.needsUpdate ? ", needs update" : stage.ready ? ", ready" : ""}`} onClick={() => current === stage.id ? onOpenIndex() : onSelect(stage.id)}><span>{stage.label}</span>{stage.needsUpdate ? <i>Needs update</i> : stage.ready ? <i>Ready</i> : null}</Button>
+      <Button variant="secondary" size="small" className={`spine-stage ${current === stage.id ? "current" : ""} ${stage.ready ? "ready" : ""} ${stage.needsUpdate ? "needs-update" : ""}`} aria-current={current === stage.id ? "step" : undefined} aria-label={current === stage.id ? `Open Workshop index, ${stage.label}${stage.needsUpdate ? ", needs update" : ""}` : `${stage.label}${stage.needsUpdate ? ", needs update" : stage.ready ? ", ready" : ""}`} onClick={() => current === stage.id ? onOpenIndex() : onSelect(stage.id)}><span>{stage.label}</span>{stage.needsUpdate ? <i>Needs update</i> : stage.ready ? <i>Ready</i> : null}</Button>
     </div>)}
   </nav>;
 }

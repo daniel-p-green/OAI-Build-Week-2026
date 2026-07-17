@@ -100,7 +100,7 @@ export type WorkshopVideo = { id: string; version: number; storyboardVersion: nu
 export type RenderedVideoInput = Omit<WorkshopVideo, "id" | "version" | "stale" | "createdAt">;
 export type WorkshopVideoRecovery = { outcome: "failed" | "cancelled"; message: string; attempts: number; updatedAt: string };
 export type WorkshopOutputRecovery = { message: string; attempts: number; updatedAt: string };
-export type WorkshopState = { id: string; title: string; onboarding: WorkshopOnboarding; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered" | "failed" | "cancelled"; videoRecovery?: WorkshopVideoRecovery; outputRecovery?: Partial<Record<"deck" | "infographic", WorkshopOutputRecovery>>; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; conversationTurns: WorkshopConversationTurn[]; toolCalls: WorkshopToolInvocation[]; conversationContinuation?: WorkshopConversationContinuation; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; sketchHistory: WorkshopSketch[]; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; storyboardHistory: WorkshopStoryboard[]; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; audioOverviews: WorkshopAudioOverview[]; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
+export type WorkshopState = { id: string; title: string; onboarding: WorkshopOnboarding; briefApproved: boolean; storyboardApproved: boolean; videoState: "blocked" | "queued" | "rendering" | "rendered" | "failed" | "cancelled"; videoRecovery?: WorkshopVideoRecovery; outputRecovery?: Partial<Record<"deck" | "infographic", WorkshopOutputRecovery>>; sources: number; groundedClaims: number; transcriptSegments: WorkshopTranscriptSegment[]; conversationTurns: WorkshopConversationTurn[]; toolCalls: WorkshopToolInvocation[]; conversationContinuation?: WorkshopConversationContinuation; firstTranscriptAt?: string; firstRenderedOutputAt?: string; sourceItems: WorkshopSource[]; activeSourceIds: string[]; sourceChunks: WorkshopChunk[]; claims: WorkshopClaim[]; candidates: WorkshopCandidate[]; mapNodes: WorkshopMapNode[]; mapEdges: WorkshopMapEdge[]; mapInputClaimIds: string[]; frame?: WorkshopFrame; sketch?: WorkshopSketch; sketchHistory: WorkshopSketch[]; style?: WorkshopStyle; designArtifact?: WorkshopDesignArtifact; visualDna?: WorkshopVisualDna; assetPlan?: WorkshopAssetPlan; storyboard: WorkshopStoryboard; storyboardHistory: WorkshopStoryboard[]; imageBatch?: WorkshopImageBatch; narration?: WorkshopNarration; audioOverviews: WorkshopAudioOverview[]; aiRuns: WorkshopAiRun[]; outputs: WorkshopOutput[]; videos: WorkshopVideo[]; graphState?: string; updatedAt: string };
 export type WorkshopSummary = { id: string; title: string; sources: number; outputs: number; updatedAt: string; active: boolean };
 export type SourceIngestion = { title: string; origin: string; type?: WorkshopSource["type"]; text: string; permission?: WorkshopSource["permission"] };
 const execFile = promisify(execFileCallback);
@@ -129,7 +129,7 @@ const defaultState = (id = defaultWorkshopId, title = defaultWorkshopTitle, seed
   { id: "edge-promise-proof", from: "promise", to: "proof", kind: "supports" },
   { id: "edge-proof-risk", from: "proof", to: "risk", kind: "depends_on" },
   { id: "edge-risk-visual", from: "risk", to: "visual", kind: "depends_on" },
-] : [], storyboard: seeded ? { version: 1, stale: false, approved: false, panels: [{ id: "panel-1", title: "Raw thought", narration: "Start with the messy original thinking.", durationSeconds: 3, claimIds: [], evidence: [{ sourceId: "source-raw", locator: "ChatGPT task · 12:41 · chunk 04" }], approved: true, stale: false }, { id: "panel-2", title: "Cited Map", narration: "Show the editable Map and evidence locators.", durationSeconds: 5, claimIds: [], evidence: [{ sourceId: "source-brief", locator: "Build notes · §2" }], approved: true, stale: false }, { id: "panel-3", title: "Finished work", narration: "End with source-traceable created work.", durationSeconds: 4, claimIds: [], evidence: [{ sourceId: "source-design", locator: "Design · Map" }], approved: true, stale: false }] } : emptyStoryboard(), storyboardHistory: [], sketchHistory: [], audioOverviews: [], aiRuns: [], outputs: [], videos: [], mapNodes: seeded ? [
+] : [], mapInputClaimIds: seeded ? seedClaims.map((claim) => claim.id) : [], storyboard: seeded ? { version: 1, stale: false, approved: false, panels: [{ id: "panel-1", title: "Raw thought", narration: "Start with the messy original thinking.", durationSeconds: 3, claimIds: [], evidence: [{ sourceId: "source-raw", locator: "ChatGPT task · 12:41 · chunk 04" }], approved: true, stale: false }, { id: "panel-2", title: "Cited Map", narration: "Show the editable Map and evidence locators.", durationSeconds: 5, claimIds: [], evidence: [{ sourceId: "source-brief", locator: "Build notes · §2" }], approved: true, stale: false }, { id: "panel-3", title: "Finished work", narration: "End with source-traceable created work.", durationSeconds: 4, claimIds: [], evidence: [{ sourceId: "source-design", locator: "Design · Map" }], approved: true, stale: false }] } : emptyStoryboard(), storyboardHistory: [], sketchHistory: [], audioOverviews: [], aiRuns: [], outputs: [], videos: [], mapNodes: seeded ? [
   { id: "promise", title: "The product promise", body: "Turn raw thinking into finished work without losing the trail back to source material.", kind: "grounded", locator: "Meeting · 12:41", sourceId: "source-raw", x: 11, y: 12, width: 24, height: 18 },
   { id: "proof", title: "Judge proof", body: "Show one continuous capture → map → brief → storyboard → rendered video seam.", kind: "grounded", locator: "Build notes · §2", sourceId: "source-brief", x: 48, y: 36, width: 24, height: 18 },
   { id: "visual", title: "Visual behavior", body: "Evidence first becomes an editable knowledge system, not a static report.", kind: "creative", locator: "Design · Map", sourceId: "source-design", x: 39, y: 58, width: 24, height: 18 },
@@ -446,6 +446,14 @@ function storyboardHistoryWithCurrent(state: WorkshopState): WorkshopStoryboard[
   return [...state.storyboardHistory, state.storyboard];
 }
 function activeClaimsFor(state: WorkshopState) { return state.claims.filter((claim) => state.activeSourceIds.includes(claim.sourceId)); }
+function sameIds(left: string[], right: string[]) {
+  if (left.length !== right.length) return false;
+  const expected = new Set(right);
+  return left.every((id) => expected.has(id));
+}
+export function mapNeedsUpdate(state: WorkshopState) {
+  return !sameIds(state.mapInputClaimIds, activeClaimsFor(state).map((claim) => claim.id));
+}
 export function assertStoryboardGrounding(state: WorkshopState): void {
   for (const panel of state.storyboard.panels) {
     if (!panel.evidence.length) throw new Error(`Storyboard panel ${panel.id} requires a source reference.`);
@@ -611,22 +619,42 @@ export function repairBenignCanvasNormalization(root?: string): WorkshopState {
 export function organizeGroundedMap(root?: string): WorkshopState {
   const current = readWorkshopState(root);
   const claims = activeClaimsFor(current);
-  if (claims.length < 2) return current;
+  const evidenceClaimIds = claims.map((claim) => claim.id);
+  if (!mapNeedsUpdate(current)) return current;
+  const createdAt = new Date().toISOString();
   const snapshot = graphFor(current);
-  const currentIds = new Set<string>(snapshot.graph.nodes.map((node) => node.id));
   const synthesisId = "node-map-synthesis";
   const directionId = "node-map-direction";
-  if (currentIds.has(synthesisId) && currentIds.has(directionId)) return current;
   let graph = snapshot.graph;
   let history = snapshot.history;
-  const createdAt = new Date().toISOString();
-  const evidenceClaimIds = claims.map((claim) => claim.id);
   const primary = claims[0]!;
   const append = (operation: Parameters<typeof appendGraphOperation>[2], id: string) => {
     const applied = appendGraphOperation(graph, history, operation, { id, actor: "assistant", createdAt });
     graph = applied.graph;
     history = applied.history;
   };
+  const activeClaimIds = new Set<string>(evidenceClaimIds);
+  const activeSourceIds = new Set(current.activeSourceIds);
+  for (const node of [...graph.nodes]) {
+    if ((node.id === synthesisId || node.id === directionId) && claims.length < 2) {
+      append(GraphOperation.parse({ type: "remove_node", nodeId: node.id }), `operation-map-organizer-${Date.now()}-remove-${node.id}`);
+      continue;
+    }
+    if (node.id === synthesisId || node.id === directionId) continue;
+    const metadata = node.metadata as { evidenceClaimIds?: unknown; sourceId?: unknown };
+    const citedClaimIds = Array.isArray(metadata.evidenceClaimIds) ? metadata.evidenceClaimIds.filter((id): id is string => typeof id === "string") : [];
+    const unsupported = citedClaimIds.length
+      ? citedClaimIds.every((claimId) => !activeClaimIds.has(claimId))
+      : typeof metadata.sourceId === "string" && !activeSourceIds.has(metadata.sourceId);
+    if (unsupported) append(GraphOperation.parse({ type: "remove_node", nodeId: node.id }), `operation-map-organizer-${Date.now()}-remove-${node.id}`);
+  }
+  const representedClaims = new Set<string>(graph.nodes.flatMap((node) => node.claimId ? [node.claimId] : []));
+  const missingClaimNodes = mapNodesForClaims(claims.filter((claim) => !representedClaims.has(claim.id)), graph.nodes.length);
+  for (const [index, node] of missingClaimNodes.entries()) {
+    append(GraphOperation.parse({ type: "add_node", node: { id: `node-${node.id}`, kind: "claim", label: node.title, claimId: node.id, evidenceState: "verified", metadata: { body: node.body, locator: node.locator, sourceId: node.sourceId, x: node.x, y: node.y, width: node.width, height: node.height } } }), `operation-map-organizer-${Date.now()}-restore-${index + 1}`);
+  }
+  if (claims.length < 2) return write({ ...current, graphState: serializeGraphState(graph, history), mapNodes: mapNodesFor(graph, current.mapNodes), mapEdges: mapEdgesFor(graph), mapInputClaimIds: evidenceClaimIds, frame: current.frame ? { ...current.frame, stale: true } : undefined, briefApproved: false, updatedAt: createdAt }, root);
+  const currentIds = new Set<string>(graph.nodes.map((node) => node.id));
   if (!currentIds.has(synthesisId)) append(GraphOperation.parse({ type: "add_node", node: {
     id: synthesisId,
     kind: "idea",
@@ -648,6 +676,16 @@ export function organizeGroundedMap(root?: string): WorkshopState {
     locked: false,
     metadata: { body: "Review the strongest evidence and synthesis, then approve the direction before creating work.", locator: primary.locator, sourceId: primary.sourceId, evidenceClaimIds, x: 74, y: 36, width: 24, height: 18 },
   } }), `operation-map-organizer-${Date.now()}-direction`);
+  if (currentIds.has(synthesisId)) append(GraphOperation.parse({ type: "update_node", nodeId: synthesisId, patch: {
+    metadata: { ...graph.nodes.find((node) => node.id === synthesisId)?.metadata, locator: "Derived from selected Sources", evidenceClaimIds },
+  } }), `operation-map-organizer-${Date.now()}-synthesis-refresh`);
+  if (currentIds.has(directionId)) append(GraphOperation.parse({ type: "update_node", nodeId: directionId, patch: {
+    claimId: primary.id,
+    metadata: { ...graph.nodes.find((node) => node.id === directionId)?.metadata, locator: primary.locator, sourceId: primary.sourceId, evidenceClaimIds },
+  } }), `operation-map-organizer-${Date.now()}-direction-refresh`);
+  for (const edge of graph.edges.filter((edge) => edge.id.startsWith("edge-map-evidence-") || edge.id === "edge-map-synthesis-direction")) {
+    append(GraphOperation.parse({ type: "remove_edge", edgeId: edge.id }), `operation-map-organizer-${Date.now()}-remove-${edge.id}`);
+  }
   for (const [index, claim] of claims.slice(0, 3).entries()) {
     const from = `node-${claim.id}`;
     if (!graph.nodes.some((node) => node.id === from)) continue;
@@ -659,6 +697,7 @@ export function organizeGroundedMap(root?: string): WorkshopState {
     graphState: serializeGraphState(graph, history),
     mapNodes: mapNodesFor(graph, current.mapNodes),
     mapEdges: mapEdgesFor(graph),
+    mapInputClaimIds: evidenceClaimIds,
     frame: current.frame ? { ...current.frame, stale: true } : undefined,
     sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined,
     assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined,
@@ -713,7 +752,7 @@ export function applyGroundedMapProposal(proposal: GroundedMapProposal, run: Omi
     graph = applied.graph; history = applied.history;
   }
   const aiRun: WorkshopAiRun = { id: `ai-run-grounded-graph-${Date.now()}`, operation: "grounded_graph", model: run.model, inputClaimIds: [...new Set(proposal.nodes.flatMap((node) => node.evidenceClaimIds))], outputSha256: run.outputSha256, requestId: run.requestId, createdAt };
-  return write({ ...current, graphState: serializeGraphState(graph, history), mapNodes: mapNodesFor(graph, []), mapEdges: mapEdgesFor(graph), aiRuns: [...current.aiRuns, aiRun], frame: current.frame ? { ...current.frame, stale: true } : undefined, sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, audioOverviews: staleAudioOverviews(current), outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: createdAt }, root);
+  return write({ ...current, graphState: serializeGraphState(graph, history), mapNodes: mapNodesFor(graph, []), mapEdges: mapEdgesFor(graph), mapInputClaimIds: activeClaims.map((claim) => claim.id), aiRuns: [...current.aiRuns, aiRun], frame: current.frame ? { ...current.frame, stale: true } : undefined, sketch: current.sketch ? { ...current.sketch, stale: true, approved: false } : undefined, assetPlan: current.assetPlan ? { ...current.assetPlan, stale: true } : undefined, imageBatch: current.imageBatch ? { ...current.imageBatch, stale: true } : undefined, narration: current.narration ? { ...current.narration, stale: true } : undefined, storyboard: { ...current.storyboard, stale: true, panels: current.storyboard.panels.map((panel) => ({ ...panel, stale: true })) }, audioOverviews: staleAudioOverviews(current), outputs: current.outputs.map((output) => ({ ...output, stale: true })), videos: staleVideos(current), briefApproved: false, storyboardApproved: false, videoState: "blocked", updatedAt: createdAt }, root);
 }
 function normalizeSourceText(text: string) { return text.replace(/[\u200B-\u200D\uFEFF]/g, "").replace(/\r\n?/g, "\n").replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim(); }
 function decodeHtmlText(text: string) {
@@ -1697,7 +1736,11 @@ export function recordVideoFailure(error: string, attempts: number, root?: strin
 export function cancelVideoRender(root?: string): WorkshopState { const current = readWorkshopState(root); const db = dbFor(root); const job = db.prepare("SELECT id, attempts FROM job WHERE workshop_id=? AND kind='render_video' AND state IN ('queued','retrying') ORDER BY created_at DESC LIMIT 1").get(current.id) as { id: string; attempts: number } | undefined; if (!job || !cancelJob(db, job.id)) throw new Error("No queued video render is available to cancel."); const updatedAt = new Date().toISOString(); return write({ ...current, videoState: "cancelled", videoRecovery: { outcome: "cancelled", message: "Video creation was cancelled. Your approved Storyboard is ready when you are.", attempts: job.attempts, updatedAt }, updatedAt }, root); }
 export function applyWorkshopAction(action: "approveBrief" | "lockManualStyle" | "approveStoryboard" | "renderVideo", root?: string): WorkshopState {
   const current = readWorkshopState(root); const updatedAt = new Date().toISOString();
-  if (action === "approveBrief") return write({ ...current, frame: frameFor(current, updatedAt, root), videos: staleVideos(current), briefApproved: true, storyboardApproved: false, videoState: "blocked", updatedAt }, root);
+  if (action === "approveBrief") {
+    if (current.frame && mapNeedsUpdate(current)) throw new Error("Update the Map with the current Sources before approving the Brief.");
+    const approvalState = current.frame ? current : { ...current, mapInputClaimIds: activeClaimsFor(current).map((claim) => claim.id) };
+    return write({ ...approvalState, frame: frameFor(approvalState, updatedAt, root), videos: staleVideos(approvalState), briefApproved: true, storyboardApproved: false, videoState: "blocked", updatedAt }, root);
+  }
   if (action === "lockManualStyle") return lockManualStyle({}, root);
   if (action === "approveStoryboard") {
     if (!current.briefApproved) throw new Error("Storyboard approval requires an approved current brief.");

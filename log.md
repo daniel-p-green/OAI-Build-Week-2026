@@ -11284,3 +11284,31 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. Demo-film work remains paused.
 - User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 06:29 CT — Four-stage status model fails closed on stale Map synthesis
+
+### Changed
+
+- Locked the primary Workshop index to `Capture → Map → Brief → Create`, with Conversation and Sources inside Capture and Style inside Create. The expanded Workshop sheet remains the only place where the complete object family is enumerated.
+- Added explicit Map input coverage to durable Workshop state. The current Map now knows which active grounded claims it organized without exposing those IDs in the interface.
+- When a Source is added or the selected Source set changes, the Map and Brief now show `Needs update`; the global action becomes `Update Map` instead of `Approve brief`.
+- Refreshing the Map reuses the existing GPT-5.6 path when enabled and the constrained deterministic Evidence → Synthesis → Direction organizer otherwise. It updates evidence coverage and the recommended direction without adding a generic whiteboard mode.
+- Brief approval now fails closed at the service boundary when a previously approved Workshop has changed Sources but has not refreshed its Map.
+
+### Verified
+
+- Added a weekly-return service regression proving that a new meeting stales prior work, blocks premature Brief approval, refreshes the Map against every active claim, preserves the reused Style, and then creates a new source-traced Presentation version.
+- The worker suite passed all 129 tests; worker and web typechecks passed.
+- The production-browser suite passed all 35 scenarios after a new regression proved the sole visible next action is `Update Map` and the compact spine announces `Map, needs update`. Existing screenshot baselines remained unchanged across desktop, compact, and mobile widths.
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages. `pnpm demo:e2e` passed the complete recorded-fixture seam through both approvals, six image panels, Cedar Audio Overview, Storyboard, local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Map excellence remains bounded: immediate hierarchy, clusters, evidence, synthesis, and one recommended path forward. More Excalidraw surface area is not an active objective.
+- Source coverage is a trust invariant, not another visible product concept. Professionals see only the calm `Needs update` state and one recovery action.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

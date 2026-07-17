@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     if (body.action === "buildMap") {
       const fallback = updateWorkshopOnboarding({ title: body.title, outcome: body.outcome, step: "complete" });
       const apiKey = process.env.OPENAI_API_KEY?.trim();
-      if (fallback.claims.filter((claim) => fallback.activeSourceIds.includes(claim.sourceId)).length < 2) return NextResponse.json(fallback);
+      if (fallback.claims.filter((claim) => fallback.activeSourceIds.includes(claim.sourceId)).length < 2) return NextResponse.json(organizeGroundedMap());
       if (process.env.WORKSHOPLM_LIVE_OPENAI !== "1" || !apiKey) return NextResponse.json(organizeGroundedMap());
       try { return NextResponse.json(await generateGroundedMapWithGpt56(workshopDataRoot(), { apiKey, model: "gpt-5.6-terra", reasoningEffort: "medium" })); }
       catch { return NextResponse.json(organizeGroundedMap()); }

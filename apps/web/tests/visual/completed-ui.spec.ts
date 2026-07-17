@@ -872,6 +872,34 @@ test("empty, loading, partial, error, and needs-update states stay calm and acti
   }
 });
 
+test("a changed Source set requires a refreshed Map before Brief approval", async ({ page }) => {
+  const readyState = await (await page.request.get("/api/workshop")).json();
+  const addedSource = { ...readyState.sourceItems[0], id: "source-new-meeting", title: "New meeting", claimCount: 1 };
+  const addedClaim = { ...readyState.claims[0], id: "claim-new-meeting", sourceId: addedSource.id, text: "Leadership approved the pilot." };
+  const staleMapState = {
+    ...readyState,
+    sourceItems: [...readyState.sourceItems, addedSource],
+    activeSourceIds: [...readyState.activeSourceIds, addedSource.id],
+    claims: [...readyState.claims, addedClaim],
+    briefApproved: false,
+    frame: { ...readyState.frame, stale: true },
+  };
+  const postedActions: string[] = [];
+  await page.route("**/api/workshop", async (route) => {
+    if (route.request().method() === "GET") return route.fulfill({ json: staleMapState });
+    const body = route.request().postDataJSON() as { action?: string };
+    if (body.action) postedActions.push(body.action);
+    return route.fulfill({ json: readyState });
+  });
+
+  await page.goto("/");
+  await expect(page.getByRole("button", { name: "Update Map" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Approve brief" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Open Workshop index, Map, needs update" })).toBeVisible();
+  await page.getByRole("button", { name: "Update Map" }).click();
+  expect(postedActions).toContain("buildMap");
+});
+
 test("Outputs preserve recognizable version history and source coverage", async ({ page }) => {
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
