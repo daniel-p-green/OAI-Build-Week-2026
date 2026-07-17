@@ -32,7 +32,12 @@ Every consultant, strategist, and enablement lead lives the same Tuesday. The me
 
 WorkshopLM is a local-first professional knowledge workspace. It turns conversations and source material into presentations, graphics, Audio Overviews, visual Maps, Storyboards, and Videos. Every expression shares the same knowledge, visual identity, and connection to its Sources.
 
-You talk and add Sources. WorkshopLM turns them into an editable Map: claims, decisions, and evidence on a live visual whiteboard, each grounded card retaining its exact source locator. You shape the Map, then approve it as the Brief. Point WorkshopLM at a website or add brand assets, review what it found, and lock a Style with exact colors, fonts, and rules.
+The experience stays simple: **Capture → Map → Brief → Create.**
+
+- **Capture:** talk naturally or add Sources. Conversation, voice, documents, websites, and meeting notes stay together.
+- **Map:** WorkshopLM auto-organizes the material into hierarchy, evidence clusters, synthesis, direction, and a recommended path. Each grounded idea retains its exact Source locator, and the professional can edit the semantic canvas directly.
+- **Brief:** approve the current Map as the creation direction. This is the first deliberate sign-off.
+- **Create:** point WorkshopLM at a website or add brand assets, review the proposed Style, and create the coordinated professional work. Style and created work live here; Storyboard approval appears contextually before Video.
 
 Then one action creates a coordinated family of professional knowledge work from the same approved thinking and Style:
 
@@ -96,7 +101,7 @@ pnpm install --frozen-lockfile
 pnpm judge:start
 ```
 
-That runs the complete recorded seam (Sources → Map → Brief → Style → Created work → Storyboard → rendered MP4) and serves the Workshop at a printed local URL. Open that URL in the Codex in-app browser. The README covers Codex plugin installation from the repository's public marketplace and the optional live-provider path. The current build passes checks across 13 packages, the production-route browser suite, all six acceptance gates, and submission integrity verification. The final publication gate will pin a tagged judge release and preserve it through the winner announcement.
+That runs the complete recorded four-stage experience—Capture → Map → Brief → Create—including the contextual Style, created-work, Storyboard, and rendered-Video states, then serves the Workshop at a printed local URL. Open that URL in the Codex in-app browser. The README covers Codex plugin installation from the repository's public marketplace and the optional live-provider path. The current build passes checks across 13 packages, the production-route browser suite, all six acceptance gates, and submission integrity verification. The final publication gate will pin a tagged judge release and preserve it through the winner announcement.
 
 ### Scope, honestly
 
@@ -133,9 +138,9 @@ The append-only build log (`log.md`), goal file (`GOAL.md`), and claim ledger (`
 3. **What (1:22–2:05):** a provider-backed Presentation, Infographic, image set, Audio Overview, editable Storyboard, and narrated local Video.
 4. **Reveal (2:05–2:20):** `Show original`, final traced package, Codex build record, and explicit AI-voice/runtime disclosure.
 
-## Final publication gate (unchanged)
+## Final publication gate
 
-1. Re-run `pnpm check`, the browser suite, `pnpm demo:e2e`, `pnpm submission:build`, `pnpm submission:verify`, and `pnpm submission:packet:verify`; refresh the counts.
+1. Re-run `pnpm check`, the browser suite, and `pnpm submission:fixture:verify`. The fixture command preserves the required order: reset the fixture, rebuild and verify the package, rebind the sample provenance, verify the sample, then verify the complete packet. Refresh the counts.
 2. Resolve the remaining founder/final-package brackets from inspected artifacts; no bracket ships.
 3. Verify title, thumbnail, and project name carry no Google or NotebookLM marks.
 4. Record the Session ID, public YouTube URL, release tag, and logged-out link checks in `log.md`.

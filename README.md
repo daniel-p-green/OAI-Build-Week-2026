@@ -4,18 +4,20 @@
 
 WorkshopLM is the professional knowledge workspace that turns conversations and source material into presentations, graphics, Audio Overviews, visual Maps, Storyboards, and Videos. Every expression shares the same knowledge, visual identity, and connection to its Sources.
 
-Notebook-style tools help people learn from Sources. WorkshopLM helps professionals create from them: speak or type in Conversation, shape the evidence on an editable Map, approve the Brief, apply a reusable Style, and create connected professional knowledge work. Presentations, Graphics and Infographics, Audio Overviews, Maps and Sketches, image sets, Storyboards, and Videos are first-class expressions of the same Workshop; no single format is the destination.
+Notebook-style tools help people learn from Sources. WorkshopLM helps professionals create from them through one compact path: **Capture → Map → Brief → Create**. Presentations, Graphics and Infographics, Audio Overviews, Maps and Sketches, image sets, Storyboards, and Videos are first-class expressions of the same Workshop; no single format is the destination.
 
 WorkshopLM runs locally in the Codex in-app browser as one focused workbench. Conversation, Sources, Map, Brief, Style, created work, and Storyboard stay in one product surface; contextual views and sheets preserve the full workflow without a persistent tab maze. Codex desktop/CLI is the verified plugin host and build environment. ChatGPT Work support is not claimed.
 
 ## The professional path
 
 ```text
-Conversation + Sources → grounded Map → approved Brief + reusable Style
-  → connected professional knowledge work
-    → Presentation · Graphic · Infographic · Audio Overview · Map or Sketch
-    → Storyboard → approved Storyboard → Video
+Capture → Map → Brief → Create
 ```
+
+- **Capture** contains Conversation, voice, and Sources.
+- **Map** auto-organizes hierarchy, evidence clusters, synthesis, direction, and a recommended path.
+- **Brief** is the deliberately approved creation direction.
+- **Create** contains Style and the connected professional work: Presentation, Graphic, Infographic, Audio Overview, Map or Sketch, Image set, Storyboard, and Video.
 
 Two approvals carry visible consequence: `Approve brief` freezes the creative direction, and `Approve storyboard` authorizes Video. Source or Style changes preserve history while marking dependent work `Needs update`.
 

@@ -50,6 +50,11 @@ export type WorkshopState = {
         claimIds: string[];
         stale: boolean;
     }>;
+    audioOverviews?: Array<{
+        id: string;
+        claimIds: string[];
+        stale: boolean;
+    }>;
     videos?: Array<{
         id: string;
         claimIds: string[];
@@ -65,6 +70,9 @@ export type WorkshopState = {
         panels: Array<{
             id: string;
             state: string;
+            evidence?: Array<{
+                claimId?: string;
+            }>;
         }>;
     };
     updatedAt: string;

@@ -206,12 +206,13 @@ export function executeTool(name, arguments_ = {}) {
             const output = state.outputs?.find((candidate) => candidate.id === artifactId);
             const video = state.videos?.find((candidate) => candidate.id === artifactId);
             const image = state.imageBatch?.panels.find((candidate) => candidate.id === artifactId);
-            const claimIds = output?.claimIds ?? video?.claimIds ?? [];
-            if (!output && !video && !image)
+            const audioOverview = state.audioOverviews?.find((candidate) => candidate.id === artifactId);
+            const claimIds = output?.claimIds ?? video?.claimIds ?? audioOverview?.claimIds ?? image?.evidence?.flatMap((reference) => reference.claimId ? [reference.claimId] : []) ?? [];
+            if (!output && !video && !image && !audioOverview)
                 continue;
             const claims = (state.claims ?? []).filter((claim) => claimIds.includes(claim.id));
             const evidence = claims.map((claim) => ({ claimId: claim.id, sourceId: claim.sourceId, chunkId: claim.chunkId, locator: claim.locator, text: claim.text }));
-            return { text: `Found source trace for ${artifactId}.`, data: { trace: { artifactId, workshopId: state.id, stale: output?.stale ?? video?.stale ?? state.imageBatch?.stale ?? false, claimIds, evidence, buildTrace: video?.buildTrace } } };
+            return { text: `Found source trace for ${artifactId}.`, data: { trace: { artifactId, workshopId: state.id, stale: output?.stale ?? video?.stale ?? audioOverview?.stale ?? state.imageBatch?.stale ?? false, claimIds, evidence, buildTrace: video?.buildTrace } } };
         }
         return { isError: true, text: `Artifact trace not found: ${artifactId}.` };
     }
@@ -274,10 +275,14 @@ export function executeTool(name, arguments_ = {}) {
         }
         if (name === "workshop_create_output") {
             if (!state.briefApproved)
-                return { isError: true, text: "Output creation blocked: approve the current Map as a brief first." };
+                return { isError: true, text: "Creation blocked: approve the current Map as the Brief first." };
             const outputType = arguments_.outputType;
-            if (outputType === "deck" || outputType === "infographic")
-                return actionResult(serviceAction({ action: "generateOutput", workshopId, outputType }), `Created ${outputType}.`, { outputType });
+            if (outputType === "presentation")
+                return actionResult(serviceAction({ action: "generateOutput", workshopId, outputType: "deck" }), "Created Presentation.", { outputType });
+            if (outputType === "infographic")
+                return actionResult(serviceAction({ action: "generateOutput", workshopId, outputType }), "Created Infographic.", { outputType });
+            if (outputType === "audio_overview")
+                return actionResult(serviceAction({ action: "generateAudioOverview", workshopId }), "Created grounded Audio Overview script.", { outputType });
             if (outputType === "images")
                 return actionResult(serviceAction({ action: "createImageBatch", workshopId }), "Created coherent image plan.", { outputType });
             if (outputType === "storyboard") {
@@ -293,7 +298,7 @@ export function executeTool(name, arguments_ = {}) {
                     return { isError: true, text: "Video creation blocked: approve the current Storyboard first." };
                 return actionResult(serviceAction({ action: "renderVideo", workshopId }), "Video render queued from the approved current Storyboard.", { outputType });
             }
-            return { isError: true, text: "Output type must be deck, infographic, images, storyboard, or video." };
+            return { isError: true, text: "Format must be presentation, infographic, audio_overview, images, storyboard, or video." };
         }
         return { isError: true, text: `Unknown WorkshopLM tool: ${name}.` };
     }

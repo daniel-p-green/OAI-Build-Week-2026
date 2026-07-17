@@ -85,4 +85,12 @@ describe("shared Workshop tool executor", () => {
     expect(created.state.audioOverviews[0]!.sections).toHaveLength(3);
     expect(created.state.audioOverviews[0]!.sections[0]!.evidence[0]).toMatchObject({ claimId: expect.stringMatching(/^claim-/), sourceId: expect.stringMatching(/^source-/), chunkId: expect.stringMatching(/^chunk-/) });
   });
+
+  it("creates a Presentation through the professional model-facing format name", async () => {
+    const root = await groundedRoot(); const state = readWorkshopState(root);
+    applyWorkshopAction("approveBrief", root); lockManualStyle({ intentProfile: "client_facing_pitch" }, root);
+    const created = await executeWorkshopTool({ name: "workshop_create_output", arguments: { workshopId: state.id, outputType: "presentation" }, channel: "responses", explicitUserIntent: true, provider: { callId: "presentation-1" } }, root);
+    expect(created.result).toMatchObject({ isError: false, summary: "Created Presentation.", data: { outputType: "presentation" } });
+    expect(created.state.outputs.at(-1)).toMatchObject({ type: "deck", stale: false });
+  });
 });

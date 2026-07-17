@@ -1,6 +1,6 @@
 # WorkshopLM public claim ledger
 
-Last reconciled: 2026-07-16 CT.
+Last reconciled: 2026-07-17 CT.
 
 Use this ledger before recording, editing the Devpost entry, or publishing screenshots. A claim is eligible only when the named evidence exists, has been inspected, and still matches the recorded product. If a gate is not met, use the bounded wording or omit the claim.
 

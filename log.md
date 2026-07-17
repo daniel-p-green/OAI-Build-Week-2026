@@ -10470,3 +10470,44 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Current created-work proof was regenerated and visually inspected in `artifacts/live-review/presentation-v7/` and `artifacts/live-review/infographic-v6/`. No provider request ran; the provider-operation ledger remains 115.
 - Founder visual acceptance and the authentic founder Workshop remain the next gates. User-owned plan/video/audit work remains excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 00:39 CT — Public, installed-plugin, and submission contracts reconciled
+
+### Changed
+
+- Replaced the stale `Capture → Shape → Deliver` plugin description with `Capture → Map → Brief → Create` and refreshed the installed `workshoplm@workshoplm-local` cache from the local marketplace.
+- Rewrote the WorkshopLM skill description and final guidance around professional knowledge work and created work instead of generic `outputs`.
+- Changed the model-facing `workshop_create_output` format from `deck` to `presentation` across the shared tool registry, Responses/Realtime execution path, and installed MCP adapter. The persisted renderer type remains `deck` internally and is translated behind the contract.
+- Added contract coverage proving that the model sees `presentation, infographic, audio_overview, images, storyboard, video` and never sees `deck`; added a real shared-tool test that creates a Presentation through the new name and confirms the internal artifact remains compatible.
+- Reframed the README, Devpost product explanation, and generated submission narrative as four primary stages. Conversation and Sources are described under Capture; Style and created work under Create; Storyboard approval appears contextually before Video.
+- Updated the current evidence audit from the retired three-stage seam and stale eleven-tool count to the verified four-stage seam and installed twelve-tool surface.
+- Added `pnpm submission:fixture:verify` with the required deterministic order: reset fixture, build and verify the package, rebind sample provenance, verify the sample, then verify the complete packet. The packet verifier now protects that order.
+- Rebound the unchanged 2:20 sample film manifest to the newly generated acceptance package and build trace. The MP4 bytes and SHA-256 remained unchanged; only truthful package provenance changed.
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 125 worker tests, 30 web tests, and eight plugin tests.
+- The installed plugin cache and worktree have matching SHA-256 hashes for `.codex-plugin/plugin.json`, `skills/workshoplm/SKILL.md`, and `packages/plugin-mcp/dist/tools.js`.
+- The installed MCP server initialized as WorkshopLM `0.1.3`, returned twelve tools, and advertised exactly `presentation`, `infographic`, `audio_overview`, `images`, `storyboard`, and `video` for creation.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam after the contract change.
+- `pnpm submission:build` produced a valid, current, untampered 25-asset partial fixture package. Its rendered `README-NARRATIVE.md` visibly contains four numbered stages with the correct nested responsibilities.
+- `pnpm demo:film:verify-sample` verified the unchanged 140.010667-second H.264/AAC sample, ten review frames, Cedar narration, stable HyperFrames motion, complete sample transcript, and current package/build-trace hashes.
+- `pnpm submission:packet:verify` passed with eight ready sample shots, two honestly blocked founder shots, six provider-backed images, a 33.5-second Cedar Audio Overview replay, zero paid replay calls, and four unresolved founder publication slots.
+- No OpenAI provider request ran. The product provider-operation ledger remains 115.
+
+### Decisions
+
+- `Capture → Map → Brief → Create` is now the product contract for people, judges, plugins, and models—not only the browser UI.
+- Technical names such as the persisted `deck` artifact type and `outputs` collection may remain behind adapters where changing them would add migration risk without improving the professional experience.
+- Evidence-bound sample artifacts must be regenerated or truthfully marked stale after their package changes. Hash-only edits are forbidden.
+- The fixture verification order is now executable and guarded because `demo:e2e` intentionally resets derived submission artifacts.
+- The connected product-quality item remains open for founder visual acceptance.
+
+### Open items
+
+- Obtain founder visual judgment on the current first-use, Map, created-work, focused artifact, Presentation, and Infographic surfaces; repair only concrete visible blockers.
+- Record and run the authentic founder Workshop, then replace the four explicitly unresolved founder/publication slots.
+- User-owned `PLAN-2026-07-13.md`, interrupted founder/final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

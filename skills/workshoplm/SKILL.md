@@ -1,6 +1,6 @@
 ---
 name: workshoplm
-description: Turn source-grounded raw thinking into an approved brief and finished professional outputs.
+description: Turn source-grounded raw thinking into approved, professional knowledge work.
 ---
 
 # WorkshopLM
@@ -12,4 +12,4 @@ WorkshopLM is a local Capture → Map → Brief → Create workflow. The four st
 - **Brief:** use `Approve brief` only when the current Map is grounded and ready. `FRAME.md` stores the executable Brief.
 - **Create:** choose or derive Style, then create the selected professional work. The Storyboard stays editable, and `Create video` remains unavailable until the current Storyboard is approved.
 
-Every grounded claim must retain a source locator. The compact plugin surface is only a doorway; use the browser Workshop to edit the Map, review Sources, and work with Outputs.
+Every grounded claim must retain a source locator. The compact plugin surface is only a doorway; use the browser Workshop to edit the Map, review Sources, and refine created work.

@@ -37,6 +37,7 @@
     "ui:gallery:build": "node scripts/build-current-ui-gallery.mjs",
     "submission:build": "tsx scripts/submission-output-set.ts build",
     "submission:verify": "tsx scripts/submission-output-set.ts verify",
+    "submission:fixture:verify": "pnpm demo:e2e && pnpm submission:build && pnpm submission:verify && pnpm demo:film:sample && pnpm demo:film:verify-sample && pnpm submission:packet:verify",
     "submission:promote-founder": "tsx scripts/promote-founder-submission.ts",
     "submission:packet:verify": "node scripts/verify-submission-packet.mjs",
     "plugin:inspect": "pnpm --filter @workshoplm/plugin-mcp test",

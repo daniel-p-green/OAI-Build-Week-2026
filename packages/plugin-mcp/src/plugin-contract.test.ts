@@ -10,6 +10,8 @@ describe("plugin contract", () => {
     const apps = JSON.parse(await read(".app.json"));
     const skill = await read("skills/workshoplm/SKILL.md");
     expect(manifest.version).toBe("0.1.3");
+    expect(manifest.interface.longDescription).toContain("Capture → Map → Brief → Create");
+    expect(manifest.interface.longDescription).not.toMatch(/Shape|Deliver|outputs/i);
     expect(manifest.skills).toBe("./skills/");
     expect(manifest.interface.capabilities).toEqual(expect.arrayContaining(["Interactive", "Read", "Write"]));
     expect(mcp.mcpServers.workshoplm.command).toBe("node");

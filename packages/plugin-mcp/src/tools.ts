@@ -223,9 +223,10 @@ export function executeTool(name: string, arguments_: Record<string, unknown> = 
       return actionResult(serviceAction({ action: "renderVideo", workshopId }), "Video render queued from the approved current storyboard.");
     }
     if (name === "workshop_create_output") {
-      if (!state.briefApproved) return { isError: true, text: "Output creation blocked: approve the current Map as a brief first." };
+      if (!state.briefApproved) return { isError: true, text: "Creation blocked: approve the current Map as the Brief first." };
       const outputType = arguments_.outputType;
-      if (outputType === "deck" || outputType === "infographic") return actionResult(serviceAction({ action: "generateOutput", workshopId, outputType }), `Created ${outputType}.`, { outputType });
+      if (outputType === "presentation") return actionResult(serviceAction({ action: "generateOutput", workshopId, outputType: "deck" }), "Created Presentation.", { outputType });
+      if (outputType === "infographic") return actionResult(serviceAction({ action: "generateOutput", workshopId, outputType }), "Created Infographic.", { outputType });
       if (outputType === "audio_overview") return actionResult(serviceAction({ action: "generateAudioOverview", workshopId }), "Created grounded Audio Overview script.", { outputType });
       if (outputType === "images") return actionResult(serviceAction({ action: "createImageBatch", workshopId }), "Created coherent image plan.", { outputType });
       if (outputType === "storyboard") {
@@ -236,7 +237,7 @@ export function executeTool(name: string, arguments_: Record<string, unknown> = 
         if (!state.storyboardApproved || state.storyboard?.stale) return { isError: true, text: "Video creation blocked: approve the current Storyboard first." };
         return actionResult(serviceAction({ action: "renderVideo", workshopId }), "Video render queued from the approved current Storyboard.", { outputType });
       }
-      return { isError: true, text: "Output type must be deck, infographic, audio_overview, images, storyboard, or video." };
+      return { isError: true, text: "Format must be presentation, infographic, audio_overview, images, storyboard, or video." };
     }
     return { isError: true, text: `Unknown WorkshopLM tool: ${name}.` };
   } finally { database?.close(); }
