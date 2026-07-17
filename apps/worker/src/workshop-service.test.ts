@@ -209,7 +209,9 @@ it("turns realistic meeting notes into a six-idea grounded Map and a concise exe
     expect(ingested.mapNodes.map((node) => node.id)).toEqual(ingested.claims.map((claim) => claim.id));
     expect(new Set(ingested.mapNodes.map((node) => `${node.x}:${node.y}`)).size).toBe(6);
     const organized = organizeGroundedMap(root);
-    expect(organized.mapNodes.find((node) => node.id === "map-direction")).toMatchObject({ title: "Create work a consultant can defend and present without…", body: "The goal is professional work a consultant can defend and present without rebuilding it in another tool" });
+    expect(organized.mapNodes.find((node) => node.id === "map-direction")).toMatchObject({ title: "Create work a consultant can defend and present", body: "The goal is professional work a consultant can defend and present without rebuilding it in another tool" });
+    expect(organized.mapNodes.find((node) => node.id === "map-synthesis")?.title).toBe("Client-ready presentations need source traceability");
+    expect([...organized.mapNodes.slice(0, 3), ...organized.mapNodes.filter((node) => node.id === "map-synthesis" || node.id === "map-direction")].every((node) => !node.title.endsWith("…"))).toBe(true);
     const approved = applyWorkshopAction("approveBrief", root);
     expect(approved.frame?.markdown).toContain("## Outcome\nWorkshopLM organizes messy thinking into a grounded Map, then creates an editable Presentation with every factual claim linked to its exact source");
     expect(approved.frame?.markdown).toContain("## Audience\nClients and external decision-makers");

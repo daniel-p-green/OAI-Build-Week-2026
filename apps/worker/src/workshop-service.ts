@@ -473,7 +473,8 @@ function mapDirectionTitle(text: string) {
   const action = prose(text)
     .replace(/^(?:the\s+)?(?:team|teams|leadership|professionals?|users?)\s+(?:should|must|recommend(?:s|ed)?)\s+/i, "")
     .replace(/^the goal is\s+/i, "Create ")
-    .replace(/^create professional (?:knowledge )?work\b/i, "Create work");
+    .replace(/^create professional (?:knowledge )?work\b/i, "Create work")
+    .replace(/\s+without\s+rebuilding\s+(?:it|everything|the\s+(?:work|context))\b.*$/i, "");
   const title = mapNodeTitle(action || text);
   return title ? `${title[0]!.toUpperCase()}${title.slice(1)}` : mapNodeTitle(text);
 }
@@ -503,8 +504,13 @@ function mapSynthesis(claims: WorkshopClaim[], direction: WorkshopClaim) {
   const fragmentedSubject = evidence.length > 1 && /\b(?:slow|fragmented|disconnected)\b/i.test(evidence[0]!.text)
     ? prose(evidence[0]!.text).match(/^(?:creating\s+)?(.+?)\s+(?:is|are)\s+(?:slow|fragmented|disconnected)\b/i)?.[1]
     : undefined;
-  const traceability = evidence.slice(1).some((claim) => /\b(?:source locator|source trail|traceab(?:le|ility)|traced?|evidence)\b/i.test(claim.text));
-  const synthesizedTitle = fragmentedSubject && traceability ? `${fragmentedSubject} needs source traceability` : lead;
+  const timeCostSubject = evidence.length > 1 && /\blose hours\b/i.test(evidence[0]!.text)
+    ? prose(evidence[0]!.text).match(/\binto\s+(.+?)(?:[.!?]|$)/i)?.[1]
+    : undefined;
+  const traceability = evidence.slice(1).some((claim) => /\b(?:source locator|source trail|exact source|linked to (?:its |the )?source|traceab(?:le|ility)|traced?|evidence)\b/i.test(claim.text));
+  const synthesisSubject = fragmentedSubject ?? timeCostSubject;
+  const traceabilityVerb = synthesisSubject && /s$/i.test(synthesisSubject) ? "need" : "needs";
+  const synthesizedTitle = synthesisSubject && traceability ? `${synthesisSubject} ${traceabilityVerb} source traceability` : lead;
   const title = mapNodeTitle(synthesizedTitle);
   return { body, title: title ? `${title[0]!.toUpperCase()}${title.slice(1)}` : "Source synthesis" };
 }
@@ -883,7 +889,11 @@ function sourceExcerpt(text: string) { return text.length <= 240 ? text : `${tex
 function mapNodeTitle(text: string) {
   const clean = prose(text);
   const clause = clean.split(/,\s+(?:then|but|because|so|while)\b|[;:]\s*/i)[0]?.trim() ?? clean;
-  return outputHeading(clause.length >= 24 ? clause : clean, 64);
+  const complete = (clause.length >= 24 ? clause : clean)
+    .replace(/^professional teams lose hours\s+turning\s+.+?\s+into\s+(.+)$/i, "Teams lose hours creating $1")
+    .replace(/^(.*?)\s+lose hours\s+turning\s+.+?\s+into\s+(.+)$/i, "$1 lose hours creating $2")
+    .replace(/\s+without\s+rebuilding\s+(?:it|everything|the\s+(?:work|context))\b.*$/i, "");
+  return outputHeading(complete, 64);
 }
 function mapNodesForClaims(claims: WorkshopClaim[], existingCount: number): WorkshopMapNode[] {
   const room = Math.max(0, 12 - existingCount);

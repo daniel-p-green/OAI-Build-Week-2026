@@ -557,8 +557,8 @@ button { -webkit-tap-highlight-color: transparent; }
   .header-browse-trigger { display: none; }
   .map-canvas { padding: 12px 0; overflow: auto; background: #f3f3f3; }
   .map-insight-bar { display: none; }
-  .map-canvas.has-map-undo { padding-top: 64px; }
-  .has-map-undo .map-insight-bar { top: 8px; right: 12px; left: 12px; display: flex; justify-content: flex-end; padding: 8px 9px; }
+  .map-canvas.has-map-undo { padding-top: 52px; }
+  .has-map-undo .map-insight-bar { top: 10px; right: 12px; left: auto; display: block; padding: 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
   .has-map-undo .map-clusters, .has-map-undo .map-path { display: none; }
   .excalidraw-map { display: none; }
   .map-canvas > .semantic-map { height: auto; padding: 12px; }

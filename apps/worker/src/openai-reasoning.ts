@@ -20,7 +20,7 @@ const groundedMapSchema = {
         required: ["id", "title", "body", "evidenceState", "evidenceClaimIds", "x", "y"],
         properties: {
           id: { type: "string", pattern: "^[a-z0-9][a-z0-9-]{0,63}$" },
-          title: { type: "string", minLength: 1, maxLength: 80 },
+          title: { type: "string", minLength: 1, maxLength: 64 },
           body: { type: "string", minLength: 1, maxLength: 500 },
           evidenceState: { type: "string", enum: ["grounded", "derived", "direction"] },
           evidenceClaimIds: { type: "array", items: { type: "string" } },
@@ -67,7 +67,7 @@ export async function generateGroundedMapWithGpt56(root: string, config: OpenAiR
       reasoning: { effort: config.reasoningEffort },
       max_output_tokens: 2200,
       input: [
-        { role: "developer", content: "Turn only the supplied evidence into a compact professional thought map with a clear left-to-right hierarchy: grounded evidence, synthesis, then recommended direction. Include at least one grounded node, one derived synthesis node, and one direction node. Every grounded and direction node must cite supporting claim IDs; derived nodes should cite the claims they synthesize. A direction is a recommended next action grounded in the supplied evidence, not a new factual claim. Use a readable 0-100 canvas and connect the strongest evidence-to-synthesis-to-direction path." },
+        { role: "developer", content: "Turn only the supplied evidence into a compact professional thought map with a clear left-to-right hierarchy: grounded evidence, synthesis, then recommended direction. Include at least one grounded node, one derived synthesis node, and one direction node. Every grounded and direction node must cite supporting claim IDs; derived nodes should cite the claims they synthesize. A direction is a recommended next action grounded in the supplied evidence, not a new factual claim. Every title must be a complete, plain-language headline of at most 64 characters; never end a title with an ellipsis or incomplete phrase. Use a readable 0-100 canvas and connect the strongest evidence-to-synthesis-to-direction path." },
         { role: "user", content: JSON.stringify({ evidence }) },
       ],
       text: { format: { type: "json_schema", name: "workshoplm_grounded_map", strict: true, schema: groundedMapSchema } },

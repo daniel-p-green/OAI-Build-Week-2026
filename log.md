@@ -11828,3 +11828,37 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The complete `10:13 CT — Simplified Capture clears repository and seam checks` verification entry was appended at line 2747 because its patch anchor matched an older repeated footer. Its repository and end-to-end evidence remain valid; this append-only correction establishes that the checks occurred after the `10:11 CT` first-Capture milestone.
 - No historical entry was moved or rewritten. No provider request ran, the connected product-quality goal remains active pending founder visual acceptance, and demo-film work remains paused.
+
+---
+
+## 2026-07-17 10:25 CT — First-use Map communicates a complete argument
+
+### Changed
+
+- Audited the authentic first-use Map rather than the short-label fixture. Its lane hierarchy was visible, but the key Evidence, Synthesis, recommended Direction, and overview all ended in truncated phrases, so the professional could not understand the argument within five seconds.
+- Tightened deterministic Map headlines without changing source bodies or evidence edges. The time-cost claim now reads `Teams lose hours creating client-ready work`; the derived point combines that evidence with the exact-source requirement as `Client-ready work needs source traceability`; and the recommended path reads `Create work a consultant can refine and present` in full.
+- Tightened the live GPT-5.6 grounded-Map contract to complete plain-language headlines of at most 64 characters and explicitly prohibited ellipses and incomplete phrases.
+- Added a first-use mobile Map baseline. It proves that the same Direction → Synthesis → Evidence argument remains readable at 390 × 844, with the full-width empty overview bar replaced by a quiet contextual Undo control.
+
+### Verified
+
+- All 130 worker tests passed, including deterministic Map organization, GPT-5.6 proposal validation, source grounding, revisions, approvals, and stale propagation.
+- The optimized Next.js build succeeded at 35.5 kB for the main route and 140 kB first load.
+- All 35 production-browser scenarios passed across desktop, compact, mobile, first use, grounding, created work, history, and accessibility.
+- Visually inspected the current desktop and mobile first-use Map. The key evidence, distinct Synthesis, complete Direction, selected Source count, and next approval action are all visible without opening a generic whiteboard tool surface.
+- No OpenAI provider request ran; the cumulative request count remains 118.
+
+### Decisions and open items
+
+- Map labels summarize for comprehension; the complete source statement remains in the node body and evidence inspector. Concision cannot end in a visibly incomplete phrase.
+- The connected product-quality item remains open until founder visual acceptance. Demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 10:27 CT — Complete Map argument clears repository and seam checks
+
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 38 web tests and 130 worker tests. Repository hygiene reported 693 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam through the grounded Map, both approvals, Style, Sketch, Presentation, Infographic, three-section Cedar Audio Overview, six-image provider fixture, five-panel Storyboard, local Video, and build trace.
+- No provider request ran. The connected product-quality goal remains active pending founder visual acceptance; demo-film work remains paused.

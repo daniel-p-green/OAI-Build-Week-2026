@@ -1549,11 +1549,17 @@ test("a new professional reaches the real Map through the durable first-use path
 
   await expect(page.getByRole("region", { name: "Map overview" })).toContainText("key evidence");
   await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Recommended direction");
-  await expect(page.getByRole("button", { name: /Recommended direction: Create work a consultant can refine and present without/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Recommended direction: Create work a consultant can refine and present" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
   await expect(page.locator(".map-source-shelf")).toContainText("1 selected");
   await expectMapReady(page, viewports[0]);
   await expectScreen(page, "desktop-onboarding-map");
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobileDirection = page.locator(".map-outline-node").filter({ hasText: "Direction" });
+  await expect(mobileDirection).toContainText("Create work a consultant can refine and present");
+  await expect(page.locator(".map-outline-node").first()).toContainText("Direction");
+  await expectScreen(page, "mobile-onboarding-map");
+  await page.setViewportSize({ width: 1200, height: 800 });
   await page.reload();
   await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
   await page.getByRole("button", { name: "Approve brief" }).click();
