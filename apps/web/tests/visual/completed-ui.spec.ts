@@ -967,7 +967,14 @@ test("finished Audio Overview keeps playback visible at desktop and mobile width
     await openWorkshopView(page, "outputs");
     await page.getByRole("button", { name: /^Open Audio Overview/ }).click();
     await expect(page.getByText("Audio ready", { exact: true })).toBeVisible();
-    await expect(page.getByText("Cedar voice · AI-generated voice", { exact: true })).toBeVisible();
+    await expect(page.getByText("Cedar", { exact: true })).toBeVisible();
+    await expect(page.getByText("AI-generated voice", { exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Chapters" })).toBeVisible();
+    await expect(page.getByLabel("Audio Overview script").locator("textarea")).toHaveCount(0);
+    await page.getByRole("button", { name: "Edit script" }).click();
+    await expect(page.getByLabel("Audio Overview script").locator("textarea")).toHaveCount(3);
+    await page.getByRole("button", { name: "Cancel" }).click();
+    await expect(page.getByLabel("Audio Overview script").locator("textarea")).toHaveCount(0);
     const player = page.locator(".audio-player audio[controls]");
     await expect(player).toBeVisible();
     await expect.poll(async () => (await player.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(40);

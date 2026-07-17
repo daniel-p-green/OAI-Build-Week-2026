@@ -3,7 +3,7 @@ import { dirname, resolve } from "node:path";
 import { createHash } from "node:crypto";
 import { generateAudioOverview, readWorkshopState, recordAudioOverviewAudio } from "../../../worker/src/workshop-service.ts";
 
-function fixtureWav(seconds = 1, sampleRate = 24_000): Buffer {
+function fixtureWav(seconds = 34, sampleRate = 24_000): Buffer {
   const samples = sampleRate * seconds;
   const dataSize = samples * 2;
   const bytes = Buffer.alloc(44 + dataSize);
@@ -22,7 +22,7 @@ async function main() {
   const bytes = fixtureWav();
   await mkdir(dirname(path), { recursive: true });
   await writeFile(path, bytes);
-  recordAudioOverviewAudio(current.id, { relativePath, sha256: createHash("sha256").update(bytes).digest("hex"), byteCount: bytes.length, durationSeconds: 1, model: "gpt-4o-mini-tts", voice: "cedar", instructions: "Visual fixture only", requestId: "visual-fixture", generatedAt: new Date().toISOString() }, root);
+  recordAudioOverviewAudio(current.id, { relativePath, sha256: createHash("sha256").update(bytes).digest("hex"), byteCount: bytes.length, durationSeconds: 34, model: "gpt-4o-mini-tts", voice: "cedar", instructions: "Visual fixture only", requestId: "visual-fixture", generatedAt: new Date().toISOString() }, root);
 }
 
 main().catch((error: unknown) => {

@@ -11010,3 +11010,31 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 04:40 CT — Audio Overview becomes a focused listening experience
+
+### Changed
+
+- Replaced the finished Audio Overview's persistent three-column textarea grid with one quiet listening surface and a compact chapter transcript. The professional now sees the briefing title, representative duration, word count, Cedar voice, AI-voice disclosure, and Source-backed chapter sequence before any editing controls.
+- Made script editing progressive: `Edit script` reveals the three text areas, `Cancel` restores the saved narration, and `Save script` remains disabled until a valid change exists. The existing versioned update and provider-audio paths remain unchanged.
+- Reworked the mobile composition around the same hierarchy instead of stacking three oversized form cards. Playback remains above the fold; each chapter retains an obvious `Show source` action; disclosure stays visible without dominating the work.
+- Replaced the one-second visual-test WAV with a deterministic 34-second fixture, matching the duration class of the verified 33.5-second Cedar provider artifact without making another paid request.
+
+### Verified
+
+- Inspected `desktop-audio-overview.png` and `mobile-audio-overview.png` at original resolution. Both read as a finished briefing; player, chapters, evidence actions, and AI-voice disclosure remain legible and contained.
+- Added browser assertions that the default listening view contains no textareas, `Edit script` reveals exactly three, and `Cancel` returns to the finished view without mutating the saved script.
+- The production build succeeded and the complete production-browser suite passed all 32 scenarios without snapshot updates after the intentional Audio Overview baselines were refreshed.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 32 web tests and 129 worker tests.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Treat listening as the primary Audio Overview job and script editing as refinement. Do not expose the editable transcript as the default finished-work presentation.
+- Keep native audio controls for dependable local playback and accessibility; surrounding hierarchy and Source trust should carry the product's design language.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
