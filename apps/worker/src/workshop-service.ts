@@ -477,6 +477,32 @@ function mapDirectionTitle(text: string) {
   const title = mapNodeTitle(action || text);
   return title ? `${title[0]!.toUpperCase()}${title.slice(1)}` : mapNodeTitle(text);
 }
+function mapSynthesis(claims: WorkshopClaim[], direction: WorkshopClaim) {
+  const score = (claim: WorkshopClaim) => {
+    const text = prose(claim.text);
+    let value = 0;
+    if (/\b(need|needs|problem|friction|fragment(?:ed|ation)?|gap|risk|challenge|goal|outcome|lose|lost|hours)\b/i.test(text)) value += 20;
+    if (/\b(source|evidence|trace|grounded|measure|report|adoption|proof|trust)\b/i.test(text)) value += 12;
+    if (/\b(professional|client|leadership|team|decision|launch|pilot)\b/i.test(text)) value += 8;
+    if (/\b(is|are|keeps?|makes?|creates?|turns?|confirms?|shows?|requires?)\b/i.test(text)) value += 4;
+    if (/\brecommended workflow\b|\bcapture\b.{0,24}\bmap\b.{0,24}\bbrief\b.{0,24}\bcreate\b/i.test(text)) value -= 30;
+    return value;
+  };
+  const selected = claims
+    .filter((claim) => claim.id !== direction.id)
+    .sort((left, right) => score(right) - score(left) || claims.indexOf(left) - claims.indexOf(right))
+    .slice(0, 2);
+  const evidence = selected.length ? selected : [direction];
+  const body = evidence.map((claim) => {
+    const text = prose(claim.text);
+    return /[.!?]$/.test(text) ? text : `${text}.`;
+  }).join(" ");
+  const lead = prose(evidence[0]!.text)
+    .replace(/^(?:our|the)\s+(?:leadership\s+)?team\s+(?:needs?|requires?)\s+(?:a|an|the)\s+/i, "")
+    .replace(/^we\s+(?:need|require)\s+(?:a|an|the)\s+/i, "");
+  const title = mapNodeTitle(lead);
+  return { body, title: title ? `${title[0]!.toUpperCase()}${title.slice(1)}` : "Source synthesis" };
+}
 export function assertStoryboardGrounding(state: WorkshopState): void {
   for (const panel of state.storyboard.panels) {
     if (!panel.evidence.length) throw new Error(`Storyboard panel ${panel.id} requires a source reference.`);
@@ -538,7 +564,6 @@ function frameAudience(state: WorkshopState) {
 }
 function frameFor(state: WorkshopState, approvedAt: string, root?: string): WorkshopFrame {
   const available = state.mapNodes.filter((node) => node.kind !== "creative");
-  const outcomeNode = [...available].sort((left, right) => frameOutcomeScore(right) - frameOutcomeScore(left) || available.indexOf(left) - available.indexOf(right))[0];
   const grounded = available.filter((node) => node.kind === "grounded");
   const recommendedTarget = state.mapEdges.find((edge) => edge.label === "recommends")?.to;
   const explicitDirections = state.mapNodes.filter((node) => node.kind === "creative");
@@ -548,13 +573,21 @@ function frameFor(state: WorkshopState, approvedAt: string, root?: string): Work
   const explicitDirection = state.mapNodes.find((node) => node.id === recommendedTarget)
     ?? state.mapNodes.find((node) => node.id === "map-direction")
     ?? aiMapDirection;
+  const repeatsExplicitDirection = (node: WorkshopMapNode) => node.id === explicitDirection?.id || prose(node.body) === prose(explicitDirection?.body ?? "");
+  const groundedOutcomes = grounded.filter((node) => !repeatsExplicitDirection(node));
+  const aiDerivedOutcomes = state.aiRuns.some((run) => run.operation === "grounded_graph")
+    ? available.filter((node) => node.kind === "derived")
+    : [];
+  const outcomeCandidates = aiDerivedOutcomes.length ? [...aiDerivedOutcomes, ...groundedOutcomes] : groundedOutcomes;
+  const outcomePool = outcomeCandidates.length ? outcomeCandidates : available.filter((node) => !repeatsExplicitDirection(node));
+  const outcomeNode = [...outcomePool].sort((left, right) => frameOutcomeScore(right) - frameOutcomeScore(left) || outcomePool.indexOf(left) - outcomePool.indexOf(right))[0];
   const directionCandidates = grounded.filter((node) => node.id !== outcomeNode?.id);
   const directionNode = explicitDirection ?? [...(directionCandidates.length ? directionCandidates : available.filter((node) => node.id !== outcomeNode?.id))].sort((left, right) => frameDirectionScore(right) - frameDirectionScore(left) || available.indexOf(left) - available.indexOf(right))[0];
   const repeatsDirection = (node: WorkshopMapNode) => node.id === directionNode?.id || prose(node.body) === prose(directionNode?.body ?? "");
   const evidenceNodes = grounded.filter((node) => node.id !== outcomeNode?.id && !repeatsDirection(node)).slice(0, 3);
   for (const node of grounded) {
     if (evidenceNodes.length >= 3) break;
-    if (!repeatsDirection(node) && !evidenceNodes.some((candidate) => candidate.id === node.id)) evidenceNodes.push(node);
+    if (node.id !== outcomeNode?.id && !repeatsDirection(node) && !evidenceNodes.some((candidate) => candidate.id === node.id)) evidenceNodes.push(node);
   }
   if (!evidenceNodes.length && outcomeNode) evidenceNodes.push(outcomeNode);
   const outcome = prose(outcomeNode?.body ?? outcomeNode?.title ?? "Turn raw thinking into professional knowledge work.");
@@ -662,6 +695,7 @@ export function organizeGroundedMap(root?: string): WorkshopState {
   let history = snapshot.history;
   const primary = mapDirectionClaim(claims);
   const directionTitle = mapDirectionTitle(primary.text);
+  const synthesis = mapSynthesis(claims, primary);
   const append = (operation: Parameters<typeof appendGraphOperation>[2], id: string) => {
     const applied = appendGraphOperation(graph, history, operation, { id, actor: "assistant", createdAt });
     graph = applied.graph;
@@ -692,12 +726,12 @@ export function organizeGroundedMap(root?: string): WorkshopState {
   if (!currentIds.has(synthesisId)) append(GraphOperation.parse({ type: "add_node", node: {
     id: synthesisId,
     kind: "idea",
-    label: "What the Sources show",
+    label: synthesis.title,
     evidenceState: "derived",
     priority: 1,
     unresolved: false,
     locked: false,
-    metadata: { body: "The selected Sources converge on a shared problem, a professional outcome, and the controls needed to move forward.", locator: "Derived from selected Sources", evidenceClaimIds, x: 40, y: 36, width: 24, height: 18 },
+    metadata: { body: synthesis.body, locator: "Derived from selected Sources", evidenceClaimIds, x: 40, y: 36, width: 24, height: 18 },
   } }), `operation-map-organizer-${Date.now()}-synthesis`);
   if (!currentIds.has(directionId)) append(GraphOperation.parse({ type: "add_node", node: {
     id: directionId,
@@ -711,7 +745,8 @@ export function organizeGroundedMap(root?: string): WorkshopState {
     metadata: { body: prose(primary.text), locator: primary.locator, sourceId: primary.sourceId, evidenceClaimIds, x: 74, y: 36, width: 24, height: 18 },
   } }), `operation-map-organizer-${Date.now()}-direction`);
   if (currentIds.has(synthesisId)) append(GraphOperation.parse({ type: "update_node", nodeId: synthesisId, patch: {
-    metadata: { ...graph.nodes.find((node) => node.id === synthesisId)?.metadata, locator: "Derived from selected Sources", evidenceClaimIds },
+    label: synthesis.title,
+    metadata: { ...graph.nodes.find((node) => node.id === synthesisId)?.metadata, body: synthesis.body, locator: "Derived from selected Sources", evidenceClaimIds },
   } }), `operation-map-organizer-${Date.now()}-synthesis-refresh`);
   if (currentIds.has(directionId)) append(GraphOperation.parse({ type: "update_node", nodeId: directionId, patch: {
     label: directionTitle,

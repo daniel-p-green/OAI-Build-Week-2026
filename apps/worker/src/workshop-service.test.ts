@@ -130,7 +130,7 @@ it("organizes grounded claims into an honest deterministic evidence-to-direction
     const organized = organizeGroundedMap(root);
     expect(organized.mapNodes.filter((node) => node.kind === "grounded")).toHaveLength(3);
     expect(organized.mapNodes).toEqual(expect.arrayContaining([
-      expect.objectContaining({ id: "map-synthesis", kind: "derived", title: "What the Sources show" }),
+      expect.objectContaining({ id: "map-synthesis", kind: "derived", title: "Client work is fragmented across tools", body: "Client work is fragmented across tools. Every factual claim needs a source locator." }),
       expect.objectContaining({ id: "map-direction", kind: "creative", title: "Approve direction before creating work", body: "The team should approve direction before creating work" }),
     ]));
     expect(organized.mapEdges.filter((edge) => edge.to === "map-synthesis")).toHaveLength(3);
@@ -152,14 +152,20 @@ it("promotes the proposed decision instead of prose that merely mentions recomme
     await ingestSource({
       title: "Launch notes",
       origin: "Meeting",
-      text: "We need a client-ready launch plan that keeps every recommendation tied to the meeting notes. The team should prioritize a two-week pilot, confirm ownership, and show leadership the decision path.",
+      text: "We need a client-ready launch plan that keeps every recommendation tied to the meeting notes. The team should prioritize a two-week pilot, confirm ownership, and show leadership the decision path. Every recommendation must remain traceable to its Source.",
     }, root);
     const organized = organizeGroundedMap(root);
+    expect(organized.mapNodes.find((node) => node.id === "map-synthesis")).toMatchObject({
+      title: "Client-ready launch plan that keeps every recommendation tied…",
+      body: "We need a client-ready launch plan that keeps every recommendation tied to the meeting notes. Every recommendation must remain traceable to its Source.",
+    });
     expect(organized.mapNodes.find((node) => node.id === "map-direction")).toMatchObject({
       title: "Prioritize a two-week pilot, confirm ownership, and show…",
       body: "The team should prioritize a two-week pilot, confirm ownership, and show leadership the decision path",
     });
     const approved = applyWorkshopAction("approveBrief", root);
+    expect(approved.frame?.markdown).toContain("## Outcome\nWe need a client-ready launch plan that keeps every recommendation tied to the meeting notes");
+    expect(approved.frame?.markdown.match(/We need a client-ready launch plan/g)).toHaveLength(1);
     expect(approved.frame?.markdown).toContain("## Direction\nThe team should prioritize a two-week pilot, confirm ownership, and show leadership the decision path");
     expect(approved.frame?.markdown.match(/The team should prioritize a two-week pilot/g)).toHaveLength(1);
   } finally {
@@ -325,7 +331,7 @@ it("refreshes the weekly Map and Brief after a new meeting while preserving the 
   const updatedMap = organizeGroundedMap(root);
   const activeClaimIds = updatedMap.claims.filter((claim) => updatedMap.activeSourceIds.includes(claim.sourceId)).map((claim) => claim.id);
   expect(new Set(updatedMap.mapInputClaimIds)).toEqual(new Set(activeClaimIds));
-  expect(updatedMap.mapNodes.find((node) => node.id === "map-synthesis")?.body).toContain("selected Sources converge");
+  expect(updatedMap.mapNodes.find((node) => node.id === "map-synthesis")?.body).toContain("weekly client update");
   const nextBrief = applyWorkshopAction("approveBrief", root);
   const regenerated = await generateOutput("deck", root);
   const currentDeck = regenerated.outputs.at(-1)!;

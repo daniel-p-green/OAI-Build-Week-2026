@@ -11424,3 +11424,29 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
 - User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 07:30 CT — Synthesis and Brief Outcome say what the Workshop is actually about
+
+### Changed
+
+- Continued the empty-data-root audit through the visible Map and approved Brief. The deterministic Synthesis card still used the placeholder `What the Sources show`, and its generic body—`The selected Sources converge…`—could outrank real evidence and become the Brief Outcome.
+- Replaced the scaffold with a bounded, source-faithful synthesis of the strongest non-direction findings. The canvas headline now names the actual professional need, while the complete selected findings remain in the derived node body and retain the active claim set.
+- Brief construction now prefers grounded intent for Outcome on the deterministic path, preserves a grounded AI-derived outcome when a recorded GPT-5.6 Map run exists, excludes the approved Direction from Outcome ranking, and keeps distinct supporting evidence from repeating either object when the Source set provides it.
+
+### Verified
+
+- A fresh in-app-browser Workshop changed the visible Synthesis from `What the Sources show` to `Concise launch recommendation grounded in the meeting notes`. Brief approval then rendered the grounded Outcome `Our leadership team needs a concise launch recommendation grounded in the meeting notes`, preserved the exact two-week pilot Direction, and showed only the separate traceability claim under Evidence.
+- The same Outcome → Direction → Evidence hierarchy remained complete and readable at 390×844. No navigation, whiteboard tool, or new user-facing concept was added.
+- All 130 worker tests passed, including exact Synthesis body/title, grounded Outcome, non-duplication, Direction fidelity, and weekly refresh coverage. The optimized Next.js build passed, and the production first-use browser scenario passed in 4.6 seconds with its existing responsive screenshot contract.
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages. `pnpm demo:e2e` passed the complete recorded-fixture seam through both approvals, six images, Cedar Audio Overview, Storyboard, local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Deterministic fallback quality is part of the product contract, but it remains bounded: select and connect the strongest grounded findings; do not grow a second semantic engine or generic Excalidraw surface.
+- Outcome, Direction, and Evidence are different professional objects. Approval should preserve their hierarchy rather than filling each section with the same high-scoring sentence.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
