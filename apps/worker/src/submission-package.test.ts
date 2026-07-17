@@ -125,17 +125,18 @@ describe("submission Output set", () => {
     await expect(buildSubmissionOutputSet(root, { renderThumbnail: fakeThumbnail })).rejects.toThrow("Video provenance does not match");
   });
 
-  it("reaches ready only when every provider evidence family is complete", async () => {
+  it("allows an authentic imported recording to reach ready when every created-work provider family is complete", async () => {
     const root = await buildableWorkshop(); const state = readWorkshopState(root); const generatedAt = new Date().toISOString();
     const readyState = {
       ...state,
-      transcriptSegments: [...state.transcriptSegments, { id: "realtime-1", origin: "realtime_fallback" as const, transport: "webrtc" as const, text: "Verified voice", capturedAt: generatedAt, provider: { model: "gpt-realtime-2.1" as const, transcriptionModel: "gpt-realtime-whisper" as const, itemIds: ["item-1"], eventIds: ["event-1"] } }],
+      transcriptSegments: [...state.transcriptSegments, { id: "founder-import-1", origin: "manual_import" as const, transport: "fixture" as const, text: "Authentic founder recording transcript", capturedAt: generatedAt }],
       aiRuns: [{ id: "ai-run-1", operation: "grounded_graph" as const, model: "gpt-5.6-sol" as const, inputClaimIds: state.claims.map((claim) => claim.id), outputSha256: "a".repeat(64), requestId: "response-1", createdAt: generatedAt }],
       imageBatch: { ...state.imageBatch!, panels: state.imageBatch!.panels.map((panel) => ({ ...panel, state: "generated" as const, relativePath: `generated/${panel.id}.png`, sha256: "b".repeat(64), provenance: { model: "gpt-image-2" as const, size: "1024x1024", quality: "medium" as const, referenceId: state.imageBatch!.referenceId, requestId: `image-${panel.id}`, generatedAt } })) },
       narration: { storyboardVersion: state.storyboard.version, disclosure: "AI-generated voice" as const, stale: false, failures: [], createdAt: generatedAt, panels: state.storyboard.panels.map((panel, index) => ({ panelId: panel.id, relativePath: `generated/panel-${index + 1}.wav`, sha256: "c".repeat(64), model: "gpt-4o-mini-tts" as const, voice: "cedar" as const, instructions: "Clear narration", requestId: `speech-${index + 1}`, generatedAt })) },
       audioOverviews: state.audioOverviews.map((overview) => ({ ...overview, status: "audio_ready" as const, audio: { relativePath: `generated/${overview.id}.wav`, sha256: "d".repeat(64), byteCount: 16_044, durationSeconds: 1, model: "gpt-4o-mini-tts" as const, voice: "cedar" as const, instructions: "Clear executive briefing", requestId: "speech-overview-1", generatedAt } })),
     };
     expect(submissionLimitations(readyState)).toEqual([]);
+    expect(submissionLimitations({ ...readyState, transcriptSegments: [] })).toEqual([]);
     expect(submissionLimitations({ ...readyState, aiRuns: [] })).toContain("The recorded fixture uses the deterministic grounded Map path; no live GPT-5.6 reasoning run is present.");
     expect(submissionLimitations({ ...readyState, narration: { ...readyState.narration, panels: readyState.narration.panels.slice(1) } })).toContain("The video uses deterministic placeholder tones; provider-generated narration is not present.");
     expect(submissionLimitations({ ...readyState, audioOverviews: readyState.audioOverviews.map((overview) => ({ ...overview, status: "script_ready" as const, audio: undefined })) })).toContain("The Audio Overview includes a grounded reviewed script, but no provider-generated speech file is present.");

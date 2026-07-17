@@ -2720,6 +2720,36 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-16 20:04 CT — Authentic founder import can reach a ready final package without false Realtime provenance
+
+### Changed
+
+- Audited the authentic Workshop handoff into final browser capture and found that submission readiness incorrectly required a provider-verified WebRTC transcript. That made an explicitly imported founder recording permanently `partial` even when its grounded Map, GPT Image 2 set, Cedar narration, Audio Overview, approvals, Sources, and HyperFrames Video were complete.
+- Removed Realtime from created-work package limitations. Realtime remains a first-class product capability and separate verified sample proof, but an authentic founder recording is a valid input without being relabeled as a provider Realtime turn.
+- Kept the generated Devpost narrative explicit: it still reports the exact number of verified WebRTC turns and states when none are claimed. The evidence-boundary copy now explains that `ready` measures connected created-work completeness and integrity while capture provenance is reported separately.
+- Replaced the readiness policy test with an authentic manual-import transcript and added the format-neutral case where a Workshop begins from non-voice Sources. Both can reach `ready` only when the required provider Map, image, Storyboard narration, and Audio Overview families are complete.
+
+### Verified
+
+- The focused submission-package suite passes 8/8 tests, including the imported-founder readiness policy and independent failures for a missing GPT-5.6 Map, incomplete Cedar Storyboard narration, and missing Cedar Audio Overview speech.
+- `pnpm check` passes lint, typecheck, and every test suite across all thirteen packages, including all 121 worker tests, 30 web tests, and 19 production tests. The first restricted run exposed only the known inability to resolve the website-style test host; the same suite passed outside that restriction.
+- `pnpm submission:verify` reports the current 25-asset acceptance package valid, current, and untampered. `pnpm submission:packet:verify` passes with the 140.010667-second sample editorial film, six provider images, five Cedar Storyboard clips, the Cedar Audio Overview, eight ready shots, and two intentionally founder-blocked shots.
+- `git diff --check` passes. The compact five-item critical path in `GOAL.md` remains unchanged because this repair removes a visible blocker from `Run the authentic Workshop`; it does not add another queue item.
+
+### Decisions
+
+- Package readiness and capture provenance are separate truth dimensions. A package is not downgraded merely because an authentic imported recording was used, and imported audio is never upgraded into Realtime evidence.
+- Final browser capture still requires an explicitly shareable founder Source and a `ready`, limitation-free package. Required provider-created work, approvals, source integrity, privacy, and hash gates remain unchanged.
+- No OpenAI provider request ran. The provider-operation ledger remains 114.
+- `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+### Open items
+
+- The authentic founder run remains the only proof that can close the first two critical-path items. After it passes, run `pnpm demo:capture-final`, inspect the contact sheet, then promote through final HyperFrames assembly and verification.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-16 18:42 CT — Current created-work proof is visually current and vocabulary-coherent
 
 **Area:** Product UI / visual proof / professional language / release verification
@@ -9821,3 +9851,11 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - After the authentic founder operator passes, run `pnpm demo:capture-final`, inspect its contact sheet and Video beat, then run `pnpm demo:film:final` and `pnpm demo:film:verify-final`.
 - The founder recording, intended-audience review, public YouTube upload, `/feedback` Session ID, release tag, Devpost completion, and logged-out link verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 20:05 CT — Chronology correction for founder-package readiness entry
+
+- The immediately preceding implementation milestone titled `Authentic founder import can reach a ready final package without false Realtime provenance` was accidentally inserted earlier in this append-only file rather than at its chronological tail.
+- That 20:04 CT entry remains the authoritative evidence for the change. It is intentionally not deleted or relocated so the correction itself preserves the log's append-only rule.
+- No implementation, verification result, provider-operation count, or critical-path status changed in this correction.
