@@ -21,3 +21,22 @@ export function connectionBetween(start: MapRectangle, end: MapRectangle) {
 
   return { x, y, width: endX - x, height: endY - y };
 }
+
+export function semanticConnectionBetween(start: MapRectangle, end: MapRectangle) {
+  const horizontalGap = end.x - (start.x + start.width);
+  if (horizontalGap <= 0) return connectionBetween(start, end);
+
+  const x = start.x + start.width;
+  const y = start.y + start.height / 2;
+  const endX = end.x;
+  const endY = end.y + end.height / 2;
+  const midpointX = horizontalGap / 2;
+
+  return {
+    x,
+    y,
+    width: endX - x,
+    height: endY - y,
+    points: [[0, 0], [midpointX, 0], [midpointX, endY - y], [endX - x, endY - y]] as [number, number][],
+  };
+}

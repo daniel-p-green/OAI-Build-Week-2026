@@ -10873,8 +10873,6 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
 
----
-
 ## 2026-07-17 03:34 CT — First Capture now produces the grounded Map in one action
 
 ### Changed
@@ -11098,4 +11096,33 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Do not close the final licensing/authorization gate from repository policy alone. Resolve it from the exact public Video, fonts, images, music, trademarks, integrations, and final packaged work.
 - The founder recording, founder-derived provider run, cold professional judgment, public Video, `/feedback` ID, stable release, and submitted/logged-out links remain open.
 - User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 05:16 CT — The constrained Map has a professional semantic layout
+
+### Changed
+
+- Repaired the Map after direct screenshot inspection showed the right information model rendered with overlapping cluster frames, repeated one-Source captions, diagonal relationship clutter, and crowded evidence text.
+- Widened the auto-organized semantic gutters so Evidence, Synthesis, and Direction remain visually separate in both the two-evidence fixture and the six-evidence first-use case.
+- Replaced the tangle of individual Evidence-to-Synthesis arrows with one cluster-level orthogonal connection. Same-layer edges remain in the semantic graph but no longer add meaningless line noise to the professional canvas.
+- Added orthogonal routing through the whitespace between semantic regions while preserving boundary-clipped fallback geometry after a professional manually rearranges nodes.
+- Reduced Evidence typography to a readable knowledge-map scale, retained stronger emphasis for Synthesis and Direction, and omitted repeated per-card captions when every claim comes from the same Source. Multi-source Maps still identify each claim's Source.
+
+### Verified
+
+- Inspected the regenerated `desktop-onboarding-map.png`, `desktop-map.png`, `compact-map.png`, `desktop-reset-map.png`, and website-Style-ready Map at original resolution. The six-evidence case now presents one evidence cluster, one synthesis, one emphasized direction, and one clear recommended path without cluster collisions or repeated Source noise.
+- Added two geometry regressions for orthogonal semantic routing and the manually rearranged-node fallback. The web package now passes 34 tests.
+- The production build succeeded. The complete production-browser suite passed all 32 scenarios once while refreshing intentional Map baselines and again without snapshot-writing.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 19 production-renderer tests, 34 web tests, and 129 worker tests.
+- `pnpm demo:e2e` passed the complete deterministic Capture-to-Video seam with both approval gates, current created work, six image panels, Cedar Audio Overview, Storyboard, local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- The Map remains an editable Excalidraw projection, but its default presentation is deliberately constrained. Underlying same-layer relationships are preserved for provenance and future reasoning; visual hierarchy outranks drawing every graph edge.
+- A one-Source Map communicates provenance through the selected Source shelf, evidence styling, and direct inspection rather than repeating the same label six times. Multi-source differentiation stays visible at card level.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- Demo-film work remains paused. User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.

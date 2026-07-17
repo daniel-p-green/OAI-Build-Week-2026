@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef } from "react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
-import { connectionBetween } from "./excalidraw-map-geometry";
+import { semanticConnectionBetween } from "./excalidraw-map-geometry";
 import { baselineFromScene, patchesFromScene, type CanvasNodePatch, type MapSceneElement, type SceneNodeBaseline } from "./excalidraw-map-state";
 
 const Excalidraw = dynamic(() => import("@excalidraw/excalidraw").then((module) => module.Excalidraw), { ssr: false });
@@ -57,7 +57,7 @@ const sourceTitle = (source: Source) => isVoiceSource(source)
 const sourceType = (source: Source) => isVoiceSource(source) ? "VOICE" : source.type;
 const compactSourceTitle = (source: Source) => {
   const title = sourceTitle(source);
-  return title.length > 26 ? `${title.slice(0, 25).trimEnd()}…` : title;
+  return title.length > 16 ? `${title.slice(0, 15).trimEnd()}…` : title;
 };
 
 function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: MapEdge[], style?: MapStyle) {
@@ -105,11 +105,12 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     x: cluster.x + 14,
     y: cluster.y + 12,
     text: cluster.text,
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: 2 as const,
     strokeColor: `${cluster.stroke}c4`,
     locked: true,
   }));
+  const evidenceCluster = clusterDescriptors.find((cluster) => cluster.kind === "grounded");
   const nodeShapes = nodes.map((node) => ({
     type: "rectangle" as const,
     id: shapeId(node.id),
@@ -117,7 +118,7 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     y: toSceneY(node.y),
     width: toSceneWidth(node.width),
     height: toSceneY(node.height),
-    label: { text: node.title, fontSize: node.kind === "creative" ? 19 : 18, fontFamily: 2 as const, textAlign: "left" as const, verticalAlign: "middle" as const },
+    label: { text: node.title, fontSize: node.kind === "grounded" ? 15 : node.kind === "derived" ? 17 : 18, fontFamily: 2 as const, textAlign: "left" as const, verticalAlign: "middle" as const },
     customData: { nodeId: node.id },
     backgroundColor: node.kind === "grounded" || node.kind === "derived" ? "#ffffff" : `${accent}14`,
     strokeColor: node.kind === "grounded" ? "#008635" : node.kind === "derived" ? `${ink}9a` : accent,
@@ -127,6 +128,7 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     roundness: { type: 3 as const },
   }));
   const sourceCaptions = groundedNodes.flatMap((node) => {
+    if (sources.length <= 1) return [];
     const sourceId = sourceForNode.get(node.id);
     const source = sources.find((item) => item.id === sourceId);
     const geometry = nodeGeometry.get(node.id);
@@ -137,18 +139,35 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
       x: geometry.x + 18,
       y: geometry.y + geometry.height + 7,
       text: `${sourceType(source)} · ${compactSourceTitle(source)}`,
-      fontSize: 11,
+      fontSize: 10,
       fontFamily: 2 as const,
       strokeColor: "#477259",
       locked: true,
     }];
   });
+  const evidenceSynthesisTargets = [...new Set(edges.flatMap((edge) => nodeById.get(edge.from)?.kind === "grounded" && nodeById.get(edge.to)?.kind === "derived" ? [edge.to] : []))];
+  const evidenceSynthesisLinks = evidenceCluster ? evidenceSynthesisTargets.flatMap((targetId) => {
+    const end = nodeGeometry.get(targetId);
+    if (!end) return [];
+    return [{
+      type: "arrow" as const,
+      id: `graph-edge-evidence-cluster-${targetId}`,
+      ...semanticConnectionBetween(evidenceCluster, end),
+      strokeColor: `${ink}52`,
+      strokeWidth: 1.15,
+      roughness: 0,
+      endArrowhead: "arrow" as const,
+      locked: true,
+    }];
+  }) : [];
   const graphLinks = edges.flatMap((edge) => {
     if (!nodeIds.has(edge.from) || !nodeIds.has(edge.to)) return [];
+    if (nodeById.get(edge.from)?.kind === nodeById.get(edge.to)?.kind) return [];
+    if (nodeById.get(edge.from)?.kind === "grounded" && nodeById.get(edge.to)?.kind === "derived") return [];
     const start = nodeGeometry.get(edge.from);
     const end = nodeGeometry.get(edge.to);
     if (!start || !end) return [];
-    const connection = connectionBetween(start, end);
+    const connection = semanticConnectionBetween(start, end);
     return [{
       type: "arrow" as const,
       id: `graph-edge-${edge.id}`,
@@ -161,7 +180,7 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     }];
   });
 
-  return [...clusterFrames, ...graphLinks, ...clusterLabels, ...nodeShapes, ...sourceCaptions];
+  return [...clusterFrames, ...evidenceSynthesisLinks, ...graphLinks, ...clusterLabels, ...nodeShapes, ...sourceCaptions];
 }
 
 export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, onSelectNode, onShowSource, onSync }: {
