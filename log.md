@@ -10158,3 +10158,33 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Diagnose the Chromium `seeked` stall before relying on a single-command 31-path visual run as final submission evidence; the Map-relevant and remaining isolated paths are green.
 - Public Video review, intended-audience judgment, publication links, and final submission verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 21:52 CT — Real Video visual gate is bounded and green
+
+### Changed
+
+- Corrected the diagnosis from the prior Map milestone. The visual runner was not stuck in Chromium's `seeked` event: the real local HyperFrames fixture render consumed almost all of the test's former 90-second total budget, leaving the app no time to finish its browser assertions.
+- Gave the real-render Video case a separate four-minute budget based on measured local render time. Product and media assertions remain unchanged.
+- Replaced both unbounded `seeked` waits with one shared frame-selection helper. It still requires loaded metadata and a decoded review frame, but now fails explicitly after three seconds on media error or decode timeout instead of leaving the browser evaluation pending.
+
+### Verified
+
+- An isolated fixture/API probe completed the same reset, seeded Workshop, local HyperFrames Video render, and state read. The API returned `videoState: rendered`, one Video, three Sources, four Map ideas, and two created files.
+- The isolated production-browser Video path passed in 1.3 minutes across desktop, compact, and mobile views, including created-work preview, exact artifact route, Storyboard handoff, provenance record, source coverage, original-brainstorm reveal, and revision-driven `Needs update` state.
+- `pnpm --filter @workshoplm/web test:visual` then passed all 31 production-browser paths in one 2.0-minute run. This includes the real local Video case, the full responsive Workshop path, first-use onboarding, exact source tracing, official UI primitives, accessibility, loading/error/stale states, approvals, revisions, and every current visual baseline.
+- `pnpm check` passes lint, typecheck, and tests across all thirteen packages, including 124 worker tests and 30 web unit tests.
+
+### Decisions
+
+- Local composition time and browser media-decode time are different risks and now have different bounds. A slower real HyperFrames render may use the test's total budget; a stuck media frame may not.
+- The earlier open item about the Chromium seek stall is resolved by this later evidence. The historical entry remains unchanged because `log.md` is append-only.
+- No OpenAI provider request ran. The provider-operation ledger remains 115.
+- The five-item critical path in `GOAL.md` remains unchanged. `PLAN-2026-07-13.md` and `product-design-audit/` remain untouched and excluded.
+
+### Open items
+
+- Record and run the authentic founder Workshop. This remains the next external critical-path gate.
+- Public Video review, intended-audience judgment, publication links, and final submission verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

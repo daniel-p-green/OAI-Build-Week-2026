@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { execFileSync } from "node:child_process";
 import { resolve } from "node:path";
 
@@ -44,6 +44,33 @@ async function expectPreviewFramesReady(page: Page) {
     const document = (item as HTMLIFrameElement).contentDocument;
     return document?.readyState === "complete" && document.fonts.status === "loaded" && Boolean(document.body?.scrollHeight);
   }))).toBe(true);
+}
+
+async function seekVideoFrame(video: Locator, seconds = 0.1) {
+  await expect.poll(() => video.evaluate((node) => (node as HTMLVideoElement).readyState)).toBeGreaterThanOrEqual(1);
+  await video.evaluate(async (node, requestedSeconds) => {
+    const element = node as HTMLVideoElement;
+    const target = Number.isFinite(element.duration) && element.duration > 0
+      ? Math.min(requestedSeconds, element.duration / 2)
+      : requestedSeconds;
+    if (element.readyState >= 2 && Math.abs(element.currentTime - target) < 0.001) return;
+
+    await new Promise<void>((resolve, reject) => {
+      const finish = (error?: Error) => {
+        clearTimeout(timer);
+        element.removeEventListener("seeked", onSeeked);
+        element.removeEventListener("error", onError);
+        if (error) reject(error);
+        else resolve();
+      };
+      const onSeeked = () => finish();
+      const onError = () => finish(new Error(element.error?.message ?? "Video failed while selecting a review frame."));
+      const timer = window.setTimeout(() => finish(new Error(`Video did not decode the ${target.toFixed(3)}s review frame within 3 seconds.`)), 3_000);
+      element.addEventListener("seeked", onSeeked, { once: true });
+      element.addEventListener("error", onError, { once: true });
+      element.currentTime = target;
+    });
+  }, seconds);
 }
 
 async function expectMapReady(page: Page, viewport: typeof viewports[number]) {
@@ -1221,7 +1248,9 @@ test("reduced motion, contrast, and 200 percent logical zoom remain usable", asy
 });
 
 test("the local render becomes a real Video preview and the next action", async ({ page }) => {
-  test.setTimeout(90_000);
+  // HyperFrames renders the real 25-second fixture before the browser review.
+  // Keep media decoding tightly bounded, but budget separately for local render time.
+  test.setTimeout(240_000);
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   const repository = resolve(process.cwd(), "../..");
   const fixtureEnvironment = { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" };
@@ -1237,13 +1266,7 @@ test("the local render becomes a real Video preview and the next action", async 
     await expect(videoCard).toBeVisible();
     const previewVideo = videoCard.locator("video");
     await expect(previewVideo).toHaveAttribute("src", "/api/workshop/artifacts/video-v1");
-    await expect.poll(() => previewVideo.evaluate((node) => (node as HTMLVideoElement).readyState)).toBeGreaterThanOrEqual(1);
-    await previewVideo.evaluate(async (node) => {
-      const video = node as HTMLVideoElement;
-      const seeked = new Promise<void>((resolveSeek) => video.addEventListener("seeked", () => resolveSeek(), { once: true }));
-      video.currentTime = 0.1;
-      await seeked;
-    });
+    await seekVideoFrame(previewVideo);
     await expectScreen(page, `${viewport.name}-video-output`);
 
     await openWorkshopView(page, "storyboard");
@@ -1264,13 +1287,7 @@ test("the local render becomes a real Video preview and the next action", async 
     await expect(page.getByRole("region", { name: "Sources in this work" })).toBeVisible();
     await expect(page.getByRole("button", { name: /^Show source for / })).toHaveCount(4);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
-    await expect.poll(() => player.evaluate((node) => (node as HTMLVideoElement).readyState)).toBeGreaterThanOrEqual(1);
-    await player.evaluate(async (node) => {
-      const video = node as HTMLVideoElement;
-      const seeked = new Promise<void>((resolveSeek) => video.addEventListener("seeked", () => resolveSeek(), { once: true }));
-      video.currentTime = 0.1;
-      await seeked;
-    });
+    await seekVideoFrame(player);
     await page.locator(".focused-output").evaluate((node) => { node.scrollTop = 0; });
     await expect.poll(() => page.locator(".focused-output").evaluate((node) => node.scrollTop)).toBe(0);
     const scrollBeforeOriginal = await page.locator(".focused-output").evaluate((node) => node.scrollTop);
