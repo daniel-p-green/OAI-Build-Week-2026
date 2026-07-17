@@ -9997,3 +9997,34 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Founder recording and authentic Workshop generation remain the next external gate.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 20:47 CT — Visible product language now matches the professional knowledge-work contract
+
+### Changed
+
+- Removed the remaining judge-visible `Output` and `production` jargon from the active web experience. Onboarding and Style now describe one visual system across every format; created-work source trails say `Sources in this work`; Conversation actions say `Create work`; and the Workshop switcher counts `pieces of work`.
+- Kept internal route names, domain types, component names, and historical test titles unchanged. This is a user-language correction, not a risky contract migration.
+- Extended the official UI contract regression test so the retired phrases cannot return to visible product copy.
+- Updated one stale browser assertion to the current truthful build-trace statement: `One thought became the Build Week submission.`
+
+### Verified
+
+- Built the production web app and ran the complete Playwright visual suite: all 31 desktop, compact, mobile, accessibility, source-trace, onboarding, and created-work paths pass.
+- Visually inspected the refreshed 1280×800 Company Style screen. `Use one visual system across every format.` remains balanced and legible in the official Apps in ChatGPT layout. The screenshot hashes to `546a76430e5af710c66e3bd9ea61975d183fba2e8388f2c84898c4d37d46d09e`.
+- `pnpm check` passes lint, typecheck, and tests across all thirteen packages, including 124 worker tests, 30 web tests, and 19 production tests.
+- `pnpm submission:packet:verify` passes. It correctly retains four unresolved founder slots because authentic founder evidence does not exist yet.
+- A source search finds the retired phrases only inside the regression test's forbidden-copy list, not in the rendered application.
+
+### Decisions
+
+- `Created work` is the umbrella term; concrete formats keep their concrete names. The interface does not expose the implementation's generic `Output` object.
+- The five-item critical path in `GOAL.md` remains unchanged. This pass strengthens the visible demonstration without manufacturing another queue item.
+- No OpenAI provider request ran. The provider-operation ledger remains 115.
+- Unrelated in-progress demo-film files and `PLAN-2026-07-13.md` remain untouched and excluded from this milestone.
+
+### Open items
+
+- Founder recording and authentic Workshop generation remain the next external gate.
+- Codex Session ID: unavailable on this surface; not inferred.

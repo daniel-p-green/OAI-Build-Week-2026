@@ -580,7 +580,7 @@ test.describe("completed Workshop judge path", () => {
       else await expect(page.getByRole("button", { name: "3 sources" })).toBeVisible();
       await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveCount(0);
       await expect(page.getByRole("link", { name: "Download PowerPoint" })).toHaveClass(/oai-button--primary/);
-      await expect(page.getByRole("region", { name: "Sources in this output" })).toBeVisible();
+      await expect(page.getByRole("region", { name: "Sources in this work" })).toBeVisible();
       await expect(page.getByRole("button", { name: /^Show source for / })).toHaveCount(4);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
       await expect(page.getByRole("link", { name: "Open preview" })).toBeVisible();
@@ -761,7 +761,7 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
     ["Presentation", "A clear presentation built from the approved Brief. Evidence: Meeting · 12:41.", 4],
     ["Infographic", "Distill the strongest evidence into one source-traceable visual.", 4],
     ["Image set", "Show one coherent art direction across the complete image set.", 4],
-    ["Storyboard", "Review the exact sequence and visuals before video production.", 4],
+    ["Storyboard", "Review the exact sequence and visuals before creating Video.", 4],
     ["Demo video", "Render only the Storyboard and image versions approved here.", 6],
   ].map(([title, narration, durationSeconds], index) => ({
     id: `storyboard-bound-panel-${index + 1}`,
@@ -1261,7 +1261,7 @@ test("the local render becomes a real Video preview and the next action", async 
     await expect(page.getByRole("button", { name: "Approve storyboard" })).toHaveCount(0);
     await page.getByRole("button", { name: "View video" }).click();
     await expect(player).toBeVisible();
-    await expect(page.getByRole("region", { name: "Sources in this output" })).toBeVisible();
+    await expect(page.getByRole("region", { name: "Sources in this work" })).toBeVisible();
     await expect(page.getByRole("button", { name: /^Show source for / })).toHaveCount(4);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
     await expect.poll(() => player.evaluate((node) => (node as HTMLVideoElement).readyState)).toBeGreaterThanOrEqual(1);
@@ -1279,7 +1279,7 @@ test("the local render becomes a real Video preview and the next action", async 
     await expect(buildTrace).toHaveAttribute("href", "/api/workshop/artifacts/build-trace-v1");
     const traceResponse = await page.request.get("/api/workshop/artifacts/build-trace-v1");
     expect(traceResponse.ok()).toBeTruthy();
-    expect(await traceResponse.text()).toContain("Raw thinking became a finished submission.");
+    expect(await traceResponse.text()).toContain("One thought became the Build Week submission.");
     await closeDialog(page, "Original brainstorm");
     await expect(page.locator(".workshop-identity")).toContainText("WorkshopLM Build Week/Demo video");
     await expect.poll(async () => Math.abs(await page.locator(".focused-output").evaluate((node) => node.scrollTop) - scrollBeforeOriginal) <= 32).toBe(true);
