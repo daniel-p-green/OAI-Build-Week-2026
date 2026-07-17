@@ -309,9 +309,6 @@ test("an empty Workshop reaches an editable Presentation through one obvious pat
       "The client approved a two-week pilot for the enablement team.",
       "Leadership needs a grounded Presentation that explains the decision, timeline, and success measure.",
     ].join("\n"));
-    await expect(page.getByRole("textbox", { name: "Title (optional)" })).toBeVisible();
-    await page.getByRole("textbox", { name: "Title (optional)" }).fill("Weekly client meeting");
-    await page.getByRole("button", { name: "Add source", exact: true }).click();
     await page.getByRole("button", { name: "Build my Map" }).click();
 
     await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
@@ -1345,9 +1342,8 @@ test("a new professional reaches the real Map through the durable first-use path
   await expect(page.getByRole("button", { name: "Build my Map" })).toBeDisabled();
   await expectScreen(page, "desktop-onboarding-sources");
   await page.getByLabel("Source").fill("Professional teams lose hours turning meeting notes into client-ready work. WorkshopLM organizes messy thinking into a grounded Map, then creates an editable Presentation with every factual claim linked to its exact source.\n\nThe recommended workflow is Capture, Map, Brief, Create. The professional reviews the Brief before output creation and reviews the Storyboard before video rendering.\n\nCompany Style keeps colors, typography, and layout rules consistent across Presentations, diagrams, images, audio, and video. The goal is professional knowledge work a consultant can refine and present without rebuilding it in another tool.");
-  await page.getByLabel("Title (optional)").fill("Client delivery meeting");
-  await page.getByRole("button", { name: "Add source" }).click();
-  await expect(page.getByText("1 source ready")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Build my Map" })).toBeEnabled();
+  await expectScreen(page, "desktop-onboarding-source-ready");
   await page.getByRole("button", { name: "Build my Map" }).click();
 
   await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Evidence");
@@ -1372,7 +1368,22 @@ test("a new professional reaches the real Map through the durable first-use path
   await expect(page.getByRole("button", { name: "Create work" })).toBeVisible();
 
   const state = await (await page.request.get("/api/workshop")).json();
-  expect(state).toMatchObject({ title: "Acme leadership update", onboarding: { step: "complete", outcome: "client_facing_pitch" }, style: { name: "WorkshopLM editorial", intentProfile: "client_facing_pitch" }, sources: 1, groundedClaims: 6, mapNodes: expect.arrayContaining([expect.objectContaining({ id: expect.stringMatching(/^claim-/), sourceId: expect.stringMatching(/^source-/) })]) });
+  expect(state).toMatchObject({ title: "Acme leadership update", onboarding: { step: "complete", outcome: "client_facing_pitch" }, style: { name: "WorkshopLM editorial", intentProfile: "client_facing_pitch" }, sourceItems: [expect.objectContaining({ title: expect.stringMatching(/^Professional teams lose hours turning meeting notes into client/) })], sources: 1, groundedClaims: 6, mapNodes: expect.arrayContaining([expect.objectContaining({ id: expect.stringMatching(/^claim-/), sourceId: expect.stringMatching(/^source-/) })]) });
+});
+
+test("first-use Capture keeps the one-action Map handoff visible at compact and mobile widths", async ({ page }) => {
+  for (const viewport of [viewports[1], viewports[2]]) {
+    const created = await page.request.post("/api/workshop", { data: { action: "createWorkshop", title: `${viewport.name} capture review` } });
+    expect(created.ok()).toBeTruthy();
+    await page.setViewportSize({ width: viewport.width, height: viewport.height });
+    await page.goto("/");
+    await page.getByLabel("Source").fill("Professionals need one clear path from meeting notes to grounded work.\n\nEvery claim should stay attached to its exact source.\n\nThe Map should recommend what to do next.");
+    await expect(page.getByRole("button", { name: "Record voice" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Add source" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Build my Map" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Build my Map" })).toBeEnabled();
+    await expectScreen(page, `${viewport.name}-onboarding-source-ready`);
+  }
 });
 
 test("fresh Outputs keep the primary source trace clear and reveal the exact claim", async ({ page }) => {

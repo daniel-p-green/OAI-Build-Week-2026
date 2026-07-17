@@ -2718,8 +2718,6 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
----
-
 ## 2026-07-17 02:44 CT — Repository authority and generated-state boundaries reconciled
 
 ### Changed
@@ -10871,6 +10869,33 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Keep the Map semantically constrained. A relationship that cannot be read at a glance is a product defect even when the underlying graph is technically valid.
 - Treat the Source shelf as the complete scope view and the canvas as the evidence view. Not every selected Source needs a standalone canvas card when it does not ground a visible evidence node.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 03:34 CT — First Capture now produces the grounded Map in one action
+
+### Changed
+
+- Removed the optional title field from the initial Capture surface. The first Source is named automatically from its text; explicit titles remain available in the Source sheet for later multi-source work.
+- Made `Build my Map` ingest a pasted draft and build the Map in the same action. The professional no longer has to add one Source and then repeat the intent with a second button.
+- Connected successful voice capture to the same path: the transcript is persisted as a Source and the Workshop transitions directly to the grounded Map.
+- Compressed the first-use voice block and vertical spacing so Record voice, Add source, and Build my Map remain visible together at default desktop, compact, and mobile heights.
+
+### Verified
+
+- Ran an isolated live Workshop in the Codex in-app browser at 1280×720. One pasted Source and one `Build my Map` click persisted the Source, produced a real grounded Map with three Evidence items, one Synthesis, and one Direction, and exposed `Approve brief` as the next action.
+- Visually inspected the refreshed desktop, compact, and mobile first-use screenshots. The Source draft, optional multi-source action, and primary Map handoff remain visible without scrolling or horizontal overflow.
+- The production build succeeded and all 32 production-browser scenarios passed, including the complete empty-Workshop-to-Presentation path, the durable first-use Map path, and the new compact/mobile action-visibility check.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages; the web package reports 32 passing unit/contract tests and the worker package reports 129 passing tests.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam with both approval gates, current rendered outputs, Sketch, Cedar Audio Overview, six image panels, five Storyboard panels, local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Preserve `Add source` as a quiet secondary action for multi-source setup; first use optimizes for one captured thought becoming a grounded Map immediately.
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.

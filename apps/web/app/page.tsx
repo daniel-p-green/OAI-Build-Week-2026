@@ -570,7 +570,6 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
   const [title, setTitle] = useState(state.title === "WorkshopLM Build Week" ? "" : state.title);
   const [website, setWebsite] = useState("");
   const [source, setSource] = useState("");
-  const [sourceTitle, setSourceTitle] = useState("");
   const sourceKind = sourceInputKind(source);
 
   async function startWorkshop() {
@@ -590,16 +589,23 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
 
   async function addSource() {
     const value = source.trim();
-    if (!value) return;
+    if (!value) return state;
     const started = await startWorkshop();
-    if (!started) return;
+    if (!started) return null;
     const body = sourceKind === "url"
       ? { action: "ingestUrl", url: value }
       : sourceKind === "pdf"
         ? { action: "ingestPdfFile", filePath: value, permission: "private" }
-        : { action: "ingestSource", source: { title: sourceTitle.trim() || sourceTitleFromText(value), origin: "Pasted notes", text: value, permission: "private" } };
+        : { action: "ingestSource", source: { title: sourceTitleFromText(value), origin: "Pasted notes", text: value, permission: "private" } };
     const next = await onPost(body);
-    if (next) { setSource(""); setSourceTitle(""); }
+    if (next) setSource("");
+    return next;
+  }
+
+  async function buildMap() {
+    const ready = source.trim() ? await addSource() : await startWorkshop();
+    if (!ready || ready.sourceItems.length === 0) return;
+    await onPost({ action: "buildMap", title: title.trim() || undefined, outcome });
   }
 
   return <FullScreenShell className="onboarding-shell">
@@ -618,12 +624,14 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
         <Input label="Workshop name (optional)" placeholder="Name this later" value={title} onChange={(event) => setTitle(event.target.value)} />
         <RealtimeCapture onSave={async (transcript, capture) => {
           const started = await startWorkshop();
-          return Boolean(started && await onPost({ action: "captureFallbackTranscript", text: transcript, capture }));
+          if (!started) return false;
+          const captured = await onPost({ action: "captureFallbackTranscript", text: transcript, capture });
+          if (!captured) return false;
+          return Boolean(await onPost({ action: "buildMap", title: title.trim() || undefined, outcome }));
         }} />
         <div className="source-divider"><span>or add material</span></div>
         <TextArea label="Source" hint="Paste notes, https://…, or /path/to/file.pdf" value={source} onChange={(event) => setSource(event.target.value)} />
-        {sourceKind === "text" && source.trim() && <Input label="Title (optional)" value={sourceTitle} onChange={(event) => setSourceTitle(event.target.value)} />}
-        <div className="source-start-actions"><Button variant="secondary" disabled={busy || !source.trim()} onClick={() => { void addSource(); }}>Add source</Button><Button disabled={busy || state.sourceItems.length === 0} onClick={() => { void onPost({ action: "buildMap", title: title.trim() || undefined, outcome }); }}>{busy ? "Building Map…" : "Build my Map"}</Button></div>
+        <div className="source-start-actions"><Button variant="secondary" disabled={busy || !source.trim()} onClick={() => { void addSource(); }}>Add source</Button><Button disabled={busy || (state.sourceItems.length === 0 && !source.trim())} onClick={() => { void buildMap(); }}>{busy ? "Building Map…" : "Build my Map"}</Button></div>
         {state.sourceItems.length > 0 && <p className="source-ready" role="status">{state.sourceItems.length} {state.sourceItems.length === 1 ? "source" : "sources"} ready</p>}
       </Card>}
     </section>
