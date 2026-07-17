@@ -9891,3 +9891,34 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - After the authentic founder run and final film pass, run `pnpm submission:promote-founder`, inspect the generated candidate, then resolve only the public YouTube URL and Codex Session ID during the publication gate.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 20:16 CT — Final narration no longer conflates founder import with Realtime
+
+### Changed
+
+- Audited the final film's spoken claims against the authentic founder capture contract and found a judge-facing truth defect: the Cedar narration said OpenAI Realtime preserved the founder spoken turn, while the actual founder path imports a dated recording and explicitly records `providerRealtimeEvidence: false`.
+- Rewrote the 18-second Capture-and-Shape narration to state that the founder recording is imported as a grounded Source and is not relabeled as Realtime. The same line now says the separately inspected OpenAI Realtime voice proof is separate before explaining the GPT-5.6 founder-transcript-to-Map transformation.
+- Tightened the demo script's claim boundary so neither the imported founder recording nor automated in-app-browser microphone permission can be implied as Realtime evidence.
+- Added narration-input hashing to the final film verifier and submission-packet verifier. A hash-correct WAV generated from stale spoken copy now fails verification.
+
+### Verified
+
+- Used one bounded `gpt-4o-mini-tts` Cedar request to regenerate only `capture-and-shape.wav`. The 933,644-byte WAV is 19.45 seconds, hashes to `0d4784d6ab688472823c83a4bd634906a7ccb7130cb849de0570824cfdf01cf1`, and requires only a 1.11× timing fit inside its 18-second film slot.
+- Rebuilt the 2:20 sample film through local HyperFrames. HyperFrames lint, transition checks, and rendering passed. The resulting 140.010667-second H.264/AAC MP4 hashes to `daf81515ace472fc33bc26e0acd990c789047cdbcbbeb5f580a798695c2c9061`.
+- Visually inspected the rebuilt ten-shot contact sheet; layout, Style, stable motion composition, evidence views, approvals, created work, and meta reveal remain coherent. The contact-sheet hash is `249dd3cfb0daf5b0d667ef8d10509a07aa22dcbebb3f8cd243bbd2cb28ca64cc`.
+- Audio inspection of the corrected 18-second segment found a -26.0 dB mean, -6.6 dB peak, natural sub-second phrase pauses, and no clipping or unintended long silence.
+- `pnpm demo:film:verify` passes at 140 seconds, 278 words, and 119.1 words per minute while retaining the two honest founder-evidence blocks. `pnpm demo:film:verify-sample`, `pnpm submission:packet:verify`, and `pnpm check` all pass; the full suite remains green across thirteen packages with 124 worker tests.
+
+### Decisions
+
+- Product capability proof and authentic-run provenance remain separate. WorkshopLM may truthfully show verified Realtime behavior without rewriting an imported founder recording into a Realtime event.
+- The provider-operation ledger advances from 114 to 115 for the one bounded Cedar request. Exact provider debit remains unavailable from response metadata; no image, reasoning, or Realtime request ran in this milestone.
+- The five-item critical path in `GOAL.md` remains unchanged. This correction removes a visible blocker from the public Video rather than adding scope.
+- `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+### Open items
+
+- Founder recording and authentic Workshop generation remain the next external gate. Final assembly will reuse this corrected, hash-bound Cedar narration set.
+- Codex Session ID: unavailable on this surface; not inferred.

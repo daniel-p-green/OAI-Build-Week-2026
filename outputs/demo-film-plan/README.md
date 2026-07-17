@@ -5,7 +5,7 @@ Status: **draft**
 - Planned runtime: 140s (2:20)
 - Hard ceiling: 175s
 - Shots: 10
-- Narration words: 268 (114.9 words per minute)
+- Narration words: 278 (119.1 words per minute)
 - Source walkthrough: 60.76s, fixture-draft, hash verified
 - Ready shots: 8
 - Blocked shots: 2

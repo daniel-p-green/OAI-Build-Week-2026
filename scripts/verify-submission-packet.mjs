@@ -93,6 +93,10 @@ assert(provider.narration?.model === "gpt-4o-mini-tts" && provider.narration.voi
 assert(provider.video?.streams?.some((stream) => stream.codec_name === "h264") && provider.video.streams.some((stream) => stream.codec_name === "aac"), "Verified provider-backed Video streams are missing.");
 
 assert(narration.model === "gpt-4o-mini-tts" && narration.voice === "cedar" && narration.requestCount === 10 && narration.shots.length === 10, "Editorial Cedar narration manifest is incomplete.");
+assert(narration.shots.every((shot) => {
+  const planned = filmPlan.shots.find((candidate) => candidate.id === shot.id);
+  return planned && shot.narrationSha256 === createHash("sha256").update(planned.narration).digest("hex");
+}), "Editorial Cedar narration was generated from stale film copy.");
 assert(roughCut.voice?.provider === "OpenAI" && roughCut.voice.name === "cedar" && roughCut.voice.finalProviderNarration === true, "Rough cut has regressed from verified Cedar narration.");
 assert(roughCut.limitations?.some((item) => item.includes("six hash-bound GPT Image 2 replay files")) && !(roughCut.limitations ?? []).some((item) => item.includes("planned image panels")), "Rough cut does not disclose the provider-backed judge-image replay accurately.");
 assert(roughCut.shots?.length === 10 && roughCut.shots.every((shot) => shot.motion?.type === "editorial-push-in" && shot.motion?.maxScale === 1.06 && shot.motion?.ratePerFrame === 0.0001), "The editorial film no longer applies the verified restrained push-in and drift to every shot.");

@@ -5,8 +5,8 @@
   "model": "gpt-4o-mini-tts",
   "voice": "cedar",
   "requestCount": 10,
-  "regeneratedRequestCount": 6,
-  "generatedAt": "2026-07-16T23:47:15.916Z",
+  "regeneratedRequestCount": 1,
+  "generatedAt": "2026-07-17T01:13:31.676Z",
   "planPath": "submission/demo-film-plan.json",
   "shots": [
     {
@@ -41,15 +41,15 @@
       "id": "capture-and-shape",
       "title": "Messy thought becomes a grounded Map",
       "relativePath": "outputs/demo-film-narration/capture-and-shape.wav",
-      "sha256": "b33fb99ffe9e5b80f719d5da00286dbd3dc1e41c8dabb4aa0408b9446442dca8",
-      "byteCount": 796844,
-      "durationSeconds": 16.6,
+      "sha256": "0d4784d6ab688472823c83a4bd634906a7ccb7130cb849de0570824cfdf01cf1",
+      "narrationSha256": "d6b1661cd328ad4a7cb4511789d5dab80923221c6c856926ad649bc1615239a8",
+      "byteCount": 933644,
+      "durationSeconds": 19.45,
       "slotSeconds": 18,
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
-      "requestId": "req_ab4cb9c79aac41eaa8b4ab799e7e7194",
-      "generatedAt": "2026-07-16T08:09:01.066Z",
-      "narrationSha256": "6c9ccc0326bc4c964d38251e855eea9bb78cbb385a1053ff774d5172d0164c96"
+      "requestId": "req_3b18d35339ba4b1f86ed9bacb0e9fc7d",
+      "generatedAt": "2026-07-17T01:13:31.675Z"
     },
     {
       "id": "evidence-and-control",

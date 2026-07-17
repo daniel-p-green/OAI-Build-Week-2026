@@ -11,7 +11,7 @@ Every answer must point to an inspected artifact in `log.md`. A missing or ambig
 | Live GPT-5.6 result | **Yes.** Terra request/result provenance and inspected grounded Map exist. | Show the provider-backed source-to-Map result. |
 | Live GPT Image 2 set | **Yes.** Six hashed images, request provenance, coherence review, and gallery footage exist. | Show the provider-backed gallery insert. |
 | Provider narration | **Yes.** Five product-Video clips and ten editorial-film Cedar clips are hash-bound and inspected. | Disclose AI-generated voice. |
-| Live Realtime voice | **Yes, controlled Chrome.** Grounded speech, durable transcript/tool provenance, interruption, and confirmed write are recorded. | Do not imply the automated Codex in-app browser granted microphone permission. |
+| Live Realtime voice | **Yes, controlled Chrome.** Grounded speech, durable transcript/tool provenance, interruption, and confirmed write are recorded. | Do not imply the imported founder recording itself used Realtime or that the automated Codex in-app browser granted microphone permission. |
 | Codex plugin doorway captured | **Yes.** Legible Codex-side footage opens the local Workshop. | Keep the current doorway shot. |
 | Founder brainstorm captured | **No.** Dated recording and transcript are missing. | Call it a contemporaneous brainstorm, never pre-code evidence. This blocks shot 3. |
 | Final submission produced in WorkshopLM | **No.** The founder-derived final created work is missing. | Do not call the current partial fixture the final submission. This blocks shot 10. |

@@ -110,12 +110,12 @@ async function inspectEvidence(item: RequiredEvidence): Promise<{ exists: boolea
   }
   if (item.validator === "film-narration") {
     try {
-      const narration = JSON.parse(await readFile(resolve(repository, item.path), "utf8")) as { model?: string; voice?: string; requestCount?: number; shots?: Array<{ id?: string; relativePath?: string; sha256?: string; durationSeconds?: number; slotSeconds?: number; requestId?: string }> };
+      const narration = JSON.parse(await readFile(resolve(repository, item.path), "utf8")) as { model?: string; voice?: string; requestCount?: number; shots?: Array<{ id?: string; relativePath?: string; sha256?: string; narrationSha256?: string; durationSeconds?: number; slotSeconds?: number; requestId?: string }> };
       const currentPlan = JSON.parse(await readFile(planPath, "utf8")) as FilmPlan;
       if (narration.model !== "gpt-4o-mini-tts" || narration.voice !== "cedar" || narration.requestCount !== currentPlan.shots.length || narration.shots?.length !== currentPlan.shots.length) return { exists: true, satisfied: false, issue: "Film narration does not contain one Cedar clip per current shot." };
       for (const shot of narration.shots) {
         const planned = currentPlan.shots.find((candidate) => candidate.id === shot.id);
-        if (!planned || !shot.relativePath || !shot.sha256 || !shot.requestId || shot.slotSeconds !== planned.endSeconds - planned.startSeconds || !shot.durationSeconds || shot.durationSeconds > shot.slotSeconds * 1.5) return { exists: true, satisfied: false, issue: `Film narration ${shot.id ?? "unknown"} no longer fits the current plan.` };
+        if (!planned || !shot.relativePath || !shot.sha256 || !shot.requestId || shot.narrationSha256 !== createHash("sha256").update(planned.narration).digest("hex") || shot.slotSeconds !== planned.endSeconds - planned.startSeconds || !shot.durationSeconds || shot.durationSeconds > shot.slotSeconds * 1.5) return { exists: true, satisfied: false, issue: `Film narration ${shot.id ?? "unknown"} no longer fits the current plan or was generated from stale copy.` };
         const actualHash = createHash("sha256").update(await readFile(resolve(repository, shot.relativePath))).digest("hex");
         if (actualHash !== shot.sha256) return { exists: true, satisfied: false, issue: `Film narration ${shot.id} no longer matches its hash.` };
       }

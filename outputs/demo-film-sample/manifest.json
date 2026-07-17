@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance created-work set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-17T00:19:33.917Z",
+  "builtAt": "2026-07-17T01:15:36.576Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "compositor": {
@@ -33,7 +33,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "de02ab4b324af1824248e3093b5b32e0928dc63222d0e0cb7e7769f4cd72179b",
+    "sha256": "daf81515ace472fc33bc26e0acd990c789047cdbcbbeb5f580a798695c2c9061",
     "durationSeconds": 140.010667,
     "streams": [
       {
@@ -180,8 +180,8 @@
       "narration": {
         "model": "gpt-4o-mini-tts",
         "voice": "cedar",
-        "requestId": "req_ab4cb9c79aac41eaa8b4ab799e7e7194",
-        "sha256": "b33fb99ffe9e5b80f719d5da00286dbd3dc1e41c8dabb4aa0408b9446442dca8"
+        "requestId": "req_3b18d35339ba4b1f86ed9bacb0e9fc7d",
+        "sha256": "0d4784d6ab688472823c83a4bd634906a7ccb7130cb849de0570824cfdf01cf1"
       },
       "sourceBeats": [
         "sources"

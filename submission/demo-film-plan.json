@@ -59,7 +59,7 @@
       "state": "blocked",
       "captureBeats": ["sources"],
       "captureEndHoldbackSeconds": 0.9,
-      "narration": "I begin with an honestly dated, unstructured brainstorm. OpenAI Realtime preserves the spoken turn, then GPT-5.6 shapes it with the selected sources into a semantic Map. Every factual node keeps its exact source locator.",
+      "narration": "I begin with an honestly dated, unstructured recording, imported as a grounded Source—not relabeled as Realtime. Live OpenAI Realtime voice is proven separately. GPT-5.6 then shapes the founder transcript and selected Sources into a semantic Map, with every factual node retaining its exact locator.",
       "requiredMoments": ["founder-brainstorm", "realtime-voice", "gpt-5.6-map"],
       "requiredEvidence": [
         {
