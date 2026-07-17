@@ -36,6 +36,11 @@ export type SceneNodeBaseline = {
 const shapeId = (nodeId: string) => `map-node-${nodeId}`;
 const rounded = (value: number) => Math.round(value * 10) / 10;
 const normalizedTitle = (value: string) => value.replace(/\s+/g, " ").trim();
+const compactTitle = (value: string) => value.replace(/\s+/g, "");
+const canvasTitle = (value: string, original: string) => {
+  const normalized = normalizedTitle(value);
+  return compactTitle(normalized) === compactTitle(original) ? original : normalized;
+};
 
 export function baselineFromScene(nodes: MapNodeGeometry[], scene: readonly MapSceneElement[]) {
   const baseline = new Map<string, SceneNodeBaseline>();
@@ -68,7 +73,7 @@ export function patchesFromScene(
     const label = scene.find((element) => element.containerId === shape.id && element.type === "text" && !element.isDeleted);
     const patch = {
       id: node.id,
-      title: normalizedTitle(label?.text ?? initial.title),
+      title: canvasTitle(label?.text ?? initial.title, node.title),
       x: rounded(node.x + (shape.x - initial.x) / NODE_SCALE_X),
       y: rounded(node.y + (shape.y - initial.y) / (SCENE_HEIGHT / 100)),
       width: rounded(node.width + (shape.width - initial.width) / (SCENE_WIDTH / 100)),

@@ -2718,6 +2718,8 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
+---
+
 ## 2026-07-17 02:44 CT — Repository authority and generated-state boundaries reconciled
 
 ### Changed
@@ -11449,4 +11451,30 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Outcome, Direction, and Evidence are different professional objects. Approval should preserve their hierarchy rather than filling each section with the same high-scoring sentence.
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
 - User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 08:00 CT — Created work carries one approved decision from Brief to Storyboard
+
+### Changed
+
+- Audited every created format in a genuinely fresh, one-Source leadership Workshop. Presentation and Infographic could re-rank a plausible supporting fact above the reviewed Brief Direction; Audio Overview, the Decision visual, and Storyboard could each choose another claim independently. They now share the same semantic selection contract and reserve the exact approved Direction for the professional recommendation or closing decision.
+- Audio Overview now separates the central finding, strongest supporting evidence, and approved decision. Storyboard now uses distinct grounded beats with unique professional titles and ends on the approved Direction. The Decision visual now carries that same Direction and its actual Source reference.
+- Source sentence parsing now preserves decimal evidence such as `2.4 hours` as one claim. Excalidraw label normalization now ignores whitespace-only wrapping, including `two-\nweek`, so merely reopening a fitted Map no longer marks the Brief and all created work `Needs update`.
+- Refreshed the judge-fixture Cedar Audio Overview after the improved script correctly invalidated the obsolete recording. The bounded refresh used exactly one `gpt-4o-mini-tts` request and wrote a 34.9-second WAV bound to request `req_6914bd2eae4240e6a44f83712d784437` and SHA-256 `2d68e0d5c034609aac2ab7b6d825cfe5485e84bfa6e9f31583a70e53a8dfeb1b`.
+
+### Verified
+
+- In the ChatGPT/Codex in-app browser, the fresh Workshop preserved `The team recommends a two-week expansion to 120 users with one accountable enablement owner` across Brief, Presentation, Infographic, Audio Overview decision chapter, Decision visual, and the final Storyboard panel. The Storyboard sequence read `The opportunity`, `Success criteria`, `The proof`, `The evidence`, `The direction`; every focused format exposed its Source and refinement path.
+- Reopening the live Excalidraw Map and waiting for persistence left Brief and Create `Ready`, proving the line-wrap repair against the actual product surface.
+- All 130 worker tests and all 34 web unit/contract tests passed. `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages. `pnpm repo:hygiene` reported 691 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam after the provider audio refresh. The copied review WAV independently matched its recorded SHA-256.
+
+### Decisions and open items
+
+- Created formats are different expressions of one approved Workshop, not independent generators. Their composition can differ, but they must not silently change the professional decision the user reviewed.
+- The obsolete provider recording was regenerated rather than relabeled or allowed through a weaker integrity check. This tranche used exactly one paid provider request; the endpoint did not return an exact dollar charge, so none is invented. The append-only cumulative request count advances from 117 to 118 and remains within the authorized $50 ceiling.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded. The ignored local `.workshoplm` data root remains intact; only the transient browser artifact created by this tranche was removed.
 - Codex Session ID: unavailable on this surface; not inferred.

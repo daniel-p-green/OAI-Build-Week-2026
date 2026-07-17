@@ -458,8 +458,8 @@ function mapDirectionClaim(claims: WorkshopClaim[]) {
   const score = (claim: WorkshopClaim) => {
     const text = prose(claim.text);
     let value = 0;
-    if (/\b(should|must|recommend(?:ed)?|prioriti[sz]e|focus|start|begin|use|adopt|next)\b/i.test(text)) value += 20;
-    if (/\b(?:team|teams|professionals?|users?)\s+(?:should|must)\b/i.test(text)) value += 8;
+    if (/\b(should|must|recommend(?:s|ed|ing)?|prioriti[sz]e|focus|start|begin|use|adopt|next)\b/i.test(text)) value += 20;
+    if (/\b(?:team|teams|leadership|professionals?|users?)\s+(?:should|must|recommend(?:s|ed)?)\b/i.test(text)) value += 12;
     if (/\b(client|leadership|professional|decision|outcome|goal|launch|pilot|create|present|approve)\b/i.test(text)) value += 8;
     if (/\b(goal|outcome|promise)\b/i.test(text)) value += 8;
     if (/\b(source|evidence|trace|grounded|style|brand|trust)\b/i.test(text)) value += 4;
@@ -471,7 +471,7 @@ function mapDirectionClaim(claims: WorkshopClaim[]) {
 }
 function mapDirectionTitle(text: string) {
   const action = prose(text)
-    .replace(/^(?:the\s+)?(?:team|teams|professionals?|users?)\s+(?:should|must)\s+/i, "")
+    .replace(/^(?:the\s+)?(?:team|teams|leadership|professionals?|users?)\s+(?:should|must|recommend(?:s|ed)?)\s+/i, "")
     .replace(/^the goal is\s+/i, "Create ")
     .replace(/^create professional (?:knowledge )?work\b/i, "Create work");
   const title = mapNodeTitle(action || text);
@@ -551,8 +551,8 @@ function frameDirectionScore(node: WorkshopMapNode) {
   const text = prose(`${node.title} ${node.body}`);
   let score = node.kind === "grounded" ? 2 : 0;
   if (/\b(goal|success|outcome)\b/i.test(text)) score += 30;
-  if (/\b(should|must|recommend(?:ed)?|prioriti[sz]e|focus|start|show|keep|ensure|next)\b/i.test(text)) score += 20;
-  if (/\b(?:team|teams|professionals?|users?)\s+(?:should|must)\b/i.test(text)) score += 8;
+  if (/\b(should|must|recommend(?:s|ed|ing)?|prioriti[sz]e|focus|start|show|keep|ensure|next)\b/i.test(text)) score += 20;
+  if (/\b(?:team|teams|leadership|professionals?|users?)\s+(?:should|must|recommend(?:s|ed)?)\b/i.test(text)) score += 12;
   if (/\b(professional|client|leadership|decision|defend|present|create)\b/i.test(text)) score += 7;
   if (/\b(source|trace|evidence|grounded|style|identity|brand)\b/i.test(text)) score += 4;
   return score;
@@ -852,7 +852,8 @@ export function normalizePdfLayoutText(text: string) {
   return normalizeSourceText(paragraphs).split(/\n\n+/).map((paragraph) => paragraph.replace(/\n+/g, " ").replace(/\s+/g, " ").trim()).filter(Boolean).join("\n\n");
 }
 function isSourceMetadataChunk(text: string) { return /^\s*(?:source\s+locator|source\s+url|citations?)\s*:/i.test(text); }
-function sourceClaimCount(text: string) { return Math.max(1, text.split(/\n\n+/).filter((paragraph) => !isSourceMetadataChunk(paragraph)).flatMap((paragraph) => paragraph.split(/[.!?]+/)).map((sentence) => sentence.trim()).filter(Boolean).length); }
+function sourceSentences(text: string) { return text.split(/(?<=[.!?])\s+/).map((sentence) => sentence.replace(/[.!?]+$/, "").trim()).filter(Boolean); }
+function sourceClaimCount(text: string) { return Math.max(1, text.split(/\n\n+/).filter((paragraph) => !isSourceMetadataChunk(paragraph)).flatMap(sourceSentences).length); }
 function sentenceSafeChunks(paragraph: string, limit = 700) {
   const sentences = paragraph.split(/(?<=[.!?])\s+/).map((sentence) => sentence.trim()).filter(Boolean);
   const chunks: string[] = [];
@@ -872,7 +873,7 @@ function sentenceSafeChunks(paragraph: string, limit = 700) {
   return chunks;
 }
 function chunksFor(text: string, sourceId: string, hash: string, origin: string): WorkshopChunk[] { return text.split(/\n\n+/).flatMap((paragraph) => sentenceSafeChunks(paragraph)).filter(Boolean).map((chunk, ordinal) => ({ id: `chunk-${hash.slice(0, 12)}-${ordinal + 1}`, sourceId, text: chunk.trim(), locator: `${origin} · chunk ${String(ordinal + 1).padStart(2, "0")}`, ordinal })); }
-function claimsFor(chunks: WorkshopChunk[], hash: string): WorkshopClaim[] { return chunks.filter((chunk) => !isSourceMetadataChunk(chunk.text)).flatMap((chunk) => chunk.text.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean).map((text, index) => ({ id: `claim-${hash.slice(0, 12)}-${chunk.ordinal}-${index + 1}`, sourceId: chunk.sourceId, chunkId: chunk.id, text, evidenceState: "verified" as const, locator: chunk.locator }))); }
+function claimsFor(chunks: WorkshopChunk[], hash: string): WorkshopClaim[] { return chunks.filter((chunk) => !isSourceMetadataChunk(chunk.text)).flatMap((chunk) => sourceSentences(chunk.text).map((text, index) => ({ id: `claim-${hash.slice(0, 12)}-${chunk.ordinal}-${index + 1}`, sourceId: chunk.sourceId, chunkId: chunk.id, text, evidenceState: "verified" as const, locator: chunk.locator }))); }
 function sourceExcerpt(text: string) { return text.length <= 240 ? text : `${text.slice(0, 240).replace(/\s+\S*$/, "").trimEnd()}…`; }
 function mapNodeTitle(text: string) {
   const clean = prose(text);
@@ -1373,15 +1374,28 @@ export function generateStoryboard(root?: string): WorkshopState {
   const current = readWorkshopState(root);
   if (!current.assetPlan || current.assetPlan.stale) throw new Error("Storyboard generation requires a current approved-input asset plan.");
   const grounded = activeClaimsFor(current);
-  const fallbackTitles = ["The opportunity", "The friction", "The proof", "The direction", "What changes next"];
+  const selected = selectDeckClaims(current);
+  const selectedFor = (role: DeckRole) => selected.find((item) => item.role === role);
+  const ordered = (["statement", "split", "proof"] as const).flatMap((role) => {
+    const item = selectedFor(role);
+    return item ? [item] : [];
+  });
+  const recommendation = selectedFor("recommendation");
+  const usedClaimIds = new Set([...ordered, ...(recommendation ? [recommendation] : [])].map((item) => item.claim.id));
+  const supporting = grounded.filter((claim) => !usedClaimIds.has(claim.id)).map((claim) => ({ claim, text: prose(claim.text) }));
+  const narrative = [...ordered, ...supporting];
+  const fallbackTitles = ["The opportunity", "The friction", "The proof", "The evidence", "The direction"];
   const usedTitles = new Set<string>();
   const panels = current.assetPlan.items.map((item, index) => {
     const image = current.imageBatch && !current.imageBatch.stale ? current.imageBatch.panels[index % current.imageBatch.panels.length] : undefined;
-    const claim = grounded[index % Math.max(1, grounded.length)];
+    const point = index === current.assetPlan!.items.length - 1 && recommendation
+      ? recommendation
+      : narrative[index % Math.max(1, narrative.length)] ?? recommendation;
+    const claim = point?.claim;
     const evidence: WorkshopEvidenceReference[] = claim
       ? [{ claimId: claim.id, sourceId: claim.sourceId, chunkId: claim.chunkId, locator: claim.locator }]
       : item.evidence ?? [];
-    const narrationText = prose(claim?.text ?? item.prompt);
+    const narrationText = point?.text ?? prose(item.prompt);
     const narration = /[.!?]$/.test(narrationText) ? narrationText : `${narrationText}.`;
     const proposedTitle = /\b(fragmented|friction|lost|slow|waste|problem|bottleneck|handoff)\b/i.test(narration)
       ? "The friction"
@@ -1389,12 +1403,16 @@ export function generateStoryboard(root?: string): WorkshopState {
         ? "The experience"
         : /\b(trace|traceable|trust|defend|citation)\b/i.test(narration)
             ? "Trust by design"
-          : /\b(should|must|recommend|direction|prioriti[sz]e|next)\b/i.test(narration)
+          : /\b(recommend(?:s|ed|ing)?|direction|prioriti[sz]e|next)\b/i.test(narration)
             ? "The direction"
-            : /\b(source|evidence|grounded)\b/i.test(narration)
-              ? "The evidence"
-              : fallbackTitles[index] ?? `Scene ${index + 1}`;
-    const title = usedTitles.has(proposedTitle) ? fallbackTitles[index] ?? `Scene ${index + 1}` : proposedTitle;
+            : /\b(success|require at least|target|threshold)\b/i.test(narration)
+              ? "Success criteria"
+              : /\b(source|evidence|grounded|data|security)\b/i.test(narration)
+                ? "The proof"
+                : /\d/.test(narration)
+                  ? "The evidence"
+                  : fallbackTitles[index] ?? `Scene ${index + 1}`;
+    const title = [proposedTitle, fallbackTitles[index], ...fallbackTitles, `Scene ${index + 1}`].find((candidate) => candidate && !usedTitles.has(candidate)) ?? `Scene ${index + 1}`;
     usedTitles.add(title);
     const durationSeconds = Math.max(4, Math.ceil(narration.split(/\s+/).filter(Boolean).length / 2.5) + 1);
     return { id: `storyboard-v${current.storyboard.version + 1}-panel-${index + 1}`, title, narration, durationSeconds, claimIds: evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []), evidence, imagePanelId: image?.id, imagePanelVersion: image?.version, imageRelativePath: image?.relativePath, imageSha256: image?.sha256, approved: true, stale: false };
@@ -1404,6 +1422,8 @@ export function generateStoryboard(root?: string): WorkshopState {
 function outputHeading(text: string, limit = 82) { if (text.length <= limit) return text; const clipped = text.slice(0, limit).trimEnd(); return `${clipped.slice(0, clipped.lastIndexOf(" ")).trim()}…`; }
 function outputBody(text: string) { if (text.length <= 240) return text; const clipped = text.slice(0, 240).trimEnd(); return `${clipped.slice(0, clipped.lastIndexOf(" ")).trim()}…`; }
 type DeckRole = "statement" | "split" | "proof" | "recommendation";
+type DeckCandidate = { claim: WorkshopClaim; order: number; raw: string; text: string; sourceType: WorkshopSource["type"] | undefined; topicContext: string; sourcePriority: number };
+type SelectedDeckClaim = DeckCandidate & { role: DeckRole; roleMatch?: boolean; score?: number };
 const deckRoles: readonly DeckRole[] = ["statement", "split", "proof", "recommendation"];
 const roleSignals: Record<DeckRole, RegExp> = {
   statement: /\b(turns?|becomes?|helps?|delivers?|enables?|creates?|outcome|promise|from\b.+\bto)\b/i,
@@ -1424,6 +1444,11 @@ function prose(text: string) {
 }
 const deckTopicStopwords = new Set(["about", "brief", "briefing", "client", "deck", "leadership", "presentation", "strategy", "the", "this", "with", "workshop"]);
 function deckTopicTerms(title: string) { return prose(title).toLowerCase().split(/[^\p{L}\p{N}]+/u).filter((term) => term.length >= 4 && !deckTopicStopwords.has(term)); }
+function frameSection(markdown: string | undefined, heading: string) {
+  if (!markdown) return "";
+  const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return markdown.match(new RegExp(`^## ${escaped}\\s*\\n([\\s\\S]*?)(?=^## |\\s*$)`, "m"))?.[1]?.trim() ?? "";
+}
 function deckCandidateScore(text: string, role: DeckRole, raw: string, sourcePriority: number, topicTerms: string[], topicContext: string, sourceType: WorkshopSource["type"] | undefined) {
   const words = text.split(/\s+/).filter(Boolean).length;
   if (isSourceMetadataChunk(raw) || /^\s*(?:\||#{1,6}\s)/.test(raw) || /:\s*$/.test(text) || words < 4 || text.length < 24 || /^(?:md|json|tsx?|html)\b|^(?:date|status|last (updated|refreshed)|at a glance|hackathon|track|deadline|source|version)\b\s*:?/i.test(text)) return Number.NEGATIVE_INFINITY;
@@ -1448,15 +1473,25 @@ function deckCandidateScore(text: string, role: DeckRole, raw: string, sourcePri
   if ((text.match(/:/g) ?? []).length > 2) score -= 4;
   return score;
 }
-function selectDeckClaims(state: WorkshopState) {
+function selectDeckClaims(state: WorkshopState): SelectedDeckClaim[] {
   const topicTerms = deckTopicTerms(state.title);
   const chunks = new Map(state.sourceChunks.map((chunk) => [chunk.id, chunk]));
   const candidates = activeClaimsFor(state).map((claim, order) => {
     const source = state.sourceItems.find((candidate) => candidate.id === claim.sourceId);
     return { claim, order, raw: chunks.get(claim.chunkId)?.text ?? claim.text, text: prose(claim.text), sourceType: source?.type, topicContext: source?.type === "WEB" ? claim.text : `${claim.text} ${source?.title ?? ""}`, sourcePriority: Math.max(0, state.activeSourceIds.length - state.activeSourceIds.indexOf(claim.sourceId)) };
   });
-  const used = new Set<string>();
-  return deckRoles.flatMap((role) => {
+  const approvedDirection = prose(frameSection(state.frame?.markdown, "Direction"));
+  const recommendedTarget = state.mapEdges.find((edge) => edge.label === "recommends")?.to;
+  const directionNode = state.mapNodes.find((node) => node.id === recommendedTarget)
+    ?? state.mapNodes.find((node) => node.id === "map-direction")
+    ?? state.mapNodes.find((node) => node.kind === "creative" && prose(node.body) === approvedDirection);
+  const directionCandidate = candidates.find((candidate) => candidate.text === approvedDirection)
+    ?? candidates.find((candidate) => directionNode?.sourceId === candidate.claim.sourceId && directionNode.locator === candidate.claim.locator);
+  const used = new Set(directionCandidate ? [directionCandidate.claim.id] : []);
+  return deckRoles.flatMap<SelectedDeckClaim>((role) => {
+    if (role === "recommendation" && directionCandidate) {
+      return [{ ...directionCandidate, text: approvedDirection || directionCandidate.text, role: "recommendation" }];
+    }
     const scored = candidates
       .filter((candidate) => !used.has(candidate.claim.id))
       .map((candidate) => ({ ...candidate, roleMatch: roleSignals[role].test(candidate.text), score: deckCandidateScore(candidate.text, role, candidate.raw, candidate.sourcePriority, topicTerms, candidate.topicContext, candidate.sourceType) }))
@@ -1496,7 +1531,7 @@ function deckHeading(text: string, role: DeckRole) {
     if (action) return action.charAt(0).toUpperCase() + action.slice(1);
   }
   const clause = text.split(/\s*[—–]\s*|[;:]\s|,\s+(?=(?:but|because|while|which|with|without|so)\b)|\s+(?=(?:using|through|that)\b)/i)[0]?.trim() ?? text;
-  return outputHeading(clause.length >= 24 ? clause : text, role === "recommendation" ? 96 : 82);
+  return outputHeading(clause.length >= 24 ? clause : text, role === "recommendation" ? 160 : 82);
 }
 function deckBody(text: string, heading: string) {
   const transformation = text.match(/\b(?:should show how|shows? how)\s+(.+?)\s+(becomes?|turns? into)\s+([^,.;]+)/i);
@@ -1605,15 +1640,23 @@ export function generateAudioOverview(root?: string): WorkshopState {
   const current = readWorkshopState(root);
   if (!current.briefApproved || !current.frame || current.frame.stale) throw new Error("Audio Overview requires an approved current Brief.");
   if (!current.style || current.style.stale) throw new Error("Audio Overview requires a current Style and intent.");
-  const claims = activeClaimsFor(current).slice(0, 3);
-  if (!claims.length) throw new Error("Audio Overview requires at least one grounded claim.");
-  const claimAt = (index: number) => claims[index % claims.length]!;
+  const selected = selectDeckClaims(current);
+  const fallback = selected[0];
+  if (!fallback) throw new Error("Audio Overview requires at least one grounded claim.");
+  const pointFor = (role: DeckRole, secondaryRole?: DeckRole) => {
+    const candidate = selected.find((item) => item.role === role)
+      ?? (secondaryRole ? selected.find((item) => item.role === secondaryRole) : undefined)
+      ?? fallback;
+    return { claim: candidate.claim, text: candidate.text };
+  };
+  const points = [pointFor("statement"), pointFor("proof", "split"), pointFor("recommendation")];
+  const pointAt = (index: number) => points[index]!;
   const definitions = [
-    ["Executive summary", `The central finding is this: ${prose(claimAt(0).text)}`],
-    ["What the evidence shows", `The evidence adds an important point: ${prose(claimAt(1).text)}`],
-    ["Decision review", `The practical decision is how to act on this: ${prose(claimAt(2).text)}`],
+    ["Executive summary", `The central finding is this: ${pointAt(0).text}`],
+    ["What the evidence shows", `The evidence adds an important point: ${pointAt(1).text}`],
+    ["Decision review", `The practical decision is how to act on this: ${pointAt(2).text}`],
   ] as const;
-  const sections = definitions.map(([title, text], index): WorkshopAudioOverviewSection => ({ id: `audio-section-${index + 1}`, title, text, evidence: [audioEvidence(claimAt(index))], edited: false }));
+  const sections = definitions.map(([title, text], index): WorkshopAudioOverviewSection => ({ id: `audio-section-${index + 1}`, title, text, evidence: [audioEvidence(pointAt(index).claim)], edited: false }));
   const version = current.audioOverviews.reduce((highest, item) => Math.max(highest, item.version), 0) + 1;
   const createdAt = new Date().toISOString();
   const overview: WorkshopAudioOverview = { id: `audio-overview-v${version}`, version, graphRevision: graphFor(current).graph.revision, briefVersion: current.frame.version, styleVersion: current.style.version, title: `${current.title} briefing`, posture: audioOverviewPosture(current), sections, script: buildAudioOverviewScript(current.title, sections), claimIds: [...new Set(sections.flatMap((section) => section.evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : [])))], status: "script_ready", disclosure: "AI-generated voice", stale: false, createdAt, updatedAt: createdAt };
@@ -1697,8 +1740,10 @@ export function createImageBatch(root?: string): WorkshopState {
   const referenceBytes = buildStyleReferencePng(coherence.palette); const referencePath = workshopGeneratedPath(current.id, "references", `${referenceId}.png`); mkdirSync(join(dataRoot, dirname(referencePath)), { recursive: true }); writeFileSync(join(dataRoot, referencePath), referenceBytes);
   const claims = activeClaimsFor(current);
   const groundedNodes = current.mapNodes.filter((node): node is WorkshopMapNode & { sourceId: string } => node.kind === "grounded" && typeof node.sourceId === "string" && current.activeSourceIds.includes(node.sourceId));
-  const usedClaims = new Set<string>();
-  const evidenceFor = (index: number, keywords: readonly string[]): { idea: string; evidence: WorkshopEvidenceReference[] } => {
+  const approvedDirection = selectDeckClaims(current).find((item) => item.role === "recommendation");
+  const usedClaims = new Set(approvedDirection ? [approvedDirection.claim.id] : []);
+  const evidenceFor = (index: number, keywords: readonly string[], preferred?: typeof approvedDirection): { idea: string; evidence: WorkshopEvidenceReference[] } => {
+    if (preferred) return { idea: outputBody(preferred.text), evidence: [{ claimId: preferred.claim.id, sourceId: preferred.claim.sourceId, chunkId: preferred.claim.chunkId, locator: preferred.claim.locator }] };
     const available = claims.filter((claim) => !usedClaims.has(claim.id));
     const ranked = available.map((claim, order) => ({ claim, order, score: keywords.filter((keyword) => prose(claim.text).toLowerCase().includes(keyword)).length })).sort((left, right) => right.score - left.score || left.order - right.order);
     const claim = ranked[0]?.claim ?? claims[index % Math.max(1, claims.length)];
@@ -1716,9 +1761,9 @@ export function createImageBatch(root?: string): WorkshopState {
     ["Storyboard sequence", "Create a four-beat storyboard strip inside one square composition, keeping the same objects, lighting, and camera language across every beat.", ["sequence", "path", "step", "storyboard", "capture", "map", "brief", "create", "journey", "continuous"]],
     ["Section art", "Create polished closing section art: the approved idea resolved into a cohesive family of abstract presentation, diagram, and video-frame forms, with ample negative space.", ["deck", "presentation", "infographic", "image", "video", "brand", "finished", "output", "delivery"]],
   ] as const;
-  const panels = roles.map(([role, direction, keywords], index) => {
-    const grounded = evidenceFor(index, keywords);
-    const prompt = `Visual role: ${role}. ${direction} Approved idea to communicate: ${grounded.idea}. Preserve the shared reference composition, palette, lighting, material treatment, folded-plane motif, and editorial restraint. This is panel ${index + 1} of one continuous six-panel art direction. Create a presentation-ready 1:1 visual with no readable text, logos, watermarks, UI chrome, generic people-at-work scenes, device mockups, or stock-photo cliches.`;
+  const panels = roles.map(([role, roleDirection, keywords], index) => {
+    const grounded = evidenceFor(index, keywords, index === 3 ? approvedDirection : undefined);
+    const prompt = `Visual role: ${role}. ${roleDirection} Approved idea to communicate: ${grounded.idea}. Preserve the shared reference composition, palette, lighting, material treatment, folded-plane motif, and editorial restraint. This is panel ${index + 1} of one continuous six-panel art direction. Create a presentation-ready 1:1 visual with no readable text, logos, watermarks, UI chrome, generic people-at-work scenes, device mockups, or stock-photo cliches.`;
     return { id: panelIds[index]!, version: 1, prompt, evidence: grounded.evidence, state: "planned" as const, referenceId, history: [] };
   });
   return write({ ...current, imageBatch: { id: `image-batch-v${(current.imageBatch ? Number(current.imageBatch.id.match(/\d+$/)?.[0]) + 1 : 1)}`, graphRevision, briefVersion: current.frame.version, styleVersion: current.style.version, referenceId, referencePath, referenceSha256: createHash("sha256").update(referenceBytes).digest("hex"), coherence, createdAt, stale: false, panels }, updatedAt: createdAt }, root);

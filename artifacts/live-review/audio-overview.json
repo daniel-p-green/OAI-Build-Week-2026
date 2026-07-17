@@ -1,8 +1,7 @@
 {
-  "verifiedAt": "2026-07-17T00:23:18.083Z",
   "id": "audio-overview-v1",
   "title": "WorkshopLM Build Week briefing",
-  "script": "Briefing: WorkshopLM Build Week.\n\nThe central finding is this: WorkshopLM turns messy meetings into professional knowledge work teams can defend, with grounded source documents and brand rules preserving their standards\n\nThe evidence adds an important point: Creating client-ready work is slow and fragmented, because understanding, design, and production live in disconnected tools\n\nThe practical decision is how to act on this: Every factual claim retains an exact source locator, so evidence stays inspectable from the editable Map through the final presentation and Storyboard",
+  "script": "Briefing: WorkshopLM Build Week.\n\nThe central finding is this: WorkshopLM turns messy meetings into professional knowledge work teams can defend, with grounded source documents and brand rules preserving their standards\n\nThe evidence adds an important point: Every factual claim retains an exact source locator, so evidence stays inspectable from the editable Map through the final presentation and Storyboard\n\nThe practical decision is how to act on this: Teams should use two deliberate sign-offs: approve the grounded Brief before creating professional knowledge work, then approve the Storyboard before rendering Video",
   "sections": [
     {
       "id": "audio-section-1",
@@ -21,21 +20,7 @@
     {
       "id": "audio-section-2",
       "title": "What the evidence shows",
-      "text": "The evidence adds an important point: Creating client-ready work is slow and fragmented, because understanding, design, and production live in disconnected tools",
-      "evidence": [
-        {
-          "claimId": "claim-3bc07007d1b8-1-1",
-          "sourceId": "source-3bc07007d1b8",
-          "chunkId": "chunk-3bc07007d1b8-2",
-          "locator": "Sanitized fixture · chunk 02"
-        }
-      ],
-      "edited": false
-    },
-    {
-      "id": "audio-section-3",
-      "title": "Decision review",
-      "text": "The practical decision is how to act on this: Every factual claim retains an exact source locator, so evidence stays inspectable from the editable Map through the final presentation and Storyboard",
+      "text": "The evidence adds an important point: Every factual claim retains an exact source locator, so evidence stays inspectable from the editable Map through the final presentation and Storyboard",
       "evidence": [
         {
           "claimId": "claim-3bc07007d1b8-2-1",
@@ -45,24 +30,38 @@
         }
       ],
       "edited": false
+    },
+    {
+      "id": "audio-section-3",
+      "title": "Decision review",
+      "text": "The practical decision is how to act on this: Teams should use two deliberate sign-offs: approve the grounded Brief before creating professional knowledge work, then approve the Storyboard before rendering Video",
+      "evidence": [
+        {
+          "claimId": "claim-3bc07007d1b8-3-1",
+          "sourceId": "source-3bc07007d1b8",
+          "chunkId": "chunk-3bc07007d1b8-4",
+          "locator": "Sanitized fixture · chunk 04"
+        }
+      ],
+      "edited": false
     }
   ],
   "claimIds": [
     "claim-3bc07007d1b8-0-1",
-    "claim-3bc07007d1b8-1-1",
-    "claim-3bc07007d1b8-2-1"
+    "claim-3bc07007d1b8-2-1",
+    "claim-3bc07007d1b8-3-1"
   ],
   "disclosure": "AI-generated voice",
   "audio": {
     "relativePath": "generated/audio-overviews/audio-overview-v1.wav",
-    "sha256": "f485bf1515df165205f9a3b2bcdd9640214063e77a60ec1019dc6b3080fb7b33",
-    "byteCount": 1608044,
-    "durationSeconds": 33.5,
+    "sha256": "2d68e0d5c034609aac2ab7b6d825cfe5485e84bfa6e9f31583a70e53a8dfeb1b",
+    "byteCount": 1675244,
+    "durationSeconds": 34.9,
     "model": "gpt-4o-mini-tts",
     "voice": "cedar",
     "instructions": "Speak with calm authority at a brisk presentation pace. Preserve source names and technical terms exactly.",
-    "requestId": "req_ad9c5ccf42154f4a93f4ae3b43143d42",
-    "generatedAt": "2026-07-17T00:14:30.591Z"
+    "requestId": "req_6914bd2eae4240e6a44f83712d784437",
+    "generatedAt": "2026-07-17T12:59:02.866Z"
   },
-  "downloadedSha256": "f485bf1515df165205f9a3b2bcdd9640214063e77a60ec1019dc6b3080fb7b33"
+  "downloadedSha256": "2d68e0d5c034609aac2ab7b6d825cfe5485e84bfa6e9f31583a70e53a8dfeb1b"
 }
