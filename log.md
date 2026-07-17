@@ -12044,3 +12044,26 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The halfway reminder does not authorize resuming demo-film work before the founder-derived Workshop exists. It confirms that the `/feedback` ID remains a later mandatory submission field despite not being a current product-quality gate.
 - No OpenAI provider request ran; the cumulative recorded provider-operation count remains 119.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 12:55 CT — Anonymous judge repository access verified; stale About copy isolated
+
+### Changed
+
+- Added an explicit final repository-metadata gate for the GitHub About description. It still says `Capture to Shape to Deliver`, while the implemented and locked product model is `Capture → Map → Brief → Create`.
+- Did not silently change public account metadata. The local checklist now makes the reversible external action and its anonymous verification explicit.
+
+### Verified
+
+- An unauthenticated GitHub page identified `daniel-p-green/OAI-Build-Week-2026` as Public on `main`, exposed the repository tree and README, and showed an MIT license.
+- Cache-busted anonymous GitHub API output reported `private: false`, `visibility: public`, `default_branch: main`, `license: MIT`, `archived: false`, and `disabled: false`.
+- Cache-busted raw `main` returned the current README with the 29.25-second Audio Overview and `THIRD_PARTY_NOTICES.md` link, plus the complete third-party notice. The public `main` head was `abaacad15c09b37abd33993338a333398cb37e79` (`refresh live hackathon contract`).
+- The normal rendered repository page initially served an older cached README with the superseded 33.5-second claim. Raw cache-busted objects proved this was presentation cache lag rather than a failed push.
+
+### Decisions and open items
+
+- The repository URL and anonymous source access are proven now; repeat the logged-out check against the tagged judge release at submission time.
+- Update the GitHub About description before submission, then verify the new wording anonymously. The stale About copy must not be reused in Devpost.
+- No OpenAI provider request ran; the cumulative recorded provider-operation count remains 119. Demo-film work remains paused.
+- Codex Session ID: unavailable on this surface; not inferred.
