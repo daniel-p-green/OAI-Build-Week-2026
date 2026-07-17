@@ -662,6 +662,11 @@ test.describe("completed Workshop judge path", () => {
       await openWorkshopView(page, "brief");
       await expectPrimaryActions(page, 1);
       await expect(page.getByText("# FRAME.md", { exact: false })).toHaveCount(0);
+      if (viewport.width > 900 && viewport.width <= 1100) {
+        const styleName = page.getByLabel("Style").getByText("Clean professional", { exact: true });
+        await expect(styleName).toBeVisible();
+        expect(await styleName.evaluate((element) => element.scrollWidth <= element.clientWidth)).toBeTruthy();
+      }
       await expectScreen(page, `${viewport.name}-brief`);
       await page.getByRole("button", { name: "Edit", exact: true }).click();
       await expect(page.getByRole("dialog", { name: "Style" })).toBeVisible();
