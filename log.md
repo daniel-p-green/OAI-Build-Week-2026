@@ -2720,6 +2720,30 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-17 09:37 CT — Four-stage Workshop model locked against navigation drift
+
+### Changed
+
+- Reconciled the refined product model against the live implementation and current screenshots. The primary header remains a compact `Capture → Map → Brief → Create` status index; Conversation and Sources are nested under Capture, while Style, created work, and Storyboard are nested under Create in the expanded Workshop sheet.
+- Added a static design-contract check that requires exactly those four primary stage labels and rejects supporting Workshop objects if they drift into the primary spine.
+- Kept the Map scope constrained. No generic whiteboard capability was added: the current surface continues to auto-organize Evidence, Synthesis, and Direction, expose Source connections, and present one recommended direction.
+
+### Verified
+
+- Inspected the current desktop Map and mobile Workshop-index baselines. The desktop header shows four stages and the semantic canvas shows explicit Evidence, Synthesis, Direction, Source scope, and recommended direction; the mobile expanded index exposes the nested objects without turning them into primary stages.
+- `pnpm --filter @workshoplm/web test` passed all 38 web unit and static-contract tests, including the new navigation-drift guard and the existing Map presentation and Excalidraw geometry checks.
+- No OpenAI provider request ran; the append-only cumulative request count remains 118.
+
+### Decisions and open items
+
+- The Workshop spine is shared navigation and status, not a feature inventory. Supporting objects remain discoverable contextually through the expanded index.
+- Map quality is judged by immediate semantic legibility and a useful recommended path, not by generic whiteboard breadth.
+- The connected product-quality item remains open until founder visual acceptance. Demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-17 02:44 CT — Repository authority and generated-state boundaries reconciled
 
 ### Changed
@@ -11653,3 +11677,18 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The connected product-quality item remains open until founder visual acceptance. The authentic founder recording, paid run, and human review remain the next proof gate; demo-film work remains paused.
 - User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 09:38 CT — Log-order correction
+
+- The complete `09:37 CT — Four-stage Workshop model locked against navigation drift` milestone was appended at line 2723 because its patch anchor matched an older repeated footer. Its implementation and verification evidence remain valid; this append-only correction establishes that it occurred after the `09:32` Video-language milestone.
+- No historical entry was moved or rewritten. The active product state is unchanged.
+
+---
+
+## 2026-07-17 09:39 CT — Four-stage contract passes the repository gate
+
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages after the navigation-drift guard landed. The suite includes 38 web tests, 130 worker tests, the constrained Map presentation and geometry checks, and the new exact four-stage/nested-object contract.
+- Repository hygiene reported 693 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file. No OpenAI provider request ran; the cumulative request count remains 118.
+- The connected product-quality goal remains active pending founder visual acceptance; demo-film work remains paused.

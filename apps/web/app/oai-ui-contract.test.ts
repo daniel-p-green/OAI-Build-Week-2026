@@ -111,6 +111,22 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(appCss).toContain(".header-source-trigger, .header-browse-trigger, .workflow-action { display: flex; }");
   });
 
+  it("keeps the primary Workshop spine compact while nesting supporting objects in the index", () => {
+    const spine = page.slice(page.indexOf("function WorkshopSpine"), page.indexOf("function recommendedMapPath"));
+    const index = page.slice(page.indexOf("function ObjectsSheet"), page.indexOf("function HowItWorksSheet"));
+
+    expect(spine.match(/label: "(Capture|Map|Brief|Create)"/g)).toHaveLength(4);
+    for (const stage of ["Capture", "Map", "Brief", "Create"]) expect(spine).toContain(`label: "${stage}"`);
+    for (const nestedObject of ["Conversation", "Sources", "Style", "Created work", "Storyboard"]) expect(spine).not.toContain(`label: "${nestedObject}"`);
+
+    expect(index).toContain('{ stage: "capture", title: "Capture", items: [');
+    expect(index).toContain('{ target: "conversation", title: "Conversation"');
+    expect(index).toContain('{ target: "sources", title: "Sources"');
+    expect(index).toContain('{ stage: "create", title: "Create", items: [');
+    expect(index).toContain('{ target: "style", title: "Style"');
+    expect(index).toContain('{ target: "outputs", title: "Created work"');
+  });
+
   it("lets the canvas own the screen without hiding source-scope consequences", () => {
     expect(page).toContain('aria-label="Source change impact"');
     expect(page).toContain('pending.affected.join(", ")');
