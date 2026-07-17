@@ -779,6 +779,8 @@ test.describe("completed Workshop judge path", () => {
 
       await page.getByRole("button", { name: "Open Storyboard" }).click();
       await expectPrimaryActions(page, 1);
+      await expect(page.getByRole("button", { name: "Edit panel" })).toBeVisible();
+      await expect(page.getByRole("textbox", { name: "Panel title" })).toHaveCount(0);
       await expect(page.getByRole("button", { name: "Save changes" })).toHaveCount(0);
       await expect(page.locator(".panel-visual img")).toBeVisible();
       await expectScreen(page, `${viewport.name}-storyboard`);
@@ -788,12 +790,15 @@ test.describe("completed Workshop judge path", () => {
       await expect(storyboardSource).toContainText("WorkshopLM direction");
       await expect(storyboardSource).toContainText("Design · Map");
       await closeDialog(page, "Source");
+      await page.getByRole("button", { name: "Edit panel" }).click();
       const titleField = page.getByRole("textbox", { name: "Panel title" });
       const originalTitle = await titleField.inputValue();
       await titleField.fill(`${originalTitle} revised`);
       await expect(page.getByRole("button", { name: "Save changes" })).toBeVisible();
       await titleField.fill(originalTitle);
-      await expect(page.getByRole("button", { name: "Save changes" })).toHaveCount(0);
+      await expect(page.getByRole("button", { name: "Save changes" })).toBeDisabled();
+      await page.getByRole("button", { name: "Cancel" }).click();
+      await expect(page.getByRole("textbox", { name: "Panel title" })).toHaveCount(0);
       if (viewport.name === "mobile") {
         const updateOutputs = page.getByRole("button", { name: "Update work" });
         if (await updateOutputs.isVisible()) {
@@ -986,6 +991,7 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
   await openWorkshopView(page, "outputs");
   await page.getByRole("button", { name: "Open Storyboard" }).click();
   const preview = page.locator(".panel-visual");
+  await page.getByRole("button", { name: "Edit panel" }).click();
   const timing = page.getByRole("spinbutton", { name: "Seconds" });
   await expect(timing).toHaveValue("4");
   await timing.fill("9");
@@ -1008,7 +1014,8 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
   await expectScreen(page, "desktop-storyboard-history");
   await closeDialog(page, "Storyboard · Version 2");
   await page.setViewportSize({ width: 1024, height: 768 });
-  await timing.scrollIntoViewIfNeeded();
+  await page.getByRole("button", { name: "Edit panel" }).click();
+  await page.getByRole("spinbutton", { name: "Seconds" }).scrollIntoViewIfNeeded();
   await expectScreen(page, "compact-storyboard-timing");
 });
 
@@ -1474,6 +1481,7 @@ test("the local render becomes a real Video preview and the next action", async 
     const editStoryboard = page.getByRole("button", { name: "Edit storyboard" });
     await expect(editStoryboard).toHaveClass(/oai-button--primary/);
     await editStoryboard.click();
+    await page.getByRole("button", { name: "Edit panel" }).click();
     await expect(page.getByRole("textbox", { name: "Panel title" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Approve storyboard" })).toHaveCount(0);
     await page.getByRole("button", { name: "View video" }).click();
@@ -1504,6 +1512,7 @@ test("the local render becomes a real Video preview and the next action", async 
   }
 
   await page.getByRole("button", { name: "Edit storyboard" }).click();
+  await page.getByRole("button", { name: "Edit panel" }).click();
   const narration = page.getByRole("textbox", { name: "Narration" });
   const seconds = page.getByRole("spinbutton", { name: "Seconds" });
   await narration.fill(`${await narration.inputValue()} Tighten the close.`);

@@ -389,6 +389,8 @@ button { -webkit-tap-highlight-color: transparent; }
 .panel-fields .panel-change-note { grid-column: 1 / -1; }
 .panel-fields .status { justify-self: start; }
 .panel-change-note { margin: -6px 0 0; color: #5d5d5d; font-size: 12px; line-height: 17px; }
+.panel-review { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 20px; background: #fff; }
+.panel-review > span { color: #5d5d5d; font-size: 13px; line-height: 19px; }
 .storyboard-view > .output-version-history { max-width: 1180px; margin: 22px auto 0; }
 .storyboard-history-strip { margin-bottom: 16px; }
 .oai-side-sheet .storyboard-history-strip { margin-inline: 0; }
@@ -514,6 +516,7 @@ button { -webkit-tap-highlight-color: transparent; }
   .panel-editor { grid-template-columns: 1fr; }
   .panel-visual { min-height: 300px; }
   .panel-fields { grid-template-columns: 1fr; align-items: stretch; }
+  .panel-review { align-items: flex-start; flex-direction: column; }
   .focused-image-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .focused-image-caption { align-items: flex-start; flex-direction: column; gap: 2px; }
   .focused-image-actions .oai-button { width: 100%; max-width: 100%; padding-inline: 8px; }

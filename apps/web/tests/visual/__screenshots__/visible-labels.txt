@@ -19,6 +19,7 @@ CaptureReady
 CreateReady
 Created work
 Edit
+Edit panel
 Evidence behind this brief
 Image set
 Infographic

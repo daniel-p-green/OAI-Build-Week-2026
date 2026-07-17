@@ -11755,3 +11755,35 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 38 web tests and 130 worker tests.
 - `pnpm demo:e2e` passed the complete recorded-fixture seam with grounding, both approvals, Style, eight-idea Sketch, Presentation, Infographic, three-section Cedar Audio Overview, six-image provider fixture, five-panel Storyboard, local Video, and build trace.
 - No provider request ran. The connected product-quality goal remains active pending founder visual acceptance; demo-film work remains paused.
+
+---
+
+## 2026-07-17 09:59 CT — Storyboard is a review gate before it is an editor
+
+### Changed
+
+- Replaced the always-open Storyboard panel form with a review-first selected-panel surface. The professional sees the exact image, narration, panel number, duration, and Source action without entering edit mode.
+- Added one contextual `Edit panel` action. Editing reveals title, narration, and timing fields plus explicit Cancel and Save actions; switching panels exits edit mode, Cancel restores the reviewed values, and Save remains disabled until a valid change exists.
+- Preserved the consequential control model: Storyboard approval remains the sole primary action during review, and a saved panel edit still revokes approval and marks the existing Video `Needs update` through the existing service boundary.
+
+### Verified
+
+- Visually inspected refreshed desktop, compact, and mobile Storyboard review baselines plus timing, bound-image, and history states. Mobile now presents the selected visual and two quiet contextual actions instead of opening with a full production form.
+- The complete 35-scenario Playwright suite passed. It covers deliberate entry into editing, cancel without mutation, timing validation, saved-edit approval invalidation, exact image-version bindings, historical Storyboard review, return from Video, responsive rendering, and the updated plain-language snapshot.
+- The optimized Next.js production build, web typecheck, and all 38 web unit/static-contract tests passed. One targeted run timed out because the test expected an editor to stay open after changing panels; the test was corrected to match the deliberate review-first behavior, then passed.
+- No OpenAI provider request ran; the cumulative request count remains 118.
+
+### Decisions and open items
+
+- The second approval gate should optimize for judgment. Editing remains fully available but cannot dominate the default review state.
+- The connected product-quality item remains open until founder visual acceptance. Demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 10:03 CT — Review-first Storyboard clears repository and seam checks
+
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 38 web tests and 130 worker tests.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam with grounding, both approvals, Style, eight-idea Sketch, Presentation, Infographic, three-section Cedar Audio Overview, six-image provider fixture, five-panel Storyboard, local Video, and build trace.
+- No provider request ran. The connected product-quality goal remains active pending founder visual acceptance; demo-film work remains paused.
