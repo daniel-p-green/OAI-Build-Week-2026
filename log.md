@@ -10790,3 +10790,31 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - `pnpm demo:e2e` passed the complete recorded Source-to-Video seam after the authority-chain cleanup.
 - No OpenAI provider request ran; the provider-operation ledger remains 117. The separate user-owned plan and video tranche remains untouched.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 02:57 CT — The semantic Map keeps its hierarchy at every width
+
+### Changed
+
+- Compared the stale product-design audit screenshots with the current live fixture in the Codex in-app browser. The current Map already implemented Evidence → Synthesis → Direction, but its overview repeated the canvas as three truncated navigation pills and mobile exposed the first evidence node as the supposed recommended path.
+- Replaced that duplicate path strip with one concise recommended Direction while retaining quiet counts for Evidence, Synthesis, and Direction.
+- Added resize-aware Excalidraw fitting. When the workbench changes width, the complete semantic scene now refits instead of clipping the Direction cluster outside the compact viewport.
+- Kept mobile deliberately non-canvas: it opens with Direction, then Synthesis, then Evidence, preserving the professional thinking hierarchy without exposing generic whiteboard controls.
+
+### Verified
+
+- Visually inspected the current fixture at the default desktop width, after a live resize from 1280×720 to 900×700, and at 390×844. The complete hierarchy remains visible on desktop and compact; mobile begins with the recommended Direction and has no horizontal overflow.
+- The web typecheck and all 30 web tests passed, including the official UI contract and a resize-observer regression assertion.
+- The current production build and all 31 browser scenarios passed after the reviewed visible-copy baseline was updated.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam with eight Map ideas, the approved Brief and Style, six image panels, Cedar Audio Overview, five-panel Storyboard, rendered local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Keep the recommendation as orientation, not a second navigation model. The canvas itself remains the dominant object.
+- Preserve the constrained Map boundary: hierarchy, clusters, evidence, synthesis, and direction are the product; Excalidraw mechanics are implementation detail.
+- Founder visual acceptance and the authentic founder Workshop remain the next proof gates.
+- User-owned plan/video changes and untracked final-preview/design-audit artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

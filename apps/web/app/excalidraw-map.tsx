@@ -202,6 +202,7 @@ export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, on
   const timeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fitFrame = useRef<number | null>(null);
   const apiRef = useRef<ExcalidrawImperativeAPI | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const baseline = useRef<Map<string, SceneNodeBaseline> | null>(null);
   const lastSent = useRef("");
   const lastSelection = useRef("");
@@ -221,6 +222,13 @@ export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, on
     lastSent.current = "";
     if (timeout.current) clearTimeout(timeout.current);
     fitScene();
+  }, [sceneKey]);
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => fitScene());
+    observer.observe(container);
+    return () => observer.disconnect();
   }, [sceneKey]);
 
   function fitScene(api = apiRef.current) {
@@ -265,7 +273,7 @@ export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, on
   const mobileNodes = [...nodes].sort((left, right) => ({ creative: 0, derived: 1, grounded: 2 })[left.kind] - ({ creative: 0, derived: 1, grounded: 2 })[right.kind]);
 
   return <div className="semantic-map" data-domain-ui="excalidraw-map">
-    <div className="excalidraw-map" aria-label="Editable Map" onContextMenu={(event) => event.preventDefault()}>
+    <div ref={containerRef} className="excalidraw-map" aria-label="Editable Map" onContextMenu={(event) => event.preventDefault()}>
       <Excalidraw
         key={sceneKey}
         initialData={initialData}

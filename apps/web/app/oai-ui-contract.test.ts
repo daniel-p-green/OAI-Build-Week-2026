@@ -80,6 +80,7 @@ describe("official Apps in ChatGPT UI implementation", () => {
   it("fits the complete first Map inside the visible workbench canvas", () => {
     const map = readFileSync(resolve(process.cwd(), "app/excalidraw-map.tsx"), "utf8");
     expect(map).toContain("api.scrollToContent(elements");
+    expect(map).toContain("new ResizeObserver(() => fitScene())");
     expect(map).toContain("fitToViewport: true");
     expect(map).toContain("viewportZoomFactor: 0.88");
   });

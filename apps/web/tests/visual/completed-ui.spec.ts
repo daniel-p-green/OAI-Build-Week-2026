@@ -152,9 +152,10 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await expect(page.getByRole("region", { name: "Map overview" })).toContainText("1 Synthesis");
   await expect(page.getByRole("region", { name: "Map overview" })).toContainText("1 Direction");
   const mapOverview = page.getByRole("region", { name: "Map overview" });
-  await expect(mapOverview).toContainText("The product promise");
-  await expect(mapOverview).toContainText("Judge proof");
+  await expect(mapOverview).toContainText("Recommended direction");
   await expect(mapOverview).toContainText("Visual behavior");
+  await expect(mapOverview).not.toContainText("The product promise");
+  await expect(mapOverview).not.toContainText("Judge proof");
   await selectProductPromise(page, viewports[0]);
   const claimEditor = page.getByRole("textbox", { name: "Claim" });
   await expect(claimEditor).toBeVisible();
@@ -1350,7 +1351,7 @@ test("a new professional reaches the real Map through the durable first-use path
   await page.getByRole("button", { name: "Build my Map" }).click();
 
   await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Evidence");
-  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Recommended path");
+  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Recommended direction");
   await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
   await expect(page.locator(".map-source-shelf")).toContainText("1 selected");
   await expectMapReady(page, viewports[0]);
