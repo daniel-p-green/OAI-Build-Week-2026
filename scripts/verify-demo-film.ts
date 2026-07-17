@@ -14,7 +14,7 @@ type FilmShot = {
   endSeconds: number;
   state: "ready" | "blocked";
   captureBeats: string[];
-  openingSequence?: { type: "finished-work-to-map"; proofSeconds: number; transition: "design-accent-dip" };
+  openingSequence?: { type: "finished-work-to-map"; proofSeconds: number; transition: "neutral-dip" };
   narration: string;
   requiredMoments: string[];
   requiredEvidence: RequiredEvidence[];
@@ -179,7 +179,7 @@ async function main(): Promise<void> {
     if (shot.openingSequence) {
       assert(shot === plan.shots[0] && shot.openingSequence.type === "finished-work-to-map", "Only the first film shot may own the finished-work opening sequence.");
       assert(shot.openingSequence.proofSeconds >= 3 && shot.openingSequence.proofSeconds <= 6 && shot.openingSequence.proofSeconds < shot.endSeconds - shot.startSeconds, "The opening proof must remain a three-to-six-second introduction before the Map.");
-      assert(shot.openingSequence.transition === "design-accent-dip", "The opening proof must use the stable DESIGN Accent color dip.");
+      assert(shot.openingSequence.transition === "neutral-dip", "The opening proof must use the stable neutral dip.");
     }
     if (shot.state === "blocked") assert(shot.requiredEvidence.length > 0, `Blocked shot ${shot.id} must name its missing evidence.`);
     shot.requiredMoments.forEach((moment) => seenMoments.add(moment));

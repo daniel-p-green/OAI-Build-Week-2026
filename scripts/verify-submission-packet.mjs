@@ -105,12 +105,11 @@ assert(sampleCut.status === "sample-editorial-cut" && /authorized sample/i.test(
 assert(sampleCut.voice?.provider === "OpenAI" && sampleCut.voice.name === "cedar" && sampleCut.voice.finalProviderNarration === true, "The clean review film has regressed from verified Cedar narration.");
 assert(sampleCut.shots?.length === 10 && sampleCut.shots.filter((shot) => shot.state === "blocked").length === 2, "The clean review film no longer retains ten shots and two final-evidence blocks.");
 const sampleOpening = sampleCut.shots.find((shot) => shot.id === "promise");
-assert(sampleOpening?.openingProof?.type === "finished-work-to-map" && sampleOpening.openingProof.transition === "design-accent-dip" && sampleOpening.motion?.transition === "opening-proof-dip" && sampleOpening.motion.spatialTransform === false, "The clean review film no longer opens on finished work before the Map with stable motion.");
+assert(sampleOpening?.openingProof?.type === "finished-work-to-map" && sampleOpening.openingProof.transition === "neutral-dip" && sampleOpening.motion?.transition === "opening-proof-dip" && sampleOpening.motion.spatialTransform === false, "The clean review film no longer opens on finished work before the Map with stable motion.");
 assert(createHash("sha256").update(await readFile(resolve(repository, sampleOpening.openingProof.relativePath))).digest("hex") === sampleOpening.openingProof.sha256, "The clean review film opening proof no longer matches its package asset.");
 assert(sampleCut.openingProofFrame?.atSeconds > 0 && createHash("sha256").update(await readFile(resolve(repository, "outputs/demo-film-sample", sampleCut.openingProofFrame.relativePath))).digest("hex") === sampleCut.openingProofFrame.sha256, "The clean review film is missing its rendered opening proof frame.");
-assert(sampleCut.shots.find((shot) => shot.id === "codex-doorway")?.editorialCue === "codex-to-workshoplm", "The clean review film no longer makes the Codex doorway explicit.");
 const sampleRealtimeShot = sampleCut.shots.find((shot) => shot.id === "capture-and-shape");
-assert(sampleRealtimeShot?.editorialCue === "realtime-proof-separate-from-founder", "The clean review film no longer makes the separate Realtime proof explicit.");
+assert(!sampleCut.shots.some((shot) => shot.editorialCue), "The clean review film must keep persistent editorial callouts off product interaction.");
 assert(sampleRealtimeShot.realtimeProof?.model === "gpt-realtime-2.1" && sampleRealtimeShot.realtimeProof.transport === "webrtc" && sampleRealtimeShot.realtimeProof.successfulToolCallCount === 3 && sampleRealtimeShot.realtimeProof.founderRecording === false, "The clean review film no longer preserves the verified Realtime/founder boundary.");
 assert(createHash("sha256").update(await readFile(resolve(repository, sampleRealtimeShot.realtimeProof.relativePath))).digest("hex") === sampleRealtimeShot.realtimeProof.sha256, "The clean review film's Realtime evidence hash has drifted.");
 assert(sampleCut.shots.find((shot) => shot.id === "meta-reveal")?.generatedMetaReveal === true, "The clean review film no longer contains its generated trace reveal.");
@@ -168,7 +167,7 @@ assert(unresolvedSlots === 4, `Expected four founder/final-package slots, found 
 process.stdout.write(`${JSON.stringify({
   status: "passed",
   providerEvidence: { model: provider.groundedMap.model, images: provider.imageBatch.panelCount, productNarration: provider.narration.panelCount },
-  editorialFilm: { status: sampleCut.status, seconds: sampleCut.video.durationSeconds, voice: sampleCut.voice.name, readyShots: 8, blockedShots: 2, generatedMetaReveal: true, codexDoorway: sampleCut.shots.find((shot) => shot.id === "codex-doorway").editorialCue, realtimeProof: sampleRealtimeShot.editorialCue },
+  editorialFilm: { status: sampleCut.status, seconds: sampleCut.video.durationSeconds, voice: sampleCut.voice.name, readyShots: 8, blockedShots: 2, generatedMetaReveal: true, persistentEditorialCallouts: false, realtimeProofBoundInManifest: Boolean(sampleRealtimeShot.realtimeProof) },
   diagnosticRoughCut: { status: roughCut.status, seconds: roughCut.video.durationSeconds },
   thumbnail: { composition: thumbnailManifest.composition, dimensions: thumbnailManifest.dimensions, sha256: thumbnailManifest.thumbnailSha256 },
   uiGallery: { screenshots: uiGallery.screenshots.length, providerBackedOutputs: "08-current-outputs.png" },

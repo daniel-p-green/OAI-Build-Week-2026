@@ -20,7 +20,7 @@
       "openingSequence": {
         "type": "finished-work-to-map",
         "proofSeconds": 4.5,
-        "transition": "design-accent-dip"
+        "transition": "neutral-dip"
       },
       "captureEndHoldbackSeconds": 0.7,
       "narration": "WorkshopLM turns conversations and Sources into professional knowledge work—every expression sharing one Style and one source trail.",

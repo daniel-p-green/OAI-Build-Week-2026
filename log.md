@@ -10028,3 +10028,35 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Founder recording and authentic Workshop generation remain the next external gate.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 20:51 CT — Demo film now lets the Workshop carry the visual argument
+
+### Changed
+
+- Removed the persistent 1236×96 editorial lower-third, blue rule, chapter numbering, duplicate Codex doorway card, and in-Map Realtime proof card from the clean sample film. Product interaction now occupies the frame without an unrelated presentation-template layer.
+- Replaced the film's decorative blue transition and tinted exterior treatment with a neutral black/white/system-font treatment. The only provider detail now appears in the final `BUILD RECORD` reveal, alongside the hash-bound transcript and created-work evidence.
+- Reframed the 1200×800 browser capture to fill 1280×720 rather than letterboxing it. The two Map moments receive a fixed center crop so their claims are legible; this is a static editorial frame, not a zoom-pan effect.
+- Updated the sample and packet verifiers to require the neutral transition and reject persistent editorial callouts over product interaction.
+
+### Verified
+
+- Rebuilt the full 140.010667-second sample film through local HyperFrames 0.7.60. HyperFrames lint and transition checks passed; the resulting H.264/AAC MP4 hashes to `5e668b5e6e221f31a58ba0ec1502c9c647aac57ed4838018e6dab893e23631c9`.
+- Inspected the full 10-shot contact sheet plus native 1280×720 Map, source-trace, and final build-record frames. The app is now visually dominant; there is no beige panel, blue edge rule, numbered chapter label, persistent lower-third, or technical proof card covering live Map interaction. The final provenance frame contains the provider record without pretending it is product UI.
+- `pnpm demo:film:verify-sample` passes with ten inspected frames, Cedar narration, eight ready and two founder-blocked shots, no spatial transforms, and the `neutral-dip` transition.
+- `pnpm submission:packet:verify` passes with `persistentEditorialCallouts: false` and Realtime evidence still bound in the sample manifest.
+- A read-only gallery audit found no new product-surface change warranted inside this film-only milestone. The local app route was unavailable during that audit, so it used the current deterministic screenshot gallery. The final Video path remains gated on an authentic founder capture rather than the intentionally sparse one-claim sanitized Map.
+
+### Decisions
+
+- Narration explains the workflow; live interaction proves it. Compact annotations are reserved for a future shot only when the visual state genuinely cannot carry the needed context.
+- Provider evidence is provenance, not a badge on the Map. It stays in the final build-record reveal and the manifest.
+- The five-item critical path in `GOAL.md` remains unchanged. This is a visible-quality repair to the public Video, not feature expansion.
+- No OpenAI provider request ran. The provider-operation ledger remains 115.
+
+### Open items
+
+- Record and run the authentic founder Workshop, then capture and inspect the founder-derived film input before final assembly.
+- The public Video, intended-audience review, publication links, and submission gates remain open.
+- Codex Session ID: unavailable on this surface; not inferred.

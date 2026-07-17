@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance created-work set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-17T01:34:07.833Z",
+  "builtAt": "2026-07-17T01:50:34.672Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "compositor": {
@@ -12,7 +12,7 @@
     "composition": "workshoplm-editorial-film",
     "jitterProneZoompan": false,
     "spatialTransforms": false,
-    "transition": "design-accent-dip",
+    "transition": "neutral-dip",
     "design": {
       "sha256": "03fb3f1f6e4c277c02088cfd4d92e1ad624e655fe8475ac5e7db5bb8568b8672",
       "source": ".workshoplm/acceptance/generated/DESIGN-v1.md"
@@ -33,7 +33,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "855fe02c4ef0cbce68a8b4a04f400e2c354a9197278992c9aaac1be81914ca51",
+    "sha256": "5e668b5e6e221f31a58ba0ec1502c9c647aac57ed4838018e6dab893e23631c9",
     "durationSeconds": 140.010667,
     "streams": [
       {
@@ -51,53 +51,53 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "a6889282f3e053aa4bc1c451ea007be723d6986e606ba32aa7a9efb939a721e7"
+    "sha256": "291b1bb0bd033f21440059083175d981545d1cfd160336c2727e637533d34e6d"
   },
   "openingProofFrame": {
     "relativePath": "review/opening-proof.jpg",
-    "sha256": "f2aaa84836485cd666f0d1f985e9f7b00577b09e347a15254636c1c703fa3c7e",
+    "sha256": "9866b2a7166e54bf85cd120be350809c634fa383520460b29c4442f81f559589",
     "atSeconds": 2.25
   },
   "reviewFrames": [
     {
       "relativePath": "review/01.jpg",
-      "sha256": "cd459a56b66180cd14170573c355a2e977f31e95a8178f7122c57e722fde615c"
+      "sha256": "73fe8fa6e67a4b52418a07ca23bbd9194496cad782fa0020e978539b1552130f"
     },
     {
       "relativePath": "review/02.jpg",
-      "sha256": "58cfb2bb59eaf5a99349f8fbeaa4ce20d3bc9608e27988f891cf83a9c7c4d044"
+      "sha256": "1199baf2230475c1ae2fd632ac965256d47440925d12e217727a71541eaafda6"
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "f03861185c9ca37bb1b5b996b009a8e3b6f4593eda9534d1fcafabf70341c1aa"
+      "sha256": "ef24774232d4aa6e2c32b5a5650c0694f6e28867502d90f678ee4a8d63ed78a8"
     },
     {
       "relativePath": "review/04.jpg",
-      "sha256": "8c1e655843944b02221db4953e3616c9535cc4df9b19c43aaecb5ae484ecee4d"
+      "sha256": "c407dc79af0fdc0d2a65ab65ef60dd066de79a471ed29beef55d966d0b7d74ff"
     },
     {
       "relativePath": "review/05.jpg",
-      "sha256": "0b28308ce940dfc9dc45807293b6daeb8ce3216de101ff237e11b21b805b2217"
+      "sha256": "fdd9b43b5f5d0c9d4b50a5beec948d793fc073d8710634617bcd2930738a4eef"
     },
     {
       "relativePath": "review/06.jpg",
-      "sha256": "a081626809aa8fc59b0e2da883193e83245d632c8591b1462c530a64633b8832"
+      "sha256": "2b82e51ee7c4da3ced002f70f516c667e4a41caa26ee51743670c6fff6337990"
     },
     {
       "relativePath": "review/07.jpg",
-      "sha256": "ae2e00a590068cfbbb66ed6582eacfbdf88bb004c55099414be587b91ef9960a"
+      "sha256": "ceefd98c7ce3323072cbb2d75b9c766ead144d0cf352af98eee51e2525d659b1"
     },
     {
       "relativePath": "review/08.jpg",
-      "sha256": "32921b9f0d37459f4622fbc770a27546e392fad63ffc369419d3e39bcb53bf9d"
+      "sha256": "d12bc991e92b669fc8e864b317ea626a8b8daef74ebb24580b1620036654e4f0"
     },
     {
       "relativePath": "review/09.jpg",
-      "sha256": "e52966ea2dfee2fb771ad852e49b10cb476fa9488c132891ea04a059c346693c"
+      "sha256": "fe57ba052d5ce11a4f04ca782bfc1035e3de38eda220e4e32717b0efe5629547"
     },
     {
       "relativePath": "review/10.jpg",
-      "sha256": "999f4ae3029bd77fe30bd7a87a456bad48c5cb74baa6096bc5f08ec085e434c9"
+      "sha256": "ba880eb3db7d5dade3e5c01a4ad0123662e7d348a1aba760dc731cfeb59ab4a8"
     }
   ],
   "metaRevealEvidence": {
@@ -142,7 +142,7 @@
         "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/thumbnail-opening.png",
         "sha256": "6b0b8e4c9a24a740b175f58a01e083b8292b5edc250ff7c39cdc16a0392f1e43",
         "durationSeconds": 4.5,
-        "transition": "design-accent-dip"
+        "transition": "neutral-dip"
       },
       "motion": {
         "type": "hyperframes-stable-media",
@@ -167,11 +167,10 @@
       "sourcePlaybackRate": 1,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-dip",
+        "transition": "neutral-dip",
         "spatialTransform": false,
         "jitterProneZoompan": false
-      },
-      "editorialCue": "codex-to-workshoplm"
+      }
     },
     {
       "id": "capture-and-shape",
@@ -190,11 +189,10 @@
       "sourceEndSeconds": 4.363,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-dip",
+        "transition": "neutral-dip",
         "spatialTransform": false,
         "jitterProneZoompan": false
       },
-      "editorialCue": "realtime-proof-separate-from-founder",
       "realtimeProof": {
         "relativePath": "artifacts/live/realtime-turn.json",
         "sha256": "46b265900e2851b6dfd492e1b604a36c89d872d8ab784098f1fb75525674318c",
@@ -223,7 +221,7 @@
       "sourceEndSeconds": 7.585,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-dip",
+        "transition": "neutral-dip",
         "spatialTransform": false,
         "jitterProneZoompan": false
       }
@@ -245,7 +243,7 @@
       "sourceEndSeconds": 9.869,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-dip",
+        "transition": "neutral-dip",
         "spatialTransform": false,
         "jitterProneZoompan": false
       }
@@ -267,7 +265,7 @@
       "sourceEndSeconds": 11.772,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-dip",
+        "transition": "neutral-dip",
         "spatialTransform": false,
         "jitterProneZoompan": false
       }
@@ -290,7 +288,7 @@
       "sourceEndSeconds": 18.349,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-dip",
+        "transition": "neutral-dip",
         "spatialTransform": false,
         "jitterProneZoompan": false
       }
@@ -313,7 +311,7 @@
       "sourceEndSeconds": 21.637,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-dip",
+        "transition": "neutral-dip",
         "spatialTransform": false,
         "jitterProneZoompan": false
       }
@@ -335,7 +333,7 @@
       "fixtureVideo": true,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-dip",
+        "transition": "neutral-dip",
         "spatialTransform": false,
         "jitterProneZoompan": false
       }
@@ -354,7 +352,7 @@
       "generatedMetaReveal": true,
       "motion": {
         "type": "hyperframes-stable-media",
-        "transition": "design-accent-dip",
+        "transition": "neutral-dip",
         "spatialTransform": false,
         "jitterProneZoompan": false
       }

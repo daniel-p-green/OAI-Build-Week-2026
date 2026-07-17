@@ -26,8 +26,9 @@ const voice = process.env.WORKSHOPLM_ROUGH_CUT_VOICE || "Samantha";
 const fixedSpeechRate = process.env.WORKSHOPLM_ROUGH_CUT_RATE ? Number(process.env.WORKSHOPLM_ROUGH_CUT_RATE) : undefined;
 const width = 1280;
 const height = 720;
+const neutralFilm = { ink: "#0D0D0D", muted: "#5D5D5D", paper: "#FFFFFF", hairline: "rgba(13,13,13,0.10)" };
 const authorizedSampleTranscript = "I want a workspace where a professional can talk through a messy idea, ground it in meetings and documents, shape it on a visual Map, approve the thinking, and create a Presentation, graphics, an Audio Overview, a Storyboard, and Video without losing the source trail. Every format should share one Style and feel simple enough for serious work, with two clear moments of human control.";
-let filmIdentity = { accent: "#1668E3", ink: "#171816", paper: "#F4F2EC", heading: "system-ui", body: "system-ui", designMarkdownPath: undefined, designTokensPath: undefined, frameMarkdownPath: undefined, frameJsonPath: undefined, designSha256: undefined, frameSha256: undefined, frameVersion: undefined, outcome: undefined };
+let filmIdentity = { accent: neutralFilm.ink, ink: neutralFilm.ink, paper: neutralFilm.paper, heading: "system-ui", body: "system-ui", designMarkdownPath: undefined, designTokensPath: undefined, frameMarkdownPath: undefined, frameJsonPath: undefined, designSha256: undefined, frameSha256: undefined, frameVersion: undefined, outcome: undefined };
 let realtimeProof;
 let finalAssemblyStarted = false;
 
@@ -100,20 +101,6 @@ function escapeXml(value) {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
 }
 
-function captionLines(text, maxCharacters = 66) {
-  const words = text.split(/[.!?]/)[0].trim().split(/\s+/).filter(Boolean);
-  const lines = [];
-  for (const word of words) {
-    const current = lines.at(-1);
-    if (!current || (current.length + word.length + 1 > maxCharacters && lines.length < 2)) lines.push(word);
-    else lines[lines.length - 1] = `${current} ${word}`;
-  }
-  if (lines.length > 2) lines.splice(2);
-  const second = lines[1];
-  if (second && second.length > maxCharacters) lines[1] = `${second.slice(0, maxCharacters - 1).trimEnd()}…`;
-  return lines;
-}
-
 function wrappedLines(text, maxCharacters, maxLines) {
   const words = text.replace(/\s+/g, " ").trim().split(" ").filter(Boolean);
   const lines = [];
@@ -142,31 +129,23 @@ function guideVoiceRate(text, durationSeconds) {
   return Math.max(120, Math.min(180, Math.ceil(requiredWordsPerMinute * 1.05)));
 }
 
-function overlaySvg(shot, index) {
-  const { accent, ink, paper } = filmIdentity;
+function captureFrameFilter(shotId) {
+  // The Map is a sparse canvas. A static center crop makes its actual claims
+  // legible without adding a synthetic label or a zoom-pan effect.
+  return ["promise", "capture-and-shape"].includes(shotId)
+    ? `scale=1540:-2,crop=${width}:${height}`
+    : `scale=${width}:${height}:force_original_aspect_ratio=increase,crop=${width}:${height}`;
+}
+
+function overlaySvg(shot) {
   if (cleanEditorialStyle) {
-    if (shot.id === "meta-reveal") return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"/>`;
-    const lines = captionLines(shot.caption ?? shot.narration, 74);
-    const doorwayCue = shot.id === "codex-doorway" ? `<rect x="28" y="24" width="306" height="62" rx="16" fill="${paper}" fill-opacity="0.97" stroke="${ink}" stroke-opacity="0.12"/>
-  <text x="50" y="50" font-family="system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="1.1" fill="${ink}" fill-opacity="0.62">CODEX → WORKSHOPLM</text>
-  <text x="50" y="72" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="${ink}">Conversation opens the visual workbench</text>` : "";
-    const realtimeCue = shot.id === "capture-and-shape" ? `<rect x="28" y="24" width="430" height="78" rx="16" fill="${paper}" fill-opacity="0.97" stroke="${ink}" stroke-opacity="0.12"/>
-  <text x="50" y="48" font-family="system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="1.1" fill="${ink}" fill-opacity="0.62">OPENAI REALTIME · SEPARATE VERIFIED PATH</text>
-  <text x="50" y="72" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="${ink}">${escapeXml(realtimeProof.model)} · WebRTC · ${realtimeProof.successfulToolCallCount} source-tool calls</text>
-  <text x="50" y="91" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="${ink}" fill-opacity="0.62">Founder recording ${finalBuild ? "remains" : "will remain"} a separate grounded Source</text>` : "";
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
-  ${doorwayCue}
-  ${realtimeCue}
-  <rect x="22" y="606" width="1236" height="96" rx="18" fill="${paper}" fill-opacity="0.96" stroke="${ink}" stroke-opacity="0.10"/>
-  <rect x="22" y="606" width="7" height="96" rx="3.5" fill="${accent}"/>
-  <text x="48" y="632" font-family="system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="1.2" fill="${ink}" fill-opacity="0.62">${String(index + 1).padStart(2, "0")} · ${escapeXml(shot.title.toUpperCase())}</text>
-  <text x="48" y="661" font-family="system-ui, sans-serif" font-size="19" font-weight="650" fill="${ink}">${escapeXml(lines[0] || "")}</text>
-  <text x="48" y="687" font-family="system-ui, sans-serif" font-size="19" font-weight="650" fill="${ink}">${escapeXml(lines[1] || "")}</text>
-</svg>`;
+    // Live product interaction is the annotation. The final build-record scene owns provenance text.
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}"/>`;
   }
+  const { ink, paper } = neutralFilm;
   const state = shot.state === "ready" ? (shot.captureBeats.length ? "CAPTURED FIXTURE" : "CAPTURED EVIDENCE") : "FINAL EVIDENCE PENDING";
   const stateFill = shot.state === "ready" ? "#15803d" : "#b45309";
-  const lines = captionLines(shot.caption ?? shot.narration);
+  const { lines } = wrappedLines(shot.caption ?? shot.narration, 62, 2);
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   <rect x="24" y="22" width="266" height="30" rx="15" fill="#0d0d0d" fill-opacity="0.88"/>
   <text x="40" y="42" font-family="Arial, sans-serif" font-size="12" font-weight="700" letter-spacing="1.2" fill="#ffffff">EDITORIAL ROUGH CUT · FIXTURE</text>
@@ -192,7 +171,7 @@ function hyperframesCompositionHtml(plan, identity) {
   const transitions = `${openingTransition}${plan.shots.slice(1).map((shot, index) => `<div id="transition-${index + 1}" class="clip transition" data-start="${(shot.startSeconds - 0.32).toFixed(2)}" data-duration="0.64" data-track-index="2"></div>`).join("")}`;
   const openingMotion = openingSequence ? `tl.fromTo("#transition-opening",{opacity:0},{opacity:1,duration:0.32,ease:"power2.in"},${(openingSequence.proofSeconds - 0.32).toFixed(2)});tl.to("#transition-opening",{opacity:0,duration:0.32,ease:"power2.out"},${openingSequence.proofSeconds.toFixed(2)});` : "";
   const motion = `${openingMotion}${plan.shots.slice(1).map((shot, index) => { const start = shot.startSeconds - 0.32; return `tl.fromTo("#transition-${index + 1}",{opacity:0},{opacity:1,duration:0.32,ease:"power2.in"},${start.toFixed(2)});tl.to("#transition-${index + 1}",{opacity:0,duration:0.32,ease:"power2.out"},${shot.startSeconds.toFixed(2)});`; }).join("")}`;
-  return `<!doctype html><html><head><meta charset="utf-8"><script src="gsap.min.js"></script><style>*{box-sizing:border-box}html,body,main{margin:0;width:${width}px;height:${height}px;overflow:hidden;background:${identity.paper};font-family:${identity.body},sans-serif}.clip{visibility:hidden}video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:${identity.paper}}.transition{position:absolute;inset:-2px;background:${identity.accent};will-change:opacity}</style></head><body><main data-composition-id="workshoplm-editorial-film" data-start="0" data-duration="${plan.targetDurationSeconds}" data-width="${width}" data-height="${height}" data-fps="30" data-design-sha256="${identity.designSha256}" data-frame-sha256="${identity.frameSha256}" data-frame-version="${identity.frameVersion}" data-frame-outcome="${escapeXml(identity.outcome ?? "")}" data-motion-system="stable-editorial-dip">${media}${transitions}</main><script>window.__timelines=window.__timelines||{};const tl=gsap.timeline({paused:true});${motion}window.__timelines["workshoplm-editorial-film"]=tl;</script></body></html>`;
+  return `<!doctype html><html><head><meta charset="utf-8"><script src="gsap.min.js"></script><style>*{box-sizing:border-box}html,body,main{margin:0;width:${width}px;height:${height}px;overflow:hidden;background:${neutralFilm.paper};font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.clip{visibility:hidden}video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:${neutralFilm.paper}}.transition{position:absolute;inset:-2px;background:${neutralFilm.ink};will-change:opacity}</style></head><body><main data-composition-id="workshoplm-editorial-film" data-start="0" data-duration="${plan.targetDurationSeconds}" data-width="${width}" data-height="${height}" data-fps="30" data-design-sha256="${identity.designSha256}" data-frame-sha256="${identity.frameSha256}" data-frame-version="${identity.frameVersion}" data-frame-outcome="${escapeXml(identity.outcome ?? "")}" data-motion-system="stable-neutral-dip">${media}${transitions}</main><script>window.__timelines=window.__timelines||{};const tl=gsap.timeline({paused:true});${motion}window.__timelines["workshoplm-editorial-film"]=tl;</script></body></html>`;
 }
 
 async function metaRevealSvg(finalManifestPath, options = {}) {
@@ -209,16 +188,17 @@ async function metaRevealSvg(finalManifestPath, options = {}) {
   const assetCount = submission.assets.length;
   const thumbnailNames = ["thumbnail-opening.png", "thumbnail-process.png", "thumbnail-result.png"];
   const thumbnails = await Promise.all(thumbnailNames.map(async (name) => `data:image/png;base64,${(await readFile(resolve(packageRoot, name))).toString("base64")}`));
-  const { accent, ink, paper, heading, body } = filmIdentity;
+  const { ink, muted, paper, hairline } = neutralFilm;
+  const heading = "system-ui";
+  const body = "system-ui";
   const headingFamily = `${escapeXml(heading)}, system-ui, sans-serif`;
   const bodyFamily = `${escapeXml(body)}, system-ui, sans-serif`;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   <rect width="1280" height="720" fill="${paper}"/>
-  <rect x="56" y="45" width="40" height="4" rx="2" fill="${accent}"/>
-  <text x="108" y="62" font-family="${bodyFamily}" font-size="13" font-weight="700" letter-spacing="1.4" fill="${ink}" fill-opacity="0.58">THE ORIGINAL → THE SUBMISSION</text>
+  <text x="56" y="62" font-family="${bodyFamily}" font-size="13" font-weight="700" letter-spacing="1.4" fill="${muted}">BUILD RECORD</text>
   <text x="56" y="110" font-family="${headingFamily}" font-size="34" font-weight="700" fill="${ink}">One raw thought. One traced body of work.</text>
-  <rect x="56" y="148" width="500" height="474" rx="22" fill="${paper}" stroke="${ink}" stroke-opacity="0.13"/>
-  <text x="84" y="184" font-family="${bodyFamily}" font-size="12" font-weight="700" letter-spacing="1.2" fill="${accent}">${options.sample ? "AUTHORIZED SAMPLE · COMPLETE TRANSCRIPT" : options.preview ? "LAYOUT PREVIEW · COMPLETE SAMPLE" : "FOUNDER BRAINSTORM · VERBATIM EXCERPT"}</text>
+  <rect x="56" y="148" width="500" height="474" rx="16" fill="${paper}" stroke="${hairline}"/>
+  <text x="84" y="184" font-family="${bodyFamily}" font-size="12" font-weight="700" letter-spacing="1.2" fill="${muted}">${options.sample ? "AUTHORIZED SAMPLE · COMPLETE TRANSCRIPT" : options.preview ? "LAYOUT PREVIEW · COMPLETE SAMPLE" : "FOUNDER BRAINSTORM · VERBATIM EXCERPT"}</text>
   ${transcriptLines.map((line, index) => `<text x="84" y="${220 + index * 32}" font-family="${bodyFamily}" font-size="18" font-weight="500" fill="${ink}">${escapeXml(line)}</text>`).join("\n  ")}
   <text x="84" y="594" font-family="${bodyFamily}" font-size="13" fill="${ink}" fill-opacity="0.58">${options.sample || options.preview ? "Complete sample · final mode requires hash-bound founder evidence" : "Verbatim excerpt · full hash-bound Source remains in the Workshop"}</text>
   <rect x="596" y="148" width="292" height="213" fill="${ink}"/>
@@ -227,10 +207,11 @@ async function metaRevealSvg(finalManifestPath, options = {}) {
   <image href="${thumbnails[0]}" x="596" y="148" width="292" height="213" preserveAspectRatio="xMidYMid meet"/>
   <image href="${thumbnails[1]}" x="908" y="148" width="292" height="213" preserveAspectRatio="xMidYMid meet"/>
   <image href="${thumbnails[2]}" x="596" y="381" width="604" height="241" preserveAspectRatio="xMidYMid meet"/>
-  <rect x="596" y="568" width="604" height="54" fill="${paper}" fill-opacity="0.97"/>
-  <text x="620" y="590" font-family="${bodyFamily}" font-size="10" font-weight="700" letter-spacing="1.1" fill="${accent}">HOW THIS WAS BUILT</text>
-  <text x="620" y="610" font-family="${bodyFamily}" font-size="14" font-weight="700" fill="${ink}">${outputCount} pieces of work · ${claimCount} source-linked claims · ${signOffCount} sign-offs · ${assetCount} hashed assets</text>
-  <rect x="596" y="148" width="604" height="474" rx="22" fill="none" stroke="${ink}" stroke-opacity="0.13" stroke-width="2"/>
+  <rect x="596" y="555" width="604" height="67" fill="${paper}" fill-opacity="0.97"/>
+  <text x="620" y="578" font-family="${bodyFamily}" font-size="10" font-weight="700" letter-spacing="1.1" fill="${muted}">VERIFIED PROVIDER RECORD</text>
+  <text x="620" y="598" font-family="${bodyFamily}" font-size="12" font-weight="600" fill="${ink}">GPT-5.6 Terra · GPT Image 2 · Cedar · Realtime verified separately</text>
+  <text x="620" y="615" font-family="${bodyFamily}" font-size="12" font-weight="600" fill="${ink}">${outputCount} pieces of work · ${claimCount} source-linked claims · ${signOffCount} approvals · ${assetCount} hashed assets</text>
+  <rect x="596" y="148" width="604" height="474" rx="16" fill="none" stroke="${hairline}"/>
   <text x="1198" y="670" text-anchor="end" font-family="${bodyFamily}" font-size="14" font-weight="700" fill="${ink}">WORKSHOPLM · BUILT WITH OPENAI + CODEX</text>
 </svg>`;
 }
@@ -258,7 +239,7 @@ async function main() {
       await writeFile(svg, overlaySvg(shot, index), "utf8");
       run("rsvg-convert", ["-w", String(width), "-h", String(height), svg, "-o", overlay]);
       const previewBase = index === 0 && existsSync(previewSubmissionManifest) ? resolve(dirname(previewSubmissionManifest), "thumbnail-opening.png") : resolve(repository, "outputs/workshoplm-current-ui", previewBases[index]);
-      run("ffmpeg", ["-y", "-i", previewBase, "-i", overlay, "-filter_complex", "[0:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2:color=#f7f7f5[base];[base][1:v]overlay=0:0,format=rgb24", "-frames:v", "1", frame]);
+      run("ffmpeg", ["-y", "-i", previewBase, "-i", overlay, "-filter_complex", `[0:v]${captureFrameFilter(shot.id)}[base];[base][1:v]overlay=0:0,format=rgb24`, "-frames:v", "1", frame]);
       frames.push(frame);
     }
     run("ffmpeg", ["-y", ...frames.flatMap((frame) => ["-i", frame]), "-filter_complex", `${frames.map((_, index) => `[${index}:v]scale=384:216[s${index}]`).join(";")};${frames.map((_, index) => `[s${index}]`).join("")}xstack=inputs=10:layout=0_0|384_0|768_0|1152_0|1536_0|0_216|384_216|768_216|1152_216|1536_216:fill=#f7f7f5[out]`, "-map", "[out]", "-frames:v", "1", previewPath]);
@@ -361,7 +342,7 @@ async function main() {
       const sourceEnd = Math.min(capture.video.durationSeconds, selectedBeats.at(-1).endMs / 1000 - (shot.captureEndHoldbackSeconds ?? 0.3));
       const sourceDuration = Math.min(mapDuration, Math.max(0.5, sourceEnd - sourceStart));
       const holdDuration = Math.max(0, mapDuration - sourceDuration);
-      run("ffmpeg", ["-y", "-loop", "1", "-t", String(proofSeconds), "-i", proofImage, "-ss", sourceStart.toFixed(3), "-i", sourceVideo, "-filter_complex", `[0:v]scale=${width}:${height},trim=duration=${proofSeconds},setpts=PTS-STARTPTS[proof];[1:v]scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=${filmIdentity.paper},trim=duration=${sourceDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${mapDuration},format=yuv420p[map];[proof][map]concat=n=2:v=1:a=0,format=yuv420p[out]`, "-map", "[out]", "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "20", basePath]);
+      run("ffmpeg", ["-y", "-loop", "1", "-t", String(proofSeconds), "-i", proofImage, "-ss", sourceStart.toFixed(3), "-i", sourceVideo, "-filter_complex", `[0:v]scale=${width}:${height},trim=duration=${proofSeconds},setpts=PTS-STARTPTS[proof];[1:v]${captureFrameFilter(shot.id)},trim=duration=${sourceDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${mapDuration},format=yuv420p[map];[proof][map]concat=n=2:v=1:a=0,format=yuv420p[out]`, "-map", "[out]", "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "20", basePath]);
       shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: shot.captureBeats, sourceStartSeconds: Number(sourceStart.toFixed(3)), sourceEndSeconds: Number(sourceEnd.toFixed(3)), openingProof: { type: shot.openingSequence.type, relativePath: relative(repository, proofImage), sha256: sha256(await readFile(proofImage)), durationSeconds: proofSeconds, transition: shot.openingSequence.transition } });
     } else if ((finalBuild || sampleEditorialBuild) && shot.id === "meta-reveal") {
       const metaSource = resolve(temporaryRoot, `${stem}-meta.svg`);
@@ -375,24 +356,22 @@ async function main() {
       const playbackRate = sampleProductVideo === externalVideo ? 1 : sourceDuration > duration ? sourceDuration / duration : 1;
       const presentationDuration = Math.min(duration, sourceDuration / playbackRate);
       const holdDuration = Math.max(0, duration - presentationDuration);
-      run("ffmpeg", ["-y", "-i", externalVideo, "-vf", `setpts=PTS/${playbackRate.toFixed(5)},scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=${filmIdentity.paper},trim=duration=${presentationDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${duration},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
+      run("ffmpeg", ["-y", "-i", externalVideo, "-vf", `setpts=PTS/${playbackRate.toFixed(5)},scale=${width}:${height}:force_original_aspect_ratio=increase,crop=${width}:${height},trim=duration=${presentationDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${duration},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
       shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: [], externalVideo: relative(repository, externalVideo), sourceDurationSeconds: sourceDuration, sourcePlaybackRate: playbackRate, ...(sampleProductVideo === externalVideo ? { fixtureVideo: true } : {}) });
     } else if (selectedBeats.length) {
       const sourceStart = Math.max(0, selectedBeats[0].startMs / 1000 - 0.2);
       const sourceEnd = Math.min(capture.video.durationSeconds, selectedBeats.at(-1).endMs / 1000 - (shot.captureEndHoldbackSeconds ?? 0.3));
       const sourceDuration = Math.max(0.5, sourceEnd - sourceStart);
       const holdDuration = Math.max(0, duration - sourceDuration);
-      run("ffmpeg", ["-y", "-ss", sourceStart.toFixed(3), "-i", sourceVideo, "-vf", `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=${filmIdentity.paper},trim=duration=${sourceDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${duration},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
+      run("ffmpeg", ["-y", "-ss", sourceStart.toFixed(3), "-i", sourceVideo, "-vf", `${captureFrameFilter(shot.id)},trim=duration=${sourceDuration.toFixed(3)},setpts=PTS-STARTPTS,tpad=stop_mode=clone:stop_duration=${holdDuration.toFixed(3)},trim=duration=${duration},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
       shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: shot.captureBeats, sourceStartSeconds: Number(sourceStart.toFixed(3)), sourceEndSeconds: Number(sourceEnd.toFixed(3)) });
     } else {
-      run("ffmpeg", ["-y", "-loop", "1", "-i", resolve(repository, "outputs/workshoplm-current-ui/03-grounded-map.png"), "-t", String(duration), "-vf", `scale=${width}:${height}:force_original_aspect_ratio=decrease,pad=${width}:${height}:(ow-iw)/2:(oh-ih)/2:color=${filmIdentity.paper},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
+      run("ffmpeg", ["-y", "-loop", "1", "-i", resolve(repository, "outputs/workshoplm-current-ui/03-grounded-map.png"), "-t", String(duration), "-vf", `${captureFrameFilter(shot.id)},format=yuv420p`, "-an", "-c:v", "libx264", "-preset", "fast", "-crf", "22", basePath]);
       shotRecords.push({ id: shot.id, state: effectiveState, durationSeconds: duration, ...(providerShot ? { narration: { model: providerShot.model, voice: providerShot.voice, requestId: providerShot.requestId, sha256: providerShot.sha256 } } : { guideVoiceRate: shotSpeechRate }), sourceBeats: [], stillFallback: "outputs/workshoplm-current-ui/03-grounded-map.png" });
     }
 
-    shotRecords.at(-1).motion = { type: "hyperframes-stable-media", transition: shot.openingSequence ? "opening-proof-dip" : index ? "design-accent-dip" : "opening-hold", spatialTransform: false, jitterProneZoompan: false };
-    if (cleanEditorialStyle && shot.id === "codex-doorway") shotRecords.at(-1).editorialCue = "codex-to-workshoplm";
+    shotRecords.at(-1).motion = { type: "hyperframes-stable-media", transition: shot.openingSequence ? "opening-proof-dip" : index ? "neutral-dip" : "opening-hold", spatialTransform: false, jitterProneZoompan: false };
     if (cleanEditorialStyle && shot.id === "capture-and-shape") {
-      shotRecords.at(-1).editorialCue = "realtime-proof-separate-from-founder";
       shotRecords.at(-1).realtimeProof = realtimeProof;
     }
 
@@ -453,7 +432,7 @@ async function main() {
     builtAt: new Date().toISOString(),
     plan: "submission/demo-film-plan.json",
     sourceCapture: plan.captureManifest,
-    compositor: { engine: "hyperframes", mode: "local", version: "0.7.60", composition: "workshoplm-editorial-film", jitterProneZoompan: false, spatialTransforms: false, transition: "design-accent-dip", design: { sha256: filmIdentity.designSha256, source: relative(repository, filmIdentity.designMarkdownPath) }, frame: { version: filmIdentity.frameVersion, sha256: filmIdentity.frameSha256, source: relative(repository, filmIdentity.frameMarkdownPath) } },
+    compositor: { engine: "hyperframes", mode: "local", version: "0.7.60", composition: "workshoplm-editorial-film", jitterProneZoompan: false, spatialTransforms: false, transition: "neutral-dip", design: { sha256: filmIdentity.designSha256, source: relative(repository, filmIdentity.designMarkdownPath) }, frame: { version: filmIdentity.frameVersion, sha256: filmIdentity.frameSha256, source: relative(repository, filmIdentity.frameMarkdownPath) } },
     voice: providerNarration ? { provider: "OpenAI", model: providerNarration.model, name: providerNarration.voice, disclosure: providerNarration.disclosure, requestCount: providerNarration.requestCount, finalProviderNarration: true } : { provider: "local macOS say", name: voice, ratePolicy: fixedSpeechRate ? `fixed ${fixedSpeechRate}` : "adaptive 120–180 words per minute", finalProviderNarration: false },
     video: { relativePath: finalBuild ? "workshoplm-demo.mp4" : sampleEditorialBuild ? "workshoplm-demo-sample.mp4" : "workshoplm-demo-rough-cut.mp4", sha256: sha256(videoBytes), durationSeconds: Number(inspected.format?.duration || 0), streams: inspected.streams || [] },
     contactSheet: { relativePath: "contact-sheet.jpg", sha256: sha256(sheetBytes) },
