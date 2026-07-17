@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { useEffect, useMemo, useRef } from "react";
 import type { ExcalidrawImperativeAPI } from "@excalidraw/excalidraw/types";
+import { connectionBetween } from "./excalidraw-map-geometry";
 import { baselineFromScene, patchesFromScene, type CanvasNodePatch, type MapSceneElement, type SceneNodeBaseline } from "./excalidraw-map-state";
 
 const Excalidraw = dynamic(() => import("@excalidraw/excalidraw").then((module) => module.Excalidraw), { ssr: false });
@@ -62,7 +63,14 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
   const activeSourceIds = new Set(sources.map((source) => source.id));
   const nodeIds = new Set(nodes.map((node) => node.id));
   const nodeById = new Map(nodes.map((node) => [node.id, node]));
-  const sourceGeometry = new Map(sources.map((source, index) => [source.id, { x: 24, y: 70 + index * 180, width: 184, height: 108 }]));
+  const groundedNodes = nodes.filter((node) => node.kind === "grounded");
+  const sourceForNode = new Map(groundedNodes.flatMap((node, index) => {
+    const sourceId = node.sourceId ?? sources[index % Math.max(1, sources.length)]?.id;
+    return sourceId ? [[node.id, sourceId] as const] : [];
+  }));
+  const canvasSourceIds = new Set(sourceForNode.values());
+  const canvasSources = sources.filter((source) => canvasSourceIds.has(source.id));
+  const sourceGeometry = new Map(canvasSources.map((source, index) => [source.id, { x: 24, y: 70 + index * 180, width: 184, height: 108 }]));
   const nodeGeometry = new Map(nodes.map((node) => [node.id, { x: toSceneX(node.x), y: toSceneY(node.y), width: toSceneWidth(node.width), height: toSceneY(node.height) }]));
   const clusterDescriptors = ([
     { id: "map-cluster-evidence", text: "EVIDENCE", kind: "grounded", fill: "#eef8f1", stroke: "#008635" },
@@ -103,7 +111,7 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     strokeColor: `${cluster.stroke}c4`,
     locked: true,
   }));
-  const sourceShapes = sources.map((source) => {
+  const sourceShapes = canvasSources.map((source) => {
     const geometry = sourceGeometry.get(source.id)!;
     return {
       type: "rectangle" as const,
@@ -137,22 +145,18 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
   }));
 
   const linkedSourceIds = new Set<string>();
-  const sourceLinks = nodes.flatMap((node, index) => {
-    const sourceId = node.sourceId ?? (node.kind === "grounded" ? sources[index % Math.max(1, sources.length)]?.id : undefined);
+  const sourceLinks = groundedNodes.flatMap((node) => {
+    const sourceId = sourceForNode.get(node.id);
     if (!sourceId || !activeSourceIds.has(sourceId) || linkedSourceIds.has(sourceId)) return [];
     const start = sourceGeometry.get(sourceId);
     const end = nodeGeometry.get(node.id);
     if (!start || !end) return [];
     linkedSourceIds.add(sourceId);
-    const x = start.x + start.width;
-    const y = start.y + start.height / 2;
+    const connection = connectionBetween(start, end);
     return [{
       type: "arrow" as const,
       id: `source-edge-${sourceId}-${node.id}`,
-      x,
-      y,
-      width: end.x - x,
-      height: end.y + end.height / 2 - y,
+      ...connection,
       start: { id: sourceShapeId(sourceId) },
       end: { id: shapeId(node.id) },
       strokeColor: `${ink}54`,
@@ -167,17 +171,11 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     const start = nodeGeometry.get(edge.from);
     const end = nodeGeometry.get(edge.to);
     if (!start || !end) return [];
-    const x = start.x + start.width / 2;
-    const y = start.y + start.height / 2;
+    const connection = connectionBetween(start, end);
     return [{
       type: "arrow" as const,
       id: `graph-edge-${edge.id}`,
-      x,
-      y,
-      width: end.x + end.width / 2 - x,
-      height: end.y + end.height / 2 - y,
-      start: { id: shapeId(edge.from) },
-      end: { id: shapeId(edge.to) },
+      ...connection,
       strokeColor: edge.kind === "contradicts" ? "#e02e2a" : nodeById.get(edge.to)?.kind === "creative" ? accent : `${ink}88`,
       strokeWidth: nodeById.get(edge.to)?.kind === "creative" ? 2.5 : 1.5,
       roughness: 0,

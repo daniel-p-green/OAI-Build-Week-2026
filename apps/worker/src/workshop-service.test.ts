@@ -6,6 +6,17 @@ import { DatabaseSync } from "node:sqlite";
 import { describe, expect, it } from "vitest";
 import { analyzeWebsiteStyle, applyMapOperation, applyStyleLibrary, applyWorkshopAction, approveSketch, approveVisualDna, assertStoryboardGrounding, beginWebsiteStyleAnalysis, captureFallbackTranscript, captureImportedTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, dismissWorkshopOrientation, extractWorkshopCandidates, fetchWebsiteBrandAsset, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestSource, ingestUrl, listStyleLibrary, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, markImagePanelFailed, normalizePdfLayoutText, organizeGroundedMap, readWorkshopState, recordGeneratedImagePanel, recordOutputFailure, repairBenignCanvasNormalization, resolveWorkshopArtifact, runWebsiteStyleAnalysis, searchWorkshopSources, selectImagePanelForRegeneration, selectWorkshop, sendConversationMessage, setActiveSourceScope, syncMapCanvas, undoMapOperation, updateAudioOverview, updateStoryboardPanel, updateWorkshopOnboarding } from "./workshop-service.js";
 describe("Workshop service", () => { it("persists brief/style/storyboard gates and blocks video until the storyboard is approved", async () => { const root = await mkdtemp(join(tmpdir(), "workshop-service-")); expect(() => applyWorkshopAction("renderVideo", root)).toThrow(/storyboard/); const brief = applyWorkshopAction("approveBrief", root); expect(brief.frame).toMatchObject({ markdownPath: "generated/FRAME-v1.md", executablePath: "generated/FRAME-v1.json" }); const frameMarkdown = await readFile(join(root, brief.frame!.markdownPath), "utf8"); expect(frameMarkdown).toContain("# FRAME.md"); expect(frameMarkdown).toContain("## Audience\nClients and external decision-makers"); expect(frameMarkdown).toContain("## Direction\nShow one continuous capture"); expect(frameMarkdown).not.toMatch(/Production proof|finished output/i); expect(JSON.parse(await readFile(join(root, brief.frame!.executablePath), "utf8"))).toMatchObject({ frameVersion: 1, schemaVersion: 1, audience: "Clients and external decision-makers", direction: expect.stringContaining("Show one continuous capture"), evidence: expect.any(Array), productionProof: expect.stringContaining("Show one continuous capture") }); applyWorkshopAction("lockManualStyle", root); expect(applyWorkshopAction("approveStoryboard", root).storyboardApproved).toBe(true); expect(applyWorkshopAction("renderVideo", root).videoState).toBe("queued"); expect(readWorkshopState(root).briefApproved).toBe(true); await rm(root, { recursive: true, force: true }); });
+it("seeds the sample Workshop with one legible Evidence to Synthesis to Direction chain", async () => {
+  const root = await mkdtemp(join(tmpdir(), "workshop-map-seed-"));
+  const state = readWorkshopState(root);
+  expect(state.mapEdges).toEqual([
+    expect.objectContaining({ from: "promise", to: "proof" }),
+    expect.objectContaining({ from: "proof", to: "risk" }),
+    expect.objectContaining({ from: "risk", to: "visual" }),
+  ]);
+  expect(state.mapEdges).not.toContainEqual(expect.objectContaining({ from: "proof", to: "visual" }));
+  await rm(root, { recursive: true, force: true });
+});
 it("opens a genuinely fresh data root in durable onboarding and preserves outcome, name, and orientation state", async () => {
   const root = await mkdtemp(join(tmpdir(), "workshop-onboarding-"));
   const priorFixtureMode = process.env.WORKSHOPLM_SEEDED_FIXTURE;

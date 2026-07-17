@@ -10843,3 +10843,34 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Preserve historical visual research separately; only the production-browser baseline directory is the authoritative current responsive proof.
 - Founder visual acceptance and the authentic founder Workshop remain the next proof gates.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 03:17 CT — Map relationships now read as one professional reasoning path
+
+### Changed
+
+- Repaired the constrained semantic canvas after current screenshots revealed relationship lines entering card centers and crossing the recommended Direction label.
+- Added rectangle-boundary connection geometry so evidence, synthesis, and direction arrows stop outside card text. Kept those graph links unbound because Excalidraw's automatic binding pulled their endpoints back into translucent card centers.
+- Corrected the seeded sample graph from a direct Evidence → Direction shortcut to one legible `promise → proof → synthesis → direction` chain. The deterministic fresh-Workshop organizer already used the same Evidence → Synthesis → Direction structure.
+- Limited canvas Source objects to Sources attached to grounded evidence. The full selected Source set remains visible in the shelf, while creative or derived lineage no longer draws a misleading shortcut across the reasoning path.
+- Refreshed and inspected the affected desktop, compact, onboarding, Source-sheet, evidence-sheet, and website-Style Map baselines. Unrelated Created-work and Style snapshot churn from regeneration was restored rather than included.
+- Audited repository hygiene. No cache directory, local SQLite database, Next/Turbo build output, test result, or TypeScript build state is tracked. Large tracked media and provider artifacts are intentional hackathon evidence, so they were preserved. Ignored caches and the explicitly user-owned plan, video, and design-audit work remain untouched.
+
+### Verified
+
+- Inspected the live current Workshop in the Codex in-app browser. Five grounded evidence cards converge on one synthesis and one recommended direction without any line crossing card text.
+- Inspected the refreshed `desktop-map.png`, `compact-map.png`, `desktop-onboarding-map.png`, and `desktop-map-style-ready.png` at original resolution. Desktop and compact retain the complete hierarchy; mobile remains the deliberate Direction → Synthesis → Evidence outline.
+- Added two geometry regression tests and one seeded semantic-chain regression. All 32 web tests and all 129 worker tests pass.
+- The production build succeeded and the complete production-browser suite passed all 31 scenarios. An initial run encountered a transient `ECONNRESET`; the isolated edit/undo scenario passed immediately, and the final full serial run completed green.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam with two approved gates, two current rendered outputs, one Sketch, six image panels, a Cedar Audio Overview, five Storyboard panels, current local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Keep the Map semantically constrained. A relationship that cannot be read at a glance is a product defect even when the underlying graph is technically valid.
+- Treat the Source shelf as the complete scope view and the canvas as the evidence view. Not every selected Source needs a standalone canvas card when it does not ground a visible evidence node.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
