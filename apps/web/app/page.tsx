@@ -538,6 +538,7 @@ export default function WorkshopPage() {
   const currentStage = stageForView(view);
   const backTarget: ObjectView | null = view === "conversation" || view === "map" ? null : view === "brief" ? "map" : view === "outputs" ? "brief" : "outputs";
   const mapUpdateRequired = workshopMapNeedsUpdate(state);
+  const focusedArtifactHasPrimaryAction = view === "output" && Boolean(selectedOutput?.editableRelativePath || selectedOutputId?.startsWith("sketch"));
   const workflowAction = creationProgress
     ? <Button variant="secondary" disabled>Creating {creationProgress.label}…</Button>
     : !state?.mapNodes.length
@@ -557,7 +558,7 @@ export default function WorkshopPage() {
           : !state.storyboardApproved
             ? view === "storyboard"
               ? <Button aria-label="Approve storyboard" variant={sheet ? "secondary" : "primary"} disabled={busy || state.storyboard.stale || !state.storyboard.panels.length} onClick={() => { void post({ action: "approveStoryboard" }); }}>Approve</Button>
-              : <Button variant={sheet ? "secondary" : "primary"} onClick={() => openView("storyboard")}>Review storyboard</Button>
+              : <Button variant={sheet || focusedArtifactHasPrimaryAction ? "secondary" : "primary"} onClick={() => openView("storyboard")}>Review storyboard</Button>
             : state.videoState === "rendered"
               ? <Button variant={sheet ? "secondary" : "primary"} onClick={() => openOutput([...state.videos].reverse().find((video) => !video.stale)?.id ?? "video")}>View video</Button>
               : state.videoState === "queued"

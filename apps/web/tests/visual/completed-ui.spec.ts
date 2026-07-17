@@ -724,6 +724,8 @@ test.describe("completed Workshop judge path", () => {
       await expect(page.getByRole("button", { name: "3 sources" })).toBeVisible();
       await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveCount(0);
       await expect(page.getByRole("link", { name: "Download PowerPoint" })).toHaveClass(/oai-button--primary/);
+      await expect(page.getByRole("button", { name: "Review storyboard" })).toHaveClass(/oai-button--secondary/);
+      await expectPrimaryActions(page, 1);
       await expect(page.getByRole("region", { name: "Sources in this work" })).toBeVisible();
       await expect(page.getByRole("button", { name: /^Show source for / })).toHaveCount(4);
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);

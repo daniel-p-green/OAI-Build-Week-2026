@@ -11724,3 +11724,34 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages after the image-role and visual-baseline changes.
 - `pnpm demo:e2e` passed the complete recorded-fixture seam through the grounded Map, both approvals, Style, Sketch, Presentation, Infographic, Audio Overview, six-image set, Storyboard, local Video, and build trace.
 - No provider request ran. The connected product-quality goal remains active pending founder visual acceptance; demo-film work remains paused.
+
+---
+
+## 2026-07-17 09:53 CT — Focused work has one dominant professional action
+
+### Changed
+
+- Audited the current Created work gallery, Presentation, Infographic, Audio Overview, and Sketch together. Focused Presentation and Infographic showed two competing primary black actions: their editable PowerPoint export and the Workshop-level `Review storyboard` action.
+- Made Storyboard review contextually secondary when the focused object already has a primary editable export. Presentation and Infographic now emphasize `Download PowerPoint`; Sketch emphasizes `Download SVG`. Storyboard review remains visible in the shared Workshop header and stays primary on Created work, Image set, and Audio Overview where it is the actual next workflow action.
+- Added a browser assertion requiring exactly one enabled primary action in the focused Presentation state and requiring `Review storyboard` to use the official secondary button primitive there.
+
+### Verified
+
+- Visually inspected the refreshed desktop, compact, and mobile Presentation, Infographic, and Sketch baselines. Each focused object now has one black professional action, with source inspection and preview controls remaining available without competing emphasis.
+- The complete 35-scenario Playwright suite passed after the nine intentionally affected responsive baselines were refreshed. Two earlier retries ended before application assertions because Chrome exited during launch; the clean full run passed all desktop, compact, mobile, accessibility, first-use, source-tracing, history, and created-work scenarios.
+- No OpenAI provider request ran; the cumulative request count remains 118.
+
+### Decisions and open items
+
+- Shared workflow state may stay visible in the header, but it cannot visually outrank the focused object's direct professional action.
+- The connected product-quality item remains open until founder visual acceptance. Demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 09:54 CT — Focused-action hierarchy clears repository and seam checks
+
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 38 web tests and 130 worker tests.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam with grounding, both approvals, Style, eight-idea Sketch, Presentation, Infographic, three-section Cedar Audio Overview, six-image provider fixture, five-panel Storyboard, local Video, and build trace.
+- No provider request ran. The connected product-quality goal remains active pending founder visual acceptance; demo-film work remains paused.
