@@ -22,6 +22,7 @@ import {
   generateStoryboard,
   ingestSource,
   lockManualStyle,
+  organizeGroundedMap,
   readWorkshopState,
   updateWorkshopOnboarding,
 } from "../apps/worker/src/workshop-service.ts";
@@ -99,23 +100,26 @@ async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: Prov
   if (founderCapture) await captureImportedTranscript(founderCapture.transcript, { title: "Founder brainstorm", origin: "Founder-provided recording", permission: shareFounderSource ? "shareable" : "private" }, root);
   else if (!preservedCaptures.length && allowSample) await captureImportedTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved Brief, coherent visuals, an editable Storyboard, and the final Build Week demonstration Video.", { title: "Authorized sample brainstorm", origin: "Authorized sample script", permission: "sanitized" }, root);
   else if (!preservedCaptures.length) await captureFallbackTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved Brief, coherent visuals, an editable Storyboard, and the final Build Week demonstration Video.", root);
-  await ingestSource({
-    title: "Build Week judge path",
-    origin: "Sanitized operator fixture",
-    permission: "sanitized",
-    text: "Judges need one continuous Capture to Map to Brief to Create path. Every factual claim must retain a visible source locator. The public demo video must remain under three minutes.",
-  }, root);
-  await ingestSource({
-    title: "WorkshopLM product direction",
-    origin: "Sanitized operator fixture",
-    permission: "sanitized",
-    text: "Professional teams start with unstructured voice or meeting notes. The approved Map becomes the Brief. Brand rules govern the presentation, infographic, image set, Storyboard, and narrated Video. Only an approved current Storyboard may render.",
-  }, root);
+  if (!founderCapture) {
+    await ingestSource({
+      title: "Build Week judge path",
+      origin: "Sanitized operator fixture",
+      permission: "sanitized",
+      text: "Judges need one continuous Capture to Map to Brief to Create path. Every factual claim must retain a visible source locator. The public demo video must remain under three minutes.",
+    }, root);
+    await ingestSource({
+      title: "WorkshopLM product direction",
+      origin: "Sanitized operator fixture",
+      permission: "sanitized",
+      text: "Professional teams start with unstructured voice or meeting notes. The approved Map becomes the Brief. Brand rules govern the presentation, infographic, image set, Storyboard, and narrated Video. Only an approved current Storyboard may render.",
+    }, root);
+  }
   updateWorkshopOnboarding({ outcome: "client_facing_pitch", step: "complete" }, root);
   dismissWorkshopOrientation("map", root);
   dismissWorkshopOrientation("outputs", root);
   extractWorkshopCandidates(root);
   if (config) await generateGroundedMapWithGpt56(root, { apiKey: config.media.apiKey, model: "gpt-5.6-terra", reasoningEffort: "medium" }, config.budget.fetch);
+  else organizeGroundedMap(root);
   applyWorkshopAction("approveBrief", root);
   lockManualStyle({
     name: "WorkshopLM official demo",

@@ -1346,7 +1346,7 @@ test("voice Sources keep provider transport language out of the professional sur
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   const readyState = await (await page.request.get("/api/workshop")).json();
-  const voiceSource = { ...readyState.sourceItems[0], title: "Voice capture-only fallback transcript 2026-07-16T05:48:00Z", origin: "gpt-realtime-2.1 capture-only fallback", locator: "gpt-realtime-2.1 capture-only fallback · normalized:21960f8a7bf7" };
+  const voiceSource = { ...readyState.sourceItems[0], title: "Voice capture-only fallback transcript 2026-07-16T05:48:00Z", origin: "gpt-realtime-2.1 capture-only fallback", locator: "gpt-realtime-2.1 capture-only fallback · normalized:21960f8a7bf7", permission: "private" as const };
   const normalizedDocument = { ...readyState.sourceItems[1], locator: "Local · normalized:729dbff1a620" };
   const state = { ...readyState, sourceItems: [voiceSource, normalizedDocument, ...readyState.sourceItems.slice(2)] };
   await page.route("**/api/workshop", async (route) => route.request().method() === "GET" ? route.fulfill({ json: state }) : route.continue());
@@ -1354,8 +1354,8 @@ test("voice Sources keep provider transport language out of the professional sur
   await page.getByRole("button", { name: "3 sources" }).click();
   const sources = page.getByRole("dialog", { name: "Sources" });
   await expect(sources.getByText("Voice brainstorm", { exact: true }).first()).toBeVisible();
-  await expect(sources).toContainText("Voice · 5 claims");
-  await expect(sources).toContainText("Voice brainstorm · Source material");
+  await expect(sources).toContainText("Private · Voice · 5 claims");
+  await expect(sources).toContainText("Private · Voice brainstorm · Source material");
   await expect(sources).not.toContainText("gpt-realtime-2.1");
   await expect(sources).not.toContainText("capture-only fallback");
   await expect(sources).not.toContainText("normalized:");
@@ -1368,6 +1368,7 @@ test("voice Sources keep provider transport language out of the professional sur
   const evidence = page.getByRole("dialog", { name: "Source" });
   await expect(evidence).toContainText("Voice brainstorm · chunk 04");
   await expect(evidence).toContainText("OriginVoice");
+  await expect(evidence).toContainText("AccessPrivate");
   await expect(evidence).not.toContainText("gpt-realtime-2.1");
   await expect(evidence).not.toContainText("capture-only fallback");
 });

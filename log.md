@@ -11506,3 +11506,33 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
 - User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 08:57 CT — Founder preflight now proves the transcript became the work
+
+### Changed
+
+- Ran the real zero-spend founder-import command with a disposable timestamped H.264/AAC recording and exact transcript. The first run exposed a demo-truth defect: the operator injected two sanitized sample fixtures, so the visible approved direction and five of six planned images were driven by fixture copy rather than the founder transcript.
+- Founder mode now imports only the supplied recording transcript. The authorized sample and sanitized operator Sources remain available for the separate sample or Realtime path, but cannot silently enter the authentic founder Workshop.
+- Zero-spend preflight now organizes a deterministic Evidence → Synthesis → Direction Map before approving the Brief. Private review therefore shows the same professional object contract that the paid GPT-5.6 Terra request will replace, instead of approving an unorganized list of extracted claims.
+- Source review now says `Private`, `Shareable`, or `Sample` in the quiet row metadata and adds `Access` to the exact Source view. Provider transport language remains hidden.
+
+### Verified
+
+- The corrected private preflight produced exactly one `Founder brainstorm` Source, one Synthesis, one Direction, an approved source-grounded Brief, Presentation, Infographic, six-image plan, Audio Overview plan, and five-panel Storyboard plan. Every output claim and every image evidence edge resolved to that founder Source. `paidCallsMade` remained `false`; `nextCommand` remained withheld while the Source was private.
+- The ChatGPT/Codex in-app browser showed one Source, one key evidence item, one Synthesis, one approved Direction, and `Private · Recording · 2 claims`. The complete Source excerpt and privacy state remained readable without exposing a filesystem path or provider mechanism.
+- A second zero-spend preflight with explicit sharing approval changed the same Source to `shareable`, cleared the private-source list, marked the public package eligible, and printed the bounded thirteen-request command. Hash-bound film-input staging remains covered by the existing founder-capture tests; this audit did not copy disposable media into the repository's final film inputs.
+- The separate authorized-sample preflight still kept its three sanitized Sources, generated the deterministic semantic hierarchy, and printed its bounded live command.
+- The optimized Next.js production build passed. The complete Playwright suite passed all 35 desktop, compact, mobile, accessibility, first-use, source-tracing, and created-work scenarios after the Source-access visual contracts were refreshed.
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 37 web tests and 130 worker tests. `pnpm demo:e2e` passed the complete recorded-fixture seam through both approvals, six images, Cedar Audio Overview, Storyboard, local Video, and build trace.
+- `pnpm submission:build` rebuilt a valid, current, untampered 25-asset `partial` acceptance package and `pnpm submission:verify` passed it. The broader packet verifier remained red because the paused sample-film manifest is hash-bound to an older acceptance-manifest version. That sample-film artifact and the user-owned film-plan work were not rewritten during this product tranche.
+- No OpenAI provider request ran; the append-only cumulative request count remains 118. All disposable recordings, transcripts, Workshop roots, and browser servers created for this audit were removed.
+
+### Decisions and open items
+
+- The authentic meta-demo cannot be driven by injected sample copy. The bounded founder operator uses the founder transcript as its sole knowledge source; broader multi-Source work remains part of the normal Workshop product rather than this proof run.
+- The deterministic preflight Map is for zero-spend privacy and content review; it is not represented as GPT-5.6 provider evidence. The paid command still generates and records the GPT-5.6 Terra Map.
+- The connected product-quality item remains open until founder visual acceptance. The authentic founder recording, its paid run, and human review remain the next completion gate; demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
