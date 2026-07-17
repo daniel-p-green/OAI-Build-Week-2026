@@ -10573,3 +10573,26 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The full `01:02 CT` fresh-Map status entry was appended earlier in this file because its patch again matched a repeated current-milestone footer. It remains unchanged there to preserve append-only history; this correction establishes its intended current chronology.
 - The verified result is unchanged: a new Workshop no longer shows `Create · Needs update` before created work exists; web typecheck and all 30 web tests pass; no additional provider request ran and the ledger remains 117.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 01:09 CT — Create inspection and safe repository hygiene
+
+### Changed
+
+- Inspected the live acceptance Workshop's Created work surface in the Codex in-app browser at 1440×900. The Presentation remains the dominant object, six supporting formats remain progressively disclosed below it, source counts are visible on every created format, and `View video` is the single contextual next action.
+- Removed only ignored and reproducible local material: the 415 MB Next development cache, stale browser-automation logs, and `.DS_Store` metadata. The 61 MB acceptance data root, dependency installation, all tracked evidence, and all user-owned dirty files were preserved.
+
+### Verified
+
+- `git status --short` was identical before and after cleanup: no tracked or untracked user work was removed or altered.
+- `pnpm check` rebuilt from a cold Turbo cache and passed lint, typecheck, and tests across all thirteen packages, including 126 worker tests, 30 web tests, and eight plugin tests.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam with the approved Brief, locked Style, six provider-backed fixture images, Cedar Audio Overview, approved five-panel Storyboard, rendered local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Do not rewrite Git history or remove committed evidence media before submission. `git count-objects -vH` reports roughly 605 MB of packed history and 63 MB of unreachable garbage, but destructive pruning or evidence deletion has a worse risk-to-value ratio than preserving the current proof record.
+- The live Create surface did not expose a concrete usability defect worth destabilizing. Founder visual acceptance remains the product-quality gate; the next product change should answer a specific founder or intended-audience objection.
+- User-owned `PLAN-2026-07-13.md`, interrupted founder/final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
