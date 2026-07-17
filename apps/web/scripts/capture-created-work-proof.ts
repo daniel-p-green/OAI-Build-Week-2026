@@ -7,7 +7,7 @@ import { chromium } from "@playwright/test";
 const repository = resolve(process.cwd(), "../..");
 const generated = resolve(repository, ".workshoplm", "acceptance", "generated");
 const presentationRoot = resolve(repository, "artifacts", "live-review", "presentation-v7");
-const infographicRoot = resolve(repository, "artifacts", "live-review", "infographic-v5");
+const infographicRoot = resolve(repository, "artifacts", "live-review", "infographic-v6");
 const sha256 = (bytes: Uint8Array | string) => createHash("sha256").update(bytes).digest("hex");
 
 async function captureSlides(htmlPath: string, outputRoot: string, selector = ".slide"): Promise<string[]> {
@@ -55,13 +55,13 @@ async function main(): Promise<void> {
   await Promise.all([
     copyFile(presentationHtml, resolve(presentationRoot, "presentation-v7.html")),
     copyFile(presentationPptx, resolve(presentationRoot, "presentation-v7.pptx")),
-    copyFile(infographicHtml, resolve(infographicRoot, "infographic-v5.html")),
-    copyFile(infographicPptx, resolve(infographicRoot, "infographic-v5.pptx")),
+    copyFile(infographicHtml, resolve(infographicRoot, "infographic-v6.html")),
+    copyFile(infographicPptx, resolve(infographicRoot, "infographic-v6.pptx")),
   ]);
   const presentationSlides = await captureSlides(presentationHtml, presentationRoot);
   const infographicSlides = await captureSlides(infographicHtml, infographicRoot, ".infographic");
   await contactSheet(presentationSlides, resolve(presentationRoot, "contact-sheet.png"));
-  await copyFile(infographicSlides[0]!, resolve(infographicRoot, "infographic-v5.png"));
+  await copyFile(infographicSlides[0]!, resolve(infographicRoot, "infographic-v6.png"));
 
   const evidence = {
     generatedAt: new Date().toISOString(),
@@ -74,7 +74,7 @@ async function main(): Promise<void> {
     writeFile(resolve(presentationRoot, "evidence.json"), `${JSON.stringify(evidence.presentation, null, 2)}\n`),
     writeFile(resolve(infographicRoot, "evidence.json"), `${JSON.stringify(evidence.infographic, null, 2)}\n`),
     writeFile(resolve(presentationRoot, "README.md"), "# Current Presentation proof\n\nDeterministically rendered from the current recorded acceptance Workshop after the active product vocabulary moved to Capture → Shape → Create. The editable PowerPoint, HTML, five slide images, and contact sheet share the same approved Brief, Style, and Sources. No provider request was made for this capture.\n"),
-    writeFile(resolve(infographicRoot, "README.md"), "# Current Infographic proof\n\nDeterministically rendered from the current recorded acceptance Workshop after the active product vocabulary moved to Capture → Shape → Create. The editable PowerPoint, HTML, and visual proof share the same approved Brief, Style, and Sources. No provider request was made for this capture.\n"),
+    writeFile(resolve(infographicRoot, "README.md"), "# Current Infographic proof\n\nDeterministically rendered from the current recorded acceptance Workshop as a connected visual narrative rather than a card grid. The editable PowerPoint, HTML, and visual proof share the same approved Brief, Style, and Sources. No provider request was made for this capture.\n"),
   ]);
   console.log(JSON.stringify(evidence));
 }

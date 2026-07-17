@@ -37,8 +37,10 @@ describe("production renderers", () => {
     expect(deck).toContain('class="brand-logo"');
     expect(deck).toContain("WorkshopLM · Client presentation");
     const infographic = renderInfographic(brief);
-    expect(infographic).toContain("Source-defensible brief");
-    expect(infographic).toContain('class="infographic-grid"');
+    expect(infographic).toContain("Grounded infographic");
+    expect(infographic).toContain('class="infographic-flow"');
+    expect(infographic).toContain('aria-label="Grounded visual narrative"');
+    expect(infographic).toContain("linear-gradient(90deg,var(--accent)");
     expect(infographic.match(/<article class="block"/g)).toHaveLength(3);
   });
   it("places a reviewed generated visual on the cover with inspectable image provenance", async () => {
@@ -160,12 +162,12 @@ describe("production renderers", () => {
     const board = renderInfographic({ ...brief, style: { ...brief.style, intent: "board_deck" } });
     const workshop = renderInfographic({ ...brief, style: { ...brief.style, intent: "internal_workshop" } });
     expect(client).toContain('class="infographic intent-client-facing-pitch" data-intent="client_facing_pitch"');
-    expect(client).toContain("Source-defensible brief");
+    expect(client).toContain("Grounded infographic");
     expect(board).toContain('class="infographic intent-board-deck" data-intent="board_deck"');
-    expect(board).toContain("Leadership evidence brief");
+    expect(board).toContain("Leadership evidence");
     expect(board).toContain(".infographic.intent-board-deck{border-top:14px solid var(--accent)");
     expect(workshop).toContain('class="infographic intent-internal-workshop" data-intent="internal_workshop"');
-    expect(workshop).toContain("Workshop action brief");
+    expect(workshop).toContain("Workshop visual");
     expect(workshop).toContain(".infographic.intent-internal-workshop{background:color-mix");
     expect(new Set([client, board, workshop]).size).toBe(3);
   });
@@ -182,7 +184,7 @@ describe("production renderers", () => {
   it("writes an editable one-slide PowerPoint infographic", async () => {
     const root = await mkdtemp(join(tmpdir(), "workshoplm-infographic-"));
     const artifact = await writeRenderedArtifact(root, "out-2", "infographic", brief);
-    expect(await readFile(join(root, artifact.relativePath), "utf8")).toContain("Source-defensible brief");
+    expect(await readFile(join(root, artifact.relativePath), "utf8")).toContain("Grounded infographic");
     expect(artifact.editableRelativePath).toBe("generated/out-2.infographic.pptx");
     const pptx = await readFile(join(root, artifact.editableRelativePath!));
     expect(pptx.subarray(0, 2).toString()).toBe("PK");

@@ -64,7 +64,7 @@ export function fitLogoBox(aspectRatio: number | undefined, maxWidth: number, ma
   return { width: maxHeight * ratio, height: maxHeight };
 }
 const deckLabel = (brief: RenderBrief) => `${brief.style.name ?? "Workshop"} · ${brief.style.intent === "board_deck" ? "Board presentation" : brief.style.intent === "internal_workshop" ? "Team workshop" : "Client presentation"}`;
-const infographicLabel = (brief: RenderBrief) => brief.style.intent === "board_deck" ? "Leadership evidence brief" : brief.style.intent === "internal_workshop" ? "Workshop action brief" : "Source-defensible brief";
+const infographicLabel = (brief: RenderBrief) => brief.style.intent === "board_deck" ? "Leadership evidence" : brief.style.intent === "internal_workshop" ? "Workshop visual" : "Grounded infographic";
 const intentProfile = (brief: RenderBrief): IntentProfile => brief.style.intent ?? "client_facing_pitch";
 const intentClass = (brief: RenderBrief) => `intent-${intentProfile(brief).replaceAll("_", "-")}`;
 const deckSummary = (brief: RenderBrief) => brief.summary?.trim() || (intentProfile(brief) === "board_deck"
@@ -106,7 +106,9 @@ function shell(title: string, brief: RenderBrief, body: string) {
   .infographic .block[data-layout="sequence"]{background:color-mix(in srgb,var(--accent) 6%,var(--paper));border-top-color:var(--accent);padding-right:22px}.infographic-sequence{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;margin-top:24px;counter-reset:infographic-sequence}.infographic-sequence span{counter-increment:infographic-sequence;position:relative;min-height:58px;padding:28px 12px 10px;border-top:3px solid var(--accent);font:500 clamp(14px,1.35vw,19px)/1.05 var(--heading)}.infographic-sequence span:before{content:counter(infographic-sequence,decimal-leading-zero);position:absolute;top:9px;left:12px;color:var(--accent);font:700 8px/1 var(--body);letter-spacing:.1em}.infographic-sequence span:not(:last-child):after{content:'→';position:absolute;right:-18px;top:27px;color:var(--accent);font:500 14px/1 var(--heading)}
   .infographic.intent-board-deck{border-top:14px solid var(--accent);padding-top:4.6%}.infographic.intent-board-deck:before{display:none}.infographic.intent-board-deck .title{font-size:clamp(30px,3.3vw,50px);max-width:72%}.infographic.intent-board-deck .block{padding-left:54px}.infographic.intent-board-deck .block .cite{left:54px;max-width:calc(100% - 54px)}
   .infographic.intent-internal-workshop{background:color-mix(in srgb,var(--accent) 8%,var(--paper))}.infographic.intent-internal-workshop:before{width:24px}.infographic.intent-internal-workshop .title{max-width:92%}.infographic.intent-internal-workshop .block{border-top:3px solid var(--accent);background:var(--paper);padding:22px 18px 30px 68px}.infographic.intent-internal-workshop .block-number{left:18px}.infographic.intent-internal-workshop .block .cite{left:68px;max-width:calc(100% - 86px)}
+  .infographic .title{margin-bottom:46px}.infographic-flow{position:relative;display:grid;grid-template-columns:repeat(var(--flow-count),minmax(0,1fr));gap:32px}.infographic-flow:before{content:'';position:absolute;left:18px;right:18px;top:20px;height:3px;background:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 30%,var(--paper)))}.infographic-flow .block{position:relative;min-width:0;min-height:260px;border:0;background:transparent;padding:68px 0 34px}.infographic-flow .block:not(:last-child):after{content:'→';position:absolute;right:-24px;top:10px;color:var(--accent);font:500 19px/1 var(--heading);background:var(--paper);padding:0 5px}.infographic-flow .block-number{position:absolute;left:0;top:0;z-index:1;display:grid;place-items:center;width:43px;height:43px;border-radius:50%;background:var(--accent);color:var(--accent-foreground);font:700 10px/1 var(--body);letter-spacing:.08em;box-shadow:0 0 0 8px var(--paper)}.infographic-flow .block h2{font-size:clamp(19px,1.8vw,27px);margin-bottom:14px}.infographic-flow .block>div>p:not(.cite){font-size:clamp(12px,1.05vw,16px);line-height:1.4}.infographic-flow .block .cite{left:0;bottom:8px;max-width:100%}.infographic-flow .block[data-layout="sequence"]{padding-right:8px}.infographic-flow .infographic-sequence{grid-template-columns:1fr;gap:6px;margin-top:16px}.infographic-flow .infographic-sequence span{min-height:auto;padding:8px 8px 8px 30px;border:0;border-left:2px solid var(--accent);font-size:clamp(11px,.95vw,14px)}.infographic-flow .infographic-sequence span:before{top:10px;left:8px}.infographic-flow .infographic-sequence span:after{display:none}.infographic.intent-board-deck .infographic-flow:before{height:2px}.infographic.intent-board-deck .infographic-flow .block{padding-left:0}.infographic.intent-board-deck .infographic-flow .block-number{left:0;border-radius:3px}.infographic.intent-board-deck .infographic-flow .block .cite{left:0;max-width:100%}.infographic.intent-internal-workshop .infographic-flow .block{border:0;background:transparent;padding:68px 0 34px}.infographic.intent-internal-workshop .infographic-flow .block-number{left:0;box-shadow:0 0 0 8px color-mix(in srgb,var(--accent) 8%,var(--paper))}.infographic.intent-internal-workshop .infographic-flow .block .cite{left:0;max-width:100%}
   @media print{html,body{background:white}.deck{display:block;padding:0}.slide{width:100vw;height:100vh;box-shadow:none;break-after:page}.infographic{box-shadow:none;margin:0;width:100vw;height:100vh}}@media(max-width:720px){.deck{padding:12px;gap:12px}.slide{width:calc(100vw - 24px);padding:7%}.split,.proof,.decision{display:flex;flex-direction:column;align-items:stretch;justify-content:center}.split .number{font-size:72px}.split.is-sparse .number{font-size:120px}.proof .proof-card{display:none}.sequence-flow{gap:14px}.sequence-step{min-height:92px;padding:14px 10px}.sequence-step:not(:last-child):after{display:none}.plan-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.plan-step{min-height:110px}.cite{max-width:72%}.infographic{width:calc(100vw - 24px);aspect-ratio:auto;margin:12px;padding:44px 28px 44px 38px}.infographic-grid{grid-template-columns:1fr}.infographic .block{min-height:160px}}
+  @media(max-width:720px){.infographic-flow{grid-template-columns:1fr;gap:0;padding-left:8px}.infographic-flow:before{left:28px;right:auto;top:18px;bottom:18px;width:3px;height:auto;background:linear-gradient(180deg,var(--accent),color-mix(in srgb,var(--accent) 30%,var(--paper)))}.infographic-flow .block,.infographic.intent-internal-workshop .infographic-flow .block{min-height:180px;padding:10px 0 40px 76px}.infographic-flow .block:not(:last-child):after{content:'↓';left:18px;right:auto;top:auto;bottom:8px}.infographic-flow .block-number,.infographic.intent-internal-workshop .infographic-flow .block-number{left:7px}.infographic-flow .block .cite,.infographic.intent-board-deck .infographic-flow .block .cite,.infographic.intent-internal-workshop .infographic-flow .block .cite{left:76px;max-width:calc(100% - 76px)}}
   </style></head><body>${body}</body></html>`;
 }
 
@@ -143,14 +145,15 @@ export function renderDeck(brief: RenderBrief): string {
 }
 
 export function renderInfographic(brief: RenderBrief): string {
-  const blocks = brief.blocks.map((block, index) => {
-    const layout = slideLayout(block, index, brief.blocks.length);
+  const sourceBlocks = brief.blocks.slice(0, 4);
+  const blocks = sourceBlocks.map((block, index) => {
+    const layout = slideLayout(block, index, sourceBlocks.length);
     const body = layout === "sequence" && block.items?.length
       ? `<div class="infographic-sequence">${block.items.slice(0, 4).map((item) => `<span>${escapeHtml(item)}</span>`).join("")}</div>`
       : block.body.trim() ? `<p>${escapeHtml(block.body)}</p>` : "";
     return `<article class="block" data-layout="${layout}"><div class="block-number">${String(index + 1).padStart(2, "0")}</div><div><h2>${escapeHtml(block.heading)}</h2>${body}<p class="cite"${citationData(block)}>${escapeHtml(citationText(block))}</p></div></article>`;
   }).join("\n");
-  return shell(`${brief.workshopTitle} infographic`, brief, `<main class="infographic ${intentClass(brief)}" data-intent="${intentProfile(brief)}"><div class="eyebrow">${escapeHtml(infographicLabel(brief))}</div><h1 class="title">${escapeHtml(brief.workshopTitle)}</h1><section class="infographic-grid">${blocks}</section></main>`);
+  return shell(`${brief.workshopTitle} infographic`, brief, `<main class="infographic ${intentClass(brief)}" data-intent="${intentProfile(brief)}"><div class="eyebrow">${escapeHtml(infographicLabel(brief))}</div><h1 class="title">${escapeHtml(brief.workshopTitle)}</h1><section class="infographic-flow" style="--flow-count:${Math.max(sourceBlocks.length, 1)}" aria-label="Grounded visual narrative">${blocks}</section></main>`);
 }
 
 function addPptxFooter(slide: PptxSlide, brief: RenderBrief, block: RenderBlock | undefined, page: number, foreground?: string) {
@@ -312,29 +315,30 @@ export async function writeEditableInfographic(path: string, brief: RenderBrief)
   if (brief.style.logoData && logo) slide.addImage({ data: brief.style.logoData, x: 0.68, y: 0.48 + (0.5 - logo.height) / 2, w: logo.width, h: logo.height });
   slide.addText(infographicLabel(brief).toUpperCase(), { x: logo ? 0.68 + logo.width + 0.2 : 0.68, y: 0.58, w: logo ? 5.8 - logo.width : 5.8, h: 0.2, fontFace: bodyFont(brief), fontSize: 8, bold: true, color: accent, charSpacing: board ? 0 : 1.4, margin: 0 });
   slide.addText(brief.workshopTitle, { x: 0.68, y: 1.05, w: board ? 9.4 : 11.8, h: 0.76, fontFace: headingFont(brief), fontSize: board ? 27 : 30, color: ink, margin: 0, breakLine: false, fit: "shrink" });
-  const blocks = brief.blocks.slice(0, 4); const cardWidth = 5.58; const cardHeight = 1.82;
+  const blocks = brief.blocks.slice(0, 4);
+  const flowStart = 0.72; const flowWidth = 11.92; const flowGap = 0.28; const stageWidth = (flowWidth - flowGap * Math.max(0, blocks.length - 1)) / Math.max(blocks.length, 1);
+  slide.addShape(pptx.ShapeType.rect, { x: flowStart + 0.2, y: 2.38, w: Math.max(flowWidth - 0.4, 0.2), h: 0.035, fill: { color: accent, transparency: 22 }, line: { color: accent, transparency: 100 } });
   blocks.forEach((block, index) => {
-    const column = index % 2; const row = Math.floor(index / 2); const x = 0.72 + column * 6.08; const y = 2.02 + row * 2.27;
+    const x = flowStart + index * (stageWidth + flowGap);
     const layout = slideLayout(block, index, blocks.length);
     const headingPrefix = block.heading.replace(/…$/, "").trim();
     const bodyRepeatsHeading = Boolean(headingPrefix && block.body.toLowerCase().startsWith(headingPrefix.toLowerCase()));
     const primaryText = block.heading.endsWith("…") && bodyRepeatsHeading ? block.body : block.heading;
     const supportingText = block.body.trim() && !bodyRepeatsHeading ? block.body : undefined;
-    if (workshop || layout === "sequence") slide.addShape(pptx.ShapeType.rect, { x, y: workshop ? y - 0.08 : y, w: cardWidth, h: workshop ? cardHeight + 0.18 : cardHeight, fill: { color: accent, transparency: 94 }, line: { color: accent, transparency: 100 } });
-    slide.addShape(pptx.ShapeType.rect, { x, y, w: cardWidth, h: layout === "sequence" || workshop ? 0.035 : 0.02, fill: { color: layout === "sequence" || workshop ? accent : ink, transparency: layout === "sequence" || workshop ? 18 : 82 }, line: { color: layout === "sequence" || workshop ? accent : ink, transparency: 100 } });
-    slide.addText(String(index + 1).padStart(2, "0"), { x, y: y + 0.28, w: 0.5, h: 0.28, fontFace: bodyFont(brief), fontSize: 10, bold: true, color: accent, margin: 0 });
-    slide.addText(primaryText, { x: x + 0.68, y: y + 0.22, w: cardWidth - 0.68, h: layout === "sequence" ? 0.48 : supportingText ? 0.68 : 1.02, fontFace: headingFont(brief), fontSize: layout === "sequence" ? 15 : supportingText ? 17 : 19, color: ink, margin: 0, breakLine: false, fit: "shrink", valign: "top" });
+    slide.addShape(board ? pptx.ShapeType.rect : pptx.ShapeType.ellipse, { x, y: 2.16, w: 0.48, h: 0.48, fill: { color: accent }, line: { color: paper, width: 4 } });
+    slide.addText(String(index + 1).padStart(2, "0"), { x, y: 2.29, w: 0.48, h: 0.13, fontFace: bodyFont(brief), fontSize: 6.5, bold: true, color: pptxColor(accentForeground(brief)), charSpacing: 0.8, margin: 0, align: "center", valign: "mid" });
+    if (index < blocks.length - 1) slide.addText("→", { x: x + stageWidth, y: 2.28, w: flowGap, h: 0.18, fontFace: headingFont(brief), fontSize: 9, color: accent, margin: 0, align: "center" });
+    slide.addText(primaryText, { x, y: 3.02, w: stageWidth, h: layout === "sequence" ? 0.74 : supportingText ? 0.9 : 1.28, fontFace: headingFont(brief), fontSize: blocks.length === 4 ? 18 : 20, color: ink, margin: 0, breakLine: false, fit: "shrink", valign: "top" });
     if (layout === "sequence" && block.items?.length) {
-      const steps = block.items.slice(0, 4); const stepGap = 0.18; const stepWidth = (cardWidth - 0.68 - stepGap * Math.max(0, steps.length - 1)) / steps.length;
+      const steps = block.items.slice(0, 4); const stepHeight = 0.43;
       steps.forEach((item, itemIndex) => {
-        const stepX = x + 0.68 + itemIndex * (stepWidth + stepGap);
-        slide.addShape(pptx.ShapeType.rect, { x: stepX, y: y + 0.88, w: stepWidth, h: 0.035, fill: { color: accent }, line: { color: accent, transparency: 100 } });
-        slide.addText(String(itemIndex + 1).padStart(2, "0"), { x: stepX + 0.08, y: y + 1.0, w: 0.25, h: 0.14, fontFace: bodyFont(brief), fontSize: 5.5, bold: true, color: accent, margin: 0 });
-        slide.addText(item, { x: stepX + 0.08, y: y + 1.22, w: stepWidth - 0.16, h: 0.3, fontFace: headingFont(brief), fontSize: 10.5, color: ink, margin: 0, fit: "shrink", valign: "mid" });
-        if (itemIndex < steps.length - 1) slide.addText("→", { x: stepX + stepWidth, y: y + 1.16, w: stepGap, h: 0.22, fontFace: headingFont(brief), fontSize: 8, color: accent, margin: 0, align: "center" });
+        const stepY = 4.04 + itemIndex * (stepHeight + 0.12);
+        slide.addShape(pptx.ShapeType.rect, { x, y: stepY, w: 0.025, h: stepHeight, fill: { color: accent }, line: { color: accent, transparency: 100 } });
+        slide.addText(String(itemIndex + 1).padStart(2, "0"), { x: x + 0.1, y: stepY + 0.13, w: 0.25, h: 0.12, fontFace: bodyFont(brief), fontSize: 5.5, bold: true, color: accent, margin: 0 });
+        slide.addText(item, { x: x + 0.4, y: stepY + 0.08, w: stageWidth - 0.4, h: 0.25, fontFace: headingFont(brief), fontSize: 9.5, color: ink, margin: 0, fit: "shrink", valign: "mid" });
       });
-    } else if (supportingText) slide.addText(supportingText, { x: x + 0.68, y: y + 0.94, w: cardWidth - 0.68, h: 0.5, fontFace: bodyFont(brief), fontSize: 10, color: ink, transparency: 28, margin: 0, breakLine: false, fit: "shrink", valign: "top" });
-    slide.addText(citationText(block), { x: x + 0.68, y: y + cardHeight - 0.18, w: cardWidth - 0.68, h: 0.18, fontFace: bodyFont(brief), fontSize: 6.5, color: ink, transparency: 42, margin: 0, breakLine: false, fit: "shrink" });
+    } else if (supportingText) slide.addText(supportingText, { x, y: 4.14, w: stageWidth, h: 1.25, fontFace: bodyFont(brief), fontSize: 11, color: ink, transparency: 28, margin: 0, breakLine: false, fit: "shrink", valign: "top" });
+    slide.addText(citationText(block), { x, y: 6.46, w: stageWidth, h: 0.18, fontFace: bodyFont(brief), fontSize: 6.5, color: ink, transparency: 42, margin: 0, breakLine: false, fit: "shrink" });
   });
   slide.addNotes(`WorkshopLM source trace\n${blocks.map((block) => `${block.id}\n${block.citations.join("\n") || "Approved Workshop brief"}`).join("\n\n")}`);
   slide.addText(`${brief.style.name ?? "Workshop"} · ${brief.version}`, { x: 0.72, y: 7.12, w: 8.5, h: 0.18, fontFace: bodyFont(brief), fontSize: 7, color: ink, transparency: 38, margin: 0 });

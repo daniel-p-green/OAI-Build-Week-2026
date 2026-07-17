@@ -2718,6 +2718,42 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
+---
+
+## 2026-07-16 22:24 CT — Focused workbench and professional Infographic pass are visually green
+
+### Changed
+
+- Replaced the default three-column control wall with progressive disclosure: Sources remain open where they support thinking, Create is collapsed by default, and the single current action now stays visible in the official navigation header.
+- Added visible hierarchy to Created work and Storyboard without adding navigation. Both now identify the current object, its purpose, and quiet status before showing controls.
+- Replaced Storyboard's placeholder film-strip rectangles with the exact image versions bound to each panel. The selected panel remains editable and source-traceable.
+- Refined the official Apps in ChatGPT workbench composition with inset white surfaces, quieter rails, softer hierarchy, and a focused current-object canvas while preserving the locked primitives and responsive behavior.
+- Replaced the Infographic's two-by-two text-card layout in both HTML and editable PowerPoint with a connected four-stage visual narrative. The same approved claims and exact source labels remain intact; no facts were added.
+- Updated the compact goal's created-work pointer from `infographic-v5` to the inspected `infographic-v6` proof. The five-item critical path is unchanged.
+
+### Verified
+
+- Inspected live 1440×900 captures of the Map, Created work gallery, and Storyboard at `artifacts/ui-review/polish-*-2026-07-16.png`. Created work now presents a clear hero Presentation and supporting formats; Storyboard shows five coherent generated-image thumbnails and one focused editor.
+- Inspected `artifacts/live-review/infographic-v6/infographic-v6.png`: it is a legible connected visual sequence, not a card grid. Its editable PowerPoint and HTML hashes are recorded in the adjacent `evidence.json`; capture used zero provider calls.
+- `pnpm exec playwright test --config playwright.config.ts` passed all 31 production-browser scenarios in 2.1 minutes after intentional baseline review across desktop, compact, mobile, focus, contrast, source tracing, revision, recovery, and real local Video states.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 124 worker tests, 30 web unit tests, and 19 production-renderer tests.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam: grounded Sources, approved Map and Brief, Style, Presentation, Infographic, Sketch, Audio Overview, six-image set, five-panel Storyboard, and rendered local Video.
+
+### Decisions
+
+- The Excalidraw Map remains visibly whiteboard-like because it is the editable thinking surface. Polish belongs in the surrounding workbench, legibility, selection, and source context—not in disguising it as a static design artifact.
+- Create progress remains one click away instead of permanently occupying the canvas. The current action in the header preserves the five-second next-step test.
+- An Infographic must explain a relationship at a glance. A clean grid of sourced statements is professional typography but not sufficient visual knowledge work.
+- No OpenAI provider request ran. The provider-operation ledger remains 115.
+- `PLAN-2026-07-13.md` and the untracked `product-design-audit/` set remain untouched and excluded.
+
+### Open items
+
+- Record and run the authentic founder Workshop. This remains the next external critical-path gate.
+- Review the founder-derived created work together, then repair only visible professional-quality or source-trust blockers.
+- Replace sample-only public-video evidence with founder-derived proof, complete intended-audience review, publish, and verify the submission.
+- Codex Session ID: unavailable on this surface; not inferred.
+
 ## 2026-07-16 20:28 CT — Realtime proof is now visible in the film without rewriting founder provenance
 
 ### Changed
@@ -10187,4 +10223,13 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Record and run the authentic founder Workshop. This remains the next external critical-path gate.
 - Public Video review, intended-audience judgment, publication links, and final submission verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 22:27 CT — Log-order correction for the focused workbench milestone
+
+- The full `22:24 CT` focused-workbench and Infographic evidence entry was appended after an older `2026-07-14 14:00 CT` section because its patch matched a repeated end marker instead of the physical end of this file. It remains unchanged there to preserve append-only history; this correction establishes its intended current chronology.
+- The verified result is unchanged: 31/31 production-browser scenarios, all thirteen package checks, and the recorded Source-to-Video seam pass; the inspected current proofs are `artifacts/ui-review/polish-*-2026-07-16.png` and `artifacts/live-review/infographic-v6/`.
+- No OpenAI provider request ran. The provider-operation ledger remains 115. The five-item critical path is unchanged, and the authentic founder Workshop remains the next external gate.
 - Codex Session ID: unavailable on this surface; not inferred.

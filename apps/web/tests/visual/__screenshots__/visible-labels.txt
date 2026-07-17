@@ -10,14 +10,12 @@ Approve storyboard
 Back to Brief
 Back to Created work
 Back to Map
-Brief3 sourcesApproved
 Build notes · §2
 ChatAsk your sources
-Collapse Create
 Collapse Sources
 Created work
-Created work4 readyUp to date
 Edit
+Expand Create
 Expand Sources
 Goal · capture
 Image set
@@ -32,8 +30,6 @@ Sketch
 Sketch4 ideasUp to date3 sources
 Sources behind this brief
 Storyboard
-Storyboard5 editable panelsNeeds review
-StyleClean professionalReady
 Success looks like
 TXTVoice brainstorm5 claims
 The product promise

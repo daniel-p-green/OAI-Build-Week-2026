@@ -24,6 +24,7 @@ async function openWorkshopView(page: Page, view: "chat" | "brief" | "outputs" |
   const railName = view === "chat" ? "Sources" : "Create";
   const direct = page.getByRole("complementary", { name: railName }).getByRole("button", { name: directName, exact: true });
   if ((page.viewportSize()?.width ?? 0) > 900) {
+    if (!await direct.isVisible()) await page.getByRole("button", { name: `Expand ${railName}` }).click();
     await direct.click();
     return;
   }
@@ -171,7 +172,7 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   // Begin at the control immediately before the contextual next action. The Map
   // canvas intentionally owns many keyboard stops, so starting in Sources would
   // test Excalidraw's internal tab order rather than WorkshopLM's workflow.
-  await page.getByRole("button", { name: "Collapse Create" }).focus();
+  await page.getByRole("button", { name: "Expand Create" }).focus();
   await pressTabUntil(page, "Approve brief");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("The product promise");
@@ -596,7 +597,7 @@ test.describe("completed Workshop judge path", () => {
       await expect(page.locator('.output-grid [data-output-role="hero"]')).toHaveCount(1);
       await expect(page.getByRole("button", { name: "Show source" })).toHaveCount(0);
       await expect(page.locator(".output-grid")).not.toContainText("Version");
-      if (viewport.width > 900) await expect(page.getByRole("complementary", { name: "Create" }).getByText("4 ready", { exact: true })).toBeVisible();
+      if (viewport.width > 900) await expect(page.locator(".object-page-header")).toContainText(/\d+ current/);
       await expectPreviewFramesReady(page);
       await expectScreen(page, `${viewport.name}-outputs`);
 
@@ -986,6 +987,7 @@ test("Video history preserves prior versions without adding another navigation s
 test("core primitive computed styles and states match the official reference", async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
+  await page.getByRole("button", { name: "Expand Create" }).click();
   const button = page.locator(".next-action .oai-button");
 
   await expect(button).toHaveCSS("height", "36px");
@@ -994,6 +996,7 @@ test("core primitive computed styles and states match the official reference", a
   await expect(button).toHaveCSS("font-size", "14px");
   await expect(button).toHaveCSS("line-height", "20px");
 
+  await page.keyboard.press("Tab");
   await button.focus();
   await expect(button).toHaveCSS("outline-width", "2px");
   await expect(button).toHaveCSS("outline-color", "rgb(2, 133, 255)");

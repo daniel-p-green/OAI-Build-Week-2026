@@ -90,7 +90,8 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(page).toContain('<ProductionItem title="Created work"');
     expect(page).not.toContain('className="stage-progress"');
     expect(appCss).toContain("grid-template-columns: 216px minmax(0, 1fr) 220px");
-    expect(appCss).toContain(".mobile-sources-trigger, .mobile-workflow-action, .mobile-object-trigger { display: none; }");
+    expect(appCss).toContain(".mobile-sources-trigger, .mobile-object-trigger { display: none; }");
+    expect(appCss).toContain(".mobile-workflow-action { display: block; }");
   });
 
   it("lets the canvas reclaim rail space without hiding source-scope consequences", () => {
