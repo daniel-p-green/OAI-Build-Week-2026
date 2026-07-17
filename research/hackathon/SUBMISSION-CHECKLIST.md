@@ -80,6 +80,7 @@ WorkshopLM is a local plugin/developer-tool experience. Keep these concise and s
 
 - [ ] Re-check https://openai.devpost.com/rules
 - [ ] Re-check the submission deadline and latest announcements
+  - [x] Interim July 17 refresh confirmed the Tuesday, July 21, 2026 at 5:00 PM Pacific deadline, two host announcements, and unchanged submission requirements; repeat at final submission.
 - [ ] Verify every submitted link in a logged-out/private browser session
 - [ ] Confirm the YouTube video is public
 - [ ] Confirm the repository permissions work for judges

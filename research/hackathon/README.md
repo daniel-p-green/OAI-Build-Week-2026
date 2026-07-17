@@ -1,6 +1,6 @@
 # OpenAI Build Week Reference
 
-Last refreshed from the Devpost Hackathons app: **July 13, 2026, approximately 4:41 PM Central**.
+Last refreshed from the live Devpost overview and updates pages: **July 17, 2026 at approximately 12:20 PM Central**.
 
 ## At a glance
 

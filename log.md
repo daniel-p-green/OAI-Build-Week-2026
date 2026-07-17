@@ -12019,3 +12019,28 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The AI Collective dogfood logo and NotebookLM/Figma research captures remain excluded from the judge package unless a separate publication right is documented.
 - No OpenAI provider request ran; the cumulative recorded provider-operation count remains 119. Demo-film work remains paused.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 12:45 CT — Live Devpost contract and second announcement refreshed
+
+### Changed
+
+- Refreshed the local hackathon routing page and announcement record from the live Devpost overview and updates pages rather than relying on the July 13 plugin snapshot.
+- Added the July 17 halfway checkpoint. It expects working core functionality, a locatable Codex `/feedback` Session ID, a rough video direction, and a prepared repository; it adds no new submission artifact or judging criterion.
+- Clarified that both host announcements incorrectly call July 21 Monday. The live overview independently labels submissions due Tuesday and displays the controlling deadline as July 21, 2026 at 5:00 PM Pacific.
+- Kept the final deadline/announcement checkbox open while recording the July 17 interim refresh as passed; it must be repeated at final submission.
+
+### Verified
+
+- The live overview still requires a working project built with Codex using GPT-5.6, one of four categories, a description, a public YouTube video under three minutes with audio covering Codex and GPT-5.6, a testable repository and README, and the core Codex `/feedback` Session ID.
+- Work and productivity remains defined as tools that make teams faster or more effective, matching WorkshopLM's professional team workflow. The four published judging criteria remain Technological Implementation, Design, Potential Impact, and Quality of the Idea.
+- The live updates page showed two announcements as of July 17 at approximately 12:20 PM Central. No deadline extension, track change, or extra deliverable appeared.
+- Local research and submission checklists remain aligned with the live overview. `git diff --check` and repository hygiene pass after the refresh.
+
+### Decisions and open items
+
+- The date and clock time control over the announcements' incorrect weekday label. Internal completion planning continues to use Tuesday, July 21 at 5:00 PM Pacific.
+- The halfway reminder does not authorize resuming demo-film work before the founder-derived Workshop exists. It confirms that the `/feedback` ID remains a later mandatory submission field despite not being a current product-quality gate.
+- No OpenAI provider request ran; the cumulative recorded provider-operation count remains 119.
+- Codex Session ID: unavailable on this surface; not inferred.
