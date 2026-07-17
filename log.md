@@ -11289,6 +11289,33 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 ---
 
+## 2026-07-17 09:06 CT — Founder preflight now completes the connected work set
+
+### Changed
+
+- Audited the corrected founder-only Workshop in the live product and found `Create Needs update` despite current Presentation, Infographic, Audio Overview, image plan, and Storyboard. The status was honest: Sketch is a required first-class created format, but the operator had never created it.
+- Added grounded Sketch creation immediately after the founder Style is locked and before visual DNA and media planning. Both zero-spend preflight and the paid founder path now follow the same complete created-work contract.
+- Added Sketch version, path, claim count, and freshness to the operator plan so the CLI evidence cannot hide another incomplete Create state.
+- Kept the final submission package contract unchanged. The Sketch remains a first-class Workshop format and visible product proof; it is not duplicated into the narrower selected public package without a product or submission need.
+
+### Verified
+
+- The private zero-spend founder command passed with one disposable founder recording and exact transcript, no injected fixture Sources, and no provider request. Its operator plan reported Sketch Version 1 at `generated/sketch-v1.svg`, three grounded claims, and `stale: false`.
+- In the ChatGPT/Codex in-app browser, the compact index read `Capture Ready → Map Ready → Brief Ready → Create Ready`. Created work showed six current pre-Video formats: Presentation, Infographic, Audio Overview, Sketch, Image set, and Storyboard; the Storyboard remained correctly `Ready for review`.
+- The focused Sketch showed `From the approved Map`, one Source, three Source links, SVG download, full-size review, and all three exact founder claims linked to `Founder brainstorm · chunk 01`.
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 37 web tests and 130 worker tests. Repository hygiene reported 693 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam with an eight-idea Sketch, grounded Audio Overview, six-image set, approved Storyboard, local Video, and build trace.
+- No OpenAI provider request ran; the append-only cumulative request count remains 118.
+
+### Decisions and open items
+
+- `Create Ready` means the complete pre-Video professional work family is current; a missing required format must be repaired rather than hidden with a softer label.
+- The authentic founder recording/transcript, bounded paid run, and human quality review remain the next proof gate. Demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-17 06:29 CT — Four-stage status model fails closed on stale Map synthesis
 
 ### Changed
@@ -11536,3 +11563,10 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The connected product-quality item remains open until founder visual acceptance. The authentic founder recording, its paid run, and human review remain the next completion gate; demo-film work remains paused.
 - User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 09:07 CT — Log-order correction
+
+- The complete `09:06 CT — Founder preflight now completes the connected work set` milestone was appended above the later `08:00`, `08:35`, and `08:57` entries because its patch anchor matched an older repeated footer. Its implementation and verification evidence remain valid; this append-only correction establishes that it occurred after the `08:57` milestone.
+- No historical entry was moved or rewritten to conceal the ordering error.

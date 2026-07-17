@@ -13,6 +13,7 @@ import {
   captureFallbackTranscript,
   captureImportedTranscript,
   createImageBatch,
+  createSketch,
   createVisualDna,
   dismissWorkshopOrientation,
   extractWorkshopCandidates,
@@ -133,6 +134,7 @@ async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: Prov
     negativeRules: ["no stock-photo cliches", "no readable text inside generated images", "no gradients"],
     intentProfile: "client_facing_pitch",
   }, root);
+  createSketch(root);
   createVisualDna(root);
   approveVisualDna(root);
   generateAssetPlan(root);
@@ -238,6 +240,7 @@ async function main(): Promise<void> {
       approvals: { brief: prepared.briefApproved, storyboard: prepared.storyboardApproved },
       sources: prepared.sourceItems.filter((source) => source.origin === "Sanitized operator fixture" || source.origin.includes("capture-only fallback") || source.origin === "Founder-provided recording" || source.origin === "Authorized sample script").map((source) => ({ title: source.title, origin: source.origin, permission: source.permission })),
       outputs: prepared.outputs.map((output) => ({ type: output.type, relativePath: output.relativePath, claims: output.claimIds.length })),
+      sketch: prepared.sketch ? { version: prepared.sketch.version, relativePath: prepared.sketch.relativePath, claims: prepared.sketch.claimIds.length, stale: prepared.sketch.stale } : null,
       imageReadiness,
       narrationReadiness,
       imagePlan: prepared.imageBatch?.panels.map((panel) => ({ id: panel.id, prompt: panel.prompt, evidence: panel.evidence })) ?? [],
