@@ -135,7 +135,7 @@ export function RealtimeCapture({ disabled = false, mode = "capture", continuati
       {transcriptError && <p className="capture-error" role="alert">{transcriptError}</p>}
     </div>
     <div className="button-row">
-      {(phase === "idle" || phase === "error") && <Button disabled={disabled} onClick={() => { void start(); }}>{mode === "conversation" ? "Start talking" : "Record voice"}</Button>}
+      {(phase === "idle" || phase === "error") && <Button variant={mode === "capture" ? "secondary" : undefined} disabled={disabled} onClick={() => { void start(); }}>{mode === "conversation" ? "Start talking" : "Record voice"}</Button>}
       {phase === "connecting" && <Button disabled>Connecting…</Button>}
       {phase === "recording" && <Button onClick={stop}>{mode === "conversation" ? "End conversation" : "Stop"}</Button>}
       {phase === "review" && <Button disabled={!text.trim() || !providerEvents.itemIds.length} onClick={() => { void save(); }}>{mode === "conversation" ? "Save conversation" : "Add transcript"}</Button>}

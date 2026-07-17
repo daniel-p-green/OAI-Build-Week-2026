@@ -2744,6 +2744,14 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-17 10:13 CT — Simplified Capture clears repository and seam checks
+
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 38 web tests and 130 worker tests. Repository hygiene reported 693 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam through the grounded Map, both approvals, Style, Sketch, Presentation, Infographic, three-section Cedar Audio Overview, six-image provider fixture, five-panel Storyboard, local Video, and build trace.
+- No provider request ran. The connected product-quality goal remains active pending founder visual acceptance; demo-film work remains paused.
+
+---
+
 ## 2026-07-17 02:44 CT — Repository authority and generated-state boundaries reconciled
 
 ### Changed
@@ -11787,3 +11795,36 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 38 web tests and 130 worker tests.
 - `pnpm demo:e2e` passed the complete recorded-fixture seam with grounding, both approvals, Style, eight-idea Sketch, Presentation, Infographic, three-section Cedar Audio Overview, six-image provider fixture, five-panel Storyboard, local Video, and build trace.
 - No provider request ran. The connected product-quality goal remains active pending founder visual acceptance; demo-film work remains paused.
+
+---
+
+## 2026-07-17 10:11 CT — First Capture presents one dominant next action
+
+### Changed
+
+- Removed the redundant `Add source` action from an empty Workshop. Pasting notes or a website now leads directly to the grounded Map through the sole dominant `Build my Map` action.
+- Kept voice and local PDF capture available as quiet input alternatives. The voice action now uses the official secondary-button primitive in first use and the Add Source sheet rather than competing with the current workflow action.
+- Added `Add another` only when the Workshop already contains a Source and newly pasted material can actually extend the set. The dedicated Add Source sheet retains its explicit `Add source` action for deliberate multi-source management.
+- Extended the static UI contract and first-use browser path to prevent the redundant choice from returning.
+
+### Verified
+
+- Web typecheck and all 38 web unit/static-contract tests passed.
+- The optimized Next.js production build succeeded at 35.5 kB for the main route and 140 kB first load.
+- All 35 production-browser scenarios passed across desktop, compact, mobile, source capture, first use, grounding, created work, history, and accessibility.
+- Visually inspected the empty, source-ready, compact, and mobile Capture states plus the desktop Add Source sheet. Each keeps capture methods available while giving the current workflow no more than one enabled primary action.
+- No OpenAI provider request ran; the cumulative request count remains 118.
+
+### Decisions and open items
+
+- Input methods are alternatives; they should not all receive primary visual emphasis. The action that advances the Workshop owns the dominant treatment.
+- The connected product-quality item remains open until founder visual acceptance. Demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 10:14 CT — Log-order correction for simplified Capture verification
+
+- The complete `10:13 CT — Simplified Capture clears repository and seam checks` verification entry was appended at line 2747 because its patch anchor matched an older repeated footer. Its repository and end-to-end evidence remain valid; this append-only correction establishes that the checks occurred after the `10:11 CT` first-Capture milestone.
+- No historical entry was moved or rewritten. No provider request ran, the connected product-quality goal remains active pending founder visual acceptance, and demo-film work remains paused.

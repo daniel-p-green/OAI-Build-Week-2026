@@ -1583,9 +1583,11 @@ test("first-use Capture keeps the one-action Map handoff visible at compact and 
     await page.getByLabel("Notes or website").fill("Professionals need one clear path from meeting notes to grounded work.\n\nEvery claim should stay attached to its exact source.\n\nThe Map should recommend what to do next.");
     await expect(page.getByRole("button", { name: "Record voice" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Choose PDF" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Add source" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Add source" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Add another" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Build my Map" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Build my Map" })).toBeEnabled();
+    await expectPrimaryActions(page, 1);
     await expectScreen(page, `${viewport.name}-onboarding-source-ready`);
   }
 });

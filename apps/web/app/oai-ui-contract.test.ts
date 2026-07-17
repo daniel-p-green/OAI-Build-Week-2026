@@ -74,6 +74,8 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(page).not.toContain('title: title.trim(), outcome, onboardingStep: "style"');
     expect(page).toContain('action: "buildMap"');
     expect(page).toContain('state.sourceItems.length === 0 && !source.trim()');
+    expect(page).toContain('state.sourceItems.length > 0 && source.trim()');
+    expect(page).toContain('>Add another</Button>');
     expect(page).toContain('const captured = await onPost({ action: "captureFallbackTranscript", text: transcript, capture });');
     expect(page).toContain('return Boolean(await onPost({ action: "buildMap", title: title.trim() || undefined, outcome }));');
     expect(page).toContain('aria-hidden="true" tabIndex={-1} scrolling="no" title={`${name} preview`}');

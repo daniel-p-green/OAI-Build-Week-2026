@@ -692,7 +692,7 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost, onUploadPdf
         }} />
         <div className="source-divider"><span>or add material</span></div>
         <TextArea label="Notes or website" hint="Paste meeting notes or a public URL" value={source} onChange={(event) => setSource(event.target.value)} />
-        <div className="source-start-actions"><FilePicker className="local-pdf-picker" label="Choose PDF" accept="application/pdf,.pdf" disabled={busy} onChoose={(file) => { void addPdf(file); }} /><Button variant="secondary" disabled={busy || !source.trim()} onClick={() => { void addSource(); }}>Add source</Button><Button disabled={busy || (state.sourceItems.length === 0 && !source.trim())} onClick={() => { void buildMap(); }}>{busy ? "Building Map…" : "Build my Map"}</Button></div>
+        <div className="source-start-actions"><FilePicker className="local-pdf-picker" label="Choose PDF" accept="application/pdf,.pdf" disabled={busy} onChoose={(file) => { void addPdf(file); }} />{state.sourceItems.length > 0 && source.trim() && <Button variant="secondary" disabled={busy} onClick={() => { void addSource(); }}>Add another</Button>}<Button disabled={busy || (state.sourceItems.length === 0 && !source.trim())} onClick={() => { void buildMap(); }}>{busy ? "Building Map…" : "Build my Map"}</Button></div>
         {state.sourceItems.length > 0 && <p className="source-ready" role="status">{state.sourceItems.length} {state.sourceItems.length === 1 ? "source" : "sources"} ready</p>}
       </Card>}
     </section>
