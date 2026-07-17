@@ -11970,3 +11970,26 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The `12:05 CT` founder-media rehearsal and its `12:07 CT` append-order correction appear earlier in this append-only file because repeated patch anchors placed them before later historical entries. This final chronology marker records that both occurred after the `11:56 CT` product-quality milestone.
 - The evidence is unchanged: private and explicit-shareable preflights passed with real H.264/AAC probing, zero provider requests, no public staging, and the paid command withheld until the Source was shareable. Authentic founder evidence remains open; demo-film work remains paused.
+
+---
+
+## 2026-07-17 12:19 CT — Public proof language reconciled to the current artifact
+
+### Changed
+
+- Reconciled the active README, GOAL, and public claim ledger after the Cedar editorial refresh. They now identify the current grounded Audio Overview as the exact 29.25-second hash-bound artifact rather than the superseded 33.5-second recording or a representative placeholder.
+- Updated the verification-floor claim from 129 worker tests, 34 web tests, and 34 production-browser scenarios to the verified current floor of 130 worker tests, 38 web tests, and 35 production-browser scenarios across thirteen packages.
+- Removed the paused film verifiers from the current-floor sentence. They remain historical evidence, but will not be presented as current proof until film work resumes and the final candidate is rerun.
+
+### Verified
+
+- `artifacts/live-review/audio-overview.json` records 29.25 seconds, `gpt-4o-mini-tts`, Cedar, request `req_df846be9dea44d6c8a6da04d2700f21a`, and SHA-256 `74056890e6e17ad95d8a2c60fab6672440333abcf53c0b9f90db62dc9b4c4cab`.
+- Repository-wide active-document search found no remaining 33.5-second, 129-worker, 34-web, or 34-browser public claim.
+- `pnpm repo:hygiene` passed with 697 tracked files, five active documents checked, zero tracked transient paths, and a 7.9 MiB largest tracked file. `git diff --check` passed.
+
+### Decisions and open items
+
+- Public claims follow the latest inspected artifact, not a formerly valid provider run.
+- Film verification is not part of the current-floor claim while demo-film work is paused. The final film must earn a new verification claim from its own inspected candidate.
+- No OpenAI provider request ran; the cumulative recorded provider-operation count remains 119. Authentic founder evidence and external professional judgment remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
