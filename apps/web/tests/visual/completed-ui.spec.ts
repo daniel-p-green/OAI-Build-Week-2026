@@ -640,6 +640,8 @@ test.describe("completed Workshop judge path", () => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await page.goto("/");
       await expect(page.getByRole("region", { name: "Map", exact: true })).toBeVisible();
+      await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Approved direction");
+      await expect(page.getByRole("region", { name: "Map overview" })).not.toContainText("Turn this evidence into an approved Brief");
       await expectMapReady(page, viewport);
       await expectPrimaryActions(page, 1);
       await expectScreen(page, `${viewport.name}-map`);

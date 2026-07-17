@@ -556,7 +556,7 @@ button { -webkit-tap-highlight-color: transparent; }
   .map-path { min-width: 0; justify-content: flex-start; gap: 6px; overflow: hidden; }
   .map-path > small { display: none; }
   .map-path button { width: 100%; max-width: none; display: block; font-size: 0; text-align: left; }
-  .map-path button::after { content: "Recommended direction"; font: 600 11px/15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+  .map-path button::after { content: attr(data-compact-label); font: 600 11px/15px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
   .excalidraw-map { display: none; }
   .map-canvas > .semantic-map { height: auto; padding: 12px; }
   .map-mobile-outline { display: grid; gap: 10px; }

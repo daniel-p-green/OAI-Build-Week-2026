@@ -454,6 +454,28 @@ function sameIds(left: string[], right: string[]) {
 export function mapNeedsUpdate(state: WorkshopState) {
   return !sameIds(state.mapInputClaimIds, activeClaimsFor(state).map((claim) => claim.id));
 }
+function mapDirectionClaim(claims: WorkshopClaim[]) {
+  const score = (claim: WorkshopClaim) => {
+    const text = prose(claim.text);
+    let value = 0;
+    if (/\b(should|must|recommend(?:ed|ation)?|prioriti[sz]e|focus|start|begin|use|adopt|next)\b/i.test(text)) value += 20;
+    if (/\b(client|leadership|professional|decision|outcome|goal|launch|pilot|create|present|approve)\b/i.test(text)) value += 8;
+    if (/\b(goal|outcome|promise)\b/i.test(text)) value += 8;
+    if (/\b(source|evidence|trace|grounded|style|brand|trust)\b/i.test(text)) value += 4;
+    if (/\brecommended workflow\b|\bcapture\b.{0,24}\bmap\b.{0,24}\bbrief\b.{0,24}\bcreate\b/i.test(text)) value -= 30;
+    if (/\?$/.test(text)) value -= 12;
+    return value;
+  };
+  return [...claims].sort((left, right) => score(right) - score(left) || claims.indexOf(left) - claims.indexOf(right))[0]!;
+}
+function mapDirectionTitle(text: string) {
+  const action = prose(text)
+    .replace(/^(?:the\s+)?(?:team|teams|professionals?|users?)\s+(?:should|must)\s+/i, "")
+    .replace(/^the goal is\s+/i, "Create ")
+    .replace(/^create professional (?:knowledge )?work\b/i, "Create work");
+  const title = mapNodeTitle(action || text);
+  return title ? `${title[0]!.toUpperCase()}${title.slice(1)}` : mapNodeTitle(text);
+}
 export function assertStoryboardGrounding(state: WorkshopState): void {
   for (const panel of state.storyboard.panels) {
     if (!panel.evidence.length) throw new Error(`Storyboard panel ${panel.id} requires a source reference.`);
@@ -627,7 +649,8 @@ export function organizeGroundedMap(root?: string): WorkshopState {
   const directionId = "node-map-direction";
   let graph = snapshot.graph;
   let history = snapshot.history;
-  const primary = claims[0]!;
+  const primary = mapDirectionClaim(claims);
+  const directionTitle = mapDirectionTitle(primary.text);
   const append = (operation: Parameters<typeof appendGraphOperation>[2], id: string) => {
     const applied = appendGraphOperation(graph, history, operation, { id, actor: "assistant", createdAt });
     graph = applied.graph;
@@ -668,20 +691,21 @@ export function organizeGroundedMap(root?: string): WorkshopState {
   if (!currentIds.has(directionId)) append(GraphOperation.parse({ type: "add_node", node: {
     id: directionId,
     kind: "goal",
-    label: "Turn this evidence into an approved Brief",
+    label: directionTitle,
     claimId: primary.id,
     evidenceState: "creative",
     priority: 2,
     unresolved: false,
     locked: false,
-    metadata: { body: "Review the strongest evidence and synthesis, then approve the direction before creating work.", locator: primary.locator, sourceId: primary.sourceId, evidenceClaimIds, x: 74, y: 36, width: 24, height: 18 },
+    metadata: { body: prose(primary.text), locator: primary.locator, sourceId: primary.sourceId, evidenceClaimIds, x: 74, y: 36, width: 24, height: 18 },
   } }), `operation-map-organizer-${Date.now()}-direction`);
   if (currentIds.has(synthesisId)) append(GraphOperation.parse({ type: "update_node", nodeId: synthesisId, patch: {
     metadata: { ...graph.nodes.find((node) => node.id === synthesisId)?.metadata, locator: "Derived from selected Sources", evidenceClaimIds },
   } }), `operation-map-organizer-${Date.now()}-synthesis-refresh`);
   if (currentIds.has(directionId)) append(GraphOperation.parse({ type: "update_node", nodeId: directionId, patch: {
+    label: directionTitle,
     claimId: primary.id,
-    metadata: { ...graph.nodes.find((node) => node.id === directionId)?.metadata, locator: primary.locator, sourceId: primary.sourceId, evidenceClaimIds },
+    metadata: { ...graph.nodes.find((node) => node.id === directionId)?.metadata, body: prose(primary.text), locator: primary.locator, sourceId: primary.sourceId, evidenceClaimIds },
   } }), `operation-map-organizer-${Date.now()}-direction-refresh`);
   for (const edge of graph.edges.filter((edge) => edge.id.startsWith("edge-map-evidence-") || edge.id === "edge-map-synthesis-direction")) {
     append(GraphOperation.parse({ type: "remove_edge", edgeId: edge.id }), `operation-map-organizer-${Date.now()}-remove-${edge.id}`);

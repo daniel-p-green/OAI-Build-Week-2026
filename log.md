@@ -11312,3 +11312,29 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
 - User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 06:44 CT — Map direction represents professional thinking, not workflow chrome
+
+### Changed
+
+- Inspected the real completed Workshop in the ChatGPT/Codex in-app browser at desktop, compact, and mobile widths. The return visit exposed a contradiction: the header correctly offered `View video`, while the Map still called `Turn this evidence into an approved Brief` its recommended direction.
+- Replaced that deterministic workflow instruction with the strongest action-oriented recommendation from the selected grounded claims. The visible title is concise (`Use two deliberate sign-offs` in the recorded fixture); the complete source statement, claim ID, locator, and active Source coverage remain attached underneath.
+- The Map now distinguishes `Recommended direction` before Brief approval from `Approved direction` afterward. Mobile uses the same state-aware label without introducing a new navigation or status concept.
+
+### Verified
+
+- Direct in-app browser inspection showed the source-derived direction inside the constrained Evidence → Synthesis → Direction canvas at 1024×768 and in the Direction-first mobile outline at 390×844. The completed Workshop simultaneously showed the accurate four-stage status and `View video` next action.
+- The deterministic organizer regression proves its Direction title and body come from the selected Source while recording no provider run.
+- The complete 35-scenario production-browser suite passed after the state-label change. A final targeted production-browser run passed all affected completed-Workshop desktop, compact, mobile, and first-use Map states after the concise direction refinement.
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 129 worker tests and 34 web tests. `pnpm demo:e2e` passed the recorded-fixture seam through both approvals, six images, Cedar Audio Overview, Storyboard, local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- The Map's recommended path is a source-backed professional direction, not an instruction to operate WorkshopLM. Product workflow remains in the four-stage spine and the single contextual next action.
+- Approval changes the direction's status, not its meaning. The node remains editable and source-inspectable.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -770,6 +770,7 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
   const displayedNodes = useMemo(() => shouldOrganize ? organizedMapNodes(nodes, state?.mapEdges ?? []) : nodes, [nodes, state?.mapEdges, shouldOrganize]);
   const path = recommendedMapPath(nodes, state?.mapEdges ?? []);
   const recommendation = path[path.length - 1] ?? nodes[0];
+  const directionLabel = state?.briefApproved && !state.frame?.stale ? "Approved direction" : "Recommended direction";
   const clusterCounts = {
     evidence: displayedNodes.filter((node) => node.kind === "grounded").length,
     synthesis: displayedNodes.filter((node) => node.kind === "derived").length,
@@ -781,7 +782,7 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
   return <div className="map-canvas" data-domain-ui="map-canvas">
     <section className="map-insight-bar" aria-label="Map overview">
       <div className="map-clusters"><span><b>{clusterCounts.evidence}</b> Evidence</span>{clusterCounts.synthesis > 0 && <span><b>{clusterCounts.synthesis}</b> Synthesis</span>}{clusterCounts.direction > 0 && <span><b>{clusterCounts.direction}</b> Direction</span>}</div>
-      {recommendation && <div className="map-path"><small>Recommended direction</small><Button variant="secondary" size="small" aria-label={`Recommended direction: ${recommendation.title}`} onClick={() => onSelect(recommendation.id)}>{recommendation.title}</Button></div>}
+      {recommendation && <div className="map-path"><small>{directionLabel}</small><Button variant="secondary" size="small" data-compact-label={directionLabel} aria-label={`${directionLabel}: ${recommendation.title}`} onClick={() => onSelect(recommendation.id)}>{recommendation.title}</Button></div>}
       {canUndo && <Button variant="secondary" size="small" disabled={busy} onClick={onUndo}>Undo</Button>}
     </section>
     {!state?.style && analysis && <Card className="style-analysis-status" role="status"><div><strong>{analysis.status === "reviewing" ? `Reviewing ${analysisDomain}…` : analysis.status === "ready" ? "Company style ready to review" : "Couldn't review this website"}</strong><p>{analysis.status === "reviewing" ? "Keep shaping the Map while WorkshopLM checks the public visual foundation." : analysis.status === "ready" ? "Review the suggested colors, type, and brand assets before creating work." : analysis.error ?? "Try again or continue with a clean professional Style."}</p></div><div className="button-row">{analysis.status === "ready" && <Button variant="secondary" size="small" onClick={onReviewStyle}>Review style</Button>}{analysis.status === "error" && <><Button variant="secondary" size="small" disabled={busy} onClick={() => onRetryStyle(analysis.url)}>Try again</Button><Button variant="secondary" size="small" onClick={onReviewStyle}>Set manually</Button><Button variant="secondary" size="small" disabled={busy} onClick={onUseDefaultStyle}>Use a clean default</Button></>}</div></Card>}

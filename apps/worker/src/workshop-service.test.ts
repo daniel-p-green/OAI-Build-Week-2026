@@ -131,7 +131,7 @@ it("organizes grounded claims into an honest deterministic evidence-to-direction
     expect(organized.mapNodes.filter((node) => node.kind === "grounded")).toHaveLength(3);
     expect(organized.mapNodes).toEqual(expect.arrayContaining([
       expect.objectContaining({ id: "map-synthesis", kind: "derived", title: "What the Sources show" }),
-      expect.objectContaining({ id: "map-direction", kind: "creative", title: "Turn this evidence into an approved Brief" }),
+      expect.objectContaining({ id: "map-direction", kind: "creative", title: "Approve direction before creating work", body: "The team should approve direction before creating work" }),
     ]));
     expect(organized.mapEdges.filter((edge) => edge.to === "map-synthesis")).toHaveLength(3);
     expect(organized.mapEdges).toContainEqual(expect.objectContaining({ from: "map-synthesis", to: "map-direction", kind: "depends_on" }));
@@ -156,6 +156,8 @@ it("turns realistic meeting notes into a six-idea grounded Map and a concise exe
     expect(ingested.mapNodes.every((node) => node.kind === "grounded" && node.sourceId === ingested.sourceItems[0]!.id)).toBe(true);
     expect(ingested.mapNodes.map((node) => node.id)).toEqual(ingested.claims.map((claim) => claim.id));
     expect(new Set(ingested.mapNodes.map((node) => `${node.x}:${node.y}`)).size).toBe(6);
+    const organized = organizeGroundedMap(root);
+    expect(organized.mapNodes.find((node) => node.id === "map-direction")).toMatchObject({ title: "Create work a consultant can defend and present without…", body: "The goal is professional work a consultant can defend and present without rebuilding it in another tool" });
     const approved = applyWorkshopAction("approveBrief", root);
     expect(approved.frame?.markdown).toContain("## Outcome\nWorkshopLM organizes messy thinking into a grounded Map, then creates an editable Presentation with every factual claim linked to its exact source");
     expect(approved.frame?.markdown).toContain("## Audience\nClients and external decision-makers");
