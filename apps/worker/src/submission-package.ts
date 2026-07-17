@@ -143,8 +143,8 @@ export function submissionCoverSvg(state: WorkshopState, heroImage?: Uint8Array)
   <text x="64" y="76" fill="${paper}" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700">WorkshopLM</text>
   <rect x="64" y="112" width="171" height="32" rx="16" fill="${paper}" opacity=".1" stroke="${paper}" stroke-opacity=".22"/>
   <text x="149.5" y="133" text-anchor="middle" fill="${paper}" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" letter-spacing="1.4">SOURCE-GROUNDED</text>
-  <text x="64" y="238" fill="${paper}" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="500" letter-spacing="-3.4"><tspan x="64">From rough</tspan><tspan x="64" dy="82">thought to</tspan><tspan x="64" dy="82">finished work</tspan></text>
-  <text x="64" y="536" fill="${paper}" opacity=".78" font-family="Arial, Helvetica, sans-serif" font-size="20">Sources → Map → Brief → finished work</text>
+  <text x="64" y="238" fill="${paper}" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="500" letter-spacing="-3.4"><tspan x="64">One thought.</tspan><tspan x="64" dy="82">Every format.</tspan><tspan x="64" dy="82">Sources attached.</tspan></text>
+  <text x="64" y="536" fill="${paper}" opacity=".78" font-family="Arial, Helvetica, sans-serif" font-size="20">Sources → Map → Brief → created work</text>
   <line x1="64" y1="578" x2="516" y2="578" stroke="${paper}" stroke-opacity=".18"/>
   <text x="64" y="618" fill="${paper}" opacity=".56" font-family="Arial, Helvetica, sans-serif" font-size="15">${sourceCount} ${sourceCount === 1 ? "source" : "sources"} · ${claimCount} traced ${claimCount === 1 ? "claim" : "claims"}</text>
   <g filter="url(#shadow)"><rect x="630" y="80" width="586" height="560" rx="28" fill="${paper}"/></g>

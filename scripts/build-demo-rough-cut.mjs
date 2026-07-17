@@ -26,7 +26,7 @@ const voice = process.env.WORKSHOPLM_ROUGH_CUT_VOICE || "Samantha";
 const fixedSpeechRate = process.env.WORKSHOPLM_ROUGH_CUT_RATE ? Number(process.env.WORKSHOPLM_ROUGH_CUT_RATE) : undefined;
 const width = 1280;
 const height = 720;
-const authorizedSampleTranscript = "I want a workspace where a professional can talk through a messy idea, ground it in their meetings and documents, shape it on a visual Map, approve the thinking, and ship polished slides, images, an audio overview, a storyboard, and video without losing the source trail. The product should feel simple but built for serious work, with OpenAI quality and two clear moments of human control.";
+const authorizedSampleTranscript = "I want a workspace where a professional can talk through a messy idea, ground it in meetings and documents, shape it on a visual Map, approve the thinking, and create a Presentation, graphics, an Audio Overview, a Storyboard, and Video without losing the source trail. Every format should share one Style and feel simple enough for serious work, with two clear moments of human control.";
 let filmIdentity = { accent: "#1668E3", ink: "#171816", paper: "#F4F2EC", heading: "system-ui", body: "system-ui", designMarkdownPath: undefined, designTokensPath: undefined, frameMarkdownPath: undefined, frameJsonPath: undefined, designSha256: undefined, frameSha256: undefined, frameVersion: undefined, outcome: undefined };
 let finalAssemblyStarted = false;
 
@@ -198,7 +198,7 @@ async function metaRevealSvg(finalManifestPath, options = {}) {
   <image href="${thumbnails[2]}" x="596" y="381" width="604" height="241" preserveAspectRatio="xMidYMid meet"/>
   <rect x="596" y="568" width="604" height="54" fill="${paper}" fill-opacity="0.97"/>
   <text x="620" y="590" font-family="${bodyFamily}" font-size="10" font-weight="700" letter-spacing="1.1" fill="${accent}">HOW THIS WAS BUILT</text>
-  <text x="620" y="610" font-family="${bodyFamily}" font-size="14" font-weight="700" fill="${ink}">${outputCount} Outputs · ${claimCount} source-linked claims · ${signOffCount} sign-offs · ${assetCount} hashed assets</text>
+  <text x="620" y="610" font-family="${bodyFamily}" font-size="14" font-weight="700" fill="${ink}">${outputCount} pieces of work · ${claimCount} source-linked claims · ${signOffCount} sign-offs · ${assetCount} hashed assets</text>
   <rect x="596" y="148" width="604" height="474" rx="22" fill="none" stroke="${ink}" stroke-opacity="0.13" stroke-width="2"/>
   <text x="1198" y="670" text-anchor="end" font-family="${bodyFamily}" font-size="14" font-weight="700" fill="${ink}">WORKSHOPLM · BUILT WITH OPENAI + CODEX</text>
 </svg>`;
@@ -269,6 +269,7 @@ async function main() {
       if (sha256(bytes) !== shot.sha256) throw new Error(`Provider narration ${shot.id} no longer matches its manifest.`);
       const planShot = plan.shots.find((candidate) => candidate.id === shot.id);
       if (!planShot || shot.slotSeconds !== planShot.endSeconds - planShot.startSeconds || shot.durationSeconds > shot.slotSeconds * 1.5) throw new Error(`Provider narration ${shot.id} no longer fits the film plan.`);
+      if (shot.narrationSha256 !== sha256(Buffer.from(planShot.narration))) throw new Error(`Provider narration ${shot.id} was generated from stale film copy.`);
     }
   }
   const captureManifestPath = resolve(repository, plan.captureManifest);
@@ -407,7 +408,7 @@ async function main() {
   const manifest = {
     schemaVersion: 1,
     status: finalBuild ? "final-public-demo" : sampleEditorialBuild ? "sample-editorial-cut" : "editorial-rough-cut",
-    disclosure: finalBuild ? "Final WorkshopLM demo with OpenAI Cedar narration, hash-bound founder evidence, and a verified traced submission Output set." : sampleEditorialBuild ? "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance Output set. This is not founder footage or the public submission video." : providerNarration ? "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video." : "Truthful fixture rough cut with a local macOS guide voice. This is not provider narration, final host footage, or the public submission video.",
+    disclosure: finalBuild ? "Final WorkshopLM demo with OpenAI Cedar narration, hash-bound founder evidence, and a verified traced connected Workshop." : sampleEditorialBuild ? "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance created-work set. This is not founder footage or the public submission video." : providerNarration ? "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video." : "Truthful fixture rough cut with a local macOS guide voice. This is not provider narration, final host footage, or the public submission video.",
     builtAt: new Date().toISOString(),
     plan: "submission/demo-film-plan.json",
     sourceCapture: plan.captureManifest,
@@ -423,11 +424,11 @@ async function main() {
       sampleEditorialBuild ? `${plan.shots.filter((shot) => shot.state === "blocked").length} final-evidence shots use explicitly labeled sample or fixture material in this review cut.` : `${plan.shots.filter((shot) => shot.state === "blocked").length} shots remain visibly marked FINAL EVIDENCE PENDING.`,
       "The walkthrough uses the sanitized deterministic fixture and six hash-bound GPT Image 2 replay files; it makes no paid image call during replay.",
       providerNarration ? "OpenAI Cedar narration is present; founder footage and final public export remain pending." : "The guide voice is local macOS speech synthesis, not OpenAI narration.",
-      providerNarration ? "Founder brainstorm, final Source-derived Output set, and public-export evidence remain gated elsewhere." : "Founder brainstorm, Realtime, GPT-5.6, GPT Image 2, provider narration, final Output set, and public-export evidence remain gated elsewhere."
+      providerNarration ? "Founder brainstorm, final Source-derived connected work, and public-export evidence remain gated elsewhere." : "Founder brainstorm, Realtime, GPT-5.6, GPT Image 2, provider narration, final connected work, and public-export evidence remain gated elsewhere."
     ]
   };
   await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
-  if (sampleEditorialBuild) await writeFile(resolve(outputRoot, "README.md"), `# WorkshopLM sample editorial cut\n\nThis 2:20 review cut uses the authorized sample transcript, the verified acceptance Output set, and the existing OpenAI Cedar narration. It is intentionally not founder footage or the public submission video.\n\n- Watch: \`workshoplm-demo-sample.mp4\`\n- Scan all ten shots: \`contact-sheet.jpg\` and \`review/\`\n- Inspect hashes, disclosures, and remaining final-evidence gates: \`manifest.json\`\n- Rebuild: \`pnpm demo:film:sample\`\n- Verify: \`pnpm demo:film:verify-sample\`\n\nThe final command remains fail-closed until the founder recording and founder-derived ready submission package exist.\n`, "utf8");
+  if (sampleEditorialBuild) await writeFile(resolve(outputRoot, "README.md"), `# WorkshopLM sample editorial cut\n\nThis 2:20 review cut uses the authorized sample transcript, the verified acceptance created-work set, and OpenAI Cedar narration. It is intentionally not founder footage or the public submission video.\n\n- Watch: \`workshoplm-demo-sample.mp4\`\n- Scan all ten shots: \`contact-sheet.jpg\` and \`review/\`\n- Inspect hashes, disclosures, and remaining final-evidence gates: \`manifest.json\`\n- Rebuild: \`pnpm demo:film:sample\`\n- Verify: \`pnpm demo:film:verify-sample\`\n\nThe final command remains fail-closed until the founder recording and founder-derived ready submission package exist.\n`, "utf8");
   await rm(temporaryRoot, { recursive: true, force: true });
   if (finalBuild) {
     const finalPlan = { ...plan, status: "final", shots: plan.shots.map((shot) => ({ ...shot, state: "ready" })) };

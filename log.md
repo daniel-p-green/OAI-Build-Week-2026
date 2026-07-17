@@ -9651,3 +9651,38 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The complete `18:42 CT — Current created-work proof is visually current and vocabulary-coherent` entry was appended at line 2723 because its patch matched an earlier repeated Session-ID anchor. It remains valid append-only evidence; this entry is the authoritative chronological tail marker.
 - Current truth: the sixteen-screen gallery, active product vocabulary, compact Video focus/scroll behavior, full repository suite, 31-screen-state visual suite, recorded acceptance seam, local HyperFrames sample film, submission manifest, judge thumbnail, and packet integrity checks all pass.
 - No OpenAI provider request ran; the provider-operation ledger remains 107. The pre-existing user edit to `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+---
+
+## 2026-07-16 19:03 CT — Judge story and sample film now match the product compass
+
+### Changed
+
+- Reframed the active Devpost draft, demonstration script, claim ledger, evidence audit, film plan, thumbnail, and generated opening proof around WorkshopLM as a professional knowledge workspace. Presentations, Graphics and Infographics, Audio Overviews, Maps or Sketches, Storyboards, and Videos are now presented as first-class expressions of one Workshop rather than a slide-first funnel.
+- Updated the sample film narration for the product promise, Brief approval, Style, created-work overview, source trace, and meta-reveal. Six bounded `gpt-4o-mini-tts` requests regenerated those Cedar clips.
+- Added an exact narration-text SHA-256 to every narration record and made the rough-cut builder reject stale audio when the film plan changes. This closes the failure mode where polished but obsolete narration could survive a script rewrite.
+- Re-recorded the deterministic browser walkthrough after correcting an ambiguous Presentation selector. The capture now uses the active `Presentation` and `Created work` vocabulary throughout.
+- Rebuilt the local HyperFrames film, thumbnail, submission opening proof, and partial submission package from the current sources.
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and all thirteen package suites: 121 worker tests, 30 web tests, 19 production tests, and the remaining package suites.
+- `pnpm demo:film:verify` passed at 140 seconds, 268 narration words, and 114.9 words per minute. All ten narration hashes match the current film plan.
+- `pnpm demo:film:verify-sample` passed against local HyperFrames `0.7.60`. The current H264/AAC sample film is 140.010667 seconds with SHA-256 `5eb6a29f97539991cea0391b47bd414d658755f1ff84611a98bfc2f9b16848da`; jitter-prone spatial transforms remain disabled.
+- `pnpm demo:capture-draft` passed a 61.6-second, twelve-beat browser capture with SHA-256 `cd7200d5709b0c4dd1082844298befced92b994c466ac95df96d1e8ba57b6e69`.
+- `pnpm submission:build`, `pnpm submission:verify`, and `pnpm submission:packet:verify` passed. The packet reports eight ready film shots, two intentionally founder-blocked shots, sixteen UI screenshots, and four unresolved founder slots. The current thumbnail SHA-256 is `055f16973eed63da8a45e94aeae236599afdd39f3c3b05d421601a434df01eb7`.
+- Visual inspection of the thumbnail, capture contact sheet, sample-film review frames, and final meta-reveal found the new multi-format thesis visible and coherent. The old slide-first opening proof was caught during this review, repaired at its generator, rebuilt, and reverified.
+- `git diff --check` passes.
+
+### Decisions
+
+- No single created-work format is the product destination. The demonstration can emphasize a Presentation in one scene while the governing product claim remains the shared knowledge, Style, and source connection across all formats.
+- Internal compatibility identifiers such as `deck` and `outputs`, plus historical evidence paths, remain unchanged where renaming would create migration risk or falsify the record. Active public language follows the locked vocabulary.
+- The founder-independent sample film remains an editorial rehearsal, not authentic founder proof. The two final founder-derived shots remain blocked and visibly labeled.
+- The provider-operation ledger advances from 107 to 113 for the six bounded Cedar narration requests. Exact provider debit is unavailable; no image or reasoning request ran in this milestone.
+- `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+### Open items
+
+- The five-item critical path in `GOAL.md` remains current: record the founder brainstorm, run the authentic Workshop, review and refine the resulting knowledge work, complete the public video, then verify and submit.
+- Codex Session ID: unavailable on this surface; not inferred.

@@ -4,7 +4,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 
 type FilmPlan = { shots: Array<{ id: string; title: string; startSeconds: number; endSeconds: number; narration: string }> };
-type NarrationRecord = { id: string; title: string; relativePath: string; sha256: string; byteCount: number; durationSeconds: number; slotSeconds: number; model: "gpt-4o-mini-tts"; voice: "cedar"; requestId?: string; generatedAt: string };
+type NarrationRecord = { id: string; title: string; relativePath: string; sha256: string; narrationSha256?: string; byteCount: number; durationSeconds: number; slotSeconds: number; model: "gpt-4o-mini-tts"; voice: "cedar"; requestId?: string; generatedAt: string };
 
 const repository = resolve(import.meta.dirname, "..");
 const outputRoot = resolve(repository, "outputs/demo-film-narration");
@@ -70,9 +70,12 @@ async function main(): Promise<void> {
     assert(durationSeconds > 0, `Narration ${shot.id} has no playable duration.`);
     const slotSeconds = shot.endSeconds - shot.startSeconds;
     assert(durationSeconds <= slotSeconds * 1.5, `Narration ${shot.id} is ${durationSeconds.toFixed(2)}s for a ${slotSeconds}s slot and would require excessive time compression.`);
-    recordsById.set(shot.id, { id: shot.id, title: shot.title, relativePath, sha256: createHash("sha256").update(bytes).digest("hex"), byteCount: bytes.byteLength, durationSeconds, slotSeconds, model, voice, requestId: response.headers.get("x-request-id") ?? undefined, generatedAt: new Date().toISOString() });
+    recordsById.set(shot.id, { id: shot.id, title: shot.title, relativePath, sha256: createHash("sha256").update(bytes).digest("hex"), narrationSha256: createHash("sha256").update(shot.narration).digest("hex"), byteCount: bytes.byteLength, durationSeconds, slotSeconds, model, voice, requestId: response.headers.get("x-request-id") ?? undefined, generatedAt: new Date().toISOString() });
   }
-  const records = plan.shots.map((shot) => recordsById.get(shot.id)).filter((record): record is NarrationRecord => Boolean(record));
+  const records = plan.shots.map((shot) => {
+    const record = recordsById.get(shot.id);
+    return record ? { ...record, title: shot.title, narrationSha256: createHash("sha256").update(shot.narration).digest("hex") } : undefined;
+  }).filter((record): record is NarrationRecord => Boolean(record));
   assert(records.length === plan.shots.length, "Narration manifest must retain all ten film shots.");
 
   const manifest = {

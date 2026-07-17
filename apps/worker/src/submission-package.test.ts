@@ -43,9 +43,9 @@ const fakeThumbnail = async (_videoPath: string, outputPath: string, second: num
 describe("submission Output set", () => {
   it("turns the locked Workshop Style and current evidence counts into a real submission cover", async () => {
     const root = await buildableWorkshop(); const state = readWorkshopState(root); const svg = submissionCoverSvg(state);
-    expect(svg).toContain("From rough");
-    expect(svg).toContain("thought to");
-    expect(svg).toContain("finished work");
+    expect(svg).toContain("One thought.");
+    expect(svg).toContain("Every format.");
+    expect(svg).toContain("Sources attached.");
     expect(svg).toContain(state.style!.ink);
     expect(svg).toContain(state.style!.paper);
     expect(svg).toContain(state.style!.accent);

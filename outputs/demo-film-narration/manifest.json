@@ -5,22 +5,23 @@
   "model": "gpt-4o-mini-tts",
   "voice": "cedar",
   "requestCount": 10,
-  "regeneratedRequestCount": 3,
-  "generatedAt": "2026-07-16T20:51:32.849Z",
+  "regeneratedRequestCount": 6,
+  "generatedAt": "2026-07-16T23:47:15.916Z",
   "planPath": "submission/demo-film-plan.json",
   "shots": [
     {
       "id": "promise",
       "title": "The promise",
       "relativePath": "outputs/demo-film-narration/promise.wav",
-      "sha256": "579c6204e115a77584e1df86645e541fef93f4d8bff20afd5e983cd11dd39c48",
-      "byteCount": 643244,
-      "durationSeconds": 13.4,
+      "sha256": "68d826cc17953da380593b56d2002b94b2015cfce3b0d07dd57f4c7129f5007d",
+      "narrationSha256": "7f3521ffd592d05a842b769f0a85d0880453b75f25e5704c6bab7027d57d8ce6",
+      "byteCount": 398444,
+      "durationSeconds": 8.3,
       "slotSeconds": 13,
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
-      "requestId": "req_0a261178f9a54f17bd409bd0abec963c",
-      "generatedAt": "2026-07-16T20:51:27.647Z"
+      "requestId": "req_75ed5d07d0724553ac61d9abb06d989b",
+      "generatedAt": "2026-07-16T23:47:03.038Z"
     },
     {
       "id": "codex-doorway",
@@ -33,7 +34,8 @@
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
       "requestId": "req_9bad20020f4e456fb6f1332b0349d06f",
-      "generatedAt": "2026-07-16T08:08:58.082Z"
+      "generatedAt": "2026-07-16T08:08:58.082Z",
+      "narrationSha256": "21b8f43b03041ccf98fa861379a42e3a8f23f7595672be9b3ea73d2fd5348bad"
     },
     {
       "id": "capture-and-shape",
@@ -46,7 +48,8 @@
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
       "requestId": "req_ab4cb9c79aac41eaa8b4ab799e7e7194",
-      "generatedAt": "2026-07-16T08:09:01.066Z"
+      "generatedAt": "2026-07-16T08:09:01.066Z",
+      "narrationSha256": "6c9ccc0326bc4c964d38251e855eea9bb78cbb385a1053ff774d5172d0164c96"
     },
     {
       "id": "evidence-and-control",
@@ -59,46 +62,50 @@
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
       "requestId": "req_5fa723425b8e4b3ca80634aff4a43407",
-      "generatedAt": "2026-07-16T08:09:03.514Z"
+      "generatedAt": "2026-07-16T08:09:03.514Z",
+      "narrationSha256": "c33e20b13fdd77741e13a73ada508641c5f3f96c5c8b3dfbc3b107d6c09d487e"
     },
     {
       "id": "brief-approval",
       "title": "First approval: Brief",
       "relativePath": "outputs/demo-film-narration/brief-approval.wav",
-      "sha256": "c4518deb635ab11e9fbf5dc95799a8689915135ef9e09c59032c1468f795d3e7",
-      "byteCount": 520844,
-      "durationSeconds": 10.85,
+      "sha256": "cd819b3bfb82043dd7747e7ba208e0dd5b80a24b3e216e3264e2f7ee2b89339e",
+      "narrationSha256": "4f1acc7469c7f165bd980ca676214b5d49cc1108aab4332375381e071eefb2cd",
+      "byteCount": 614444,
+      "durationSeconds": 12.8,
       "slotSeconds": 12,
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
-      "requestId": "req_230ab49a7db24e2da5e71c45e0699b08",
-      "generatedAt": "2026-07-16T08:09:06.330Z"
+      "requestId": "req_1a8fe110bc8348a88315b6aaa2bade37",
+      "generatedAt": "2026-07-16T23:47:05.969Z"
     },
     {
       "id": "style",
       "title": "One reviewable visual system",
       "relativePath": "outputs/demo-film-narration/style.wav",
-      "sha256": "17db463e24236214b21191a616e405467a7ada5e2ce59b95c2ed7c987a50a22b",
-      "byteCount": 568844,
-      "durationSeconds": 11.85,
+      "sha256": "23508310cbefb0896579e9f056c9303f18d57e5d18811f44fe7dcaddc9f9acf2",
+      "narrationSha256": "79ab031e76a2213add743e1b3a8baa6f6d98d36da40e8ca42b308ba7a33af0bc",
+      "byteCount": 470444,
+      "durationSeconds": 9.8,
       "slotSeconds": 12,
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
-      "requestId": "req_ab56e361ebaa417a99e46e657103a268",
-      "generatedAt": "2026-07-16T20:51:30.557Z"
+      "requestId": "req_560f7043101c4f75867aecdc493dee42",
+      "generatedAt": "2026-07-16T23:47:08.676Z"
     },
     {
       "id": "outputs",
-      "title": "Slides—and everything around them",
+      "title": "One Workshop, many expressions",
       "relativePath": "outputs/demo-film-narration/outputs.wav",
-      "sha256": "171a1ccc1ff79f328b7c516a04f236fd5c7f296ef7accce44c326d1793d7ee60",
-      "byteCount": 518444,
-      "durationSeconds": 10.8,
+      "sha256": "ac43614da2ba1520e4bea96b70911e586698ad8e191c92318370b3b6a75c5c25",
+      "narrationSha256": "f91dea912714db0453c4b291a7f055965868eb12793408d8770b8297c7c665bb",
+      "byteCount": 499244,
+      "durationSeconds": 10.4,
       "slotSeconds": 14,
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
-      "requestId": "req_e4b2d7e1042d463794613c3175a95014",
-      "generatedAt": "2026-07-16T20:51:32.849Z"
+      "requestId": "req_5e8cb32081cb4b24a2a65bae9ba84f23",
+      "generatedAt": "2026-07-16T23:47:10.777Z"
     },
     {
       "id": "storyboard-approval",
@@ -111,33 +118,36 @@
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
       "requestId": "req_522fec504ce14669bb8bd04f24392951",
-      "generatedAt": "2026-07-16T08:09:13.345Z"
+      "generatedAt": "2026-07-16T08:09:13.345Z",
+      "narrationSha256": "0714374b4bd79b34a9daa3754721585f494ef624ad8e0b2bae4a3ab13d37387d"
     },
     {
       "id": "render-and-trace",
       "title": "Approved work renders locally",
       "relativePath": "outputs/demo-film-narration/render-and-trace.wav",
-      "sha256": "31564a35f685b9882848fcde315db9e7639e69cf161c723259a858c4d4085552",
-      "byteCount": 676844,
-      "durationSeconds": 14.1,
+      "sha256": "1e482546520557c5b59fe7b17b047cf04cf3bb7a30ab91e7834f2732569f919e",
+      "narrationSha256": "a9ce3ab82b39c5b09387cee572b26688cd2e6e2cd330e0f8b76bb09ed90f3048",
+      "byteCount": 597644,
+      "durationSeconds": 12.45,
       "slotSeconds": 15,
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
-      "requestId": "req_40ffbda194c94f4e962eba94b5c34f04",
-      "generatedAt": "2026-07-16T08:09:16.192Z"
+      "requestId": "req_504c9cd9c9bc41028d035a0108da3b93",
+      "generatedAt": "2026-07-16T23:47:13.105Z"
     },
     {
       "id": "meta-reveal",
       "title": "The submission proves the product",
       "relativePath": "outputs/demo-film-narration/meta-reveal.wav",
-      "sha256": "8dcf9dfa2ed9070751cad3737ab6d4c7eebe7f4b04ed1bda7a1c35b906aa8e17",
-      "byteCount": 708044,
-      "durationSeconds": 14.75,
+      "sha256": "e5d4c744396ebbe92549648737c5bd0ff14ef422ee0388f5959895c13fcc728b",
+      "narrationSha256": "c5b40684a357583e8a9341661d6827f45ac3fc80e68e06cd21dfc598bb1edac5",
+      "byteCount": 698444,
+      "durationSeconds": 14.55,
       "slotSeconds": 16,
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
-      "requestId": "req_6f9db693871c4236b851c35c49e057b9",
-      "generatedAt": "2026-07-16T08:09:18.725Z"
+      "requestId": "req_91622fa7d5c54890889ad6b670b0be21",
+      "generatedAt": "2026-07-16T23:47:15.915Z"
     }
   ]
 }

@@ -48,7 +48,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" v
   <rect x="64" y="112" width="171" height="32" rx="16" fill="#1e1e1e" stroke="#3a3a3a"/>
   <text x="149.5" y="133" text-anchor="middle" fill="#b7f5e3" font-family="Arial, Helvetica, sans-serif" font-size="12" font-weight="700" letter-spacing="1.4">SOURCE-GROUNDED</text>
   <text x="64" y="238" fill="#fff" font-family="Arial, Helvetica, sans-serif" font-size="72" font-weight="500" letter-spacing="-3.4">${headlineMarkup}</text>
-  <text x="64" y="536" fill="#c9c9c9" font-family="Arial, Helvetica, sans-serif" font-size="20">Voice or notes → Map → Brief → finished work</text>
+  <text x="64" y="536" fill="#c9c9c9" font-family="Arial, Helvetica, sans-serif" font-size="20">Voice or notes → Map → Brief → created work</text>
   <line x1="64" y1="578" x2="516" y2="578" stroke="#343434"/>
   <text x="64" y="618" fill="#8f8f8f" font-family="Arial, Helvetica, sans-serif" font-size="15">Every factual claim stays linked to its source.</text>
   <g filter="url(#shadow)"><rect x="604" y="78" width="612" height="564" rx="26" fill="#f7f7f5"/></g>

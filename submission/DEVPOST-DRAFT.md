@@ -10,7 +10,7 @@ WorkshopLM
 
 ## Tagline (under 200 characters)
 
-Turn raw thinking into finished work: polished slides, visuals, audio, storyboards, and video, with every factual claim traced to its source.
+Turn conversations and source material into presentations, graphics, audio, maps, storyboards, and video—one Style, one source trail.
 
 ## Category
 
@@ -26,32 +26,32 @@ TypeScript, Node.js, Next.js, React, pnpm, Turborepo, SQLite (WAL + FTS5), Excal
 
 ### The problem
 
-Every consultant, strategist, and enablement lead lives the same Tuesday. The meeting happened. The documents exist. The thinking is real. And now someone has to turn all of it into leadership slides, supporting visuals, and a clear narrative—on brand, defensible line by line, by Thursday. AI tools help you understand your material. Almost none of them help you ship the complete package. The ones that generate slides often lose source trace, ignore your visual system, or hand you a finished artifact you cannot edit. So professionals rebuild the last mile by hand and hope nobody asks, “Where did that number come from?”
+Every consultant, strategist, and enablement lead lives the same Tuesday. The meeting happened. The documents exist. The thinking is real. Now that material has to become a leadership presentation, a visual explanation, a briefing people can listen to, and often a Storyboard or Video—on brand, defensible line by line, by Thursday. AI tools can help people understand their material. The work of creating from it still fragments across chat, whiteboards, presentation tools, image generators, and editors. Context, visual identity, and the source trail disappear at every handoff.
 
 ### What WorkshopLM does
 
-WorkshopLM is a local-first production workspace that turns raw inputs into deliverables you can defend.
+WorkshopLM is a local-first professional knowledge workspace. It turns conversations and source material into presentations, graphics, Audio Overviews, visual Maps, Storyboards, and Videos. Every expression shares the same knowledge, visual identity, and connection to its Sources.
 
 You talk and add Sources. WorkshopLM turns them into an editable Map: claims, decisions, and evidence on a live visual whiteboard, each grounded card retaining its exact source locator. You shape the Map, then approve it as the Brief. Point WorkshopLM at a website or add brand assets, review what it found, and lock a Style with exact colors, fonts, and rules.
 
-Then one action creates a coordinated set of deliverables from the same approved thinking and Style:
+Then one action creates a coordinated family of professional knowledge work from the same approved thinking and Style:
 
-- polished slides with an editable PowerPoint export;
+- a polished Presentation with an editable PowerPoint export;
 - a concise infographic;
 - a coherent GPT Image 2 visual set;
 - a grounded, editable Audio Overview with Cedar voice;
 - a source-linked Storyboard that remains editable panel by panel; and
 - a narrated Video rendered locally from the approved Storyboard.
 
-Slides are the lead professional deliverable, not the limit of the product. Every supporting Output shares the same evidence, visual direction, version history, and update state.
+No single format is the product's destination. A Presentation, Infographic, Audio Overview, Sketch, image set, Storyboard, and Video are first-class expressions of one Workshop. They share evidence, visual direction, version history, and update state instead of behaving like unrelated generators.
 
-Two things make this different from ordinary slide generators and disconnected creative tools:
+Two things make this different from disconnected chat, presentation, and creative tools:
 
 **You stay in charge at exactly two moments.** Approve the Brief. Approve the Storyboard. Nothing expensive or final happens without your sign-off, and everything downstream honestly shows `Needs update` when your thinking changes upstream.
 
-**Every claim keeps its receipt.** Click any factual statement in any output, in a slide, an infographic block, or a storyboard panel, and WorkshopLM opens the exact source excerpt it came from. Not a citations page. The sentence.
+**Every claim keeps its receipt.** Click a factual statement in a Presentation, an Infographic block, a Sketch, or a Storyboard panel and WorkshopLM opens the exact Source excerpt it came from. Not a citations page. The sentence.
 
-It is built for the weekly rhythm, not the one-off demo: add Monday's new meeting to an existing Workshop and the Map expands, dependent work flags itself, your saved Style carries over, and one reapproval produces the next version of the slides and supporting Outputs. New work stays traced to the new Source while prior versions remain available in history.
+It is built for the weekly rhythm, not the one-off demo: add Monday's new meeting to an existing Workshop and the Map expands, dependent work marks itself `Needs update`, and the saved Style carries over. After deliberate reapproval, WorkshopLM creates the next version of the affected work. New material stays traced to the new Source while earlier versions remain available in history.
 
 ### The product proof is its production record
 
@@ -59,12 +59,12 @@ Codex built WorkshopLM from a goal file. WorkshopLM then used the same provenanc
 
 This project started as two files: a goal document and an operating agreement for autonomous agents. Codex, running on GPT-5.6, implemented the product from that goal file across the submission period, working through an evidence-gated checklist, verifying its own work, and appending every milestone to a public, append-only build log. The log even records the moment the system caught itself: one agent claimed the UI rebuild was complete, a second agent disproved the claim with computed-style evidence, reopened the checklist, and rebuilt it properly. That entry is in the repo, timestamped, unedited.
 
-WorkshopLM currently preserves a traced, 25-asset partial Output set from sanitized sources through Sources, Map, approved Brief, Style, editable PowerPoint files, a grounded playable Cedar Audio Overview, Storyboard, and local Video, with hashes and per-scene provenance. `Show original` lets a reviewer walk from a finished fixture Output to the transcript excerpt that started it.
+WorkshopLM currently preserves a traced, 25-asset partial set of created work from sanitized Sources through the Map, approved Brief, Style, editable PowerPoint files, a grounded playable Cedar Audio Overview, Storyboard, and local Video, with hashes and per-scene provenance. `Show original` lets a reviewer walk from the current fixture work to the transcript excerpt that started it.
 
-`[LIVE: The final Devpost copy, slides, infographic, image set, Audio Overview, thumbnails, Storyboard, narration, and public demo Video were produced and verified as one WorkshopLM Output set.]`
-`[FALLBACK: The current recorded fixture proves the traced production model, but the final public submission was assembled from those verified outputs outside the product.]`
+`[LIVE: The final Devpost copy, Presentation, Infographic, image set, Audio Overview, thumbnails, Storyboard, narration, and public demo Video were created and verified as one connected Workshop.]`
+`[FALLBACK: The current recorded fixture proves the connected creation model, but the final public submission was assembled from those verified artifacts outside the product.]`
 
-`[LIVE: The measured path from first transcript to first finished output in the recorded live run was {X minutes}.]`
+`[LIVE: The measured path from first transcript to first created work in the recorded live run was {X minutes}.]`
 `[FALLBACK: omit the sentence.]`
 
 ### How Codex was used
@@ -85,7 +85,7 @@ Two layers, both evidenced.
 
 ### Under the hood
 
-Local-first by design: SQLite in WAL mode, FTS5/BM25 retrieval over normalized evidence chunks, a workspace-owned artifact store, and a leased local job queue. One canonical semantic graph is the source of truth; the Map is an editable projection with typed, undoable operations. Style is layered (Brand Foundation, Intent Profile, versioned Visual DNA) and materializes as inspectable design tokens. Deterministic HTML/CSS renderers produce Slides and the Infographic with editable PowerPoint exports. HyperFrames renders video locally; every render emits a provenance sidecar with per-scene claim, source, image, and narration hashes. Nothing requires hosting, an account system, or anyone's credentials except one OpenAI API key for live generation.
+Local-first by design: SQLite in WAL mode, FTS5/BM25 retrieval over normalized evidence chunks, a workspace-owned artifact store, and a leased local job queue. One canonical semantic graph is the source of truth; the Map is an editable projection with typed, undoable operations. Style is layered (Brand Foundation, Intent Profile, versioned Visual DNA) and materializes as inspectable design tokens. Deterministic HTML/CSS renderers produce the Presentation and Infographic with editable PowerPoint exports. HyperFrames renders Video locally; every render emits a provenance sidecar with per-scene claim, Source, image, and narration hashes. Nothing requires hosting, an account system, or anyone's credentials except one OpenAI API key for live generation.
 
 ### Try it
 
@@ -96,7 +96,7 @@ pnpm install --frozen-lockfile
 pnpm judge:start
 ```
 
-That runs the complete recorded seam (Sources → Map → Brief → Style → Outputs → Storyboard → rendered MP4) and opens the Workshop in your browser. The README covers the Codex plugin installation from the public marketplace snapshot and the optional live-provider path. The current build passes checks across 13 packages, the production-route browser suite, all six acceptance gates, and submission integrity verification. The final publication gate will pin a tagged judge release and preserve it through the winner announcement.
+That runs the complete recorded seam (Sources → Map → Brief → Style → Created work → Storyboard → rendered MP4) and opens the Workshop in your browser. The README covers the Codex plugin installation from the public marketplace snapshot and the optional live-provider path. The current build passes checks across 13 packages, the production-route browser suite, all six acceptance gates, and submission integrity verification. The final publication gate will pin a tagged judge release and preserve it through the winner announcement.
 
 ### Scope, honestly
 
@@ -128,9 +128,9 @@ The append-only build log (`log.md`), goal file (`GOAL.md`), and claim ledger (`
 
 ## Video narration spine (aligns with the verified 2:20 rough cut)
 
-1. **Why (0:00–0:13):** raw thinking to polished slides—and the supporting work needed to ship them.
+1. **Why (0:00–0:13):** conversations and Sources become connected professional knowledge work.
 2. **How (0:13–1:22):** Codex doorway, founder Source, Terra Map, exact evidence, Brief approval, and Style.
-3. **What (1:22–2:05):** provider-backed Outputs, editable Storyboard, second approval, and narrated local Video.
+3. **What (1:22–2:05):** a provider-backed Presentation, Infographic, image set, Audio Overview, editable Storyboard, and narrated local Video.
 4. **Reveal (2:05–2:20):** `Show original`, final traced package, Codex build record, and explicit AI-voice/runtime disclosure.
 
 ## Final publication gate (unchanged)

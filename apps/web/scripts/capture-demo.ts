@@ -126,7 +126,7 @@ async function main(): Promise<void> {
     }, 1800);
 
     await page.getByRole("button", { name: "View created work" }).click();
-    await beat("create-outputs", "Create the traced Output set", async () => {
+    await beat("create-outputs", "Create connected professional knowledge work", async () => {
       await page.getByRole("button", { name: "Create work" }).click();
       await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
       await expect(page.getByRole("heading", { name: "Image set" })).toBeVisible();
@@ -142,7 +142,7 @@ async function main(): Promise<void> {
       await expect(page.getByRole("heading", { name: "Sketch", exact: true })).toBeVisible();
       await page.waitForTimeout(900);
       await page.getByRole("button", { name: "Back to Created work" }).click();
-      await page.getByRole("button", { name: /^Open Presentation/ }).click();
+      await page.locator('.output-grid [data-output-role="hero"]').click();
       await page.getByRole("button", { name: /^Show source for / }).first().click();
       await expect(page.getByRole("dialog", { name: "Source" })).toBeVisible();
     }, 1800);

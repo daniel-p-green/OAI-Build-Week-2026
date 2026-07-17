@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "sourceCapturedAt": "2026-07-16T20:15:58.596Z",
+  "sourceCapturedAt": "2026-07-16T23:56:49.701Z",
   "mode": "draft",
   "planStatus": "draft",
   "finalReady": false,
@@ -8,13 +8,13 @@
     "durationSeconds": 140,
     "maxDurationSeconds": 175,
     "shots": 10,
-    "narrationWords": 294,
-    "narrationWordsPerMinute": 126
+    "narrationWords": 268,
+    "narrationWordsPerMinute": 114.9
   },
   "capture": {
     "status": "fixture-draft",
-    "durationSeconds": 58.44,
-    "sha256": "7f62d5009d892a3cce828bde11a38b21b0a88ab65ddff889edc64e1cdca1e9a1",
+    "durationSeconds": 61.6,
+    "sha256": "cd7200d5709b0c4dd1082844298befced92b994c466ac95df96d1e8ba57b6e69",
     "referencedBeats": 12
   },
   "finalVideo": {
@@ -55,7 +55,7 @@
     },
     {
       "shotId": "meta-reveal",
-      "label": "Verified non-partial final submission Output set",
+      "label": "Verified non-partial final connected Workshop",
       "path": ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json",
       "validator": "ready-submission-manifest",
       "exists": false,

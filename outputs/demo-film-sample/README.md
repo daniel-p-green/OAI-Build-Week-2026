@@ -1,6 +1,6 @@
 # WorkshopLM sample editorial cut
 
-This 2:20 review cut uses the authorized sample transcript, the verified acceptance Output set, and the existing OpenAI Cedar narration. It is intentionally not founder footage or the public submission video.
+This 2:20 review cut uses the authorized sample transcript, the verified acceptance created-work set, and OpenAI Cedar narration. It is intentionally not founder footage or the public submission video.
 
 - Watch: `workshoplm-demo-sample.mp4`
 - Scan all ten shots: `contact-sheet.jpg` and `review/`

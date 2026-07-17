@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "status": "draft",
-  "publicTitle": "WorkshopLM — Turn raw thinking into finished work",
-  "thumbnailText": "From rough thought to finished work",
+  "publicTitle": "WorkshopLM — From conversations to professional knowledge work",
+  "thumbnailText": "One thought. Every format. Sources attached.",
   "targetDurationSeconds": 140,
   "maxDurationSeconds": 175,
   "captureManifest": "outputs/demo-recording-draft/manifest.json",
@@ -11,7 +11,7 @@
     {
       "id": "promise",
       "title": "The promise",
-      "caption": "From meetings and documents to finished work you can defend",
+      "caption": "One Workshop. Every format. Sources attached.",
       "startSeconds": 0,
       "endSeconds": 13,
       "state": "ready",
@@ -22,7 +22,7 @@
         "transition": "design-accent-dip"
       },
       "captureEndHoldbackSeconds": 0.7,
-      "narration": "From your meetings and documents to polished slides and supporting work, with every claim traced to its source. WorkshopLM turns raw professional thinking into finished work without separating conversation from production.",
+      "narration": "WorkshopLM turns conversations and Sources into professional knowledge work—every expression sharing one Style and one source trail.",
       "requiredMoments": [],
       "requiredEvidence": [
         {
@@ -105,7 +105,7 @@
       "state": "ready",
       "captureBeats": ["brief-approval"],
       "captureEndHoldbackSeconds": 1.1,
-      "narration": "When the thinking is right, the first approval turns this exact Map into an inspectable Brief. Source coverage and unresolved evidence remain visible before production begins.",
+      "narration": "When the thinking is right, the first approval turns this exact Map into an inspectable Brief. Source coverage and unresolved evidence remain visible before creation begins.",
       "requiredMoments": ["brief-approval"],
       "requiredEvidence": []
     },
@@ -118,20 +118,20 @@
       "state": "ready",
       "captureBeats": ["style"],
       "captureEndHoldbackSeconds": 1.1,
-      "narration": "Style is set once and stays reviewable. Palette, typography, layouts, image treatment, and negative rules remain consistent across the slides and every supporting Output.",
+      "narration": "Style is set once and stays reviewable, so every created format follows the same palette, typography, layout, image treatment, and negative rules.",
       "requiredMoments": [],
       "requiredEvidence": []
     },
     {
       "id": "outputs",
-      "title": "Slides—and everything around them",
-      "caption": "Create polished slides and a coordinated Output set",
+      "title": "One Workshop, many expressions",
+      "caption": "Create connected professional knowledge work",
       "startSeconds": 82,
       "endSeconds": 96,
       "state": "ready",
       "captureBeats": ["create-outputs", "output-evidence"],
       "preferCapture": true,
-      "narration": "The lead Output is polished slides I can edit and defend. The infographic, images, Audio Overview, Storyboard, and Video share the same evidence and visual direction.",
+      "narration": "The Presentation, Infographic, images, Audio Overview, Storyboard, and Video are different expressions of the same approved knowledge and Style.",
       "requiredMoments": ["provider-image-set"],
       "requiredEvidence": [
         {
@@ -167,7 +167,7 @@
       "endSeconds": 124,
       "state": "ready",
       "captureBeats": ["video-render"],
-      "narration": "The local HyperFrames worker accepts only that approved current Storyboard, synchronizes the OpenAI narration, and renders the Video. Show source still follows a finished claim back through the Brief and Map to evidence.",
+      "narration": "The local HyperFrames worker accepts only that approved current Storyboard, synchronizes the OpenAI narration, and renders the Video. Show source still follows a factual claim through the Brief and Map to evidence.",
       "requiredMoments": ["provider-narration"],
       "requiredEvidence": [
         {
@@ -186,11 +186,11 @@
       "state": "blocked",
       "captureBeats": ["original-reveal"],
       "captureEndHoldbackSeconds": 0.7,
-      "narration": "Now the reveal: that rough brainstorm became the submission you just watched. The source trail, two human decisions, and build record stayed attached. WorkshopLM produced its own assets, while Codex accelerated the implementation and verification.",
+      "narration": "Now the reveal: one messy thought became everything you just watched. The source trail, two human decisions, and build record stayed attached. WorkshopLM created the submission, while Codex accelerated the implementation and verification.",
       "requiredMoments": ["original-reveal", "build-record", "codex-evidence", "final-submission-output-set"],
       "requiredEvidence": [
         {
-          "label": "Verified non-partial final submission Output set",
+          "label": "Verified non-partial final connected Workshop",
           "path": ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json",
           "validator": "ready-submission-manifest"
         }
