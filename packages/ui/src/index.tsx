@@ -112,6 +112,18 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<H
   },
 );
 
+export function FilePicker({ label = "Choose file", accept, disabled, className, onChoose }: { label?: string; accept?: string; disabled?: boolean; className?: string; onChoose: (file: File) => void }) {
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  return <span className={classes("oai-file-picker", className)} data-oai-component="FilePicker">
+    <input ref={inputRef} aria-label={`${label} file`} type="file" accept={accept} hidden onChange={(event) => {
+      const file = event.target.files?.[0];
+      event.target.value = "";
+      if (file) onChoose(file);
+    }} />
+    <Button variant="secondary" disabled={disabled} onClick={() => inputRef.current?.click()}>{label}</Button>
+  </span>;
+}
+
 export function Card({ className, ...props }: HTMLAttributes<HTMLElement>) {
   return <section className={classes("oai-card", className)} data-oai-component="Card" {...props} />;
 }

@@ -10,6 +10,7 @@ import {
   CloseIcon,
   ConversationSurface,
   EntityCardAction,
+  FilePicker,
   FileIcon,
   FullScreenShell,
   IconButton,
@@ -305,6 +306,28 @@ export default function WorkshopPage() {
     }
   }
 
+  async function uploadPdf(file: File, permission: SourceItem["permission"] = "private") {
+    setBusy(true);
+    setNotice(null);
+    try {
+      const form = new FormData();
+      form.set("action", "ingestPdfUpload");
+      form.set("permission", permission);
+      form.set("file", file);
+      const response = await fetch("/api/workshop", { method: "POST", body: form });
+      const next = await response.json() as PersistedWorkshop & { error?: string };
+      if (!response.ok) throw new Error(next.error ?? "That PDF could not be added");
+      setState(next);
+      void reloadWorkshops();
+      return next;
+    } catch (error) {
+      setNotice({ message: error instanceof Error ? error.message : "That PDF could not be added", tone: "error" });
+      return null;
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function handleRealtimeToolEvent(event: unknown): Promise<{ output: Record<string, unknown>; createResponse: boolean } | undefined> {
     try {
       const response = await fetch("/api/workshop", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ action: "handleProviderToolEvent", providerEvent: { channel: "realtime", event, model: "gpt-realtime-2.1", explicitUserIntent: false } }) });
@@ -528,7 +551,7 @@ export default function WorkshopPage() {
                   : <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => { void post({ action: "renderVideo" }); }}>{state.videoState === "failed" || state.videoState === "cancelled" ? "Try video again" : "Create video"}</Button>;
 
   if (loadState === "ready" && state && state.onboarding.step !== "complete") {
-    return <OnboardingFlow state={state} styleLibrary={styleLibrary} busy={busy} notice={notice} onPost={post} />;
+    return <OnboardingFlow state={state} styleLibrary={styleLibrary} busy={busy} notice={notice} onPost={post} onUploadPdf={uploadPdf} />;
   }
 
   return (
@@ -571,7 +594,7 @@ export default function WorkshopPage() {
       }} onWorkshops={() => setSheet("workshops")} />}
       {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} pending={pendingSourceScope} busy={busy} onClose={closeSheet} onSelect={setSelectedSource} onToggle={requestSourceScopeChange} onApplyScope={() => { void applySourceScopeChange(); }} onCancelScope={() => setPendingSourceScope(null)} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "evidence" && selectedSource && <EvidenceSheet source={selectedSource} evidence={selectedEvidence} onClose={closeSheet} onShowMap={() => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === selectedSource.id)?.id ?? ""); openView("map"); }} />}
-      {sheet === "add-source" && <AddSourceSheet onClose={() => setSheet("sources")} onPost={post} />}
+      {sheet === "add-source" && <AddSourceSheet busy={busy} onClose={() => setSheet("sources")} onPost={post} onUploadPdf={uploadPdf} />}
       {sheet === "style" && <StyleSheet style={state?.style} analysisSuggestion={state?.onboarding.styleAnalysis?.status === "ready" ? state.onboarding.styleAnalysis.suggestion : undefined} defaultIntent={state?.onboarding.outcome} library={styleLibrary} busy={busy} onClose={closeSheet} onPost={post} onAnalyzeWebsite={analyzeWebsiteStyle} />}
       {sheet === "image-replacement" && state?.imageBatch && <ImageReplacementSheet panel={state.imageBatch.panels.find((panel) => panel.id === selectedImagePanelId)} busy={busy} onClose={closeSheet} onSubmit={async (panelId, revisionRequest) => { const next = await post({ action: "regenerateImagePanel", panelId, revisionRequest }); if (!next) return false; closeSheet(); setNotice({ message: "Creating one replacement. Review it in Storyboard before approving Video.", tone: "status" }); return true; }} />}
       {sheet === "original" && <OriginalRevealSheet state={state} onClose={closeSheet} />}
@@ -580,7 +603,7 @@ export default function WorkshopPage() {
   );
 }
 
-function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: PersistedWorkshop; styleLibrary: StyleLibraryEntry[]; busy: boolean; notice: { message: string; tone: "status" | "error" } | null; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null> }) {
+function OnboardingFlow({ state, styleLibrary, busy, notice, onPost, onUploadPdf }: { state: PersistedWorkshop; styleLibrary: StyleLibraryEntry[]; busy: boolean; notice: { message: string; tone: "status" | "error" } | null; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onUploadPdf: (file: File, permission?: SourceItem["permission"]) => Promise<PersistedWorkshop | null> }) {
   const outcome = state.onboarding.outcome ?? "client_facing_pitch";
   const [title, setTitle] = useState(state.title === "WorkshopLM Build Week" ? "" : state.title);
   const [website, setWebsite] = useState("");
@@ -617,6 +640,12 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
     return next;
   }
 
+  async function addPdf(file: File) {
+    const started = await startWorkshop();
+    if (!started) return false;
+    return Boolean(await onUploadPdf(file));
+  }
+
   async function buildMap() {
     const ready = source.trim() ? await addSource() : await startWorkshop();
     if (!ready || ready.sourceItems.length === 0) return;
@@ -645,8 +674,8 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
           return Boolean(await onPost({ action: "buildMap", title: title.trim() || undefined, outcome }));
         }} />
         <div className="source-divider"><span>or add material</span></div>
-        <TextArea label="Source" hint="Paste notes, https://…, or /path/to/file.pdf" value={source} onChange={(event) => setSource(event.target.value)} />
-        <div className="source-start-actions"><Button variant="secondary" disabled={busy || !source.trim()} onClick={() => { void addSource(); }}>Add source</Button><Button disabled={busy || (state.sourceItems.length === 0 && !source.trim())} onClick={() => { void buildMap(); }}>{busy ? "Building Map…" : "Build my Map"}</Button></div>
+        <TextArea label="Notes or website" hint="Paste meeting notes or a public URL" value={source} onChange={(event) => setSource(event.target.value)} />
+        <div className="source-start-actions"><FilePicker className="local-pdf-picker" label="Choose PDF" accept="application/pdf,.pdf" disabled={busy} onChoose={(file) => { void addPdf(file); }} /><Button variant="secondary" disabled={busy || !source.trim()} onClick={() => { void addSource(); }}>Add source</Button><Button disabled={busy || (state.sourceItems.length === 0 && !source.trim())} onClick={() => { void buildMap(); }}>{busy ? "Building Map…" : "Build my Map"}</Button></div>
         {state.sourceItems.length > 0 && <p className="source-ready" role="status">{state.sourceItems.length} {state.sourceItems.length === 1 ? "source" : "sources"} ready</p>}
       </Card>}
     </section>
@@ -1216,7 +1245,7 @@ function EvidenceSheet({ source, evidence, onClose, onShowMap }: { source: Sourc
   return <SideSheet title="Source" onClose={onClose}><blockquote className="evidence-quote">“{evidence?.excerpt ?? source.excerpt}”</blockquote><p className="source-locator">{sourceEvidenceLocator(source, locator)}</p><dl className="evidence-meta"><dt>Source</dt><dd>{sourceDisplayTitle(source)}</dd><dt>Origin</dt><dd>{sourceDisplayOrigin(source)}</dd></dl><Button onClick={onShowMap}>Show on map</Button></SideSheet>;
 }
 
-function AddSourceSheet({ onClose, onPost }: { onClose: () => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null> }) {
+function AddSourceSheet({ busy, onClose, onPost, onUploadPdf }: { busy: boolean; onClose: () => void; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null>; onUploadPdf: (file: File, permission?: SourceItem["permission"]) => Promise<PersistedWorkshop | null> }) {
   const [title, setTitle] = useState("");
   const [source, setSource] = useState("");
   const kind = sourceInputKind(source);
@@ -1229,7 +1258,12 @@ function AddSourceSheet({ onClose, onPost }: { onClose: () => void; onPost: (bod
         : { action: "ingestSource", source: { title: title.trim() || sourceTitleFromText(value), origin: "Pasted notes", text: value, permission: "private" } };
     void onPost(body).then((next) => next && onClose());
   };
-  return <SideSheet title="Add source" onClose={onClose}><RealtimeCapture onSave={async (transcript, capture) => Boolean(await onPost({ action: "captureFallbackTranscript", text: transcript, capture }).then((next) => { if (next) onClose(); return next; }))} /><div className="source-divider"><span>or add material</span></div><p className="sheet-intro">Paste notes, a public website, or an absolute local PDF path.</p><TextArea label="Source" hint="Text, https://…, or /path/to/file.pdf" value={source} onChange={(event) => setSource(event.target.value)} />{kind === "text" && source.trim() && <Input label="Title (optional)" value={title} onChange={(event) => setTitle(event.target.value)} />}<Button disabled={!source.trim()} onClick={add}>Add source</Button></SideSheet>;
+  const addPdf = async (file: File) => {
+    const next = await onUploadPdf(file);
+    if (next) onClose();
+    return Boolean(next);
+  };
+  return <SideSheet title="Add source" onClose={onClose}><RealtimeCapture onSave={async (transcript, capture) => Boolean(await onPost({ action: "captureFallbackTranscript", text: transcript, capture }).then((next) => { if (next) onClose(); return next; }))} /><div className="source-divider"><span>or add material</span></div><p className="sheet-intro">Paste notes or a public website, or choose a PDF from this Mac.</p><FilePicker className="local-pdf-picker" label="Choose PDF" accept="application/pdf,.pdf" disabled={busy} onChoose={(file) => { void addPdf(file); }} /><TextArea label="Notes or website" hint="Paste text or a public URL" value={source} onChange={(event) => setSource(event.target.value)} />{kind === "text" && source.trim() && <Input label="Title (optional)" value={title} onChange={(event) => setTitle(event.target.value)} />}<Button disabled={busy || !source.trim()} onClick={add}>Add source</Button></SideSheet>;
 }
 
 function Status({ children, tone = "current" }: { children: ReactNode; tone?: "current" | "waiting" }) {

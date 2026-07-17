@@ -106,6 +106,7 @@ button { -webkit-tap-highlight-color: transparent; }
 .style-review-preview > span { width: 34px; height: 5px; border-radius: 999px; }
 .style-review-preview strong { font-size: 16px; line-height: 22px; }
 .onboarding-secondary-actions, .source-start-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.local-pdf-picker { display: inline-flex; }
 .source-start-card .realtime-capture { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px 18px; padding: 14px 18px; border: .5px solid rgba(13,13,13,.15); border-radius: 16px; }
 .source-start-card .realtime-capture-status { grid-column: 1 / -1; }
 .source-start-card .realtime-capture-status:empty { display: none; }

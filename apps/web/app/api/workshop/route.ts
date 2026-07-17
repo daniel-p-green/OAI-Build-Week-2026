@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { mkdtemp, rm, writeFile } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { createHash } from "node:crypto";
+import { mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { analyzeWebsiteStyle, applyMapOperation, applyStyleLibrary, applyWorkshopAction, approveSketch, approveVisualDna, beginWebsiteStyleAnalysis, cancelVideoRender, captureFallbackTranscript, createImageBatch, createSketch, createVisualDna, createWorkshop, dismissWorkshopOrientation, extractWorkshopCandidates, generateAssetPlan, generateAudioOverview, generateOutput, generateStoryboard, ingestPdfFile, ingestSource, ingestUrl, listStyleLibrary, listWorkshopSummaries, lockManualStyle, lockWebsiteStyle, organizeGroundedMap, readWorkshopState, recordOutputFailure, resetSeededFixture, runWebsiteStyleAnalysis, selectImagePanelForRegeneration, selectWorkshop, sendConversationMessage, setActiveSourceScope, syncMapCanvas, type CanvasNodePatch, type ManualStyleInput, type RealtimeCaptureEvidence, type SourceIngestion, type WorkshopOnboarding, type WorkshopOutcome, undoMapOperation, updateAudioOverview, updateStoryboardPanel, updateWorkshopOnboarding, workshopDataRoot } from "../../../../worker/src/workshop-service";
 import { defaultOpenAiMediaConfig, generateOpenAiAudioOverview } from "../../../../worker/src/openai-media";
@@ -22,14 +22,18 @@ export async function POST(request: NextRequest) {
       const upload = form.get("file");
       if (!upload || typeof upload === "string" || !upload.name.toLowerCase().endsWith(".pdf")) return NextResponse.json({ error: "A PDF file is required" }, { status: 400 });
       if (upload.size > 10_000_000) return NextResponse.json({ error: "PDF uploads are limited to 10 MB" }, { status: 413 });
-      const directory = await mkdtemp(join(tmpdir(), "workshoplm-pdf-"));
+      const bytes = Buffer.from(await upload.arrayBuffer());
+      if (!bytes.subarray(0, 5).equals(Buffer.from("%PDF-"))) return NextResponse.json({ error: "That file is not a readable PDF" }, { status: 400 });
       const safeName = upload.name.replace(/[^a-zA-Z0-9._-]/g, "_").slice(0, 120);
+      const digest = createHash("sha256").update(bytes).digest("hex").slice(0, 12);
+      const directory = join(workshopDataRoot(), "sources", "originals", digest);
+      await mkdir(directory, { recursive: true });
       const filePath = join(directory, safeName);
       const rawPermission = form.get("permission");
       if (rawPermission && rawPermission !== "private" && rawPermission !== "sanitized" && rawPermission !== "shareable") return NextResponse.json({ error: "Invalid source permission" }, { status: 400 });
       const permission = rawPermission === "private" || rawPermission === "sanitized" || rawPermission === "shareable" ? rawPermission : "sanitized";
-      try { await writeFile(filePath, Buffer.from(await upload.arrayBuffer())); return NextResponse.json(await ingestPdfFile(filePath, undefined, permission ?? "sanitized")); }
-      finally { await rm(directory, { recursive: true, force: true }); }
+      try { await writeFile(filePath, bytes); return NextResponse.json(await ingestPdfFile(filePath, undefined, permission ?? "sanitized")); }
+      catch (error) { await rm(filePath, { force: true }); throw error; }
     }
     const body = await request.json() as RequestBody;
     if (!body.action) return NextResponse.json({ error: "action is required" }, { status: 400 });

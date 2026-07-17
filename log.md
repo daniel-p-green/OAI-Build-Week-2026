@@ -11213,3 +11213,47 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - Demo-film work remains paused.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 06:02 CT — Capture accepts local PDFs without filesystem knowledge
+
+### Changed
+
+- Unified the first Capture surface around voice, notes, public websites, and a standard `Choose PDF` action. Professionals no longer need to type or understand an absolute local path.
+- Added a reusable `FilePicker` composite built from the locked official Button primitive instead of creating an unreviewed raw control or design exception.
+- Connected onboarding and the quiet Add source sheet to the existing local multipart ingestion seam. Chosen PDFs default to `private`, remain on localhost, preserve their original bytes under the ignored Workshop data root, and continue through the existing deterministic extraction, chunking, claim, and Map-grounding path.
+- Added PDF signature and 10 MB boundary checks while retaining backwards-compatible programmatic path ingestion outside the visible interface.
+
+### Verified
+
+- Ran a real local ingestion with `chapter-launch-brief.pdf`: the product preserved the original at `sources/originals/655e7b36d613/chapter-launch-brief.pdf`, extracted 39 grounded claims, retained the clean filename, and registered the Source as `private`. The isolated verification data root was removed afterward.
+- Added a production-browser multipart regression proving that `Choose PDF` submits `ingestPdfUpload`, the selected filename, and private permission without exposing a path.
+- Inspected the refreshed onboarding and Add source screens at desktop, compact, and mobile widths. Each keeps voice dominant, presents PDF selection as a familiar secondary action, and retains one obvious `Build my Map` handoff.
+- The official UI-contract suite, UI package tests, and web typecheck passed. The complete production-browser suite passed all 34 scenarios without snapshot writing after the intentional Capture baselines were refreshed.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Capture remains one product stage. Conversation, Source selection, PDF choice, website ingestion, and voice are contextual inputs—not navigation items the professional must learn.
+- The local HTTP multipart request is an implementation detail inside the loopback app, not a cloud upload. The product copy says `Choose PDF` and the original remains in the local Workshop data root.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- Demo-film work remains paused. User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 06:04 CT — Capture milestone passes the complete repository floor
+
+### Verified
+
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages: 129 worker tests, 34 web tests, 19 production-renderer tests, and the official UI contract.
+- `pnpm demo:e2e` passed the deterministic Capture-to-Video seam with both approvals, six hash-bound provider-fixture images, Cedar Audio Overview, five-panel Storyboard, local Video, and build trace.
+- The complete production-browser suite had already passed all 34 scenarios without snapshot writing after the intentional Capture baselines were refreshed.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- Demo-film work remains paused. User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

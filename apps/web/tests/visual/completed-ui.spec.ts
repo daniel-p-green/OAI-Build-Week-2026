@@ -195,15 +195,38 @@ test("voice capture is bounded inside Add source and fails closed without live o
   await page.getByRole("button", { name: "Record voice" }).click();
   await expect(page.locator(".capture-error")).toContainText("Live OpenAI capture is disabled");
   await expect(page.getByRole("dialog", { name: "Add source" })).toBeVisible();
-  await expect(page.getByRole("textbox", { name: "Source" })).toBeVisible();
+  await expect(page.getByRole("textbox", { name: "Notes or website" })).toBeVisible();
   await page.route("**/api/workshop", async (route) => {
     if (route.request().method() !== "POST") return route.continue();
     posted = route.request().postDataJSON() as Record<string, unknown>;
     return route.fulfill({ json: state });
   });
-  await page.getByRole("textbox", { name: "Source" }).fill("Private client meeting notes should never be relabeled as demo-safe material.");
+  await page.getByRole("textbox", { name: "Notes or website" }).fill("Private client meeting notes should never be relabeled as demo-safe material.");
   await page.getByRole("button", { name: "Add source", exact: true }).click();
   expect(posted).toMatchObject({ action: "ingestSource", source: { origin: "Pasted notes", permission: "private" } });
+});
+
+test("local PDFs can be chosen without exposing filesystem paths", async ({ page }) => {
+  const state = await (await page.request.get("/api/workshop")).json();
+  let uploadBody = "";
+  await page.setViewportSize({ width: 1200, height: 800 });
+  await page.goto("/");
+  const sourceSheet = await openSources(page);
+  await sourceSheet.getByRole("button", { name: "Add source" }).click();
+  await page.route("**/api/workshop", async (route) => {
+    if (route.request().method() !== "POST") return route.continue();
+    uploadBody = route.request().postDataBuffer()?.toString("utf8") ?? "";
+    return route.fulfill({ json: state });
+  });
+  await page.getByLabel("Choose PDF file").setInputFiles({
+    name: "client-brief.pdf",
+    mimeType: "application/pdf",
+    buffer: Buffer.from("%PDF-1.4\n%%EOF"),
+  });
+  await expect(page.getByRole("dialog", { name: "Add source" })).toBeHidden();
+  expect(uploadBody).toContain("ingestPdfUpload");
+  expect(uploadBody).toContain("client-brief.pdf");
+  expect(uploadBody).toContain("private");
 });
 
 test("grounded Conversation preserves source scope, citations, and responsive workbench context", async ({ page }) => {
@@ -304,7 +327,7 @@ test("an empty Workshop reaches an editable Presentation through one obvious pat
   try {
     await page.setViewportSize({ width: 1200, height: 800 });
     await page.goto("/");
-    await page.getByRole("textbox", { name: "Source" }).fill([
+    await page.getByRole("textbox", { name: "Notes or website" }).fill([
       "Weekly client meeting",
       "The client approved a two-week pilot for the enablement team.",
       "Leadership needs a grounded Presentation that explains the decision, timeline, and success measure.",
@@ -1453,7 +1476,7 @@ test("a new professional reaches the real Map through the durable first-use path
   await page.getByLabel("Workshop name (optional)").fill("Acme leadership update");
   await expect(page.getByRole("button", { name: "Build my Map" })).toBeDisabled();
   await expectScreen(page, "desktop-onboarding-sources");
-  await page.getByLabel("Source").fill("Professional teams lose hours turning meeting notes into client-ready work. WorkshopLM organizes messy thinking into a grounded Map, then creates an editable Presentation with every factual claim linked to its exact source.\n\nThe recommended workflow is Capture, Map, Brief, Create. The professional reviews the Brief before output creation and reviews the Storyboard before video rendering.\n\nCompany Style keeps colors, typography, and layout rules consistent across Presentations, diagrams, images, audio, and video. The goal is professional knowledge work a consultant can refine and present without rebuilding it in another tool.");
+  await page.getByLabel("Notes or website").fill("Professional teams lose hours turning meeting notes into client-ready work. WorkshopLM organizes messy thinking into a grounded Map, then creates an editable Presentation with every factual claim linked to its exact source.\n\nThe recommended workflow is Capture, Map, Brief, Create. The professional reviews the Brief before output creation and reviews the Storyboard before video rendering.\n\nCompany Style keeps colors, typography, and layout rules consistent across Presentations, diagrams, images, audio, and video. The goal is professional knowledge work a consultant can refine and present without rebuilding it in another tool.");
   await expect(page.getByRole("button", { name: "Build my Map" })).toBeEnabled();
   await expectScreen(page, "desktop-onboarding-source-ready");
   await page.getByRole("button", { name: "Build my Map" }).click();
@@ -1489,8 +1512,9 @@ test("first-use Capture keeps the one-action Map handoff visible at compact and 
     expect(created.ok()).toBeTruthy();
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/");
-    await page.getByLabel("Source").fill("Professionals need one clear path from meeting notes to grounded work.\n\nEvery claim should stay attached to its exact source.\n\nThe Map should recommend what to do next.");
+    await page.getByLabel("Notes or website").fill("Professionals need one clear path from meeting notes to grounded work.\n\nEvery claim should stay attached to its exact source.\n\nThe Map should recommend what to do next.");
     await expect(page.getByRole("button", { name: "Record voice" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Choose PDF" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Add source" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Build my Map" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Build my Map" })).toBeEnabled();
