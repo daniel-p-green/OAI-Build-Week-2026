@@ -106,8 +106,8 @@ const locatorPosition = (locator: string) => {
   return /^normalized:[a-f0-9]+$/i.test(position) ? "Source material" : position;
 };
 const sourceEvidenceLocator = (source: SourceItem, locator: string) => {
-  if (!isVoiceSource(source) && source.origin !== "Founder-provided recording") return locator;
   const position = locatorPosition(locator);
+  if (position !== "Source material" && !isVoiceSource(source) && source.origin !== "Founder-provided recording") return locator;
   return [sourceDisplayTitle(source), position].filter(Boolean).join(" · ");
 };
 const claimDisplayLocator = (claim: { sourceId: string; locator: string }, state: Pick<PersistedWorkshop, "sourceItems"> | null) => {
@@ -830,7 +830,9 @@ function OriginalRevealSheet({ state, onClose }: { state: PersistedWorkshop | nu
   const source = state?.sourceItems.find((item) => /brainstorm|transcript/i.test(item.title)) ?? state?.sourceItems[0];
   const original = segment?.text ?? source?.excerpt ?? "No brainstorm transcript is attached to this Workshop yet.";
   const sourceKind = segment || (source && (isVoiceSource(source) || source.origin === "Founder-provided recording")) ? "Voice transcript" : "Source excerpt";
-  const sourceLocator = segment ? new Date(segment.capturedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" }) : source?.locator;
+  const sourceLocator = segment
+    ? new Date(segment.capturedAt).toLocaleString([], { dateStyle: "medium", timeStyle: "short" })
+    : source?.locator ? claimDisplayLocator({ sourceId: source.id, locator: source.locator }, { sourceItems: state?.sourceItems ?? [] }) : undefined;
   const elapsedSeconds = state?.firstTranscriptAt && state.firstRenderedOutputAt
     ? Math.max(0, Math.round((Date.parse(state.firstRenderedOutputAt) - Date.parse(state.firstTranscriptAt)) / 1000))
     : null;
