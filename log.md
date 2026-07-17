@@ -2720,6 +2720,30 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-17 12:05 CT — Founder media path rehearsed without spend or public staging
+
+### Changed
+
+- Exercised the current operator from a disposable authorized sample transcript and then from a synthetic four-second H.264/AAC recording plus separate transcript. The synthetic media states explicitly that it is rehearsal material, not Daniel's authentic brainstorm or public evidence.
+- Ran the founder-media path once with the Source private and once with an explicit shareable permission. The private run withheld `nextCommand`, reported `publicPackageEligible: false`, preserved the Source as `Private`, and did not stage film inputs. The shareable run reported `publicPackageEligible: true` and emitted the exact bounded thirteen-request command.
+- Kept both rehearsals under ignored `.workshoplm/` roots and kept synthetic inputs under `/private/tmp`; no sample or synthetic material was promoted into founder, public, or submission evidence.
+
+### Verified
+
+- `pnpm demo:live -- --root .workshoplm/founder-path-audit-2026-07-17 --allow-sample-transcript` completed with `status: ready`, six coherent image plans, five narration panels, one grounded Audio Overview plan, and `paidCallsMade: false`.
+- `ffprobe` identified the synthetic recording as H.264 video plus AAC audio with a four-second duration. Founder capture recorded hashes, byte counts, duration, codecs, transcript length, and file-modified-time provenance.
+- The private preflight produced one private founder Source, a current Brief, Presentation, Infographic, Sketch, image plan, Audio Overview plan, and Storyboard plan grounded only in that Source. It exposed only `shareablePreflightCommand`, not paid execution.
+- The explicit-share preflight produced one shareable founder Source, no private Sources, and the guarded command `WORKSHOPLM_MAX_PAID_REQUESTS=13`; it made zero OpenAI requests. The cumulative recorded provider-operation count remains 119.
+
+### Decisions and open items
+
+- Operational readiness is now proven at the real media boundary, but it does not satisfy the authentic founder-derived proof gate. Only Daniel's actual recording and exact transcript can do that.
+- The authentic run should begin with the private `pnpm demo:founder` preflight. Public staging and the paid command remain downstream of explicit Source review.
+- Demo-film work remains paused. No product redesign or additional output breadth is authorized by this rehearsal.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-17 09:37 CT — Four-stage Workshop model locked against navigation drift
 
 ### Changed
@@ -2741,6 +2765,13 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - The connected product-quality item remains open until founder visual acceptance. Demo-film work remains paused.
 - User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 12:07 CT — Log-order correction for founder media rehearsal
+
+- The complete `12:05 CT — Founder media path rehearsed without spend or public staging` entry was appended earlier in the file because its patch anchor matched a repeated milestone footer. Its private/shareable preflight evidence remains valid; this append-only correction establishes that the rehearsal occurred after the `11:56 CT` product-quality milestone.
+- No historical entry was moved or rewritten. No provider request ran; the cumulative recorded provider-operation count remains 119. The authentic founder-derived Workshop remains the only product-quality proof gate, and demo-film work remains paused.
 
 ---
 
@@ -11932,3 +11963,10 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - One OpenAI provider request ran. The cumulative recorded provider-operation count is now 119. The authentic founder-derived Workshop remains the only product-quality proof gate; demo-film work remains paused.
 - User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 12:08 CT — Founder media rehearsal chronology finalized
+
+- The `12:05 CT` founder-media rehearsal and its `12:07 CT` append-order correction appear earlier in this append-only file because repeated patch anchors placed them before later historical entries. This final chronology marker records that both occurred after the `11:56 CT` product-quality milestone.
+- The evidence is unchanged: private and explicit-shareable preflights passed with real H.264/AAC probing, zero provider requests, no public staging, and the paid command withheld until the Source was shareable. Authentic founder evidence remains open; demo-film work remains paused.
