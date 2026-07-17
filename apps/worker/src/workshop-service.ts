@@ -1281,8 +1281,8 @@ function canonicalDeckObjects(text: string) {
   return text.replace(/\bbrief\b/g, "Brief").replace(/\bstoryboard\b/g, "Storyboard").replace(/\b(?:demo\s+)?video\b/g, "Video");
 }
 function deckSequence(text: string) {
-  const match = text.match(/\b([A-Z][\p{L}\p{N}-]{2,})\s*(?:→|to)\s*([A-Z][\p{L}\p{N}-]{2,})\s*(?:→|to)\s*([A-Z][\p{L}\p{N}-]{2,})\b/u);
-  return match ? match.slice(1, 4) : [];
+  const match = text.match(/\b[A-Z][\p{L}\p{N}-]{2,}\s*(?:(?:→|to)\s*[A-Z][\p{L}\p{N}-]{2,}\s*){2,5}/u);
+  return match ? match[0].trim().split(/\s*(?:→|to)\s*/i) : [];
 }
 function displaySourceTitle(title: string) {
   const clean = title.replace(/\.(?:pdf|docx?|pptx?|txt)$/i, "").trim();
@@ -1475,7 +1475,7 @@ export function createImageBatch(root?: string): WorkshopState {
     ["Systems diagram", "Translate the approved idea into an unlabeled systems diagram made from geometric nodes, layers, and connectors. Show relationships without implying invented quantities.", ["system", "map", "process", "workflow", "chain", "connect", "brief", "organize", "relationship"]],
     ["Evidence chain", "Show source-like paper forms progressing through connected proof points into one polished decision artifact. Make provenance visually legible without words or interface chrome.", ["evidence", "source", "claim", "trace", "provenance", "locator", "citation", "grounded", "defend"]],
     ["Decision visual", "Build a clear tension-to-resolution composition with two contrasting fields joined by one accent-colored bridge. Do not invent data, scales, or labels.", ["approve", "only", "must", "should", "decision", "gate", "review", "sign-off", "recommend"]],
-    ["Storyboard sequence", "Create a four-beat storyboard strip inside one square composition, keeping the same objects, lighting, and camera language across every beat.", ["sequence", "path", "step", "storyboard", "capture", "shape", "deliver", "journey", "continuous"]],
+    ["Storyboard sequence", "Create a four-beat storyboard strip inside one square composition, keeping the same objects, lighting, and camera language across every beat.", ["sequence", "path", "step", "storyboard", "capture", "map", "brief", "create", "journey", "continuous"]],
     ["Section art", "Create polished closing section art: the approved idea resolved into a cohesive family of abstract presentation, diagram, and video-frame forms, with ample negative space.", ["deck", "presentation", "infographic", "image", "video", "brand", "finished", "output", "delivery"]],
   ] as const;
   const panels = roles.map(([role, direction, keywords], index) => {

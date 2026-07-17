@@ -22,7 +22,8 @@ describe("plugin contract", () => {
     } });
     expect(apps).not.toHaveProperty("widgets");
     expect(apps).not.toHaveProperty("dependencies");
-    expect(skill).toContain("visual Outputs");
+    expect(skill).toContain("Capture → Map → Brief → Create");
+    expect(skill).toContain("hierarchy, evidence clusters, synthesis, direction, and a recommended path");
     expect(skill).not.toMatch(/Studio|Sources rail/);
   });
 });

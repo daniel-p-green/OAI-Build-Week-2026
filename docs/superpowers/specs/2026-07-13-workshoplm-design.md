@@ -6,7 +6,7 @@ Owner: WorkshopLM Build Week team
 
 ## 1. Decision summary
 
-WorkshopLM is a professional, source-grounded workspace that turns messy thinking into finished work. It keeps the familiar NotebookLM interaction model—one durable container, scoped Sources, central conversation, and a Studio of durable outputs—then adds the professional production controls that NotebookLM does not make central.
+WorkshopLM is a professional, source-grounded workspace that turns messy thinking into finished work. It keeps the familiar NotebookLM interaction model—one durable container, scoped Sources, central conversation, and durable created work—then adds the professional creation controls that NotebookLM does not make central.
 
 The user-facing unit is a **Workshop**. A Workshop contains its sources, live/text conversation, semantic Map, approved brief, style system, output history, and dependency state.
 
@@ -17,7 +17,7 @@ ChatGPT Work / Codex task
 └── Conversation: text + native voice + WorkshopLM skill/tools
     ↕ shared Workshop commands
 In-app browser
-└── Workshop: Sources | Map/artifact workspace | Studio
+└── Workshop: Capture | Map | Brief | Create
 ```
 
 The MVP proves one high-quality path:
@@ -36,7 +36,7 @@ The demo is meta: WorkshopLM creates the material used to demonstrate WorkshopLM
 
 Execution is autonomous within the locked product boundaries. Routine implementation, compatible contract evolution, and evidence-backed fallback activation belong to the primary integrator; the user is not a standing approval dependency.
 
-WorkshopLM's distributable product shape is a unified ChatGPT/Codex plugin. The plugin packages repeatable workflow skills, a local MCP server, compact review widgets, and optional source-app dependencies. It does not collapse the product into chat: the full Map, storyboard, batch review, and Studio remain in the local browser workspace.
+WorkshopLM's distributable product shape is a unified ChatGPT/Codex plugin. The plugin packages repeatable workflow skills, a local MCP server, compact review widgets, and optional source-app dependencies. It does not collapse the product into chat: the full Map, Brief, Style, Storyboard, and created-work review remain in the local browser workspace.
 
 ## 2. Product boundaries
 
@@ -70,17 +70,11 @@ The library is intentionally recognizable to NotebookLM users. It presents Works
 
 ### Unified ChatGPT + Workshop shell
 
-ChatGPT itself is the Conversation layer. WorkshopLM does not render a second chat thread or composer. The local browser workspace is a stable three-panel visual production surface:
-
-| Area | Responsibility | Primary controls |
-| --- | --- | --- |
-| Sources, left | Ingested material, connectors, source grouping, selection, and citation viewer | add source, filter, select/deselect, inspect source, connector state |
-| Center | The dominant visual work surface | Map editing, FRAME.md/DESIGN.md review, storyboard/output focus, approvals, undo/redo |
-| Studio, right | output types, generation queue, output history, status, and focused output inspector | create output, open, approve, regenerate, inspect trace |
+ChatGPT itself is the Conversation layer. WorkshopLM does not render a second chat thread or composer. The local browser workspace uses a compact shared index—`Capture → Map → Brief → Create`—around one dominant visual work surface. The index is navigation and status, not a literal feature list: Conversation and Sources are nested under Capture; Style, created work, and Storyboard are nested under Create. Sources, status detail, and version history open in contextual sheets instead of permanent side rails.
 
 The WorkshopLM plugin connects the current ChatGPT task to a local Workshop and opens this application in the ChatGPT/Codex in-app browser. The ChatGPT conversation remains the place to talk, type, clarify, and invoke work; the browser remains the place to see, manipulate, approve, and inspect it.
 
-Panels can collapse. A compact `Continue in ChatGPT` control returns focus to the native conversation, but the browser does not duplicate its composer.
+A compact `Continue in ChatGPT` control returns focus to the native conversation, but the browser does not duplicate its composer.
 
 ### Capture
 
@@ -97,9 +91,9 @@ Source paths:
 
 Every source path normalizes into the same `Source` and `EvidenceChunk` contract. Connector/app identity, source URL/object ID, permission boundary, and native locator remain attached so downstream citations do not lose origin.
 
-### Shape
+### Map and Brief
 
-The ChatGPT conversation can suggest typed graph operations through WorkshopLM tools; it may never mutate the graph directly with free-form model output. Map is the editable Excalidraw representation of the semantic graph. Users can move, resize, connect, merge, split, edit, lock, and delete nodes. Map edits become typed graph operations and are undoable.
+The ChatGPT conversation can suggest typed graph operations through WorkshopLM tools; it may never mutate the graph directly with free-form model output. Map is a constrained, auto-organized Excalidraw representation of the semantic graph, not a generic whiteboard. It should make hierarchy, evidence clusters, synthesis, direction, and a recommended path forward immediately visible. Users can move, resize, edit, and connect semantic nodes within that model. Map edits become typed graph operations and are undoable.
 
 Every Map node communicates at least one of: source evidence, claim state, priority, confidence, unresolved status, or downstream dependency. Selecting a citation opens its source and highlighted locator without losing context.
 
@@ -117,9 +111,9 @@ Style has three layers:
 
 Website extraction is reviewable, never automatic truth. The user can correct every finding before saving `DESIGN.md` and the machine-readable token record.
 
-### Deliver — Studio and output types
+### Create — Style and professional work
 
-Studio is an output history, not a blank generator. It shows durable outputs with a type, title, status, source/brief/style versions, and relevant controls.
+Create contains Style and an accumulating history of professional work, not a blank generator. It shows durable outputs with a type, title, status, source/brief/style versions, and relevant controls.
 
 MVP output types:
 
@@ -198,7 +192,7 @@ Workshop progress is not one linear lifecycle. It is a set of independently deri
 - `storyboard_approved`
 - `video_rendered`
 
-Commands derive eligibility from these gates and the current input versions. Users can return to Capture, Shape, Style, or Studio without “moving the Workshop backward.” Only two gates require explicit blocking user approval: Map-as-brief and storyboard-before-video. Style locking is inline review.
+Commands derive eligibility from these gates and the current input versions. Users can return to Capture, Map, Brief, or Create without “moving the Workshop backward.” Conversation and Sources are nested under Capture; Style, created work, and Storyboard are nested under Create. Only two gates require explicit blocking user approval: Map-as-brief and storyboard-before-video. Style locking is inline review.
 
 `stale` is an overlay on an individual graph, brief, style, storyboard, or output version, not a destructive reset of the Workshop. A gate may remain historically achieved while a command rejects a now-stale input version.
 
@@ -238,7 +232,7 @@ packages/
   plugin.json           unified plugin metadata and interface
 .mcp.json               bundled local stdio MCP server
 skills/
-  workshoplm/SKILL.md   repeatable Capture → Shape → Deliver guidance
+  workshoplm/SKILL.md   repeatable Capture → Map → Brief → Create guidance
 ```
 
 No separate API service is required for the MVP. Route handlers own validated local commands; the worker owns long-running side effects; the bundled MCP server invokes the same domain commands rather than duplicating business logic. React components and MCP handlers never call an AI provider directly.
@@ -250,7 +244,7 @@ The plugin targets both ChatGPT Work and ChatGPT Codex and contains no required 
 - **Skill:** teaches the Workshop workflow, approval gates, grounding rules, and when to open the full workspace.
 - **Local MCP tools:** create/list/open a Workshop, add a sanitized source, inspect status/trace, approve the current brief/storyboard, enqueue an output, and render an eligible video.
 - **Compact widgets:** status, trace, and output-review summaries only. They do not reproduce Excalidraw or the full storyboard editor.
-- **Full workspace:** the local Next.js app in the in-app browser owns Conversation, Map, Style, batch review, and Studio editing.
+- **Full workspace:** the local Next.js app in the in-app browser owns Conversation, Map, Brief, Style, batch review, and created-work editing.
 - **Optional apps:** Granola, Google Drive, and later connectors can supply sources when available. They are never required for the sanitized fixture or core demo.
 
 ### Local runtime decisions
@@ -337,7 +331,7 @@ The local HyperFrames CLI receives only a current, approved storyboard and a ren
 
 ### ChatGPT Sites boundary
 
-Studio may produce a reviewable Site project with grounded content and style tokens. It does not claim autonomous deployment through a public API. Publishing remains an explicit user action in the ChatGPT/Codex Sites surface.
+Create may produce a reviewable Site project with grounded content and style tokens. It does not claim autonomous deployment through a public API. Publishing remains an explicit user action in the ChatGPT/Codex Sites surface.
 
 ## 9. Responsive and accessible design
 
@@ -385,9 +379,9 @@ Studio may produce a reviewable Site project with grounded content and style tok
 
 1. **Promise (0:00–0:20):** WorkshopLM turns raw professional thinking into finished work.
 2. **Capture (0:20–0:45):** show the original messy voice brainstorm and selected sources.
-3. **Shape (0:45–1:10):** switch to Map, show citations, make one meaningful change, and approve the brief.
+3. **Map and Brief (0:45–1:10):** show evidence clusters and the recommended path, make one meaningful change, and approve the Brief.
 4. **Style (1:10–1:35):** show website-derived `DESIGN.md`, Intent Profile, and locked Visual DNA.
-5. **Studio (1:35–2:05):** open deck, infographic, and coherent image batch as one output set.
+5. **Create (1:35–2:05):** open the Presentation, Infographic, and coherent Image set as connected professional work.
 6. **Control (2:05–2:30):** change one storyboard panel; only then approve video rendering.
 7. **Render and reveal (2:30–3:00):** show the final demo and reveal the original transcript → Map → brief → storyboard trace.
 

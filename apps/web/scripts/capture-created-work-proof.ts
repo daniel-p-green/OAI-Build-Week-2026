@@ -11,7 +11,7 @@ const infographicRoot = resolve(repository, "artifacts", "live-review", "infogra
 const sha256 = (bytes: Uint8Array | string) => createHash("sha256").update(bytes).digest("hex");
 
 async function captureSlides(htmlPath: string, outputRoot: string, selector = ".slide"): Promise<string[]> {
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await chromium.launch({ headless: true });
   try {
     const page = await browser.newPage({ viewport: { width: 1400, height: 900 }, deviceScaleFactor: 1 });
     await page.goto(pathToFileURL(htmlPath).href);
@@ -33,7 +33,7 @@ async function captureSlides(htmlPath: string, outputRoot: string, selector = ".
 
 async function contactSheet(paths: string[], outputPath: string): Promise<void> {
   const images = await Promise.all(paths.map(async (path) => `data:image/png;base64,${(await readFile(path)).toString("base64")}`));
-  const browser = await chromium.launch({ channel: "chrome", headless: true });
+  const browser = await chromium.launch({ headless: true });
   try {
     const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
     await page.setContent(`<style>*{box-sizing:border-box}body{margin:0;padding:16px;background:#111}.sheet{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.sheet img{display:block;width:100%;height:auto}</style><div class="sheet">${images.map((source) => `<img src="${source}">`).join("")}</div>`);
@@ -50,7 +50,7 @@ async function main(): Promise<void> {
   const infographicHtml = resolve(generated, "infographic-v1.infographic.html");
   const infographicPptx = resolve(generated, "infographic-v1.infographic.pptx");
   const checked = await Promise.all([presentationHtml, infographicHtml].map((path) => readFile(path, "utf8")));
-  for (const html of checked) if (/Capture (?:to|→) Deliver|<span>Deliver<\/span>|connected Output set|client-ready deliverable/i.test(html)) throw new Error("Created-work proof still contains retired active product language.");
+  for (const html of checked) if (/Capture (?:to|→) (?:Shape|Deliver)|<span>(?:Shape|Deliver)<\/span>|connected Output set|client-ready deliverable/i.test(html)) throw new Error("Created-work proof still contains retired active product language.");
 
   await Promise.all([
     copyFile(presentationHtml, resolve(presentationRoot, "presentation-v7.html")),
@@ -73,7 +73,7 @@ async function main(): Promise<void> {
   await Promise.all([
     writeFile(resolve(presentationRoot, "evidence.json"), `${JSON.stringify(evidence.presentation, null, 2)}\n`),
     writeFile(resolve(infographicRoot, "evidence.json"), `${JSON.stringify(evidence.infographic, null, 2)}\n`),
-    writeFile(resolve(presentationRoot, "README.md"), "# Current Presentation proof\n\nDeterministically rendered from the current recorded acceptance Workshop after the active product vocabulary moved to Capture → Shape → Create. The editable PowerPoint, HTML, five slide images, and contact sheet share the same approved Brief, Style, and Sources. No provider request was made for this capture.\n"),
+    writeFile(resolve(presentationRoot, "README.md"), "# Current Presentation proof\n\nDeterministically rendered from the current recorded acceptance Workshop using the active Capture → Map → Brief → Create model. The editable PowerPoint, HTML, five slide images, and contact sheet share the same approved Brief, Style, and Sources. No provider request was made for this capture.\n"),
     writeFile(resolve(infographicRoot, "README.md"), "# Current Infographic proof\n\nDeterministically rendered from the current recorded acceptance Workshop as a connected visual narrative rather than a card grid. The editable PowerPoint, HTML, and visual proof share the same approved Brief, Style, and Sources. No provider request was made for this capture.\n"),
   ]);
   console.log(JSON.stringify(evidence));

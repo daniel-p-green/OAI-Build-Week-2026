@@ -130,7 +130,7 @@ describe("official Apps in ChatGPT UI implementation", () => {
     for (const retired of ["one current object at a time", "Sources sheet or claim inspector; both are closed by default", "one `Generate package` action", "`Approve storyboard & render`", "`Approve map as brief`", "brief sheet folds into Studio inputs", "small ink pulses enter from the host strip"]) {
       expect(design).not.toContain(retired);
     }
-    for (const required of ["Sources | current object | Production", "persistent Sources rail", "Production rail", "Brief and Style", "Outputs history", "`Approve brief`", "`Create outputs`", "`Approve storyboard`", "`Create video`", "`Show source`", "`Show original`", "packages/ui/src/contract.ts"]) {
+    for (const required of ["Capture → Map → Brief → Create", "one dominant current object", "Sources sheet", "Brief and Style", "Created work history", "constrained, auto-organized semantic canvas", "`Approve brief`", "`Create outputs`", "`Approve storyboard`", "`Create video`", "`Show source`", "`Show original`", "packages/ui/src/contract.ts"]) {
       expect(design).toContain(required);
     }
   });

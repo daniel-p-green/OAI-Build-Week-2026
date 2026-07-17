@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-16 CT
+Last updated: 2026-07-17 CT
 
 This file is the current product compass. It defines the durable product contract, completion bar, and immediate execution path. Chronological implementation evidence belongs in [`log.md`](log.md).
 
@@ -169,7 +169,7 @@ Completion is an outcome judgment, not a count of routes, tests, files, provider
 ## 4. Current critical path
 
 - [ ] **Finish the connected product-quality pass.** Simplify first use and navigation around `Capture → Map → Brief → Create`; make the constrained Map clarify evidence, synthesis, direction, and the recommended path; keep grounding visible across created work; and resolve visible responsive or repository-hygiene blockers without adding breadth.
-  - Current implementation evidence covers the complete four-stage spine, simplified first use, constrained semantic Map, visible source-link depth on created work, contextual artifact source review, and responsive browser verification. Founder visual acceptance remains the completion gate.
+  - Current implementation evidence covers the complete four-stage spine, simplified first use, constrained semantic Map, visible source-link depth on created work, contextual artifact source review, aligned design/plugin/generated-work contracts, and responsive browser verification. Founder visual acceptance remains the completion gate.
 - [ ] **Record and run the authentic founder Workshop.** Capture the authentic founder voice recording and exact transcript outside the public data root, review Source sharing explicitly, then create the founder-derived Map, approved Brief, Style, connected professional knowledge work, approved Storyboard, and local HyperFrames Video.
 - [ ] **Review and refine the resulting knowledge work.** Inspect every format together for knowledge quality, visual coherence, source trust, and professional usefulness; repair only visible blockers and obtain an intended-audience `Ready` or concrete revision judgment.
 - [ ] **Complete and review the public video.** Replace sample-only evidence with founder-derived proof, preserve the meta reveal, verify stable motion and audio, and complete a final founder and target-audience taste review.

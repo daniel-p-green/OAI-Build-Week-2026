@@ -31,8 +31,8 @@ describe("Excalidraw Map persistence", () => {
     const wrapped = normalizedScene.map((element) => element.id === "label-one" ? { ...element, text: "Orig\ninal" } : element);
     expect(patchesFromScene([node], wrapped, baseline)).toEqual([{ ...node, title: "Orig inal" }]);
 
-    const phraseNode = { ...node, title: "Continuous Capture → Shape → Deliver path" };
-    const phraseScene = normalizedScene.map((element) => element.id === "label-one" ? { ...element, text: "Continuous Capture → Shape\n→ Deliver path" } : element);
+    const phraseNode = { ...node, title: "Capture → Map → Brief → Create" };
+    const phraseScene = normalizedScene.map((element) => element.id === "label-one" ? { ...element, text: "Capture → Map → Brief\n→ Create" } : element);
     const phraseBaseline = baselineFromScene([phraseNode], phraseScene)!;
     expect(patchesFromScene([phraseNode], phraseScene, phraseBaseline)).toEqual([]);
   });

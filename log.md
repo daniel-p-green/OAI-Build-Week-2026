@@ -2720,6 +2720,43 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-17 00:26 CT — Four-stage product contract reconciled through generated work
+
+### Changed
+
+- Replaced the stale three-column and `Capture → Shape → Deliver` guidance in the governing design system with the implemented focused-object model: `Capture → Map → Brief → Create`, contextual Sources, one dominant object, and one next action.
+- Locked the Map bar more precisely: a constrained, auto-organized semantic canvas that immediately communicates hierarchy, evidence clusters, synthesis, direction, and a recommended path—not an open-ended Excalidraw feature surface.
+- Updated the shipped WorkshopLM skill, current architecture specification, generated build trace, acceptance Sources, local operator fixture, and plugin contract to use the same four-stage model. Conversation and Sources remain nested under Capture; Style, created work, and Storyboard remain nested under Create.
+- Extended the Presentation sequence parser from exactly three stages to three through six stages, so `Capture → Map → Brief → Create` renders as a real editable sequence in HTML, PowerPoint, and Infographic output instead of falling back to prose.
+- Removed remaining active `Production`, `Studio`, and generic `Outputs` language from the design contract where the professional-facing term is `created work`; technical persisted Output records remain unchanged.
+- Made the created-work proof capturer use bundled Chromium rather than Daniel's running Chrome installation and tightened its vocabulary guard against both `Shape` and `Deliver` stage regressions.
+
+### Verified
+
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages after reconciling the plugin contract, including 124 worker tests, 30 web tests, 19 production-renderer tests, and seven plugin tests.
+- `pnpm demo:e2e` passed the deterministic transcript-to-Video seam with current Brief, Style, Presentation, Infographic, Sketch, Audio Overview, six-image set, approved Storyboard, local Video, and generated build trace.
+- `pnpm --filter @workshoplm/web test:visual` passed all 31 production-browser scenarios across desktop, compact, mobile, accessibility, first-use, source tracing, created work, Storyboard, and Video states.
+- The regenerated Presentation proof contains five slides and an editable 1.0 MB PowerPoint; the Infographic proof contains one editable PowerPoint and visual export. Their evidence files record zero provider requests and current SHA-256 hashes.
+- `artifacts/live-review/presentation-v7/contact-sheet.png` and `artifacts/live-review/infographic-v6/infographic-v6.png` were visually inspected. Typography, hierarchy, source treatment, layout variety, image integration, and whitespace clear the current professional-quality bar.
+- The first proof capture attempt failed because the local Chrome child process received `SIGKILL`; the bundled-Chromium path then completed successfully. This was a capture-environment failure, not a product or renderer failure.
+
+### Decisions
+
+- The four-stage spine is the only primary navigation/status model. Nested objects may appear in the expanded Workshop index, but they do not become additional stages or tabs.
+- Excalidraw remains the Map rendering and manipulation engine; WorkshopLM owns semantic structure, automatic organization, evidence states, and recommended direction.
+- The existing Presentation renderer is not the current quality bottleneck. Its current proof already demonstrates varied, editable, source-connected professional layouts, so this tranche corrected cross-product consistency instead of redesigning a working renderer.
+- Passing implementation evidence does not close the product-quality critical item; founder visual acceptance remains the completion gate.
+- No OpenAI provider request ran. The product provider-operation ledger remains 115.
+
+### Open items
+
+- Obtain founder visual judgment on the current first-use, Map, created-work, focused artifact, Presentation, and Infographic surfaces. Repair only concrete visible blockers.
+- Then record and run the authentic founder Workshop through the verified path.
+- User-owned `PLAN-2026-07-13.md`, interrupted final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded from this tranche.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-16 23:53 CT — Workshop spine, constrained semantic Map, and first-use simplification verified
 
 ### Changed
@@ -10422,4 +10459,14 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Obtain founder visual judgment on the current first-use, Map, Created work, and focused artifact surfaces. Repair only concrete visible blockers found in that review.
 - Then record and run the authentic founder Workshop through the verified path.
 - The user-owned plan/audit files and interrupted demo-film changes remain excluded from this tranche.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 00:27 CT — Log-order correction for the four-stage contract milestone
+
+- The full `00:26 CT` design-contract, sequence-parser, generated-work, visual-verification, and repository-hygiene entry was appended earlier in this file because its patch matched a repeated Session ID line instead of the physical end. It remains unchanged there to preserve append-only history; this correction establishes its intended current chronology.
+- The verified result is unchanged: one `Capture → Map → Brief → Create` contract across the design system, shipped skill, active specification, Presentation renderer, build trace, fixtures, and plugin contract; `pnpm check`, `pnpm demo:e2e`, and 31/31 production-browser scenarios all pass.
+- Current created-work proof was regenerated and visually inspected in `artifacts/live-review/presentation-v7/` and `artifacts/live-review/infographic-v6/`. No provider request ran; the provider-operation ledger remains 115.
+- Founder visual acceptance and the authentic founder Workshop remain the next gates. User-owned plan/video/audit work remains excluded.
 - Codex Session ID: unavailable on this surface; not inferred.

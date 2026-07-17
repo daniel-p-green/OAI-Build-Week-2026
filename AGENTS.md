@@ -104,7 +104,7 @@ The seam **voice/source capture → grounded Map → approved brief → branded 
 
 ## Execution slots and ownership
 
-Use at most four concurrent slots: one primary integrator plus three isolated implementation lanes. The primary integrator owns `main`, shared configuration, domain-contract stewardship, local SQLite migrations, the application shell, local queue core, judge fixture, and final verification. Rotate the three implementation lanes across Capture, Shape, Style, Deliver, meta-demo/provenance, and red-team work according to the plan.
+Use at most four concurrent slots: one primary integrator plus three isolated implementation lanes. The primary integrator owns `main`, shared configuration, domain-contract stewardship, local SQLite migrations, the application shell, local queue core, judge fixture, and final verification. Rotate the three implementation lanes across Capture, Map/Brief, Create, meta-demo/provenance, and red-team work according to the plan.
 
 - Give each lane exclusive paths before it starts; shared files remain integrator-owned.
 - Merge small verified increments continuously.
