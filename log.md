@@ -10818,3 +10818,28 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Founder visual acceptance and the authentic founder Workshop remain the next proof gates.
 - User-owned plan/video changes and untracked final-preview/design-audit artifacts remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 03:05 CT — Responsive UI evidence now matches the current product
+
+### Changed
+
+- Audited the stored responsive baselines after the semantic-Map milestone and found that ordinary visual tolerance had allowed several screenshots to retain the removed three-pill `Recommended path` even though the production UI and tests exercised the new single-Direction overview.
+- Explicitly regenerated the first-use, reset-fixture, and completed-Workshop responsive evidence from the current production build. The authoritative Map screenshots now show one recommended Direction at desktop and compact widths and the hierarchy-first mobile outline.
+- Refreshed the directly traversed Source, evidence, Brief, Style, Created work, and focused-output screenshots in the same deterministic runs so the connected path is represented by one internally consistent product state.
+- Kept the older untracked `product-design-audit/` captures outside the authoritative evidence chain rather than deleting or silently relabeling user-owned review material.
+
+### Verified
+
+- Inspected the refreshed `desktop-map.png`, `compact-map.png`, `mobile-map.png`, `desktop-onboarding-map.png`, and `desktop-reset-map.png` at original resolution. Each shows the current recommendation model; compact retains Direction and mobile begins with Direction → Synthesis → Evidence.
+- An isolated recapture confirmed that an apparent black-block artifact came from direct PNG preview rendering, not the stored screenshot; conversion to an opaque JPEG review copy showed the complete canvas and controls, and a second isolated reset-fixture capture was clean.
+- The complete production-browser suite passed all 31 scenarios against the refreshed baselines without snapshot updates.
+- No application code, Source data, paid provider path, or user-owned plan/video work changed in this milestone. The provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Treat screenshot baselines as product evidence, not merely tolerant regression fixtures. A baseline that no longer depicts current interaction or vocabulary must be deliberately refreshed and inspected.
+- Preserve historical visual research separately; only the production-browser baseline directory is the authoritative current responsive proof.
+- Founder visual acceptance and the authentic founder Workshop remain the next proof gates.
+- Codex Session ID: unavailable on this surface; not inferred.
