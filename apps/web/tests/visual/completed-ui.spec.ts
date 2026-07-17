@@ -1438,6 +1438,7 @@ test("the local render becomes a real Video preview and the next action", async 
     await expect(videoCard).toBeVisible();
     const previewVideo = videoCard.locator("video");
     await expect(previewVideo).toHaveAttribute("src", "/api/workshop/artifacts/video-v1");
+    await expect(previewVideo).toHaveAttribute("poster", `/api/workshop/artifacts/storyboard-v${renderedState.storyboard.version}-panel-1-image`);
     await seekVideoFrame(previewVideo);
     await expectScreen(page, `${viewport.name}-video-output`);
 
@@ -1448,6 +1449,7 @@ test("the local render becomes a real Video preview and the next action", async 
     await viewVideo.click();
     const player = page.locator(".focused-output-preview video[controls]");
     await expect(player).toBeVisible();
+    await expect(player).toHaveAttribute("poster", `/api/workshop/artifacts/storyboard-v${renderedState.storyboard.version}-panel-1-image`);
     await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveCount(0);
     const editStoryboard = page.getByRole("button", { name: "Edit storyboard" });
     await expect(editStoryboard).toHaveClass(/oai-button--primary/);

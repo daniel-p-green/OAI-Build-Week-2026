@@ -11338,3 +11338,33 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
 - User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 06:58 CT — Video opens on its approved Storyboard image
+
+### Changed
+
+- Audited the live focused views for Presentation, Infographic, Audio Overview, Sketch, Image set, Storyboard, and Video in the ChatGPT/Codex in-app browser. Every format retained visible Source grounding and an appropriate refinement path, but the unopened Video player presented a large black frame.
+- Added a provenance-correct poster to both the Video card and focused player. It resolves the first selected image from the exact Storyboard version recorded by that Video, including historical versions, rather than using current state or an unrelated decorative thumbnail.
+- Kept the existing Video hierarchy and actions unchanged: `Edit storyboard` remains primary, `Show original` retains the meta reveal, and exact Source links remain beneath the approved composition.
+
+### Verified
+
+- Direct in-app browser inspection loaded `/api/workshop/artifacts/storyboard-v1-panel-1-image` and showed the approved blue, black, and paper composition immediately in the 16:9 Video frame before playback.
+- Web typecheck and all 34 web unit/contract tests passed.
+- The isolated production-browser HyperFrames scenario passed after rendering the real local Video and now asserts the exact Storyboard-version poster on both the Created work card and focused player.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- A Video's resting image is part of its approved composition and provenance, not marketing artwork. Historical Video versions therefore resolve their own Storyboard-version image.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+### Final repository verification
+
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages after the Video-poster change.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam through both approvals, six images, Cedar Audio Overview, Storyboard, local Video, and build trace.
+- The first isolated production-browser attempt was killed during Chrome launch before a page opened. The clean retry passed the real local Video scenario in 40.3 seconds; no product assertion was weakened or skipped.
