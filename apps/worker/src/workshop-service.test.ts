@@ -159,6 +159,9 @@ it("promotes the proposed decision instead of prose that merely mentions recomme
       title: "Prioritize a two-week pilot, confirm ownership, and show…",
       body: "The team should prioritize a two-week pilot, confirm ownership, and show leadership the decision path",
     });
+    const approved = applyWorkshopAction("approveBrief", root);
+    expect(approved.frame?.markdown).toContain("## Direction\nThe team should prioritize a two-week pilot, confirm ownership, and show leadership the decision path");
+    expect(approved.frame?.markdown.match(/The team should prioritize a two-week pilot/g)).toHaveLength(1);
   } finally {
     if (priorFixtureMode === undefined) delete process.env.WORKSHOPLM_SEEDED_FIXTURE;
     else process.env.WORKSHOPLM_SEEDED_FIXTURE = priorFixtureMode;

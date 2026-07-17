@@ -1529,6 +1529,7 @@ test("a new professional reaches the real Map through the durable first-use path
   await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
   await page.getByRole("button", { name: "Approve brief" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "WorkshopLM organizes messy thinking into a grounded Map" })).toBeVisible();
+  await expect(page.getByText("The goal is professional knowledge work a consultant can refine and present without rebuilding it in another tool", { exact: true })).toBeVisible();
   await expect(page.locator(".brief-evidence-item")).toHaveCount(3);
   const problemEvidence = page.locator(".brief-evidence-item").filter({ hasText: "Professional teams lose hours turning meeting notes into client-ready work" });
   await problemEvidence.getByRole("button", { name: "Pasted notes · chunk 01" }).click();

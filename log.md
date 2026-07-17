@@ -11398,3 +11398,29 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 130 worker tests and 34 web tests.
 - `pnpm demo:e2e` passed the complete recorded-fixture seam through both approvals, six images, Cedar Audio Overview, Storyboard, local Video, and build trace.
+
+---
+
+## 2026-07-17 07:17 CT — Brief approval preserves the reviewed Map decision
+
+### Changed
+
+- Continued the genuinely empty Workshop through Map approval, Brief, Style, and the Create handoff in the ChatGPT/Codex in-app browser. The run exposed a trust defect: the Map recommended the explicit two-week pilot decision, but Brief approval discarded that reviewed node and selected an earlier background sentence.
+- Brief construction now uses the Map's explicit `recommends` edge or canonical Direction node. A provider-generated creative Direction is eligible only when a recorded grounded-graph run exists, preserving deterministic fixture compatibility. Grounded evidence that repeats the approved Direction is omitted instead of presenting the same sentence twice.
+- Added a one-click `Use a clean default` fallback to the fresh Style sheet. Website-derived and manual Style remain available; the action locks the existing clean professional Style contract and closes the sheet so `Create work` becomes the single next action.
+
+### Verified
+
+- The fresh in-app-browser run showed the exact reviewed sentence—`The team should run a two-week pilot, assign one accountable owner, and report adoption evidence before expanding`—under `Approved direction`; only the background and traceability statements remained under evidence. `Use a clean default` produced `Clean professional`, exposed `Create work`, and remained usable at 390×844.
+- A worker regression approves the Brief after deterministic Map generation, verifies the exact Direction in `FRAME.md`, and proves it appears once. All 130 worker tests and all 34 web unit/contract tests passed.
+- The optimized Next.js production build passed. A production first-use browser run reached the Brief and proved the exact Map Direction was rendered there; subsequent retries encountered intermittent host Chrome launch termination before a page opened, so no fully green isolated browser result is claimed for this tranche.
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages. `pnpm demo:e2e` passed the complete recorded-fixture seam through both approvals, six images, Cedar Audio Overview, Storyboard, local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Approval must preserve the professional decision that was visibly reviewed. It may change the object's status, but must not silently re-rank its meaning.
+- The clean default is a reversible first-use shortcut, not a third Style editor mode. Website extraction, exact manual rules, saved Styles, and versioned `DESIGN.md` remain intact.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate; demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

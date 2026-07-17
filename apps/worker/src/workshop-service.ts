@@ -525,7 +525,8 @@ function frameDirectionScore(node: WorkshopMapNode) {
   const text = prose(`${node.title} ${node.body}`);
   let score = node.kind === "grounded" ? 2 : 0;
   if (/\b(goal|success|outcome)\b/i.test(text)) score += 30;
-  if (/\b(should|must|recommend(?:ed|ation)?|prioriti[sz]e|focus|start|show|keep|ensure|next)\b/i.test(text)) score += 20;
+  if (/\b(should|must|recommend(?:ed)?|prioriti[sz]e|focus|start|show|keep|ensure|next)\b/i.test(text)) score += 20;
+  if (/\b(?:team|teams|professionals?|users?)\s+(?:should|must)\b/i.test(text)) score += 8;
   if (/\b(professional|client|leadership|decision|defend|present|create)\b/i.test(text)) score += 7;
   if (/\b(source|trace|evidence|grounded|style|identity|brand)\b/i.test(text)) score += 4;
   return score;
@@ -539,12 +540,21 @@ function frameFor(state: WorkshopState, approvedAt: string, root?: string): Work
   const available = state.mapNodes.filter((node) => node.kind !== "creative");
   const outcomeNode = [...available].sort((left, right) => frameOutcomeScore(right) - frameOutcomeScore(left) || available.indexOf(left) - available.indexOf(right))[0];
   const grounded = available.filter((node) => node.kind === "grounded");
+  const recommendedTarget = state.mapEdges.find((edge) => edge.label === "recommends")?.to;
+  const explicitDirections = state.mapNodes.filter((node) => node.kind === "creative");
+  const aiMapDirection = state.aiRuns.some((run) => run.operation === "grounded_graph")
+    ? [...explicitDirections].sort((left, right) => frameDirectionScore(right) - frameDirectionScore(left) || explicitDirections.indexOf(left) - explicitDirections.indexOf(right))[0]
+    : undefined;
+  const explicitDirection = state.mapNodes.find((node) => node.id === recommendedTarget)
+    ?? state.mapNodes.find((node) => node.id === "map-direction")
+    ?? aiMapDirection;
   const directionCandidates = grounded.filter((node) => node.id !== outcomeNode?.id);
-  const directionNode = [...(directionCandidates.length ? directionCandidates : available.filter((node) => node.id !== outcomeNode?.id))].sort((left, right) => frameDirectionScore(right) - frameDirectionScore(left) || available.indexOf(left) - available.indexOf(right))[0];
-  const evidenceNodes = grounded.filter((node) => node.id !== outcomeNode?.id && node.id !== directionNode?.id).slice(0, 3);
+  const directionNode = explicitDirection ?? [...(directionCandidates.length ? directionCandidates : available.filter((node) => node.id !== outcomeNode?.id))].sort((left, right) => frameDirectionScore(right) - frameDirectionScore(left) || available.indexOf(left) - available.indexOf(right))[0];
+  const repeatsDirection = (node: WorkshopMapNode) => node.id === directionNode?.id || prose(node.body) === prose(directionNode?.body ?? "");
+  const evidenceNodes = grounded.filter((node) => node.id !== outcomeNode?.id && !repeatsDirection(node)).slice(0, 3);
   for (const node of grounded) {
     if (evidenceNodes.length >= 3) break;
-    if (!evidenceNodes.some((candidate) => candidate.id === node.id)) evidenceNodes.push(node);
+    if (!repeatsDirection(node) && !evidenceNodes.some((candidate) => candidate.id === node.id)) evidenceNodes.push(node);
   }
   if (!evidenceNodes.length && outcomeNode) evidenceNodes.push(outcomeNode);
   const outcome = prose(outcomeNode?.body ?? outcomeNode?.title ?? "Turn raw thinking into professional knowledge work.");
