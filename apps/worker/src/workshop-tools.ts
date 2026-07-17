@@ -87,14 +87,14 @@ async function runTool(name: WorkshopToolName, input: Record<string, unknown>, r
     return { state: next, summary: "Map approved as the current Brief.", data: stateSummary(next) };
   }
   if (name === "workshop_create_output") {
-    if (!state.briefApproved || !state.frame || state.frame.stale) throw new Error("Output creation blocked: approve the current Map as the Brief first.");
+    if (!state.briefApproved || !state.frame || state.frame.stale) throw new Error("Creating work is blocked: approve the current Map as the Brief first.");
     const outputType = input.outputType as string; let next: WorkshopState;
     if (outputType === "deck" || outputType === "infographic") next = await generateOutput(outputType, root);
     else if (outputType === "audio_overview") next = generateAudioOverview(root);
     else if (outputType === "images") next = createImageBatch(root);
     else if (outputType === "storyboard") { if (!state.assetPlan || state.assetPlan.stale) generateAssetPlan(root); next = generateStoryboard(root); }
     else if (outputType === "video") next = applyWorkshopAction("renderVideo", root);
-    else throw new Error(`Unsupported Output type: ${outputType}.`);
+    else throw new Error(`Unsupported format: ${outputType}.`);
     const outputId = outputType === "audio_overview" ? next.audioOverviews.at(-1)?.id : undefined;
     return { state: next, summary: outputType === "video" ? "Video render queued." : `Created ${outputType}.`, data: { outputType, ...(outputId ? { outputId } : {}), ...stateSummary(next) } };
   }

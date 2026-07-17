@@ -647,7 +647,7 @@ function BriefView({ state, onChooseStyle, onShowSource }: { state: PersistedWor
     const claim = state?.claims?.find((candidate) => candidate.locator === locator && candidate.text === text) ?? state?.claims?.find((candidate) => candidate.locator === locator);
     return { text, locator, claim };
   });
-  const proof = frameSection(state?.frame?.markdown, "Production proof");
+  const proof = frameSection(state?.frame?.markdown, "Success looks like") || frameSection(state?.frame?.markdown, "Production proof");
   const locked = Boolean(state?.style && !state.style.stale);
 
   return <article className="brief-view">
@@ -751,7 +751,7 @@ function OutputsView({ state, onOpenOutput, onOpenStoryboard, onDismissOrientati
 }
 
 function imagePanelCopy(prompt: string, index: number) {
-  const role = prompt.match(/Output role:\s*([^.]+)\./)?.[1]?.trim() ?? `Image ${index + 1}`;
+  const role = prompt.match(/(?:Visual|Output) role:\s*([^.]+)\./)?.[1]?.trim() ?? `Image ${index + 1}`;
   const idea = prompt.match(/Approved idea to communicate:\s*(.+?)\.\s+Preserve/)?.[1]?.trim() ?? "Grounded in the approved Brief.";
   return { role, idea };
 }

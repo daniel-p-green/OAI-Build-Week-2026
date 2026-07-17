@@ -111,28 +111,28 @@ export function workshopGeneratedPath(workshopId: string, ...parts: string[]) { 
 const seedChunks: WorkshopChunk[] = [
   { id: "chunk-seed-raw", sourceId: "source-raw", text: "The judge should see the messy original thought become a cited Map, a real Brief, and finished work without losing the trail back to source material.", locator: "ChatGPT task · 12:41 · chunk 04", ordinal: 1 },
   { id: "chunk-seed-brief", sourceId: "source-brief", text: "One visible chain links Capture, the editable Map, approved work, Storyboard review, and created work.", locator: "Build notes · §2", ordinal: 1 },
-  { id: "chunk-seed-design", sourceId: "source-design", text: "Evidence first becomes an editable production system, not a static report.", locator: "Design · Map", ordinal: 1 },
+  { id: "chunk-seed-design", sourceId: "source-design", text: "Evidence first becomes an editable knowledge system, not a static report.", locator: "Design · Map", ordinal: 1 },
 ];
 const seedClaims: WorkshopClaim[] = [
   { id: "claim-seed-raw-outcome", sourceId: "source-raw", chunkId: "chunk-seed-raw", text: "Raw thinking becomes finished work.", evidenceState: "verified", locator: "ChatGPT task · 12:41 · chunk 04" },
   { id: "claim-seed-raw-trace", sourceId: "source-raw", chunkId: "chunk-seed-raw", text: "The source trail remains attached.", evidenceState: "verified", locator: "ChatGPT task · 12:41 · chunk 04" },
   { id: "claim-seed-brief-chain", sourceId: "source-brief", chunkId: "chunk-seed-brief", text: "One visible chain connects Capture to created work.", evidenceState: "verified", locator: "Build notes · §2" },
   { id: "claim-seed-brief-review", sourceId: "source-brief", chunkId: "chunk-seed-brief", text: "The Map and Storyboard remain reviewable before creation.", evidenceState: "verified", locator: "Build notes · §2" },
-  { id: "claim-seed-design-system", sourceId: "source-design", chunkId: "chunk-seed-design", text: "Evidence becomes an editable production system.", evidenceState: "verified", locator: "Design · Map" },
+  { id: "claim-seed-design-system", sourceId: "source-design", chunkId: "chunk-seed-design", text: "Evidence becomes an editable knowledge system.", evidenceState: "verified", locator: "Design · Map" },
 ];
 const emptyStoryboard = (): WorkshopStoryboard => ({ version: 0, stale: false, approved: false, panels: [] });
 const defaultState = (id = defaultWorkshopId, title = defaultWorkshopTitle, seeded = false): WorkshopState => ({ id, title, onboarding: { step: seeded ? "complete" : "welcome", outcome: seeded ? "client_facing_pitch" : undefined, mapOrientationDismissed: seeded, outputsOrientationDismissed: seeded, completedAt: seeded ? new Date().toISOString() : undefined }, briefApproved: false, storyboardApproved: false, videoState: "blocked", sources: seeded ? 3 : 0, groundedClaims: seeded ? 5 : 0, sourceItems: seeded ? [
   { id: "source-raw", type: "TXT", title: "Raw voice brainstorm", origin: "ChatGPT task", claimCount: 5, excerpt: "The judge should be able to see the messy original thought become a cited map, a real brief, and a finished piece of work.", locator: "ChatGPT task · 12:41 · chunk 04", permission: "sanitized" },
   { id: "source-brief", type: "PDF", title: "Build Week brief", origin: "Local", claimCount: 3, excerpt: "One visible chain links Capture, approved work, and created work.", locator: "Build notes · §2", permission: "sanitized" },
-  { id: "source-design", type: "WEB", title: "WorkshopLM direction", origin: "Local", claimCount: 2, excerpt: "Evidence first becomes an editable production system, not a static report.", locator: "Design · Map", permission: "sanitized" },
+  { id: "source-design", type: "WEB", title: "WorkshopLM direction", origin: "Local", claimCount: 2, excerpt: "Evidence first becomes an editable knowledge system, not a static report.", locator: "Design · Map", permission: "sanitized" },
 ] : [], activeSourceIds: seeded ? ["source-raw", "source-brief", "source-design"] : [], transcriptSegments: [], conversationTurns: [], toolCalls: [], sourceChunks: seeded ? seedChunks : [], claims: seeded ? seedClaims : [], candidates: [], mapEdges: seeded ? [
   { id: "edge-promise-proof", from: "promise", to: "proof", kind: "supports" },
   { id: "edge-proof-visual", from: "proof", to: "visual", kind: "depends_on" },
   { id: "edge-proof-risk", from: "proof", to: "risk", kind: "depends_on" },
-] : [], storyboard: seeded ? { version: 1, stale: false, approved: false, panels: [{ id: "panel-1", title: "Raw thought", narration: "Start with the messy original thinking.", durationSeconds: 3, claimIds: [], evidence: [{ sourceId: "source-raw", locator: "ChatGPT task · 12:41 · chunk 04" }], approved: true, stale: false }, { id: "panel-2", title: "Cited Map", narration: "Show the editable Map and evidence locators.", durationSeconds: 5, claimIds: [], evidence: [{ sourceId: "source-brief", locator: "Build notes · §2" }], approved: true, stale: false }, { id: "panel-3", title: "Finished work", narration: "End with traceable production output.", durationSeconds: 4, claimIds: [], evidence: [{ sourceId: "source-design", locator: "Design · Map" }], approved: true, stale: false }] } : emptyStoryboard(), storyboardHistory: [], sketchHistory: [], audioOverviews: [], aiRuns: [], outputs: [], videos: [], mapNodes: seeded ? [
+] : [], storyboard: seeded ? { version: 1, stale: false, approved: false, panels: [{ id: "panel-1", title: "Raw thought", narration: "Start with the messy original thinking.", durationSeconds: 3, claimIds: [], evidence: [{ sourceId: "source-raw", locator: "ChatGPT task · 12:41 · chunk 04" }], approved: true, stale: false }, { id: "panel-2", title: "Cited Map", narration: "Show the editable Map and evidence locators.", durationSeconds: 5, claimIds: [], evidence: [{ sourceId: "source-brief", locator: "Build notes · §2" }], approved: true, stale: false }, { id: "panel-3", title: "Finished work", narration: "End with source-traceable created work.", durationSeconds: 4, claimIds: [], evidence: [{ sourceId: "source-design", locator: "Design · Map" }], approved: true, stale: false }] } : emptyStoryboard(), storyboardHistory: [], sketchHistory: [], audioOverviews: [], aiRuns: [], outputs: [], videos: [], mapNodes: seeded ? [
   { id: "promise", title: "The product promise", body: "Turn raw thinking into finished work without losing the trail back to source material.", kind: "grounded", locator: "Meeting · 12:41", sourceId: "source-raw", x: 11, y: 12, width: 24, height: 18 },
   { id: "proof", title: "Judge proof", body: "Show one continuous capture → map → brief → storyboard → rendered video seam.", kind: "grounded", locator: "Build notes · §2", sourceId: "source-brief", x: 48, y: 36, width: 24, height: 18 },
-  { id: "visual", title: "Visual behavior", body: "Evidence first becomes an editable production system, not a static report.", kind: "creative", locator: "Design · Map", sourceId: "source-design", x: 39, y: 58, width: 24, height: 18 },
+  { id: "visual", title: "Visual behavior", body: "Evidence first becomes an editable knowledge system, not a static report.", kind: "creative", locator: "Design · Map", sourceId: "source-design", x: 39, y: 58, width: 24, height: 18 },
   { id: "risk", title: "Voice stays available", body: "Keep spoken thinking in the same grounded Workshop even when the host cannot retain the turn.", kind: "derived", locator: "Goal · capture", x: 74, y: 58, width: 24, height: 18 },
 ] : [], updatedAt: new Date().toISOString() });
 const repositoryDataRoot = () => resolve(process.env.WORKSHOPLM_DATA_ROOT ?? join(dirname(fileURLToPath(import.meta.url)), "..", "..", "..", ".workshoplm"));
@@ -497,8 +497,9 @@ function frameFor(state: WorkshopState, approvedAt: string, root?: string): Work
   if (!evidenceNodes.length && outcomeNode) evidenceNodes.push(outcomeNode);
   const outcome = outcomeNode?.title ?? "Turn raw thinking into finished work.";
   const evidence = evidenceNodes.map((node) => `- ${prose(node.body)} — ${node.locator}`).join("\n");
-  const version = (state.frame?.version ?? 0) + 1; const markdown = `# FRAME.md\n\n## Outcome\n${outcome}\n\n## Evidence\n${evidence}\n\n## Production proof\nShow the approved Map, source locators, and a finished output in one continuous path.\n`; const dataRoot = root ?? repositoryDataRoot(); const markdownPath = workshopGeneratedPath(state.id, `FRAME-v${version}.md`); const executablePath = workshopGeneratedPath(state.id, `FRAME-v${version}.json`); const generated = join(dataRoot, dirname(markdownPath));
-  mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, executablePath), `${JSON.stringify({ schemaVersion: 1, frameVersion: version, graphRevision: graphFor(state).graph.revision, outcome, evidence: evidenceNodes.map((node) => ({ nodeId: node.id, title: node.title, body: node.body, locator: node.locator, sourceId: node.sourceId })), productionProof: "Show the approved Map, source locators, and a finished output in one continuous path.", approvedAt }, null, 2)}\n`, "utf8");
+  const successCriterion = "Show the approved Map, source locators, and connected professional knowledge work in one continuous path.";
+  const version = (state.frame?.version ?? 0) + 1; const markdown = `# FRAME.md\n\n## Outcome\n${outcome}\n\n## Evidence\n${evidence}\n\n## Success looks like\n${successCriterion}\n`; const dataRoot = root ?? repositoryDataRoot(); const markdownPath = workshopGeneratedPath(state.id, `FRAME-v${version}.md`); const executablePath = workshopGeneratedPath(state.id, `FRAME-v${version}.json`); const generated = join(dataRoot, dirname(markdownPath));
+  mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, executablePath), `${JSON.stringify({ schemaVersion: 1, frameVersion: version, graphRevision: graphFor(state).graph.revision, outcome, evidence: evidenceNodes.map((node) => ({ nodeId: node.id, title: node.title, body: node.body, locator: node.locator, sourceId: node.sourceId })), productionProof: successCriterion, approvedAt }, null, 2)}\n`, "utf8");
   return { version, approvedAt, stale: false, markdown, markdownPath, executablePath };
 }
 export function applyMapOperation(operation: unknown, root?: string): WorkshopState {
@@ -1025,7 +1026,7 @@ export async function lockWebsiteStyle(rawUrl: string, root?: string, fetchImpl:
 }
 function cleanStyleList(values: string[] | undefined) { return [...new Set((values ?? []).map((value) => value.trim()).filter(Boolean))]; }
 function color(value: string | undefined, fallback: string) { const candidate = (value ?? fallback).trim().toUpperCase(); if (!/^#[0-9A-F]{6}$/.test(candidate)) throw new Error("Style colors must use exact six-digit hex values."); return candidate; }
-function assertReadablePalette(ink: string, paper: string) { if (contrastRatio(ink, paper) < 4.5) throw new Error("Text and Background need at least 4.5:1 contrast for readable Outputs."); }
+function assertReadablePalette(ink: string, paper: string) { if (contrastRatio(ink, paper) < 4.5) throw new Error("Text and Background need at least 4.5:1 contrast for readable work."); }
 function intentProfile(value: WorkshopStyle["intentProfile"] | undefined) { const profile = value ?? "client_facing_pitch"; if (!["client_facing_pitch", "board_deck", "internal_workshop"].includes(profile)) throw new Error("Invalid intent profile."); return profile; }
 export function designDirectivesForStyle(style: WorkshopStyle) {
   const profiles = {
@@ -1327,8 +1328,8 @@ async function generatedDeckCoverVisual(current: WorkshopState, root: string): P
 }
 export async function generateOutput(type: "deck" | "infographic", root?: string): Promise<WorkshopState> {
   const current = readWorkshopState(root);
-  if (!current.briefApproved || !current.frame || current.frame.stale) throw new Error("Output generation requires an approved current brief.");
-  if (!current.style || current.style.stale) throw new Error("Output generation requires a locked current style.");
+  if (!current.briefApproved || !current.frame || current.frame.stale) throw new Error("Creating work requires an approved current Brief.");
+  if (!current.style || current.style.stale) throw new Error("Creating work requires a current Style.");
   const dataRoot = root ?? repositoryDataRoot(); const selectedClaims = selectDeckClaims(current);
   const blocks = selectedClaims.length ? selectedClaims.map(({ claim, text, role }) => {
     const heading = deckHeading(text, role);
@@ -1479,7 +1480,7 @@ export function createImageBatch(root?: string): WorkshopState {
   ] as const;
   const panels = roles.map(([role, direction, keywords], index) => {
     const grounded = evidenceFor(index, keywords);
-    const prompt = `Output role: ${role}. ${direction} Approved idea to communicate: ${grounded.idea}. Preserve the shared reference composition, palette, lighting, material treatment, folded-plane motif, and editorial restraint. This is panel ${index + 1} of one continuous six-panel art direction. Create a presentation-ready 1:1 visual with no readable text, logos, watermarks, UI chrome, generic people-at-work scenes, device mockups, or stock-photo cliches.`;
+    const prompt = `Visual role: ${role}. ${direction} Approved idea to communicate: ${grounded.idea}. Preserve the shared reference composition, palette, lighting, material treatment, folded-plane motif, and editorial restraint. This is panel ${index + 1} of one continuous six-panel art direction. Create a presentation-ready 1:1 visual with no readable text, logos, watermarks, UI chrome, generic people-at-work scenes, device mockups, or stock-photo cliches.`;
     return { id: panelIds[index]!, version: 1, prompt, evidence: grounded.evidence, state: "planned" as const, referenceId, history: [] };
   });
   return write({ ...current, imageBatch: { id: `image-batch-v${(current.imageBatch ? Number(current.imageBatch.id.match(/\d+$/)?.[0]) + 1 : 1)}`, graphRevision, briefVersion: current.frame.version, styleVersion: current.style.version, referenceId, referencePath, referenceSha256: createHash("sha256").update(referenceBytes).digest("hex"), coherence, createdAt, stale: false, panels }, updatedAt: createdAt }, root);

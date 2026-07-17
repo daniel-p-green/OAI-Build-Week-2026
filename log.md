@@ -10060,3 +10060,38 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Record and run the authentic founder Workshop, then capture and inspect the founder-derived film input before final assembly.
 - The public Video, intended-audience review, publication links, and submission gates remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 21:02 CT — Approved Brief and image direction now use the locked product language at their source
+
+### Changed
+
+- Inspected the current Map, approved Brief, created-work, Storyboard, Video, and mobile screens against the five-second test. The approved Brief exposed one remaining product-language defect: its generated success criterion still said `finished output`.
+- Changed new `FRAME.md` artifacts to use the visible section `Success looks like` and the criterion `Show the approved Map, source locators, and connected professional knowledge work in one continuous path.` The executable frame record retains its existing `productionProof` property for contract compatibility, but its value now uses the locked language.
+- Kept the Brief renderer backward-compatible with previously approved `Production proof` sections so old Workshop history remains readable.
+- Replaced visible or model-facing `Output` and `production system` phrasing in the seeded knowledge, Workshop tool descriptions and errors, palette validation, created-work generation gates, and image-direction prompt. Internal domain types, tool names, and persisted property names remain unchanged.
+- Updated the image-role parser to accept both current `Visual role` prompts and historical `Output role` prompts. The production-browser pass caught this compatibility requirement before the change landed.
+
+### Verified
+
+- Visually inspected the refreshed desktop and mobile Briefs. Both clearly show Sources, the approved outcome, the new connected-work success criterion, Style, and one next action without overflow. The desktop Brief hashes to `7b3974b0e6edf94dc2a7a42e448064d02db6565e06245b40bef4ec08c3117380`; the mobile Brief hashes to `fb3be54ff4c8d2038d8f731db3a4af178358d9d41c8d3ae10db1e2bae3d38cbb`.
+- Visually inspected the refreshed Image set at desktop width. All six professional visual roles remain visible after the prompt migration; the screenshot hashes to `d7b7c6b949d652dfc16aa7eb8831ad27ee44ffd5266e0f95f5eb025f7517c969`.
+- The production-browser suite passed 29 paths before the intentional onboarding Brief snapshot mismatch; after refreshing that baseline, the onboarding and final exact-source-trace paths both passed. This covers all 31 paths with the current baselines across desktop, compact, mobile, accessibility, approvals, revision, and Video behavior.
+- `pnpm check` passes lint, typecheck, and tests across all thirteen packages, including 124 worker tests, 30 web tests, 19 production tests, and 16 domain tests. The worker's existing public-domain DNS safety checks were run with network permission rather than served from cache.
+- `pnpm submission:packet:verify` passes and still reports the correct four unresolved founder slots.
+- A source search finds the retired generator phrases only in the deliberate legacy FRAME parser fallback, not in newly generated professional work.
+
+### Decisions
+
+- New professional knowledge work must use the active vocabulary at generation time. Cleaning only the shell is insufficient when generated Briefs, errors, or model directions can reintroduce retired language.
+- Historical FRAME sections remain readable without silently rewriting their stored artifact. The authentic founder run will generate the current format.
+- The five-item critical path in `GOAL.md` remains unchanged. This repairs a visible blocker on the authentic founder path rather than adding a new queue item.
+- No OpenAI provider request ran. The provider-operation ledger remains 115.
+- `PLAN-2026-07-13.md` and the untracked `product-design-audit/` capture set remain untouched and excluded from this milestone.
+
+### Open items
+
+- Record and run the authentic founder Workshop. It remains the next external gate and will prove the corrected FRAME generation with founder-derived material.
+- Public Video review, intended-audience judgment, publication links, and submission verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
