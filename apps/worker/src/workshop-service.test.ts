@@ -213,13 +213,13 @@ it("turns realistic meeting notes into a six-idea grounded Map and a concise exe
     expect(organized.mapNodes.find((node) => node.id === "map-synthesis")?.title).toBe("Client-ready presentations need source traceability");
     expect([...organized.mapNodes.slice(0, 3), ...organized.mapNodes.filter((node) => node.id === "map-synthesis" || node.id === "map-direction")].every((node) => !node.title.endsWith("…"))).toBe(true);
     const approved = applyWorkshopAction("approveBrief", root);
-    expect(approved.frame?.markdown).toContain("## Outcome\nWorkshopLM organizes messy thinking into a grounded Map, then creates an editable Presentation with every factual claim linked to its exact source");
+    expect(approved.frame?.markdown).toContain("## Outcome\nClient-ready presentations need source traceability");
     expect(approved.frame?.markdown).toContain("## Audience\nClients and external decision-makers");
     expect(approved.frame?.markdown).toContain("## Direction\nThe goal is professional work a consultant can defend and present without rebuilding it in another tool");
     expect(approved.frame?.markdown).toContain("- Professional teams lose hours turning meeting notes into client-ready presentations — Pasted notes · chunk 01");
     expect(approved.frame?.markdown).not.toContain("Client delivery notes:");
     const executable = JSON.parse(await readFile(join(root, approved.frame!.executablePath), "utf8"));
-    expect(executable).toMatchObject({ outcome: expect.stringContaining("WorkshopLM organizes messy thinking"), audience: "Clients and external decision-makers", direction: expect.stringContaining("professional work a consultant can defend") });
+    expect(executable).toMatchObject({ outcome: "Client-ready presentations need source traceability", audience: "Clients and external decision-makers", direction: expect.stringContaining("professional work a consultant can defend") });
     expect(executable.evidence[0]).toMatchObject({ nodeId: ingested.claims[0]!.id, locator: "Pasted notes · chunk 01" });
   } finally {
     if (priorFixtureMode === undefined) delete process.env.WORKSHOPLM_SEEDED_FIXTURE;

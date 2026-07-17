@@ -2744,6 +2744,15 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-17 11:34 CT — Concise Brief clears repository and complete seam checks
+
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including all 130 worker tests and 38 web tests. Repository hygiene reported 694 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file.
+- The first sandboxed `pnpm demo:e2e` attempt was blocked before application execution because `tsx` could not create its local IPC socket. The unrestricted retry passed the complete recorded-fixture seam through grounded Map, both approvals, Style, Sketch, Presentation, Infographic, three-section Audio Overview, six-image provider fixture, five-panel Storyboard, local Video, and build trace.
+- No OpenAI provider request ran; the cumulative request count remains 118. The connected product-quality goal remains active for Map composition, compact context, in-place Source inspection, and Audio Overview and Storyboard editorial refinement. Demo-film work remains paused.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-17 10:13 CT — Simplified Capture clears repository and seam checks
 
 - `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 38 web tests and 130 worker tests. Repository hygiene reported 693 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file.
@@ -11862,3 +11871,37 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 38 web tests and 130 worker tests. Repository hygiene reported 693 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file.
 - `pnpm demo:e2e` passed the complete recorded-fixture seam through the grounded Map, both approvals, Style, Sketch, Presentation, Infographic, three-section Cedar Audio Overview, six-image provider fixture, five-panel Storyboard, local Video, and build trace.
 - No provider request ran. The connected product-quality goal remains active pending founder visual acceptance; demo-film work remains paused.
+
+---
+
+## 2026-07-17 11:30 CT — Brief approval preserves the synthesis instead of one format
+
+### Changed
+
+- Audited the actual first-use Brief after improving the Map. Approval was promoting a long source sentence about an editable Presentation into the largest headline, which made the sign-off harder to scan and incorrectly narrowed the broader Workshop outcome to one format.
+- Brief construction now prefers a concise derived outcome only when it is complete, specific to professional work, semantically outcome-oriented, and no longer than 72 characters. Generic or truncated synthesis labels do not displace stronger grounded outcomes.
+- The first-use Brief now reads `Client-ready work needs source traceability`. It retains the complete approved Direction, audience, three source-backed evidence statements, exact locators, and the complete executable `FRAME.md` evidence payload.
+- Added real first-use Brief baselines at 1200 × 800 and 390 × 844 before the Style sheet opens. The professional sees the approved outcome, Source scope, evidence, and the sole next action `Choose style` without a narration layer.
+- Recorded founder feedback as the remaining quality order: desktop Map composition and compact stage context, contextual Source inspection, Audio Overview and Storyboard editorial polish, then the authentic founder-derived run. This does not reopen product architecture or output breadth.
+
+### Verified
+
+- All 130 worker tests passed with normal DNS access. An earlier sandboxed run blocked seven existing website-safety tests at DNS resolution before their mocked HTTP paths; the unrestricted rerun passed all website analysis, redirect, asset-safety, and Style tests.
+- The optimized Next.js build succeeded at 35.5 kB for the main route and 140 kB first load.
+- All 35 production-browser scenarios passed across desktop, compact, mobile, first use, grounding, approvals, Style, created work, history, and accessibility. One targeted retry was required after Chrome exited during launch before any application assertion.
+- Visually inspected the desktop and mobile first-use Brief plus the Style handoff. The outcome no longer presents Presentation as the product, while the full supporting evidence remains visible.
+- No OpenAI provider request ran; the cumulative request count remains 118.
+
+### Decisions and open items
+
+- A derived Map point may govern the Brief only when it is a stronger professional outcome than a verbatim source sentence. The evidence payload remains grounded even when the headline is synthesized.
+- The connected product-quality item remains open. Demo-film work remains paused; the authentic founder run remains the final proof gate.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 11:35 CT — Log-order correction for concise Brief verification
+
+- The complete `11:34 CT — Concise Brief clears repository and complete seam checks` verification entry was appended earlier in the file because its patch anchor matched a repeated milestone footer. Its repository and end-to-end evidence remain valid; this append-only correction establishes that those checks occurred after the `11:30 CT` Brief milestone.
+- No historical entry was moved or rewritten. No provider request ran; the cumulative request count remains 118. The connected product-quality goal remains active, and demo-film work remains paused.

@@ -589,9 +589,15 @@ function frameFor(state: WorkshopState, approvedAt: string, root?: string): Work
   const aiDerivedOutcomes = state.aiRuns.some((run) => run.operation === "grounded_graph")
     ? available.filter((node) => node.kind === "derived")
     : [];
+  const conciseDerivedOutcomes = available.filter((node) => node.kind === "derived"
+    && node.title.length <= 72
+    && !node.title.endsWith("…")
+    && /\b(client|professional|leadership|work|plan|strategy|decision|outcome)\b/i.test(node.title)
+    && /\b(need|needs|requires?|enables?|creates?|turns?|source|evidence|trace)\b/i.test(`${node.title} ${node.body}`));
   const outcomeCandidates = aiDerivedOutcomes.length ? [...aiDerivedOutcomes, ...groundedOutcomes] : groundedOutcomes;
   const outcomePool = outcomeCandidates.length ? outcomeCandidates : available.filter((node) => !repeatsExplicitDirection(node));
-  const outcomeNode = [...outcomePool].sort((left, right) => frameOutcomeScore(right) - frameOutcomeScore(left) || outcomePool.indexOf(left) - outcomePool.indexOf(right))[0];
+  const outcomeNode = [...conciseDerivedOutcomes].sort((left, right) => frameOutcomeScore(right) - frameOutcomeScore(left) || conciseDerivedOutcomes.indexOf(left) - conciseDerivedOutcomes.indexOf(right))[0]
+    ?? [...outcomePool].sort((left, right) => frameOutcomeScore(right) - frameOutcomeScore(left) || outcomePool.indexOf(left) - outcomePool.indexOf(right))[0];
   const directionCandidates = grounded.filter((node) => node.id !== outcomeNode?.id);
   const directionNode = explicitDirection ?? [...(directionCandidates.length ? directionCandidates : available.filter((node) => node.id !== outcomeNode?.id))].sort((left, right) => frameDirectionScore(right) - frameDirectionScore(left) || available.indexOf(left) - available.indexOf(right))[0];
   const repeatsDirection = (node: WorkshopMapNode) => node.id === directionNode?.id || prose(node.body) === prose(directionNode?.body ?? "");
@@ -601,7 +607,7 @@ function frameFor(state: WorkshopState, approvedAt: string, root?: string): Work
     if (node.id !== outcomeNode?.id && !repeatsDirection(node) && !evidenceNodes.some((candidate) => candidate.id === node.id)) evidenceNodes.push(node);
   }
   if (!evidenceNodes.length && outcomeNode) evidenceNodes.push(outcomeNode);
-  const outcome = prose(outcomeNode?.body ?? outcomeNode?.title ?? "Turn raw thinking into professional knowledge work.");
+  const outcome = prose(outcomeNode?.kind === "derived" ? outcomeNode.title : outcomeNode?.body ?? outcomeNode?.title ?? "Turn raw thinking into professional knowledge work.");
   const audience = frameAudience(state);
   const direction = prose(directionNode?.body ?? "Use the strongest evidence to create professional knowledge work for the intended audience.");
   const evidence = evidenceNodes.map((node) => `- ${prose(node.body)} — ${node.locator}`).join("\n");
