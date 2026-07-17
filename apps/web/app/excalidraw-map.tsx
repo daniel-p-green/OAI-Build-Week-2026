@@ -47,19 +47,21 @@ const sourceShapeId = (sourceId: string) => `map-source-${sourceId}`;
 const toSceneX = (value: number) => NODE_OFFSET_X + value * NODE_SCALE_X;
 const toSceneY = (value: number) => value * (SCENE_HEIGHT / 100);
 const toSceneWidth = (value: number) => value * (SCENE_WIDTH / 100);
-const sourceTitle = (source: Source) => source.title.startsWith("Voice capture-only fallback transcript")
+const isVoiceSource = (source: Source) => source.title.startsWith("Voice capture-only fallback transcript")
   || source.title === "Raw voice brainstorm"
   || source.origin.toLowerCase() === "chatgpt task"
-  ? "Voice brainstorm"
-  : source.origin === "Founder-provided recording" ? "Founder brainstorm" : source.title;
+  || source.origin === "Founder-provided recording";
+const sourceTitle = (source: Source) => isVoiceSource(source)
+  ? source.origin === "Founder-provided recording" ? "Founder brainstorm" : "Voice brainstorm"
+  : source.title;
+const sourceType = (source: Source) => isVoiceSource(source) ? "VOICE" : source.type;
 
 function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: MapEdge[], style?: MapStyle) {
   const accent = style?.accent ?? "#0285ff";
   const ink = style?.ink ?? "#171816";
-  const paper = style?.paper ?? "#ffffff";
   const activeSourceIds = new Set(sources.map((source) => source.id));
   const nodeIds = new Set(nodes.map((node) => node.id));
-  const sourceGeometry = new Map(sources.map((source, index) => [source.id, { x: 24, y: 70 + index * 180, width: 174, height: 108 }]));
+  const sourceGeometry = new Map(sources.map((source, index) => [source.id, { x: 24, y: 70 + index * 180, width: 184, height: 108 }]));
   const nodeGeometry = new Map(nodes.map((node) => [node.id, { x: toSceneX(node.x), y: toSceneY(node.y), width: toSceneWidth(node.width), height: toSceneY(node.height) }]));
   const sourceShapes = sources.map((source) => {
     const geometry = sourceGeometry.get(source.id)!;
@@ -67,11 +69,11 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
       type: "rectangle" as const,
       id: sourceShapeId(source.id),
       ...geometry,
-      label: { text: `${source.type}  ${sourceTitle(source)}\n${source.claimCount} ${source.claimCount === 1 ? "claim" : "claims"}`, fontSize: 12, fontFamily: 2 as const, textAlign: "left" as const },
+      label: { text: `${sourceType(source)}  ${sourceTitle(source)}\n${source.claimCount} ${source.claimCount === 1 ? "claim" : "claims"}`, fontSize: 13, fontFamily: 2 as const, textAlign: "left" as const },
       customData: { sourceId: source.id },
-      backgroundColor: paper,
-      strokeColor: `${ink}40`,
-      strokeWidth: 1,
+      backgroundColor: `${ink}08`,
+      strokeColor: `${ink}85`,
+      strokeWidth: 1.25,
       fillStyle: "solid" as const,
       roughness: 0,
       roundness: { type: 3 as const },
@@ -111,8 +113,8 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
       height: end.y + end.height / 2 - y,
       start: { id: sourceShapeId(sourceId) },
       end: { id: shapeId(node.id) },
-      strokeColor: `${ink}40`,
-      strokeWidth: 1.2,
+      strokeColor: `${ink}68`,
+      strokeWidth: 1.4,
       roughness: 0,
       endArrowhead: "arrow" as const,
       locked: true,

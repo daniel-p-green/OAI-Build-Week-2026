@@ -2718,8 +2718,6 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Paid OpenAI provider evidence, the Spike A host decision, a dated founder brainstorm, and the primary `/feedback` Session ID still require founder authorization or founder-only access.
 - Codex Session ID: unavailable on this surface; not inferred.
 
----
-
 ## 2026-07-16 20:28 CT — Realtime proof is now visible in the film without rewriting founder provenance
 
 ### Changed
@@ -10124,4 +10122,39 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Record Daniel's authentic founder brainstorm and exact transcript outside `.workshoplm/`, then run the private preflight before making any sharing or paid-run decision.
 - Public Video review, intended-audience judgment, publication links, and submission verification remain open.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 21:35 CT — Grounded Map hierarchy now survives the five-second test
+
+### Changed
+
+- Audited the real semantic Excalidraw Map at desktop, compact, and mobile widths against the current product compass. The ideas were readable, but Source nodes and evidence edges were so faint that the canvas read as disconnected cards before it read as grounded thinking.
+- Strengthened only the evidence hierarchy: Source nodes now have a quiet neutral fill, legible labels and outlines, and clearer links to supported ideas. Voice brainstorm Sources now say `VOICE` instead of falsely inheriting the stored `TXT` transport label.
+- Kept the interaction model and information architecture unchanged: no new controls, modes, cards, tabs, or persistent explanation. Mobile retains its focused sourced-idea outline.
+- Refreshed the inspected `desktop-map-style-ready.png` baseline. It hashes to `2f3c934e1b585f1e0b2f8c6e1e54d2cb393647b3f559dc8f32325c84b48e8da3`.
+
+### Verified
+
+- Focused web unit and type checks passed with 30 tests. The Map interaction tests still prove direct editing, dragging, persistence, undo, evidence inspection, plain voice-source copy, and official component compliance.
+- The production-browser run passed the first 28 responsive and interaction paths, including the complete desktop, compact, and mobile Workshop paths, source tracing, accessibility, and official UI primitives. The existing local Video preview case then stalled inside Chromium's media `seeked` promise without reporting an assertion failure; it was terminated rather than mislabeled as green. The two subsequent onboarding and exact-source paths were run separately and both passed.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 124 worker tests, 30 web tests, 19 production tests, and 16 domain tests.
+- `pnpm demo:e2e` passed the full recorded Source-to-Video seam: grounded retrieval, six-idea Map, approved Brief, Style, Presentation, Infographic, Sketch, six provider-fixture images, Cedar Audio Overview, five-panel Storyboard, approved local HyperFrames Video, and seven connected pieces in the build trace.
+- Rebuilt the 140.010667-second sample film through local HyperFrames 0.7.60 after the fresh acceptance reset. HyperFrames lint, structural checks, and H.264 rendering passed; the stable movie hash remains `5e668b5e6e221f31a58ba0ec1502c9c647aac57ed4838018e6dab893e23631c9` with no spatial transforms or jitter-prone zoompan.
+- `pnpm demo:film:verify-sample` now passes against the current `DESIGN.md`, `FRAME.md`, 25-asset acceptance manifest, and build trace. `pnpm submission:packet:verify` passes with eight ready shots, two honestly founder-blocked shots, six GPT Image 2 visuals, Cedar narration, and four unresolved founder/final-package slots.
+
+### Decisions
+
+- Grounding must be visible in the canvas itself; hiding Sources in a side sheet is insufficient when the Map is the product's thinking layer.
+- Source evidence should be legible but subordinate to ideas. The repair changes contrast and labeling, not the graph model or workflow.
+- The Video seek stall is an existing browser-media test issue and is not evidence against this Map change. It remains disclosed instead of weakening timeouts or snapshot tolerances.
+- No OpenAI provider request ran. The provider-operation ledger remains 115.
+- The five-item critical path in `GOAL.md` remains unchanged. `PLAN-2026-07-13.md` and the untracked `product-design-audit/` set remain untouched and excluded.
+
+### Open items
+
+- Record and run the authentic founder Workshop. This remains the next external critical-path gate.
+- Diagnose the Chromium `seeked` stall before relying on a single-command 31-path visual run as final submission evidence; the Map-relevant and remaining isolated paths are green.
+- Public Video review, intended-audience judgment, publication links, and final submission verification remain open.
 - Codex Session ID: unavailable on this surface; not inferred.
