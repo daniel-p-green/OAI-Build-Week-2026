@@ -65,6 +65,7 @@ After the paid command passes and `.workshoplm/final-operator/generated/submissi
 pnpm demo:capture-final
 pnpm demo:film:final
 pnpm demo:film:verify-final
+pnpm submission:promote-founder
 ```
 
 The capture command copies the founder Workshop into a disposable local root before interacting with the UI, so its editable-Map demonstration cannot stale or mutate the paid source of truth. It fails unless the founder Source is explicitly shareable, the Brief and Storyboard remain approved and current, the Video is rendered, and the submission package is ready. Final HyperFrames assembly uses this founder-derived browser capture; `demo:film:sample` remains bound to the sanitized fixture.

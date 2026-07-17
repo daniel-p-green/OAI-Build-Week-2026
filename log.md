@@ -9859,3 +9859,35 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The immediately preceding implementation milestone titled `Authentic founder import can reach a ready final package without false Realtime provenance` was accidentally inserted earlier in this append-only file rather than at its chronological tail.
 - That 20:04 CT entry remains the authoritative evidence for the change. It is intentionally not deleted or relocated so the correction itself preserves the log's append-only rule.
 - No implementation, verification result, provider-operation count, or critical-path status changed in this correction.
+
+---
+
+## 2026-07-16 20:12 CT — Verified founder evidence can now promote into resolved Devpost copy
+
+### Changed
+
+- Audited the handoff after final film verification and found that the four founder-only `LIVE`/`FALLBACK` markers in the public Devpost draft still required manual editing even after every authentic artifact succeeded.
+- Added `pnpm submission:promote-founder`. It creates `submission/DEVPOST-FOUNDER-CANDIDATE.md` only after the founder operator record, current submission package, browser capture, final HyperFrames film, and final edit-readiness report all agree.
+- Promotion binds the exact current Workshop fingerprint, shareable founder Source, limitation-free `ready` manifest, manifest hash in browser capture, founder transcript hash in the film, package hash in the meta reveal, final Video hash, audio and video streams, sub-three-minute duration, and `final-ready` report.
+- The generated candidate selects only the two live founder statements, inserts the measured first-transcript-to-first-created-work duration, removes all `LIVE`/`FALLBACK` markers, and records a JSON evidence sidecar. Public YouTube URL and Codex Session ID remain explicit publication gates rather than being invented.
+- Added the command to the README and founder runbook and made the submission-packet verifier fail if that executable handoff drifts.
+
+### Verified
+
+- Three focused promotion tests pass: all evidence families are required, private/limited/over-three-minute/not-final states fail, exact marker structure is enforced, and the measured duration formats correctly.
+- `pnpm check` passes lint, typecheck, and all suites across thirteen packages, including 124 worker tests, 30 web tests, and 19 production tests.
+- `pnpm submission:packet:verify` passes and still reports four unresolved founder markers in the editable draft, which is correct before authentic evidence exists.
+- Running `pnpm submission:promote-founder` against the current repository fails with the precise missing fact: the passed founder operator record does not exist. The command leaves no candidate, JSON sidecar, or `.building` file.
+- `git diff --check` passes.
+
+### Decisions
+
+- The editable Devpost draft remains evidence-gated source copy. Founder promotion creates a separate candidate rather than mutating or prematurely resolving the draft.
+- A final film alone is insufficient. Promotion requires the entire founder Workshop, package, capture, film, and readiness chain to be mutually hash-bound.
+- No OpenAI provider request ran. The provider-operation ledger remains 114.
+- `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+### Open items
+
+- After the authentic founder run and final film pass, run `pnpm submission:promote-founder`, inspect the generated candidate, then resolve only the public YouTube URL and Codex Session ID during the publication gate.
+- Codex Session ID: unavailable on this surface; not inferred.

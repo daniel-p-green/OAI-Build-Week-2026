@@ -70,9 +70,10 @@ After the reviewed founder command succeeds and its submission manifest is `read
 pnpm demo:capture-final
 pnpm demo:film:final
 pnpm demo:film:verify-final
+pnpm submission:promote-founder
 ```
 
-`demo:capture-final` copies the founder Workshop into a disposable recording root, records all twelve browser beats, and refuses fixture, private-Source, stale-approval, incomplete-package, or unrendered-Video state. Final film mode consumes that founder capture; the sample film continues to use the sanitized fixture capture.
+`demo:capture-final` copies the founder Workshop into a disposable recording root, records all twelve browser beats, and refuses fixture, private-Source, stale-approval, incomplete-package, or unrendered-Video state. Final film mode consumes that founder capture; the sample film continues to use the sanitized fixture capture. `submission:promote-founder` then verifies the operator run, package fingerprint, founder Source permission, capture binding, final-film hashes and streams, sub-three-minute duration, and final edit-readiness report before resolving the founder-only Devpost statements into `submission/DEVPOST-FOUNDER-CANDIDATE.md`. It leaves the public YouTube URL and Codex Session ID as explicit publication gates.
 
 The inspected authorized-sample run is recorded in [`artifacts/live/provider-run.json`](artifacts/live/provider-run.json). Visual review artifacts include the [GPT Image 2 contact sheet](artifacts/live-review/gpt-image-2-contact-sheet.png), [HyperFrames Video review](artifacts/live-review/hyperframes-v4/README.md), and [Realtime grounded-conversation record](artifacts/live-review/realtime-grounded-conversation.json). These prove provider behavior without implying that the final founder Source or public submission is complete.
 
