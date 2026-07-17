@@ -96,7 +96,7 @@ pnpm install --frozen-lockfile
 pnpm judge:start
 ```
 
-That runs the complete recorded seam (Sources → Map → Brief → Style → Created work → Storyboard → rendered MP4) and opens the Workshop in your browser. The README covers the Codex plugin installation from the public marketplace snapshot and the optional live-provider path. The current build passes checks across 13 packages, the production-route browser suite, all six acceptance gates, and submission integrity verification. The final publication gate will pin a tagged judge release and preserve it through the winner announcement.
+That runs the complete recorded seam (Sources → Map → Brief → Style → Created work → Storyboard → rendered MP4) and serves the Workshop at a printed local URL. Open that URL in the Codex in-app browser. The README covers Codex plugin installation from the repository's public marketplace and the optional live-provider path. The current build passes checks across 13 packages, the production-route browser suite, all six acceptance gates, and submission integrity verification. The final publication gate will pin a tagged judge release and preserve it through the winner announcement.
 
 ### Scope, honestly
 

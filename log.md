@@ -9724,3 +9724,31 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The five-item critical path in `GOAL.md` remains unchanged. The next required external input is still the authentic founder recording and transcript; all founder-independent work in this milestone was limited to visible blockers on that path.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 19:34 CT — Judge-facing rules, access, and launch wording rechecked
+
+### Changed
+
+- Rechecked the live OpenAI Build Week rules, current update, and FAQ against the active Devpost draft and submission checklist. The deadline remains July 21, 2026 at 5:00 PM PT; Work & Productivity remains the correct category; the public YouTube video, repository and README, `/feedback` Session ID, and judge-friendly plugin testing path remain required.
+- Corrected the Devpost draft's local judge-path wording. `pnpm judge:start` recreates the fixture and serves a printed local URL; it does not itself open the browser. Replaced the ambiguous `public marketplace snapshot` phrase with the exact repository-hosted public Codex marketplace.
+
+### Verified
+
+- A logged-out web request resolved `https://github.com/daniel-p-green/OAI-Build-Week-2026` as a public repository. The repository includes an MIT license and current local installation instructions.
+- `codex plugin marketplace list` resolves `workshoplm-local` to this repository, and `codex plugin list` reports `workshoplm@workshoplm-local` installed and enabled at version `0.1.3`.
+- `.agents/plugins/marketplace.json` names the `workshoplm-local` marketplace and `.codex-plugin/plugin.json` names the `workshoplm` plugin. The documented two-command install path matches those identifiers.
+- `package.json` defines `judge:start` as `pnpm demo:e2e && pnpm demo:serve`, matching the corrected serve-then-open instructions. `git diff --check` passes.
+- `pnpm submission:verify` reports the current 25-asset partial package valid, current, and untampered. `pnpm submission:packet:verify` passes with the 140.010667-second sample editorial film, eight ready shots, two intentionally founder-blocked shots, six provider images, the 33.5-second Cedar Audio Overview, and four unresolved founder slots. The first restricted run failed only because `tsx` could not create its local IPC socket; the same verifier passed outside that restriction.
+
+### Decisions
+
+- The final-live-verification checklist remains unchecked. This dated audit reduces drift but does not substitute for the required logged-out link, public-video, tagged-release, and Devpost-form checks immediately before submission.
+- No release tag, public upload, Devpost mutation, paid provider request, or product-scope change occurred. The provider-operation ledger remains 114.
+- `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+### Open items
+
+- The five-item critical path in `GOAL.md` remains unchanged. Founder recording is still the next required external input; the public video, `/feedback` Session ID, release tag, and submitted Devpost links remain final-gate work.
+- Codex Session ID: unavailable on this surface; not inferred.
