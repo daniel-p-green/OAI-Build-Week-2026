@@ -2720,6 +2720,33 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-17 01:26 CT — Infographic upgraded from generic flow to semantic decision graphic
+
+### Changed
+
+- Replaced the hard-coded left-to-right infographic timeline with a semantic composition that assigns professional roles to the underlying knowledge: Key insight, Context, Evidence, Recommendation, and Path.
+- Aligned the browser-rendered HTML and editable PowerPoint export around the same hierarchy, with evidence receiving deliberate contrast, the recommendation carrying the active Style accent, and a real sequence rendered only when the content is actually sequential.
+- Preserved source locators, editable text, presenter notes, Style intent, and downstream submission-package compatibility.
+
+### Verified
+
+- Visually inspected the final HTML render at `artifacts/live-review/infographic-v6/infographic-v6.png` and the editable PowerPoint through a rendered Quick Look preview. The inspection caught and repaired an HTML citation collision plus PowerPoint heading/body collisions before the final pass.
+- `pnpm --filter @workshoplm/production typecheck` passed.
+- `pnpm --filter @workshoplm/production test` passed all 19 production tests.
+- `pnpm --filter @workshoplm/web test:visual --update-snapshots` passed all 31 desktop, compact, and mobile scenarios; the Created work, `Needs update`, and completed-Video states now show the semantic Infographic and visible source-link depth.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 126 worker tests, 30 web tests, 19 production tests, and eight plugin tests.
+- `pnpm demo:e2e` passed the complete recorded-fixture Source-to-Video seam, and `pnpm --filter @workshoplm/web capture:created-work-proof` regenerated the current Presentation and Infographic proof sets.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- An Infographic is a distinct professional expression of Workshop knowledge, not a decorative restatement of Presentation pages. Its layout should follow the semantic role of each idea while staying constrained and predictable.
+- The connected product-quality item remains open for founder visual acceptance. The authentic founder Workshop, resulting knowledge-work review, public video, and submission remain the current critical path.
+- User-owned `PLAN-2026-07-13.md`, interrupted founder/final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-17 00:59 CT — Live Build-my-Map seam and constrained semantic canvas verified
 
 ### Changed
@@ -10595,4 +10622,13 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Do not rewrite Git history or remove committed evidence media before submission. `git count-objects -vH` reports roughly 605 MB of packed history and 63 MB of unreachable garbage, but destructive pruning or evidence deletion has a worse risk-to-value ratio than preserving the current proof record.
 - The live Create surface did not expose a concrete usability defect worth destabilizing. Founder visual acceptance remains the product-quality gate; the next product change should answer a specific founder or intended-audience objection.
 - User-owned `PLAN-2026-07-13.md`, interrupted founder/final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 01:28 CT — Log-order correction for the semantic Infographic milestone
+
+- The full `01:26 CT` semantic Infographic entry was appended earlier in this file because its patch matched a repeated Session ID line instead of the physical end. It remains unchanged there to preserve append-only history; this correction establishes its intended current chronology.
+- The verified result is unchanged: the Infographic now communicates Key insight, Context, Evidence, Recommendation, and Path through one constrained semantic composition in HTML and editable PowerPoint; all 31 visual scenarios, all thirteen package checks, and the complete recorded-fixture seam pass.
+- No OpenAI provider request ran; the provider-operation ledger remains 117. Founder visual acceptance and the authentic founder Workshop remain the next gates.
 - Codex Session ID: unavailable on this surface; not inferred.

@@ -38,10 +38,14 @@ describe("production renderers", () => {
     expect(deck).toContain("WorkshopLM · Client presentation");
     const infographic = renderInfographic(brief);
     expect(infographic).toContain("Grounded infographic");
-    expect(infographic).toContain('class="infographic-flow"');
-    expect(infographic).toContain('aria-label="Grounded visual narrative"');
-    expect(infographic).toContain("linear-gradient(90deg,var(--accent)");
-    expect(infographic.match(/<article class="block"/g)).toHaveLength(3);
+    expect(infographic).toContain('class="infographic-board"');
+    expect(infographic).toContain('aria-label="Grounded decision graphic"');
+    expect(infographic).toContain('data-count="3"');
+    expect(infographic.match(/<article class="infographic-card"/g)).toHaveLength(3);
+    expect(infographic).toContain('<span class="infographic-card-role">Key insight</span>');
+    expect(infographic).toContain('<span class="infographic-card-role">Context</span>');
+    expect(infographic).toContain('<span class="infographic-card-role">Recommendation</span>');
+    expect(infographic).toContain('data-tone="recommendation"');
   });
   it("places a reviewed generated visual on the cover with inspectable image provenance", async () => {
     const visual = { data: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAEAQH/6X8XWQAAAABJRU5ErkJggg==", aspectRatio: 1, panelId: "image-panel-1", panelVersion: 2, sha256: "a".repeat(64) };
@@ -130,7 +134,8 @@ describe("production renderers", () => {
   it("turns a professional process into a visual sequence inside the editable infographic", async () => {
     const sequenceBrief = { ...brief, blocks: [{ id: "path", heading: "One continuous path from Capture to Create", body: "", items: ["Capture", "Map", "Brief", "Create"], citations: ["approved brief"], layout: "sequence" as const }] };
     const infographic = renderInfographic(sequenceBrief);
-    expect(infographic).toContain('class="block" data-layout="sequence"');
+    expect(infographic).toContain('class="infographic-card" data-layout="sequence"');
+    expect(infographic).toContain('<span class="infographic-card-role">Path</span>');
     expect(infographic).toContain('class="infographic-sequence"');
     expect(infographic).toContain("<span>Capture</span><span>Map</span><span>Brief</span><span>Create</span>");
     const root = await mkdtemp(join(tmpdir(), "workshoplm-infographic-sequence-"));

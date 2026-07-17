@@ -74,7 +74,7 @@ async function main(): Promise<void> {
     writeFile(resolve(presentationRoot, "evidence.json"), `${JSON.stringify(evidence.presentation, null, 2)}\n`),
     writeFile(resolve(infographicRoot, "evidence.json"), `${JSON.stringify(evidence.infographic, null, 2)}\n`),
     writeFile(resolve(presentationRoot, "README.md"), "# Current Presentation proof\n\nDeterministically rendered from the current recorded acceptance Workshop using the active Capture → Map → Brief → Create model. The editable PowerPoint, HTML, five slide images, and contact sheet share the same approved Brief, Style, and Sources. No provider request was made for this capture.\n"),
-    writeFile(resolve(infographicRoot, "README.md"), "# Current Infographic proof\n\nDeterministically rendered from the current recorded acceptance Workshop as a connected visual narrative rather than a card grid. The editable PowerPoint, HTML, and visual proof share the same approved Brief, Style, and Sources. No provider request was made for this capture.\n"),
+    writeFile(resolve(infographicRoot, "README.md"), "# Current Infographic proof\n\nDeterministically rendered from the current recorded acceptance Workshop as a semantic decision graphic: insight, context, evidence, and recommendation receive distinct visual roles instead of being forced into a generic timeline. The editable PowerPoint, HTML, and visual proof share the same approved Brief, Style, and Sources. No provider request was made for this capture.\n"),
   ]);
   console.log(JSON.stringify(evidence));
 }
