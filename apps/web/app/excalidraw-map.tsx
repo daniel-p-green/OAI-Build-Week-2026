@@ -63,6 +63,21 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
   const nodeIds = new Set(nodes.map((node) => node.id));
   const sourceGeometry = new Map(sources.map((source, index) => [source.id, { x: 24, y: 70 + index * 180, width: 184, height: 108 }]));
   const nodeGeometry = new Map(nodes.map((node) => [node.id, { x: toSceneX(node.x), y: toSceneY(node.y), width: toSceneWidth(node.width), height: toSceneY(node.height) }]));
+  const clusterLabels = [
+    { id: "map-cluster-evidence", text: "EVIDENCE", x: toSceneX(6) },
+    { id: "map-cluster-synthesis", text: "SYNTHESIS", x: toSceneX(40) },
+    { id: "map-cluster-direction", text: "DIRECTION", x: toSceneX(74) },
+  ].map((label) => ({
+    type: "text" as const,
+    id: label.id,
+    x: label.x,
+    y: 46,
+    text: label.text,
+    fontSize: 11,
+    fontFamily: 2 as const,
+    strokeColor: `${ink}72`,
+    locked: true,
+  }));
   const sourceShapes = sources.map((source) => {
     const geometry = sourceGeometry.get(source.id)!;
     return {
@@ -144,7 +159,7 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
     }];
   });
 
-  return [...sourceLinks, ...graphLinks, ...sourceShapes, ...nodeShapes];
+  return [...sourceLinks, ...graphLinks, ...clusterLabels, ...sourceShapes, ...nodeShapes];
 }
 
 export function ExcalidrawMap({ nodes, sources, edges, style, selectedNodeId, onSelectNode, onShowSource, onSync }: {

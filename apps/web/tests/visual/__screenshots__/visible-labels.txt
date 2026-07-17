@@ -11,15 +11,19 @@ Ask sources
 Back to Brief
 Back to Created work
 Back to Map
-Browse•••
+BriefReady
 Build notes · §2
+CaptureReady
+CreateReady
 Created work
 Edit
 Goal · capture
 Image set
 Infographic
 Infographic3 sourcesUp to date
+Judge proof
 Manage
+MapReady
 PDFBuild Week brief3 claims
 Presentation
 Presentation3 sourcesUp to date
@@ -34,5 +38,7 @@ TXTVoice brainstorm5 claims
 The product promise
 Version 1Earlier version · 3 panels
 Version history
+Visual behavior
 WEBWorkshopLM direction2 claims
 WorkshopLM Build Week
+Workshop•••

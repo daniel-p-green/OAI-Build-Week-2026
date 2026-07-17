@@ -20,7 +20,7 @@ WorkshopLM creates multiple first-class expressions of the same knowledge: prese
 
 WorkshopLM wins when a professional can move from messy material to coherent professional knowledge work without repeatedly rebuilding context, visual identity, or the source trail.
 
-The current phase is **product freeze and final proof**. The core product exists. Work now concentrates on the authentic founder Workshop, professional-quality review, the public demonstration video, and submission verification.
+The current phase is **product-quality consolidation and final proof**. The core product exists. Work now concentrates on making the connected experience clear and professionally useful, then proving it through the authentic founder Workshop and submission.
 
 The hackathon category is **Work & Productivity**. Education mode, general-purpose design-tool scope, and unsupported public claims remain outside the product direction.
 
@@ -52,7 +52,9 @@ The hackathon category is **Work & Productivity**. Education mode, general-purpo
 ### Visual thinking and approval
 
 - The semantic Excalidraw Map is the primary thinking surface.
-- WorkshopLM organizes, clusters, prioritizes, and links ideas while preserving direct editing, movement, resizing, and undo.
+- The Map is a constrained, auto-organized semantic canvas—not a generic whiteboard or an Excalidraw feature surface.
+- It must instantly communicate hierarchy, meaningful clusters, evidence, synthesis, direction, and a recommended path forward.
+- WorkshopLM organizes, prioritizes, and links ideas while preserving direct editing, movement, resizing, and undo where those actions improve the thinking.
 - The professional works with ideas, not Excalidraw mechanics.
 - Map items retain evidence state and source connections.
 - Sketch is a hand-drawn expression of the same semantic Map, not a second independent whiteboard engine.
@@ -104,7 +106,9 @@ Presentations are important professional work, but they do not define the bounda
 
 ### Experience contract
 
-- The happy path is: **speak or type → choose Sources → shape the Map → approve the Brief → choose Style → create professional knowledge work → approve the Storyboard → create Video**.
+- The primary Workshop model is **Capture → Map → Brief → Create**. It is a compact index of the work, not a literal list of every feature the professional must learn.
+- Conversation and Sources live inside Capture. Style and all created formats live inside Create. The expanded Workshop index may expose these objects without complicating the primary model.
+- The happy path is: **speak or type → build the grounded Map → approve the Brief → choose Style and create professional knowledge work**. Storyboard approval appears contextually when creating Video.
 - The interface behaves like a native ChatGPT/Codex workbench: quiet, spacious, focused, confident, and immediately understandable.
 - Use progressive disclosure, contextual actions, sheets, and focused object views instead of persistent tab rows or dashboards.
 - Show one dominant current object and one obvious next action.
@@ -115,7 +119,7 @@ Presentations are important professional work, but they do not define the bounda
 
 ### Active vocabulary
 
-Use: professional knowledge work; created work; presentation; graphic or infographic; Audio Overview; Map or Sketch; Storyboard; Video; Sources; Brief; Style; create, refine, present, share, or publish; ready to use; professional quality; Capture → Shape → Create.
+Use: professional knowledge work; created work; presentation; graphic or infographic; Audio Overview; Map or Sketch; Storyboard; Video; Sources; Brief; Style; create, refine, present, share, or publish; ready to use; professional quality; Capture → Map → Brief → Create.
 
 Do not frame the active product around one presentation format, logistics metaphors, market-entry terminology, or a single artifact as the destination. Historical evidence may retain earlier wording when changing it would falsify the record.
 
@@ -146,6 +150,7 @@ WorkshopLM is complete for OpenAI Build Week only when current evidence proves t
 - A professional can begin with messy voice, text, documents, a website, or meeting material without first learning the system.
 - Conversation and Sources remain visibly connected, and grounded answers trace to exact source material.
 - The semantic Map genuinely improves organization and thinking rather than merely restating the transcript.
+- The Map makes hierarchy, clusters, evidence, and a recommended path visible without requiring the professional to manually arrange a generic whiteboard.
 - The professional can edit the Map and deliberately approve it as the Brief.
 - Website-derived or manual Style creates one reusable visual identity that remains coherent across every created format.
 - Presentations, graphics or infographics, Audio Overviews, Maps or Sketches, image sets, Storyboards, and Videos are recognizable expressions of the same Workshop knowledge and Style.
@@ -163,8 +168,8 @@ Completion is an outcome judgment, not a count of routes, tests, files, provider
 
 ## 4. Current critical path
 
-- [ ] **Record founder brainstorm.** Capture the authentic founder voice recording and exact transcript outside the public data root.
-- [ ] **Run the authentic Workshop.** Review Source sharing explicitly, then create the founder-derived Map, approved Brief, Style, connected professional knowledge work, approved Storyboard, and local HyperFrames Video.
+- [ ] **Finish the connected product-quality pass.** Simplify first use and navigation around `Capture → Map → Brief → Create`; make the constrained Map clarify evidence, synthesis, direction, and the recommended path; keep grounding visible across created work; and resolve visible responsive or repository-hygiene blockers without adding breadth.
+- [ ] **Record and run the authentic founder Workshop.** Capture the authentic founder voice recording and exact transcript outside the public data root, review Source sharing explicitly, then create the founder-derived Map, approved Brief, Style, connected professional knowledge work, approved Storyboard, and local HyperFrames Video.
 - [ ] **Review and refine the resulting knowledge work.** Inspect every format together for knowledge quality, visual coherence, source trust, and professional usefulness; repair only visible blockers and obtain an intended-audience `Ready` or concrete revision judgment.
 - [ ] **Complete and review the public video.** Replace sample-only evidence with founder-derived proof, preserve the meta reveal, verify stable motion and audio, and complete a final founder and target-audience taste review.
 - [ ] **Verify and submit.** Re-run the clean judge path, reconcile claims, publish the under-three-minute video, finish Devpost, verify all public links while logged out, and record final submission evidence.

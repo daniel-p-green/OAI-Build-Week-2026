@@ -2720,6 +2720,41 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-16 23:53 CT — Workshop spine, constrained semantic Map, and first-use simplification verified
+
+### Changed
+
+- Replaced the implicit object maze with the compact primary model `Capture → Map → Brief → Create`. Conversation and Sources are grouped under Capture; Style, Created work, and Storyboard are grouped under Create in an expanded Workshop index.
+- Reduced first use to one surface: name the Workshop optionally, speak or add material, then `Build my Map`. Removed the premature choice among presentation outcomes so intent and Style appear only when they are useful.
+- Turned the Map into a constrained semantic canvas with automatic Evidence, Synthesis, and Direction layers, visible cluster counts, and a recommended path through the reasoning. The stored canvas remains editable and takes over after a deliberate user move.
+- Added restrained semantic column labels to the Excalidraw surface and a compact mobile Map that preserves hierarchy, evidence state, path, Source scope, and the next action without exposing whiteboard mechanics.
+- Updated the responsive header so the complete spine is visible at larger widths while mobile exposes only the current stage as the Workshop-index trigger.
+- Removed dead onboarding and Map-orientation styles. Deleted 3.8 GB of ignored Turbo and Next build caches after verification; dependencies and tracked evidence were preserved.
+- Updated `GOAL.md` to lock the four-stage product model, the nested object structure, and the professional Map quality bar.
+
+### Verified
+
+- `pnpm --filter @workshoplm/web typecheck` passed.
+- `pnpm exec playwright test --config playwright.config.ts --update-snapshots --workers=1` passed all 31 production-browser scenarios and regenerated the intentional responsive baselines.
+- A second no-update run, `pnpm exec playwright test --config playwright.config.ts --workers=1`, passed all 31 scenarios in 1.4 minutes, including first use, responsive Workshop navigation, grounded Conversation, constrained Map, Brief approval, Style, Created work, Storyboard, Video, stale states, accessibility, and official component-state checks.
+- The desktop first-use, desktop Map, mobile Map, and mobile Workshop index screenshots were visually inspected. The Map communicates source evidence on the left, synthesis in the middle, direction on the right, and the recommended reasoning path above the canvas.
+
+### Decisions
+
+- The Workshop spine is shared navigation and status, not a six-item feature list. Nested objects remain accessible in the expanded index but do not compete with the primary model.
+- Map excellence means semantic clarity and recommended direction, not broader Excalidraw capability. Automatic organization is a view-layer default until the professional deliberately changes the canvas, avoiding hidden persistence and preserving direct control.
+- Existing user-owned changes in `PLAN-2026-07-13.md` and `product-design-audit/`, plus the interrupted demo-film worktree changes, were not modified or staged as part of this product tranche.
+- No OpenAI provider request ran. The provider-operation ledger remains 115.
+
+### Open items
+
+- Review the remaining Created work and compact surfaces against the same five-second clarity bar, then close the product-quality item only when no visible workflow blocker remains.
+- Record and run the authentic founder Workshop after the product-quality pass is accepted.
+- Git reports approximately 63 MB of dangling or temporary objects. They were intentionally left intact because pruning can remove recoverable work from an actively dirty repository.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-16 22:56 CT — High-fidelity focused-object UI implemented and accepted locally
 
 ### Changed
@@ -10341,4 +10376,13 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Record and run the authentic founder Workshop, then replace the two blocked sample beats through the existing fail-closed final-film command.
 - Complete intended-audience review, publish the under-three-minute founder-derived Video, verify public links, and submit.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 23:58 CT — Log-order correction for the Workshop spine milestone
+
+- The full `23:53 CT` Workshop-spine, constrained-Map, first-use, responsive-verification, and cache-hygiene entry was appended earlier in this file because its patch matched a repeated Session ID line instead of the physical end. It remains unchanged there to preserve append-only history; this correction establishes its intended current chronology.
+- The verified result is unchanged: `Capture → Map → Brief → Create`, nested Conversation/Sources and Style, constrained semantic Map organization, 31/31 production-browser scenarios, and passing web typecheck.
+- No OpenAI provider request ran. The provider-operation ledger remains 115. The interrupted demo-film changes and user-owned plan/audit work remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.

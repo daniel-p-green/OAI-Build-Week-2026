@@ -34,6 +34,8 @@ import { sourceInputKind, sourceTitleFromText } from "./source-input";
 import { realtimeFunctionOutput } from "./realtime-transcript";
 
 type ObjectView = "conversation" | "map" | "brief" | "outputs" | "storyboard" | "output";
+type WorkshopStage = "capture" | "map" | "brief" | "create";
+type WorkshopIndexTarget = Exclude<ObjectView, "output"> | "sources" | "style";
 type Sheet = "workshops" | "objects" | "sources" | "evidence" | "add-source" | "style" | "image-replacement" | "original" | "help" | null;
 type WorkshopSummary = { id: string; title: string; sources: number; outputs: number; updatedAt: string; active: boolean };
 type SourceItem = { id: string; type: "TXT" | "PDF" | "WEB"; title: string; origin: string; claimCount: number; excerpt: string; locator: string; permission: "private" | "sanitized" | "shareable" };
@@ -90,6 +92,7 @@ type PersistedWorkshop = {
 type ImageBatchPanel = NonNullable<PersistedWorkshop["imageBatch"]>["panels"][number];
 
 const VIEW_TITLES: Record<ObjectView, string> = { conversation: "Conversation", map: "Map", brief: "Brief", outputs: "Created work", storyboard: "Storyboard", output: "Created work" };
+const stageForView = (view: ObjectView): WorkshopStage => view === "conversation" ? "capture" : view === "map" ? "map" : view === "brief" ? "brief" : "create";
 const outputTitle = (type: "deck" | "infographic") => type === "deck" ? "Presentation" : "Infographic";
 const outputType = (type: "deck" | "infographic") => type === "deck" ? "Presentation" : "Infographic";
 const isVoiceSource = (source: SourceItem) => source.origin.includes("capture-only fallback")
@@ -468,6 +471,7 @@ export default function WorkshopPage() {
     ? outputSourceCount(selectedOutput, state)
     : sourceCount;
   const currentTitle = view === "output" ? (selectedOutput ? outputTitle(selectedOutput.type) : selectedOutputId?.startsWith("audio-overview-") ? "Audio Overview" : selectedOutputId?.startsWith("sketch") ? "Sketch" : selectedOutputId === "images" ? "Image set" : "Demo video") : VIEW_TITLES[view];
+  const currentStage = stageForView(view);
   const backTarget: ObjectView | null = view === "conversation" || view === "map" ? null : view === "brief" ? "map" : view === "outputs" ? "brief" : "outputs";
   const workflowAction = !state?.mapNodes.length
     ? <Button variant={sheet ? "secondary" : "primary"} disabled={busy} onClick={() => openSheet("add-source")}>Add source</Button>
@@ -504,7 +508,15 @@ export default function WorkshopPage() {
           {backTarget && <IconButton label={`Back to ${VIEW_TITLES[backTarget]}`} onClick={() => openView(backTarget)}><ArrowLeftIcon /></IconButton>}
           <div className="workshop-identity"><ListRowAction className="workshop-picker" aria-label="Switch Workshop" onClick={() => openSheet("workshops")}><strong>{state?.title || "WorkshopLM"}</strong></ListRowAction><span aria-hidden="true">/</span><b>{currentTitle}</b></div>
         </div>
-        {loadState === "ready" && <div className="header-actions"><Button className="header-source-trigger" variant="secondary" size="small" onClick={() => openSheet("sources")}>{visibleSourceCount} {visibleSourceCount === 1 ? "source" : "sources"}</Button><Button className="header-browse-trigger" aria-label="Browse" variant="secondary" size="small" onClick={() => openSheet("objects")}><span className="browse-label">Browse</span><span className="browse-compact" aria-hidden="true">•••</span></Button><div className="workflow-action">{workflowAction}</div></div>}
+        {loadState === "ready" && <WorkshopSpine current={currentStage} state={state} onOpenIndex={() => openSheet("objects")} onSelect={(stage) => {
+          if (stage === "capture") return openView("conversation");
+          if (stage === "map") return state?.mapNodes.length ? openView("map") : openSheet("sources");
+          if (stage === "brief") return state?.briefApproved ? openView("brief") : openView("map");
+          if (state?.outputs.length || state?.imageBatch) return openView("outputs");
+          if (state?.briefApproved) return openSheet("style");
+          openView("map");
+        }} />}
+        {loadState === "ready" && <div className="header-actions"><Button className="header-source-trigger" variant="secondary" size="small" onClick={() => openSheet("sources")}>{visibleSourceCount} {visibleSourceCount === 1 ? "source" : "sources"}</Button><Button className="header-browse-trigger" aria-label="Open Workshop index" variant="secondary" size="small" onClick={() => openSheet("objects")}><span className="browse-label">Workshop</span><span className="browse-compact" aria-hidden="true">•••</span></Button><div className="workflow-action">{workflowAction}</div></div>}
       </NavigationHeader>
 
       {notice && <Card className={`notice notice--${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}><span>{notice.message}</span><IconButton label="Dismiss" onClick={() => setNotice(null)}><CloseIcon /></IconButton></Card>}
@@ -514,7 +526,7 @@ export default function WorkshopPage() {
           {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
           {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
           {loadState === "ready" && view === "conversation" && <ConversationView state={state} busy={busy} streamingReply={streamingReply} realtimeContinuation={realtimeContinuation} onRealtimeContinuationSent={() => setRealtimeContinuation(undefined)} onSend={sendConversation} onVoiceSave={async (text, capture) => Boolean(await post({ action: "captureFallbackTranscript", text, capture }))} onVoiceToolEvent={handleRealtimeToolEvent} onConfirmTool={confirmToolCall} onShowSource={showSource} />}
-          {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onOpenSources={() => openSheet("sources")} onOpenConversation={() => openView("conversation")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "map" }); }} onReviewStyle={() => openSheet("style")} onRetryStyle={(url) => { void post({ action: "beginWebsiteStyleAnalysis", url }); }} onUseDefaultStyle={() => { void post({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: state?.onboarding.outcome } }); }} />}
+          {loadState === "ready" && view === "map" && <MapCanvas state={state} selectedNode={selectedNode} busy={busy} onSelect={setSelectedNodeId} onSync={(canvasNodes) => { void post({ action: "syncMapCanvas", canvasNodes }); }} onUndo={() => { void post({ action: "undoMapOperation" }); }} onShowSource={showSource} onOpenSources={() => openSheet("sources")} onOpenConversation={() => openView("conversation")} onReviewStyle={() => openSheet("style")} onRetryStyle={(url) => { void post({ action: "beginWebsiteStyleAnalysis", url }); }} onUseDefaultStyle={() => { void post({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: state?.onboarding.outcome } }); }} />}
           {loadState === "ready" && view === "brief" && <BriefView state={state} onChooseStyle={() => openSheet("style")} onShowSource={showSource} />}
           {loadState === "ready" && view === "outputs" && <OutputsView state={state} onOpenOutput={openOutput} onOpenStoryboard={() => openView("storyboard")} onDismissOrientation={() => { void post({ action: "dismissOrientation", orientation: "outputs" }); }} />}
           {loadState === "ready" && view === "storyboard" && <StoryboardView storyboard={state?.storyboard} storyboardHistory={state?.storyboardHistory ?? []} imageBatch={state?.imageBatch} approved={Boolean(state?.storyboardApproved)} panel={selectedPanel} busy={busy} onSelect={setSelectedPanelId} onPost={post} onShowSource={showSource} />}
@@ -523,7 +535,10 @@ export default function WorkshopPage() {
       </Workbench>
 
       {sheet === "workshops" && <WorkshopsSheet workshops={workshops} busy={busy} onClose={closeSheet} onSelect={(workshopId) => { void post({ action: "selectWorkshop", workshopId }); }} onCreate={(title) => post({ action: "createWorkshop", title }).then(Boolean)} onHelp={() => setSheet("help")} />}
-      {sheet === "objects" && <ObjectsSheet state={state} view={view} onClose={closeSheet} onSelect={(nextView) => { closeSheet(); openView(nextView); }} onWorkshops={() => setSheet("workshops")} />}
+      {sheet === "objects" && <ObjectsSheet state={state} view={view} onClose={closeSheet} onSelect={(target) => {
+        if (target === "sources" || target === "style") return setSheet(target);
+        closeSheet(); openView(target);
+      }} onWorkshops={() => setSheet("workshops")} />}
       {sheet === "sources" && <SourcesSheet sources={state?.sourceItems ?? []} activeIds={state?.activeSourceIds ?? []} selected={selectedSource} pending={pendingSourceScope} busy={busy} onClose={closeSheet} onSelect={setSelectedSource} onToggle={requestSourceScopeChange} onApplyScope={() => { void applySourceScopeChange(); }} onCancelScope={() => setPendingSourceScope(null)} onAdd={() => setSheet("add-source")} onShowMap={(source) => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === source.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "evidence" && selectedSource && <EvidenceSheet source={selectedSource} evidence={selectedEvidence} onClose={closeSheet} onShowMap={() => { setSelectedNodeId(state?.mapNodes.find((node) => node.sourceId === selectedSource.id)?.id ?? ""); openView("map"); }} />}
       {sheet === "add-source" && <AddSourceSheet onClose={() => setSheet("sources")} onPost={post} />}
@@ -535,20 +550,18 @@ export default function WorkshopPage() {
   );
 }
 
-const OUTCOME_OPTIONS: Array<{ id: WorkshopOutcome; title: string; detail: string; defaultName: string }> = [
-  { id: "client_facing_pitch", title: "Client pitch", detail: "A persuasive recommendation with every claim sourced.", defaultName: "Client pitch" },
-  { id: "board_deck", title: "Board presentation", detail: "A concise leadership narrative grounded in your Sources.", defaultName: "Board presentation" },
-  { id: "internal_workshop", title: "Team workshop", detail: "A practical working session with clear actions.", defaultName: "Team workshop" },
-];
-
 function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: PersistedWorkshop; styleLibrary: StyleLibraryEntry[]; busy: boolean; notice: { message: string; tone: "status" | "error" } | null; onPost: (body: Record<string, unknown>) => Promise<PersistedWorkshop | null> }) {
-  const [outcome, setOutcome] = useState<WorkshopOutcome | undefined>(state.onboarding.outcome);
+  const outcome = state.onboarding.outcome ?? "client_facing_pitch";
   const [title, setTitle] = useState(state.title === "WorkshopLM Build Week" ? "" : state.title);
   const [website, setWebsite] = useState("");
   const [source, setSource] = useState("");
   const [sourceTitle, setSourceTitle] = useState("");
   const sourceKind = sourceInputKind(source);
-  const selectedOutcome = OUTCOME_OPTIONS.find((option) => option.id === outcome);
+
+  async function startWorkshop() {
+    if (state.onboarding.outcome && state.onboarding.step !== "welcome") return state;
+    return onPost({ action: "updateOnboarding", title: title.trim() || "New Workshop", outcome, onboardingStep: "sources" });
+  }
 
   async function chooseStyle(body: Record<string, unknown>) {
     const styled = await onPost(body);
@@ -563,6 +576,8 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
   async function addSource() {
     const value = source.trim();
     if (!value) return;
+    const started = await startWorkshop();
+    if (!started) return;
     const body = sourceKind === "url"
       ? { action: "ingestUrl", url: value }
       : sourceKind === "pdf"
@@ -576,13 +591,6 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
     <NavigationHeader className="onboarding-header"><strong>WorkshopLM</strong><span>From conversations and Sources to professional knowledge work.</span></NavigationHeader>
     {notice && <Card className={`notice notice--${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}>{notice.message}</Card>}
     <section className="onboarding-stage">
-      {state.onboarding.step === "welcome" && <Card className="onboarding-card welcome-card">
-        <div className="onboarding-copy"><small>New Workshop</small><h1>Turn raw thinking into professional knowledge work.</h1><p>What are you making?</p></div>
-        <div className="outcome-grid" role="radiogroup" aria-label="What are you making?">{OUTCOME_OPTIONS.map((option) => <ListRowAction key={option.id} className={`outcome-choice ${outcome === option.id ? "selected" : ""}`} role="radio" aria-checked={outcome === option.id} onClick={() => { setOutcome(option.id); if (!title.trim()) setTitle(option.defaultName); }}><span><strong>{option.title}</strong><small>{option.detail}</small></span></ListRowAction>)}</div>
-        {outcome && <Input autoFocus label="Workshop name" value={title} onChange={(event) => setTitle(event.target.value)} />}
-        <Button disabled={busy || !outcome || !title.trim()} onClick={() => { void onPost({ action: "updateOnboarding", title: title.trim(), outcome, onboardingStep: "sources" }); }}>Continue</Button>
-      </Card>}
-
       {state.onboarding.step === "style" && <Card className="onboarding-card style-start-card">
         <div className="onboarding-copy"><small>Company Style</small><h1>Make every format feel like yours.</h1><p>We’ll suggest colors, type, and brand assets for review. This website will not be added to Sources.</p></div>
         {styleLibrary.length > 0 && <section className="saved-style-start"><h2>Use your latest saved style</h2><ListGroup>{styleLibrary.slice(0, 1).map((entry) => <ListRow key={entry.id}><ListRowAction disabled={busy} onClick={() => { void chooseStyle({ action: "applyStyleLibrary", styleLibraryId: entry.id, intentProfile: outcome }); }}><div className="saved-style-row"><span><strong>{entry.name}</strong><small>{entry.source === "website" ? "From website" : "Set manually"} · Version {entry.revision}</small></span><div className="palette-preview compact" aria-hidden="true"><i style={{ background: entry.accent }} /><i style={{ background: entry.ink }} /><i style={{ background: entry.paper }} /></div></div></ListRowAction></ListRow>)}</ListGroup></section>}
@@ -590,21 +598,93 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
         <div className="onboarding-secondary-actions"><Button variant="secondary" disabled={busy} onClick={() => { void chooseStyle({ action: "lockManualStyle", manualStyle: { name: "Clean professional", intentProfile: outcome } }); }}>Use a clean default for now</Button>{state.style && <Button variant="secondary" disabled={busy} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "sources" }); }}>Continue with {state.style.name}</Button>}<Button variant="secondary" disabled={busy} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "welcome" }); }}>Back</Button></div>
       </Card>}
 
-      {state.onboarding.step === "sources" && <Card className="onboarding-card source-start-card">
-        <div className="onboarding-copy"><small>{selectedOutcome?.title ?? "Workshop"}</small><h1>Add the thinking.</h1><p>Record the conversation or add meeting notes, a public content URL, or a local PDF. Choose the look after the thinking is clear.</p></div>
-        <RealtimeCapture onSave={async (transcript, capture) => Boolean(await onPost({ action: "captureFallbackTranscript", text: transcript, capture }))} />
+      {(state.onboarding.step === "welcome" || state.onboarding.step === "sources") && <Card className="onboarding-card source-start-card">
+        <div className="onboarding-copy"><small>New Workshop</small><h1>Start with what you know.</h1><p>Talk through the idea, paste meeting notes, add a public page, or choose a local PDF. WorkshopLM will organize it into a grounded Map.</p></div>
+        <Input label="Workshop name (optional)" placeholder="Name this later" value={title} onChange={(event) => setTitle(event.target.value)} />
+        <RealtimeCapture onSave={async (transcript, capture) => {
+          const started = await startWorkshop();
+          return Boolean(started && await onPost({ action: "captureFallbackTranscript", text: transcript, capture }));
+        }} />
         <div className="source-divider"><span>or add material</span></div>
         <TextArea label="Source" hint="Paste notes, https://…, or /path/to/file.pdf" value={source} onChange={(event) => setSource(event.target.value)} />
         {sourceKind === "text" && source.trim() && <Input label="Title (optional)" value={sourceTitle} onChange={(event) => setSourceTitle(event.target.value)} />}
         <div className="source-start-actions"><Button variant="secondary" disabled={busy || !source.trim()} onClick={() => { void addSource(); }}>Add source</Button><Button disabled={busy || state.sourceItems.length === 0} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "complete" }); }}>Build my Map</Button></div>
         {state.sourceItems.length > 0 && <p className="source-ready" role="status">{state.sourceItems.length} {state.sourceItems.length === 1 ? "source" : "sources"} ready</p>}
-        <Button variant="secondary" disabled={busy} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "welcome" }); }}>Back</Button>
       </Card>}
     </section>
   </FullScreenShell>;
 }
 
-function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShowSource, onOpenSources, onOpenConversation, onDismissOrientation, onReviewStyle, onRetryStyle, onUseDefaultStyle }: { state: PersistedWorkshop | null; selectedNode?: MapNode; busy: boolean; onSelect: (id: string) => void; onSync: (nodes: Pick<MapNode, "id" | "title" | "x" | "y" | "width" | "height">[]) => void; onUndo: () => void; onShowSource: (target?: EvidenceTarget) => void; onOpenSources: () => void; onOpenConversation: () => void; onDismissOrientation: () => void; onReviewStyle: () => void; onRetryStyle: (url: string) => void; onUseDefaultStyle: () => void }) {
+function WorkshopSpine({ current, state, onSelect, onOpenIndex }: { current: WorkshopStage; state: PersistedWorkshop | null; onSelect: (stage: WorkshopStage) => void; onOpenIndex: () => void }) {
+  const created = Boolean(state?.outputs.length || state?.imageBatch || state?.audioOverviews.length || state?.sketch);
+  const stages: Array<{ id: WorkshopStage; label: string; ready: boolean; needsUpdate: boolean }> = [
+    { id: "capture", label: "Capture", ready: Boolean(state?.activeSourceIds.length), needsUpdate: false },
+    { id: "map", label: "Map", ready: Boolean(state?.mapNodes.length), needsUpdate: Boolean(state?.frame?.stale) },
+    { id: "brief", label: "Brief", ready: Boolean(state?.briefApproved && !state.frame?.stale), needsUpdate: Boolean(state?.frame?.stale) },
+    { id: "create", label: "Create", ready: created, needsUpdate: outputSetStatus(state).actionRequired },
+  ];
+  return <nav className="workshop-spine" aria-label="Workshop progress">
+    {stages.map((stage, index) => <div className="spine-step" key={stage.id}>
+      {index > 0 && <span className="spine-arrow" aria-hidden="true">→</span>}
+      <button type="button" className={`spine-stage ${current === stage.id ? "current" : ""} ${stage.ready ? "ready" : ""} ${stage.needsUpdate ? "needs-update" : ""}`} aria-current={current === stage.id ? "step" : undefined} aria-label={current === stage.id ? `Open Workshop index, ${stage.label}` : `${stage.label}${stage.needsUpdate ? ", needs update" : stage.ready ? ", ready" : ""}`} onClick={() => current === stage.id ? onOpenIndex() : onSelect(stage.id)}><span>{stage.label}</span>{stage.needsUpdate ? <i>Needs update</i> : stage.ready ? <i>Ready</i> : null}</button>
+    </div>)}
+  </nav>;
+}
+
+function recommendedMapPath(nodes: MapNode[], edges: MapEdge[]) {
+  const nodeById = new Map(nodes.map((node) => [node.id, node]));
+  const incoming = new Set(edges.map((edge) => edge.to));
+  const outgoing = new Map<string, string[]>();
+  for (const edge of edges) outgoing.set(edge.from, [...(outgoing.get(edge.from) ?? []), edge.to]);
+  const roots = nodes.filter((node) => !incoming.has(node.id));
+  const candidates = roots.length ? roots : nodes;
+  const paths = candidates.map((root) => {
+    const path = [root];
+    const seen = new Set([root.id]);
+    let current = root;
+    while (path.length < 4) {
+      const next = (outgoing.get(current.id) ?? []).map((id) => nodeById.get(id)).find((node): node is MapNode => Boolean(node && !seen.has(node.id)));
+      if (!next) break;
+      path.push(next); seen.add(next.id); current = next;
+    }
+    return path;
+  });
+  return paths.sort((left, right) => right.length - left.length)[0] ?? nodes.slice(0, 1);
+}
+
+function organizedMapNodes(nodes: MapNode[], edges: MapEdge[]) {
+  if (!nodes.length) return nodes;
+  const nodeIds = new Set(nodes.map((node) => node.id));
+  const incoming = new Map(nodes.map((node) => [node.id, 0]));
+  const outgoing = new Map<string, string[]>();
+  for (const edge of edges) {
+    if (!nodeIds.has(edge.from) || !nodeIds.has(edge.to)) continue;
+    incoming.set(edge.to, (incoming.get(edge.to) ?? 0) + 1);
+    outgoing.set(edge.from, [...(outgoing.get(edge.from) ?? []), edge.to]);
+  }
+  const depth = new Map<string, number>();
+  const queue = nodes.filter((node) => (incoming.get(node.id) ?? 0) === 0).map((node) => node.id);
+  for (const id of queue) depth.set(id, 0);
+  while (queue.length) {
+    const id = queue.shift()!;
+    for (const target of outgoing.get(id) ?? []) {
+      const nextDepth = Math.min(2, (depth.get(id) ?? 0) + 1);
+      if ((depth.get(target) ?? -1) < nextDepth) depth.set(target, nextDepth);
+      incoming.set(target, Math.max(0, (incoming.get(target) ?? 0) - 1));
+      if (incoming.get(target) === 0) queue.push(target);
+    }
+  }
+  const layerFor = (node: MapNode) => depth.get(node.id) ?? (node.kind === "grounded" ? 0 : node.kind === "derived" ? 1 : 2);
+  const layers = [0, 1, 2].map((layer) => nodes.filter((node) => layerFor(node) === layer));
+  const x = [6, 40, 74];
+  return layers.flatMap((layer, layerIndex) => {
+    const step = layer.length <= 1 ? 0 : Math.min(23, 72 / (layer.length - 1));
+    const start = layer.length <= 1 ? 41 : 10;
+    return layer.map((node, index) => ({ ...node, x: x[layerIndex], y: Math.round((start + index * step) * 10) / 10, width: 22, height: 16 }));
+  });
+}
+
+function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShowSource, onOpenSources, onOpenConversation, onReviewStyle, onRetryStyle, onUseDefaultStyle }: { state: PersistedWorkshop | null; selectedNode?: MapNode; busy: boolean; onSelect: (id: string) => void; onSync: (nodes: Pick<MapNode, "id" | "title" | "x" | "y" | "width" | "height">[]) => void; onUndo: () => void; onShowSource: (target?: EvidenceTarget) => void; onOpenSources: () => void; onOpenConversation: () => void; onReviewStyle: () => void; onRetryStyle: (url: string) => void; onUseDefaultStyle: () => void }) {
   const sources = (state?.sourceItems ?? []).filter((source) => state?.activeSourceIds.includes(source.id));
   const nodes = (state?.mapNodes ?? []).filter((node) => !node.sourceId || state?.activeSourceIds.includes(node.sourceId));
   const relatedSourceId = (node: MapNode, index: number) => node.sourceId ?? sources[index % Math.max(1, sources.length)]?.id;
@@ -613,14 +693,25 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
   const canUndo = Boolean(state?.graphState && !state.graphState.includes('"records":[]'));
   const analysis = state?.onboarding.styleAnalysis;
   const analysisDomain = analysis ? new URL(analysis.url).hostname : "";
+  const shouldOrganize = !state?.graphState?.includes("operation-canvas-");
+  const displayedNodes = useMemo(() => shouldOrganize ? organizedMapNodes(nodes, state?.mapEdges ?? []) : nodes, [nodes, state?.mapEdges, shouldOrganize]);
+  const path = recommendedMapPath(nodes, state?.mapEdges ?? []);
+  const clusterCounts = {
+    evidence: displayedNodes.filter((node) => node.x < 23).length,
+    synthesis: displayedNodes.filter((node) => node.x >= 23 && node.x < 57).length,
+    direction: displayedNodes.filter((node) => node.x >= 57).length,
+  };
 
   if (!nodes.length) return <div className="state-surface"><StateMessage state="empty" title="Start with a source">Create professional knowledge work, with every factual claim traced to its Source.</StateMessage></div>;
 
   return <div className="map-canvas" data-domain-ui="map-canvas">
-    <div className="map-caption" data-domain-ui="map-caption"><span>{nodes.length} ideas · Drag to organize · Double-click to edit</span>{canUndo && <Button variant="secondary" size="small" disabled={busy} onClick={onUndo}>Undo</Button>}</div>
-    {!state?.onboarding.mapOrientationDismissed && <Card className="map-orientation"><div><strong>Your Map is ready.</strong><p>Shape the ideas, approve the Brief, then create branded work. Use Show source to trace any factual point back to the material behind it.</p></div><Button variant="secondary" size="small" onClick={onDismissOrientation}>Got it</Button></Card>}
+    <section className="map-insight-bar" aria-label="Map overview">
+      <div className="map-clusters"><span><b>{clusterCounts.evidence}</b> Evidence</span><span><b>{clusterCounts.synthesis}</b> Synthesis</span><span><b>{clusterCounts.direction}</b> Direction</span></div>
+      <div className="map-path"><small>Recommended path</small><div>{path.map((node, index) => <span key={node.id}>{index > 0 && <i aria-hidden="true">→</i>}<button type="button" onClick={() => onSelect(node.id)}>{node.title}</button></span>)}</div></div>
+      {canUndo && <Button variant="secondary" size="small" disabled={busy} onClick={onUndo}>Undo</Button>}
+    </section>
     {!state?.style && analysis && <Card className="style-analysis-status" role="status"><div><strong>{analysis.status === "reviewing" ? `Reviewing ${analysisDomain}…` : analysis.status === "ready" ? "Company style ready to review" : "Couldn't review this website"}</strong><p>{analysis.status === "reviewing" ? "Keep shaping the Map while WorkshopLM checks the public visual foundation." : analysis.status === "ready" ? "Review the suggested colors, type, and brand assets before creating work." : analysis.error ?? "Try again or continue with a clean professional Style."}</p></div><div className="button-row">{analysis.status === "ready" && <Button variant="secondary" size="small" onClick={onReviewStyle}>Review style</Button>}{analysis.status === "error" && <><Button variant="secondary" size="small" disabled={busy} onClick={() => onRetryStyle(analysis.url)}>Try again</Button><Button variant="secondary" size="small" onClick={onReviewStyle}>Set manually</Button><Button variant="secondary" size="small" disabled={busy} onClick={onUseDefaultStyle}>Use a clean default</Button></>}</div></Card>}
-    <ExcalidrawMap nodes={nodes} sources={sources} edges={state?.mapEdges ?? []} style={state?.style ? { accent: state.style.accent, ink: state.style.ink, paper: state.style.paper } : undefined} selectedNodeId={selectedNode?.id} onSelectNode={onSelect} onShowSource={(sourceId) => onShowSource({ sourceId })} onSync={onSync} />
+    <ExcalidrawMap nodes={displayedNodes} sources={sources} edges={state?.mapEdges ?? []} style={state?.style ? { accent: state.style.accent, ink: state.style.ink, paper: state.style.paper } : undefined} selectedNodeId={selectedNode?.id} onSelectNode={onSelect} onShowSource={(sourceId) => onShowSource({ sourceId })} onSync={onSync} />
     <section className="map-source-shelf" aria-label="Selected Sources"><div className="map-source-shelf-heading"><div><strong>Sources</strong><span>{sources.length} selected</span></div><Button variant="secondary" size="small" onClick={onOpenSources}>Manage</Button></div><div className="map-source-items">{sources.slice(0, 4).map((item) => <ListRowAction className="map-source-chip" key={item.id} onClick={() => onShowSource({ sourceId: item.id })}><FileIcon label={item.type} /><span><strong>{sourceDisplayTitle(item)}</strong><small>{item.claimCount} claims</small></span></ListRowAction>)}</div><Button variant="secondary" size="small" onClick={onOpenConversation}>Ask sources</Button></section>
     {selectedNode && <ClaimInspector node={selectedNode} source={source} busy={busy} onClose={() => onSelect("")} onSave={(title) => onSync([{ id: selectedNode.id, title, x: selectedNode.x, y: selectedNode.y, width: selectedNode.width, height: selectedNode.height }])} onShowSource={() => onShowSource({ sourceId: selectedSourceId, claimId: selectedNode.id, locator: selectedNode.locator })} />}
   </div>;
@@ -1026,18 +1117,31 @@ function WorkshopsSheet({ workshops, busy, onClose, onSelect, onCreate, onHelp }
   </SideSheet>;
 }
 
-function ObjectsSheet({ state, view, onClose, onSelect, onWorkshops }: { state: PersistedWorkshop | null; view: ObjectView; onClose: () => void; onSelect: (view: Exclude<ObjectView, "output">) => void; onWorkshops: () => void }) {
-  const items: Array<{ view: Exclude<ObjectView, "output">; title: string; detail: string; ready: boolean }> = [
-    { view: "conversation", title: "Chat", detail: "Ask across your Sources", ready: true },
-    { view: "map", title: "Map", detail: "Organize your ideas", ready: Boolean(state?.mapNodes.length) },
-    { view: "brief", title: "Brief", detail: "Review the approved direction", ready: Boolean(state?.briefApproved) },
-    { view: "outputs", title: "Created work", detail: "Presentation, visuals, and audio", ready: Boolean(state?.outputs.length || state?.imageBatch) },
-    { view: "storyboard", title: "Storyboard", detail: "Review the sequence before Video", ready: Boolean(state?.storyboard.panels.length) },
+function ObjectsSheet({ state, view, onClose, onSelect, onWorkshops }: { state: PersistedWorkshop | null; view: ObjectView; onClose: () => void; onSelect: (target: WorkshopIndexTarget) => void; onWorkshops: () => void }) {
+  const groups: Array<{ stage: WorkshopStage; title: string; items: Array<{ target: WorkshopIndexTarget; title: string; detail: string; ready: boolean }> }> = [
+    { stage: "capture", title: "Capture", items: [
+      { target: "conversation", title: "Conversation", detail: "Talk or ask across your Sources", ready: true },
+      { target: "sources", title: "Sources", detail: `${state?.activeSourceIds.length ?? 0} selected`, ready: true },
+    ] },
+    { stage: "map", title: "Map", items: [
+      { target: "map", title: "Map", detail: "Evidence, synthesis, and direction", ready: Boolean(state?.mapNodes.length) },
+    ] },
+    { stage: "brief", title: "Brief", items: [
+      { target: "brief", title: "Brief", detail: "The approved direction", ready: Boolean(state?.briefApproved) },
+    ] },
+    { stage: "create", title: "Create", items: [
+      { target: "style", title: "Style", detail: state?.style?.name ?? "Choose the visual system", ready: Boolean(state?.briefApproved) },
+      { target: "outputs", title: "Created work", detail: "Presentation, visuals, and audio", ready: Boolean(state?.outputs.length || state?.imageBatch) },
+      { target: "storyboard", title: "Storyboard", detail: "Review the sequence before Video", ready: Boolean(state?.storyboard.panels.length) },
+    ] },
   ];
   const current = view === "output" ? "outputs" : view;
-  return <SideSheet title="Workshop views" onClose={onClose}>
-    <p className="sheet-intro">Move between the thinking and the work without leaving this Workshop.</p>
-    <ListGroup>{items.map((item) => <ListRow className={`object-view-row ${current === item.view ? "selected" : ""}`} key={item.view}><ListRowAction aria-current={current === item.view ? "page" : undefined} disabled={!item.ready || current === item.view} aria-label={`View ${item.title.toLowerCase()}`} onClick={() => onSelect(item.view)}><span><strong>{item.title}</strong><small>{item.ready ? item.detail : "Available later"}</small></span></ListRowAction></ListRow>)}</ListGroup><Button className="browse-workshops" variant="secondary" size="small" onClick={onWorkshops}>Workshops</Button>
+  return <SideSheet title="Workshop" onClose={onClose}>
+    <p className="sheet-intro">Capture the material, shape the Map, approve the Brief, then create.</p>
+    <div className="workshop-index">{groups.map((group, groupIndex) => <section className="workshop-index-group" key={group.stage} aria-labelledby={`workshop-index-${group.stage}`}>
+      <header><span>{String(groupIndex + 1).padStart(2, "0")}</span><strong id={`workshop-index-${group.stage}`}>{group.title}</strong></header>
+      <ListGroup>{group.items.map((item) => <ListRow className={`object-view-row ${current === item.target ? "selected" : ""}`} key={item.target}><ListRowAction aria-current={current === item.target ? "page" : undefined} disabled={!item.ready || current === item.target} aria-label={`Open ${item.title}`} onClick={() => onSelect(item.target)}><span><strong>{item.title}</strong><small>{item.ready ? item.detail : "Available later"}</small></span></ListRowAction></ListRow>)}</ListGroup>
+    </section>)}</div><Button className="browse-workshops" variant="secondary" size="small" onClick={onWorkshops}>All Workshops</Button>
   </SideSheet>;
 }
 

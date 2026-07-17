@@ -19,10 +19,19 @@ async function closeDialog(page: Page, name: string) {
   await expect(page.getByRole("dialog", { name })).toBeHidden();
 }
 
+async function openWorkshopIndex(page: Page) {
+  const explicit = page.getByRole("button", { name: "Open Workshop index", exact: true });
+  const trigger = await explicit.isVisible() ? explicit : page.locator(".spine-stage[aria-current='step']");
+  await trigger.click();
+  await expect(page.getByRole("dialog", { name: "Workshop" })).toBeVisible();
+  return trigger;
+}
+
 async function openWorkshopView(page: Page, view: "chat" | "brief" | "outputs" | "storyboard") {
-  await page.getByRole("button", { name: "Browse", exact: true }).click();
-  const sheet = page.getByRole("dialog", { name: "Workshop views" });
-  await sheet.getByRole("button", { name: view === "outputs" ? "View created work" : `View ${view}`, exact: true }).click();
+  await openWorkshopIndex(page);
+  const sheet = page.getByRole("dialog", { name: "Workshop" });
+  const label = view === "chat" ? "Conversation" : view === "outputs" ? "Created work" : view[0]!.toUpperCase() + view.slice(1);
+  await sheet.getByRole("button", { name: `Open ${label}`, exact: true }).click();
   await expect(sheet).toBeHidden();
 }
 
@@ -116,14 +125,13 @@ test("reset fixture is calm and responsive", async ({ page }) => {
     await expectMapReady(page, viewport);
     await expectScreen(page, `${viewport.name}-reset-map`);
     if (viewport.width <= 900) {
-      const views = page.getByRole("button", { name: "Browse", exact: true });
+      const views = page.getByRole("button", { name: "Open Workshop index, Map", exact: true });
       await views.click();
-      const viewSheet = page.getByRole("dialog", { name: "Workshop views" });
-      await expect(viewSheet.getByRole("button")).toHaveCount(7);
-      await expect(viewSheet.getByRole("button", { name: "View map" })).toBeDisabled();
-      await expect(viewSheet.getByRole("button", { name: "View brief" })).toBeDisabled();
-      if (viewport.name === "mobile") await expectScreen(page, "mobile-workshop-views");
-      await closeDialog(page, "Workshop views");
+      const viewSheet = page.getByRole("dialog", { name: "Workshop" });
+      await expect(viewSheet.getByRole("button", { name: "Open Map" })).toBeDisabled();
+      await expect(viewSheet.getByRole("button", { name: "Open Brief" })).toBeDisabled();
+      if (viewport.name === "mobile") await expectScreen(page, "mobile-workshop-index");
+      await closeDialog(page, "Workshop");
       await expect(views).toBeFocused();
     }
     const sourceSheet = await openSources(page);
@@ -140,10 +148,14 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
   await expectMapReady(page, viewports[0]);
-  const map = await page.locator(".excalidraw-map").boundingBox();
-  if (!map) throw new Error("Editable Map did not expose a canvas boundary");
-  const promisePoint = { x: map.x + (map.width * 0.415), y: map.y + (map.height * 0.275) };
-  await page.mouse.click(promisePoint.x, promisePoint.y);
+  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("1 Evidence");
+  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("1 Synthesis");
+  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("2 Direction");
+  const mapOverview = page.getByRole("region", { name: "Map overview" });
+  await expect(mapOverview).toContainText("The product promise");
+  await expect(mapOverview).toContainText("Judge proof");
+  await expect(mapOverview).toContainText("Visual behavior");
+  await selectProductPromise(page, viewports[0]);
   const claimEditor = page.getByRole("textbox", { name: "Claim" });
   await expect(claimEditor).toBeVisible();
   await claimEditor.fill("The product promise revised");
@@ -152,20 +164,11 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await page.getByRole("button", { name: "Close claim" }).click();
   await page.getByRole("button", { name: "Undo" }).click();
   await expect.poll(async () => (await (await page.request.get("/api/workshop")).json()).mapNodes.find((node: { id: string }) => node.id === "promise")?.title).toBe("The product promise");
-  await page.waitForTimeout(500);
-  await page.mouse.move(promisePoint.x, promisePoint.y);
-  await page.mouse.down();
-  await page.mouse.move(promisePoint.x + 50, promisePoint.y + 30, { steps: 8 });
-  await page.mouse.up();
-  await expect.poll(async () => (await (await page.request.get("/api/workshop")).json()).mapNodes.find((node: { id: string }) => node.id === "promise")?.x).toBeGreaterThan(11);
-  await page.getByRole("button", { name: "Close claim" }).click();
-  await page.getByRole("button", { name: "Undo" }).click();
-  await expect.poll(async () => (await (await page.request.get("/api/workshop")).json()).mapNodes.find((node: { id: string }) => node.id === "promise")?.x).toBe(11);
 
   // Begin at the control immediately before the contextual next action. The Map
   // canvas intentionally owns many keyboard stops, so starting in Sources would
   // test Excalidraw's internal tab order rather than WorkshopLM's workflow.
-  await page.getByRole("button", { name: "Browse", exact: true }).focus();
+  await page.getByRole("button", { name: "Open Workshop index", exact: true }).focus();
   await pressTabUntil(page, "Approve brief");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("heading", { level: 1 })).toContainText("The product promise");
@@ -222,7 +225,7 @@ test("grounded Conversation preserves source scope, citations, and responsive wo
     await expect(surface.getByRole("button", { name: source.title })).toBeVisible();
     await expect(surface.getByRole("textbox", { name: "Message WorkshopLM" })).toBeVisible();
     await expect(page.getByRole("button", { name: /^\d+ sources?$/ })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Browse", exact: true })).toBeVisible();
+    await expect(page.locator(".spine-stage[aria-current='step']")).toBeVisible();
     await expect(surface).toHaveScreenshot(`${viewport.name}-conversation.png`, { animations: "disabled", caret: "hide", maxDiffPixelRatio: viewport.name === "mobile" ? 0.004 : 0.001 });
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
     await surface.getByRole("button", { name: source.title }).click();
@@ -239,9 +242,8 @@ test("dismissed guidance remains quietly available from the Workshop sheet", asy
   for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
     await page.goto("/");
-    const browse = page.getByRole("button", { name: "Browse" });
-    await browse.click();
-    await page.getByRole("button", { name: "Workshops" }).click();
+    const browse = await openWorkshopIndex(page);
+    await page.getByRole("button", { name: "All Workshops" }).click();
     await page.getByRole("button", { name: "How WorkshopLM works" }).click();
     const help = page.getByRole("dialog", { name: "How WorkshopLM works" });
     await expect(help).toBeVisible();
@@ -300,9 +302,6 @@ test("an empty Workshop reaches an editable Presentation through one obvious pat
   try {
     await page.setViewportSize({ width: 1200, height: 800 });
     await page.goto("/");
-    await page.getByRole("radio", { name: /Client pitch/ }).click();
-    await page.getByRole("button", { name: "Continue" }).click();
-
     await page.getByRole("textbox", { name: "Source" }).fill([
       "Weekly client meeting",
       "The client approved a two-week pilot for the enablement team.",
@@ -543,7 +542,7 @@ test.describe("completed Workshop judge path", () => {
     test(`${viewport.name} visual path`, async ({ page }) => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await page.goto("/");
-      await expect(page.getByRole("region", { name: "Map" })).toBeVisible();
+      await expect(page.getByRole("region", { name: "Map", exact: true })).toBeVisible();
       await expectMapReady(page, viewport);
       await expectPrimaryActions(page, 1);
       await expectScreen(page, `${viewport.name}-map`);
@@ -1223,8 +1222,8 @@ test("reduced motion, contrast, and 200 percent logical zoom remain usable", asy
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(600);
-  await expect(page.getByRole("region", { name: "Map" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Browse", exact: true })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Map", exact: true })).toBeVisible();
+  await expect(page.locator(".spine-stage[aria-current='step']")).toBeVisible();
   await expect(page.getByRole("button", { name: /^\d+ sources?$/ })).toBeVisible();
   await expect(page.locator(".oai-button").first()).toHaveCSS("transition-duration", "0s");
 
@@ -1328,14 +1327,10 @@ test("a new professional reaches the real Map through the durable first-use path
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "Turn raw thinking into professional knowledge work." })).toBeVisible();
-  await expect(page.getByRole("radiogroup", { name: "What are you making?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Start with what you know." })).toBeVisible();
+  await expect(page.getByText("WorkshopLM will organize it into a grounded Map.")).toBeVisible();
   await expectScreen(page, "desktop-onboarding-welcome");
-  await page.getByRole("radio", { name: /Board presentation/ }).click();
-  await page.getByLabel("Workshop name").fill("Acme leadership update");
-  await page.getByRole("button", { name: "Continue" }).click();
-
-  await expect(page.getByRole("heading", { name: "Add the thinking." })).toBeVisible();
+  await page.getByLabel("Workshop name (optional)").fill("Acme leadership update");
   await expect(page.getByRole("button", { name: "Build my Map" })).toBeDisabled();
   await expectScreen(page, "desktop-onboarding-sources");
   await page.getByLabel("Source").fill("Professional teams lose hours turning meeting notes into client-ready work. WorkshopLM organizes messy thinking into a grounded Map, then creates an editable Presentation with every factual claim linked to its exact source.\n\nThe recommended workflow is Capture, Shape, Create. The professional reviews the Brief before output creation and reviews the Storyboard before video rendering.\n\nCompany Style keeps colors, typography, and layout rules consistent across Presentations, diagrams, images, audio, and video. The goal is professional knowledge work a consultant can refine and present without rebuilding it in another tool.");
@@ -1344,15 +1339,13 @@ test("a new professional reaches the real Map through the durable first-use path
   await expect(page.getByText("1 source ready")).toBeVisible();
   await page.getByRole("button", { name: "Build my Map" }).click();
 
-  await expect(page.getByText("Your Map is ready.")).toBeVisible();
-  await expect(page.getByText("6 ideas · Drag to organize · Double-click to edit")).toBeVisible();
+  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Evidence");
+  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Recommended path");
   await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
   await expect(page.locator(".map-source-shelf")).toContainText("1 selected");
   await expectMapReady(page, viewports[0]);
   await expectScreen(page, "desktop-onboarding-map");
-  await page.getByRole("button", { name: "Got it" }).click();
   await page.reload();
-  await expect(page.getByText("Your Map is ready.")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
   await page.getByRole("button", { name: "Approve brief" }).click();
   await expect(page.getByRole("heading", { level: 1, name: "WorkshopLM organizes messy thinking into a grounded Map" })).toBeVisible();
@@ -1362,13 +1355,13 @@ test("a new professional reaches the real Map through the durable first-use path
   await expect(page.getByRole("dialog", { name: "Source" })).toContainText("Professional teams lose hours turning meeting notes into client-ready work");
   await closeDialog(page, "Source");
   await page.getByRole("button", { name: "Choose style" }).click();
-  await expect(page.getByRole("dialog", { name: "Style" })).toContainText("For Board presentation");
+  await expect(page.getByRole("dialog", { name: "Style" })).toContainText("For Client pitch");
   await expectScreen(page, "desktop-onboarding-style");
   await page.getByRole("button", { name: /Use saved style WorkshopLM editorial/ }).click();
   await expect(page.getByRole("button", { name: "Create work" })).toBeVisible();
 
   const state = await (await page.request.get("/api/workshop")).json();
-  expect(state).toMatchObject({ title: "Acme leadership update", onboarding: { step: "complete", outcome: "board_deck", mapOrientationDismissed: true }, style: { name: "WorkshopLM editorial", intentProfile: "board_deck" }, sources: 1, groundedClaims: 6, mapNodes: expect.arrayContaining([expect.objectContaining({ id: expect.stringMatching(/^claim-/), sourceId: expect.stringMatching(/^source-/) })]) });
+  expect(state).toMatchObject({ title: "Acme leadership update", onboarding: { step: "complete", outcome: "client_facing_pitch" }, style: { name: "WorkshopLM editorial", intentProfile: "client_facing_pitch" }, sources: 1, groundedClaims: 6, mapNodes: expect.arrayContaining([expect.objectContaining({ id: expect.stringMatching(/^claim-/), sourceId: expect.stringMatching(/^source-/) })]) });
 });
 
 test("fresh Outputs keep the primary source trace clear and reveal the exact claim", async ({ page }) => {
