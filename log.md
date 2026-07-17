@@ -10982,3 +10982,31 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 04:34 CT — Infographic text and citations no longer collide
+
+### Changed
+
+- Repaired the browser-rendered Infographic after inspecting the current professional artifact and finding supporting copy colliding with absolute-positioned Source citations in shorter cards.
+- Made each semantic card a bounded vertical composition: role, heading, supporting content, and Source citation now participate in layout, with citations settling quietly at the card edge rather than overlaying content.
+- Rebalanced the two-row decision-graphic grid to preserve room for all four semantic roles while retaining the current Style, evidence/recommendation contrast, and editable one-slide PowerPoint export.
+- Added a focused Infographic review to the canonical desktop, compact, and mobile judge path instead of relying on the small Created work thumbnail.
+
+### Verified
+
+- Inspected `desktop-infographic.png`, `compact-infographic.png`, and `mobile-infographic.png` at original resolution. All four cards remain distinct; headings, supporting text, and Source citations are legible; and the compact/mobile focused views preserve access to the Source trail.
+- Added a real iframe-layout assertion that every Infographic card has no hidden overflow, its citation begins after the final content block, and its citation remains inside the card boundary.
+- The production build succeeded and the complete production-browser suite passed all 32 scenarios after the intentional Infographic, `Needs update`, and downstream Created work baselines were refreshed.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 19 production-renderer tests, 32 web tests, and 129 worker tests.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam with both approval gates, current Presentation and Infographic, Sketch, Cedar Audio Overview, six provider-backed image panels, five Storyboard panels, local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Visual overflow hidden by renderer chrome is a failed professional artifact, even if the HTML, editable export, and unit tests succeed. Focused created-work rendering and geometric containment are now required evidence for the Infographic.
+- Preserve the one-page semantic decision graphic; do not broaden this into a general infographic editor before the authentic founder run.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

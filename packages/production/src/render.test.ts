@@ -46,6 +46,8 @@ describe("production renderers", () => {
     expect(infographic).toContain('<span class="infographic-card-role">Context</span>');
     expect(infographic).toContain('<span class="infographic-card-role">Recommendation</span>');
     expect(infographic).toContain('data-tone="recommendation"');
+    expect(infographic).toContain(".infographic-card{display:flex;flex-direction:column");
+    expect(infographic).toContain(".infographic-card .cite{position:static");
   });
   it("places a reviewed generated visual on the cover with inspectable image provenance", async () => {
     const visual = { data: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAEAQH/6X8XWQAAAABJRU5ErkJggg==", aspectRatio: 1, panelId: "image-panel-1", panelVersion: 2, sha256: "a".repeat(64) };

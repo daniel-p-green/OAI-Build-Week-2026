@@ -617,6 +617,22 @@ test.describe("completed Workshop judge path", () => {
       await expect.poll(() => page.locator(".focused-output").evaluate((element) => element.scrollTop)).toBeGreaterThan(0);
       await page.getByRole("button", { name: "Back to Created work" }).click();
 
+      await page.getByRole("button", { name: "Open Infographic" }).click();
+      await expect(page.getByRole("heading", { name: "Infographic" })).toBeVisible();
+      await expectPreviewFramesReady(page);
+      expect(await page.locator(".focused-output-preview iframe").evaluate((iframe: HTMLIFrameElement) => {
+        const cards = [...(iframe.contentDocument?.querySelectorAll<HTMLElement>(".infographic-card") ?? [])];
+        return cards.length > 0 && cards.every((card) => {
+          const citation = card.querySelector<HTMLElement>(".cite")?.getBoundingClientRect();
+          const content = (card.querySelector<HTMLElement>(".infographic-sequence") ?? card.querySelector<HTMLElement>("p:not(.cite)") ?? card.querySelector<HTMLElement>("h2"))?.getBoundingClientRect();
+          const boundary = card.getBoundingClientRect();
+          return card.scrollHeight <= card.clientHeight + 1
+            && Boolean(citation && content && citation.top >= content.bottom - 1 && citation.bottom <= boundary.bottom - 8);
+        });
+      })).toBe(true);
+      await expectScreen(page, `${viewport.name}-infographic`);
+      await page.getByRole("button", { name: "Back to Created work" }).click();
+
       await page.getByRole("button", { name: "Open Image set" }).click();
       await expect(page.getByRole("heading", { name: "Image set" })).toBeVisible();
       await expect(page.locator('[data-domain-ui="image-review-grid"] [data-domain-ui="image-tile"]')).toHaveCount(6);
