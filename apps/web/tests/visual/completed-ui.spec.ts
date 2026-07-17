@@ -357,7 +357,7 @@ test("an empty Workshop reaches an editable Presentation through one obvious pat
     await expect.poll(() => page.locator(".outputs-view").evaluate((element) => element.scrollTop)).toBe(0);
     await page.getByRole("button", { name: "Got it" }).click();
     await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
-    await page.locator('[data-output-role="hero"]').click();
+    await page.getByRole("button", { name: /^Open Presentation/ }).click();
     await expect(page.getByRole("link", { name: "Download PowerPoint" })).toBeVisible();
     await page.waitForTimeout(200);
     await expect.poll(() => page.locator(".focused-output").evaluate((element) => element.scrollTop)).toBe(0);
@@ -694,9 +694,15 @@ test.describe("completed Workshop judge path", () => {
       await expect(page.getByRole("heading", { name: "Image set" })).toHaveCount(1);
       await expect(page.getByRole("heading", { name: "Storyboard" })).toHaveCount(1);
       const outputCards = page.locator(".output-grid .output-card");
-      await expect(outputCards.first()).toHaveAttribute("data-output-role", "hero");
       await expect(outputCards.first().getByRole("heading", { name: "Presentation" })).toBeVisible();
-      await expect(page.locator('.output-grid [data-output-role="hero"]')).toHaveCount(1);
+      await expect(page.locator(".output-grid .output-card--hero")).toHaveCount(0);
+      if (viewport.name === "desktop") {
+        const [presentationBox, infographicBox] = await Promise.all([
+          page.getByRole("button", { name: /^Open Presentation/ }).boundingBox(),
+          page.getByRole("button", { name: /^Open Infographic/ }).boundingBox(),
+        ]);
+        expect(presentationBox?.width).toBe(infographicBox?.width);
+      }
       await expect(page.getByRole("button", { name: "Show source" })).toHaveCount(0);
       await expect(page.locator(".output-grid")).not.toContainText("Version");
       if (viewport.width > 900) await expect(page.locator(".object-page-header")).toContainText(/\d+ current/);
@@ -1589,9 +1595,9 @@ test("fresh Outputs keep the primary source trace clear and reveal the exact cla
   await openWorkshopView(page, "outputs");
   await page.getByRole("button", { name: "Update work" }).click();
   await expect(page.getByRole("status")).toContainText("Created work is ready");
-  const heroPresentation = page.locator('.output-grid [data-output-role="hero"]');
-  await expect(heroPresentation).toHaveCount(1);
-  await heroPresentation.click();
+  const presentation = page.getByRole("button", { name: /^Open Presentation/ });
+  await expect(presentation).toHaveCount(1);
+  await presentation.click();
 
   const notice = page.getByRole("status");
   const download = page.getByRole("link", { name: "Download PowerPoint" });

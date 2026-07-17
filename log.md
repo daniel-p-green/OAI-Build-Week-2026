@@ -11289,6 +11289,32 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 ---
 
+## 2026-07-17 09:23 CT — Created formats are peers in behavior, not only appearance
+
+### Changed
+
+- Audited the Created work implementation against the locked rule that no single format defines WorkshopLM. Although the current grid looked equal, the component still named Presentation as the sole `hero`, added a hero class, made first-run orientation depend on that Presentation existing, and taught browser tests to find created work through the hero designation.
+- Removed the Presentation-only hero class and behavior. The orientation now appears when any current format exists, so an Audio Overview, Sketch, Image set, Infographic, Storyboard, or Video can establish Created work without a Presentation acting as the gatekeeper.
+- Replaced product-browser shortcuts with the actual professional action label (`Open Presentation`) and a peer-layout assertion. Stable sorting still puts Presentation first for predictability; order no longer implies a different card role or capability.
+- Preserved the old non-visual `data-output-role` selector only as a compatibility hook for the paused demo-capture scripts. It has no CSS, no accessibility meaning, and no product behavior; the user-owned final-capture work was not rewritten or staged.
+
+### Verified
+
+- The optimized Next.js production build passed against the current source. A clean retry of the complete Playwright suite passed all 35 desktop, compact, mobile, accessibility, first-use, source-tracing, created-work, and official-component scenarios. The desktop contract proves Presentation and Infographic cards have equal width and that no `.output-card--hero` exists.
+- The first full browser attempt ended while host Chrome launched, before a page or assertion opened. The same built artifact passed on the immediate clean retry; no product failure is concealed.
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including 37 web tests and 130 worker tests. Repository hygiene reported 693 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam through the grounded Map, both approvals, Style, Sketch, Presentation, Infographic, Audio Overview, six-image set, Storyboard, local Video, and build trace.
+- No OpenAI provider request ran; the append-only cumulative request count remains 118.
+
+### Decisions and open items
+
+- Predictable ordering is useful; a privileged product destination is not. Created work may have a stable reading order while every format remains a first-class expression of the same Workshop.
+- The connected product-quality item remains open until founder visual acceptance. The authentic founder recording, paid run, and human review remain the next proof gate; demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-17 09:06 CT — Founder preflight now completes the connected work set
 
 ### Changed
@@ -11595,3 +11621,10 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The connected product-quality item remains open until founder visual acceptance. The authentic founder recording, paid run, and human review remain the next proof gate; demo-film work remains paused.
 - User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 09:24 CT — Log-order correction
+
+- The complete `09:23 CT — Created formats are peers in behavior, not only appearance` milestone was appended above later historical entries because its patch anchor again matched a repeated footer. Its evidence remains valid; this append-only note establishes that it occurred after the `09:15` mobile Map milestone.
+- No historical entry was moved or rewritten. Future log appends must use the unique current EOF heading rather than a repeated milestone footer.
