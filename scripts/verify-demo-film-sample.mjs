@@ -40,6 +40,10 @@ async function main() {
   assert(manifest.openingProofFrame?.atSeconds > 0 && manifest.openingProofFrame.atSeconds < opening.openingProof.durationSeconds && await matches(resolve(outputRoot, manifest.openingProofFrame.relativePath), manifest.openingProofFrame.sha256), "The rendered sample film is missing its hash-verified opening proof frame.");
   const doorway = manifest.shots.find((shot) => shot.id === "codex-doorway");
   assert(doorway?.editorialCue === "codex-to-workshoplm", "The clean film must make the real Codex-to-Workshop doorway visually explicit.");
+  const captureAndShape = manifest.shots.find((shot) => shot.id === "capture-and-shape");
+  assert(captureAndShape?.editorialCue === "realtime-proof-separate-from-founder", "The clean film must make the separate Realtime proof visually explicit.");
+  assert(captureAndShape.realtimeProof?.model === "gpt-realtime-2.1" && captureAndShape.realtimeProof.transport === "webrtc" && captureAndShape.realtimeProof.successfulToolCallCount === 3 && captureAndShape.realtimeProof.founderRecording === false, "The clean film's Realtime cue is not bound to the verified non-founder WebRTC turn.");
+  assert(await matches(resolve(repository, captureAndShape.realtimeProof.relativePath), captureAndShape.realtimeProof.sha256), "The Realtime evidence shown by the clean film no longer matches its artifact hash.");
   const metaReveal = manifest.shots.find((shot) => shot.id === "meta-reveal");
   assert(metaReveal?.generatedMetaReveal === true && metaReveal.state === "blocked", "The sample meta-reveal must be generated without pretending to be final.");
 

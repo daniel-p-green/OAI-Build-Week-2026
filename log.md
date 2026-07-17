@@ -2720,6 +2720,38 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-16 20:28 CT — Realtime proof is now visible in the film without rewriting founder provenance
+
+### Changed
+
+- Audited the Capture-and-Shape shot after correcting its narration and found a remaining judge-visible gap: the film declared `realtime-voice` as a required moment and retained the verified artifact, but the rendered frame showed only the Map. A judge could hear that Realtime was proven separately without seeing any proof.
+- Added one restrained evidence cue to the Map shot. It reads directly from `artifacts/live/realtime-turn.json` and shows `gpt-realtime-2.1`, WebRTC, and three successful source-tool calls. The sample wording says the future founder recording **will remain** a separate grounded Source; final mode says it **remains** separate only after founder evidence exists.
+- Bound the rendered shot manifest to the exact Realtime artifact path and SHA-256, transport, model, tool-call count, capture mode, and `founderRecording: false` boundary.
+- Extended both the sample-film verifier and submission-packet verifier so the visible cue, evidence fields, and artifact hash must agree. Declaring the moment in the plan without rendering and binding it can no longer pass.
+
+### Verified
+
+- Rendered the complete sample film through pinned local HyperFrames 0.7.60. HyperFrames lint, transition checks, and render passed after the local runtime was allowed to bind its temporary loopback port.
+- The rebuilt H.264/AAC film remains 140.010667 seconds and hashes to `31db6dae2d78c152ca7c0b93b930384e91bc68b4db825625c823ab29e6bb9498`.
+- Inspected the native 1280×720 Capture-and-Shape frame from the actual film. The cue is legible, does not obscure the semantic Map or next action, and keeps the founder/Re​altime boundary explicit. Review frame 03 hashes to `f03861185c9ca37bb1b5b996b009a8e3b6f4593eda9534d1fcafabf70341c1aa`; the ten-shot contact sheet hashes to `0543a876003ae031a9e96dac3798386a2b2b29809e50257d68023d51431b65e3`.
+- `pnpm demo:film:verify-sample` passes with the hash-bound Realtime cue. `pnpm submission:packet:verify` passes and reports `realtime-proof-separate-from-founder` alongside the Codex doorway and generated meta reveal.
+- `pnpm check` passes lint, typecheck, and all test suites across thirteen packages, including 124 worker, 30 web, and 19 production tests.
+
+### Decisions
+
+- Provider capability proof and authentic founder provenance remain separate, but both must be visible enough for a judge to understand without inspecting JSON.
+- The cue is intentionally a single quiet editorial card rather than a provider dashboard or another product control.
+- No OpenAI provider request ran. The provider-operation ledger remains 115.
+- The five-item critical path in `GOAL.md` remains unchanged. This fixes a visible public-Video blocker and does not add product scope.
+- `PLAN-2026-07-13.md` remains untouched and excluded from this milestone.
+
+### Open items
+
+- The founder recording and authentic Workshop remain the next external gate. Final film assembly will reuse the same verified Realtime evidence while replacing the sample Map footage and future-tense boundary with founder-derived proof.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-16 20:04 CT — Authentic founder import can reach a ready final package without false Realtime provenance
 
 ### Changed
@@ -9922,3 +9954,11 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Founder recording and authentic Workshop generation remain the next external gate. Final assembly will reuse this corrected, hash-bound Cedar narration set.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-16 20:29 CT — Chronology correction for visible Realtime film-proof entry
+
+- The `20:28 CT` milestone titled `Realtime proof is now visible in the film without rewriting founder provenance` was accidentally inserted earlier in this append-only file rather than at its chronological tail.
+- That entry remains the authoritative implementation and verification evidence. It is intentionally not deleted or relocated so this correction preserves the log's append-only rule.
+- No implementation, verification result, provider-operation count, or critical-path status changed in this correction.

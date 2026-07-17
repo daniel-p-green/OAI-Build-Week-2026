@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance created-work set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-17T01:15:36.576Z",
+  "builtAt": "2026-07-17T01:27:14.750Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "compositor": {
@@ -33,7 +33,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "daf81515ace472fc33bc26e0acd990c789047cdbcbbeb5f580a798695c2c9061",
+    "sha256": "31db6dae2d78c152ca7c0b93b930384e91bc68b4db825625c823ab29e6bb9498",
     "durationSeconds": 140.010667,
     "streams": [
       {
@@ -51,7 +51,7 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "249dd3cfb0daf5b0d667ef8d10509a07aa22dcbebb3f8cd243bbd2cb28ca64cc"
+    "sha256": "0543a876003ae031a9e96dac3798386a2b2b29809e50257d68023d51431b65e3"
   },
   "openingProofFrame": {
     "relativePath": "review/opening-proof.jpg",
@@ -69,7 +69,7 @@
     },
     {
       "relativePath": "review/03.jpg",
-      "sha256": "a5286c5f99e6eb4a2e29a4ce577e28781ba4725321f92d8324bbc84395c2c918"
+      "sha256": "f03861185c9ca37bb1b5b996b009a8e3b6f4593eda9534d1fcafabf70341c1aa"
     },
     {
       "relativePath": "review/04.jpg",
@@ -193,6 +193,16 @@
         "transition": "design-accent-dip",
         "spatialTransform": false,
         "jitterProneZoompan": false
+      },
+      "editorialCue": "realtime-proof-separate-from-founder",
+      "realtimeProof": {
+        "relativePath": "artifacts/live/realtime-turn.json",
+        "sha256": "46b265900e2851b6dfd492e1b604a36c89d872d8ab784098f1fb75525674318c",
+        "model": "gpt-realtime-2.1",
+        "transport": "webrtc",
+        "successfulToolCallCount": 3,
+        "captureMode": "controlled-synthetic-microphone-audio",
+        "founderRecording": false
       }
     },
     {

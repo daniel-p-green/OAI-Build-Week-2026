@@ -28,6 +28,7 @@ const width = 1280;
 const height = 720;
 const authorizedSampleTranscript = "I want a workspace where a professional can talk through a messy idea, ground it in meetings and documents, shape it on a visual Map, approve the thinking, and create a Presentation, graphics, an Audio Overview, a Storyboard, and Video without losing the source trail. Every format should share one Style and feel simple enough for serious work, with two clear moments of human control.";
 let filmIdentity = { accent: "#1668E3", ink: "#171816", paper: "#F4F2EC", heading: "system-ui", body: "system-ui", designMarkdownPath: undefined, designTokensPath: undefined, frameMarkdownPath: undefined, frameJsonPath: undefined, designSha256: undefined, frameSha256: undefined, frameVersion: undefined, outcome: undefined };
+let realtimeProof;
 let finalAssemblyStarted = false;
 
 function run(command, args) {
@@ -68,6 +69,31 @@ async function loadFilmIdentity(submissionManifestPath) {
   const frame = JSON.parse(frameJsonBytes.toString("utf8"));
   if (design.styleVersion !== submission.inputs.styleVersion || frame.frameVersion !== submission.inputs.briefVersion) throw new Error("The HyperFrames film DESIGN.md or FRAME.md version does not match the submission package.");
   return { accent: design.palette.accent, ink: design.palette.ink, paper: design.palette.paper, heading: design.typographyRoles.heading.family, body: design.typographyRoles.body.family, designMarkdownPath, designTokensPath, frameMarkdownPath, frameJsonPath, designSha256: sha256(designMarkdown), frameSha256: sha256(frameMarkdown), frameVersion: frame.frameVersion, outcome: frame.outcome };
+}
+
+async function loadRealtimeProof(plan) {
+  const evidence = plan.shots
+    .flatMap((shot) => shot.requiredEvidence ?? [])
+    .find((item) => item.validator === "realtime-turn");
+  if (!evidence) throw new Error("The film plan does not name its Realtime evidence artifact.");
+  const path = resolve(repository, evidence.path);
+  const bytes = await readFile(path);
+  const proof = JSON.parse(bytes.toString("utf8"));
+  if (proof.transport !== "webrtc" || !proof.model || !Number.isInteger(proof.successfulToolCallCount) || proof.successfulToolCallCount < 1) {
+    throw new Error("The film requires verified WebRTC Realtime evidence with at least one successful tool call.");
+  }
+  if (proof.founderRecording !== false || !proof.limitation?.includes("not the founder's physical-microphone demo recording")) {
+    throw new Error("The Realtime evidence must remain explicitly separate from the founder recording.");
+  }
+  return {
+    relativePath: evidence.path,
+    sha256: sha256(bytes),
+    model: proof.model,
+    transport: proof.transport,
+    successfulToolCallCount: proof.successfulToolCallCount,
+    captureMode: proof.captureMode,
+    founderRecording: proof.founderRecording,
+  };
 }
 
 function escapeXml(value) {
@@ -124,8 +150,13 @@ function overlaySvg(shot, index) {
     const doorwayCue = shot.id === "codex-doorway" ? `<rect x="28" y="24" width="306" height="62" rx="16" fill="${paper}" fill-opacity="0.97" stroke="${ink}" stroke-opacity="0.12"/>
   <text x="50" y="50" font-family="system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="1.1" fill="${ink}" fill-opacity="0.62">CODEX → WORKSHOPLM</text>
   <text x="50" y="72" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="${ink}">Conversation opens the visual workbench</text>` : "";
+    const realtimeCue = shot.id === "capture-and-shape" ? `<rect x="28" y="24" width="430" height="78" rx="16" fill="${paper}" fill-opacity="0.97" stroke="${ink}" stroke-opacity="0.12"/>
+  <text x="50" y="48" font-family="system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="1.1" fill="${ink}" fill-opacity="0.62">OPENAI REALTIME · SEPARATE VERIFIED PATH</text>
+  <text x="50" y="72" font-family="system-ui, sans-serif" font-size="15" font-weight="700" fill="${ink}">${escapeXml(realtimeProof.model)} · WebRTC · ${realtimeProof.successfulToolCallCount} source-tool calls</text>
+  <text x="50" y="91" font-family="system-ui, sans-serif" font-size="11" font-weight="600" fill="${ink}" fill-opacity="0.62">Founder recording ${finalBuild ? "remains" : "will remain"} a separate grounded Source</text>` : "";
     return `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
   ${doorwayCue}
+  ${realtimeCue}
   <rect x="22" y="606" width="1236" height="96" rx="18" fill="${paper}" fill-opacity="0.96" stroke="${ink}" stroke-opacity="0.10"/>
   <rect x="22" y="606" width="7" height="96" rx="3.5" fill="${accent}"/>
   <text x="48" y="632" font-family="system-ui, sans-serif" font-size="11" font-weight="700" letter-spacing="1.2" fill="${ink}" fill-opacity="0.62">${String(index + 1).padStart(2, "0")} · ${escapeXml(shot.title.toUpperCase())}</text>
@@ -207,6 +238,7 @@ async function metaRevealSvg(finalManifestPath, options = {}) {
 async function main() {
   const originalPlanBytes = await readFile(planPath);
   const plan = JSON.parse(originalPlanBytes.toString("utf8"));
+  realtimeProof = await loadRealtimeProof(plan);
   if (previewFinalStyle) {
     const previewRoot = resolve(repository, "outputs/demo-film-plan/final-overlay-preview");
     const previewPath = resolve(repository, "outputs/demo-film-plan/final-overlay-preview.png");
@@ -359,6 +391,10 @@ async function main() {
 
     shotRecords.at(-1).motion = { type: "hyperframes-stable-media", transition: shot.openingSequence ? "opening-proof-dip" : index ? "design-accent-dip" : "opening-hold", spatialTransform: false, jitterProneZoompan: false };
     if (cleanEditorialStyle && shot.id === "codex-doorway") shotRecords.at(-1).editorialCue = "codex-to-workshoplm";
+    if (cleanEditorialStyle && shot.id === "capture-and-shape") {
+      shotRecords.at(-1).editorialCue = "realtime-proof-separate-from-founder";
+      shotRecords.at(-1).realtimeProof = realtimeProof;
+    }
 
     const audioDuration = Number(probe(audioPath).format?.duration || 0);
     const targetSpeechDuration = Math.max(1, duration - 0.55);
