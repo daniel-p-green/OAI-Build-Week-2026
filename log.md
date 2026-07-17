@@ -10726,3 +10726,31 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The verified result is unchanged: one meeting Source produced six connected formats, Created work and focused Presentation now enter at `scrollTop: 0`, the hardened empty-Workshop regression passes, and the complete repository checks and recorded-fixture seam pass.
 - No OpenAI provider request ran; the provider-operation ledger remains 117. Founder visual acceptance and the authentic founder Workshop remain the next gates.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 02:41 CT — Storyboards now express the Workshop narrative
+
+### Changed
+
+- Inspected the remaining fresh professional Audio Overview, Sketch, and Storyboard. The Storyboard was the visible blocker: it sequenced product-format labels rather than the Workshop's source-grounded story, and its image-free Style preview appeared as an oversized empty black surface.
+- Reworked Storyboard generation into a five-part semantic narrative drawn from active grounded claims in source order. Panel titles now communicate opportunity, friction, evidence, direction, experience, trust, or next action while retaining each panel's exact claim, Source chunk, locator, and selected-image binding.
+- Replaced the empty preview with a compact editorial composition derived from the current Style's paper, ink, and accent values. Image-backed panels retain their existing readable overlay treatment.
+- Locked the primary Workshop index as `Capture → Map → Brief → Create`. Conversation and Sources remain inside Capture; Style remains inside Create. The Map remains a constrained, auto-organized semantic canvas whose bar is immediate hierarchy, clusters, evidence, and a recommended path—not generic Excalidraw breadth.
+
+### Verified
+
+- Regenerated a fresh `Client strategy brief` Storyboard with the narrative sequence `The opportunity`, `The friction`, `The direction`, `The experience`, and `Trust by design`; all five panels retained distinct evidence edges and exact image bindings.
+- Visually inspected the live Storyboard at desktop, 900×700 compact, and 390×844 mobile widths. Each viewport began at the Storyboard title, retained the primary action and Source context, and had no horizontal overflow.
+- All 128 worker tests and all 30 web tests passed; worker and web typechecks passed.
+- The complete production-browser suite passed all 31 scenarios on the reviewed responsive baselines.
+- `pnpm check` passed across all thirteen packages, and `pnpm demo:e2e` passed the complete recorded Source-to-Video seam.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Keep the four-stage spine as a compact orientation model, not a persistent feature checklist.
+- Judge the Map by semantic clarity and useful direction. Direct manipulation remains available only where it improves the professional's thinking.
+- Founder visual acceptance and the authentic founder Workshop remain the next proof gates.
+- User-owned `PLAN-2026-07-13.md`, interrupted founder/final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

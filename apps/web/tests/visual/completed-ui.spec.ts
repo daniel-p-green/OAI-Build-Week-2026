@@ -891,6 +891,7 @@ test("finished Video reveals the original brainstorm without adding navigation",
   const root = resolve(process.cwd(), "../..", ".workshoplm-visual-test");
   execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" }, stdio: "pipe" });
   const readyState = await (await page.request.get("/api/workshop")).json();
+  const videoSourceLinkCount = new Set(readyState.storyboard.panels.flatMap((panel: { claimIds: string[] }) => panel.claimIds)).size;
   const revealState = {
     ...readyState,
     videoState: "rendered",
@@ -911,7 +912,7 @@ test("finished Video reveals the original brainstorm without adding navigation",
     await page.getByRole("button", { name: "Open Demo video" }).click();
     await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Edit storyboard" })).toHaveClass(/oai-button--primary/);
-    await expect(page.getByRole("button", { name: /^Show source for / })).toHaveCount(4);
+    await expect(page.getByRole("button", { name: /^Show source for / })).toHaveCount(videoSourceLinkCount);
     await page.locator(".focused-output").evaluate((element) => { element.scrollTop = 0; });
     const reveal = page.getByRole("button", { name: "Show original" });
     await reveal.click();
@@ -1257,6 +1258,8 @@ test("the local render becomes a real Video preview and the next action", async 
   const fixtureEnvironment = { ...process.env, WORKSHOPLM_SEEDED_FIXTURE: "1" };
   execFileSync("pnpm", ["exec", "tsx", "tests/visual/seed-completed.ts", root], { cwd: process.cwd(), env: fixtureEnvironment, stdio: "pipe" });
   execFileSync("pnpm", ["exec", "tsx", "apps/web/tests/visual/seed-video.ts", root], { cwd: repository, env: fixtureEnvironment, stdio: "pipe" });
+  const renderedState = await (await page.request.get("/api/workshop")).json();
+  const renderedSourceLinkCount = new Set(renderedState.storyboard.panels.flatMap((panel: { claimIds: string[] }) => panel.claimIds)).size;
 
   for (const viewport of viewports) {
     await page.setViewportSize({ width: viewport.width, height: viewport.height });
@@ -1286,7 +1289,7 @@ test("the local render becomes a real Video preview and the next action", async 
     await page.getByRole("button", { name: "View video" }).click();
     await expect(player).toBeVisible();
     await expect(page.getByRole("region", { name: "Sources in this work" })).toBeVisible();
-    await expect(page.getByRole("button", { name: /^Show source for / })).toHaveCount(4);
+    await expect(page.getByRole("button", { name: /^Show source for / })).toHaveCount(renderedSourceLinkCount);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(viewport.width);
     await seekVideoFrame(player);
     await page.locator(".focused-output").evaluate((node) => { node.scrollTop = 0; });

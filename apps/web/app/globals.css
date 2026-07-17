@@ -359,9 +359,12 @@ button { -webkit-tap-highlight-color: transparent; }
 .film-frame.has-image span, .film-frame.has-image strong, .film-frame.has-image small { position: relative; z-index: 1; color: #fff; }
 .film-frame.selected { border-color: #fff; outline: 2px solid #0d0d0d; outline-offset: 2px; box-shadow: 0 8px 24px rgba(0,0,0,.12); }
 .panel-editor { max-width: 1180px; display: grid; grid-template-columns: 1fr; margin: 0 auto; overflow: hidden; border-color: rgba(13,13,13,.08); border-radius: 20px; box-shadow: 0 18px 48px rgba(0,0,0,.08); }
-.panel-visual { position: relative; min-height: 500px; display: grid; align-content: end; gap: 8px; overflow: hidden; padding: 48px; color: #fff; background: #0d0d0d; }
+.panel-visual { position: relative; min-height: 380px; display: grid; align-content: end; gap: 8px; overflow: hidden; padding: 48px; color: var(--story-ink, #0d0d0d); background: var(--story-paper, #fff); }
+.panel-visual:not(.has-image)::before { content: ""; position: absolute; width: 360px; height: 360px; right: -72px; top: -150px; border-radius: 999px; background: var(--story-accent, #0285ff); }
+.panel-visual:not(.has-image)::after { content: ""; position: absolute; left: 48px; right: 48px; top: 48px; height: 1px; background: color-mix(in srgb, var(--story-ink, #0d0d0d) 16%, transparent); }
 .panel-visual > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .panel-visual.has-image::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13,13,13,.08), rgba(13,13,13,.76)); }
+.panel-visual.has-image { color: #fff; }
 .panel-visual-copy { position: relative; z-index: 1; display: grid; gap: 8px; }
 .panel-visual small { font-size: 12px; opacity: .8; }
 .panel-visual span { font-size: 28px; font-weight: 600; line-height: 34px; }
@@ -543,6 +546,8 @@ button { -webkit-tap-highlight-color: transparent; }
   .output-card--presentation { grid-column: span 1; }
   .artifact-preview { height: 220px; }
   .panel-visual { min-height: 240px; padding: 24px; }
+  .panel-visual:not(.has-image)::before { width: 170px; height: 170px; right: -48px; top: -82px; }
+  .panel-visual:not(.has-image)::after { left: 24px; right: 24px; top: 24px; }
   .focused-output { height: 100%; grid-template-rows: auto auto auto; align-content: start; overflow-y: auto; padding: 12px; }
   .focused-output-heading { align-items: stretch; flex-direction: column; gap: 12px; }
   .focused-output-context h1, .focused-output-context p { white-space: normal; }

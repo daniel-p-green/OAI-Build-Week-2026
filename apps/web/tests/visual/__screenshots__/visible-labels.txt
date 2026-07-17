@@ -1,10 +1,10 @@
 010203040506Image set6 imagesPlanned3 sources
-01Presentation02Infographic03Image set04Storyboard05Demo videoStoryboard5 panelsReady for review3 sources
-01Presentation5s
-02Infographic5s
-03Image set5s
-04Storyboard5s
-05Demo video5s
+01The opportunity02The evidence03The proof04The direction05What changes nextStoryboard5 panelsReady for review3 sources
+01The opportunity4s
+02The evidence4s
+03The proof5s
+04The direction5s
+05What changes next4s
 3 sources
 Approve
 Approved direction

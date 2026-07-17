@@ -1263,12 +1263,32 @@ export function generateAssetPlan(root?: string): WorkshopState {
 export function generateStoryboard(root?: string): WorkshopState {
   const current = readWorkshopState(root);
   if (!current.assetPlan || current.assetPlan.stale) throw new Error("Storyboard generation requires a current approved-input asset plan.");
+  const grounded = activeClaimsFor(current);
+  const fallbackTitles = ["The opportunity", "The friction", "The proof", "The direction", "What changes next"];
+  const usedTitles = new Set<string>();
   const panels = current.assetPlan.items.map((item, index) => {
     const image = current.imageBatch && !current.imageBatch.stale ? current.imageBatch.panels[index % current.imageBatch.panels.length] : undefined;
-    const evidence = item.evidence ?? [];
-    const narration = prose(item.prompt);
+    const claim = grounded[index % Math.max(1, grounded.length)];
+    const evidence: WorkshopEvidenceReference[] = claim
+      ? [{ claimId: claim.id, sourceId: claim.sourceId, chunkId: claim.chunkId, locator: claim.locator }]
+      : item.evidence ?? [];
+    const narrationText = prose(claim?.text ?? item.prompt);
+    const narration = /[.!?]$/.test(narrationText) ? narrationText : `${narrationText}.`;
+    const proposedTitle = /\b(fragmented|friction|lost|slow|waste|problem|bottleneck|handoff)\b/i.test(narration)
+      ? "The friction"
+      : /\b(experience|workflow|flow|immediate|journey)\b/i.test(narration)
+        ? "The experience"
+        : /\b(trace|traceable|trust|defend|citation)\b/i.test(narration)
+            ? "Trust by design"
+          : /\b(should|must|recommend|direction|prioriti[sz]e|next)\b/i.test(narration)
+            ? "The direction"
+            : /\b(source|evidence|grounded)\b/i.test(narration)
+              ? "The evidence"
+              : fallbackTitles[index] ?? `Scene ${index + 1}`;
+    const title = usedTitles.has(proposedTitle) ? fallbackTitles[index] ?? `Scene ${index + 1}` : proposedTitle;
+    usedTitles.add(title);
     const durationSeconds = Math.max(4, Math.ceil(narration.split(/\s+/).filter(Boolean).length / 2.5) + 1);
-    return { id: `storyboard-v${current.storyboard.version + 1}-panel-${index + 1}`, title: item.title, narration, durationSeconds, claimIds: evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []), evidence, imagePanelId: image?.id, imagePanelVersion: image?.version, imageRelativePath: image?.relativePath, imageSha256: image?.sha256, approved: true, stale: false };
+    return { id: `storyboard-v${current.storyboard.version + 1}-panel-${index + 1}`, title, narration, durationSeconds, claimIds: evidence.flatMap((reference) => reference.claimId ? [reference.claimId] : []), evidence, imagePanelId: image?.id, imagePanelVersion: image?.version, imageRelativePath: image?.relativePath, imageSha256: image?.sha256, approved: true, stale: false };
   });
   return write({ ...current, storyboard: { version: current.storyboard.version + 1, panels, stale: false, approved: false }, storyboardHistory: storyboardHistoryWithCurrent(current), narration: current.narration ? { ...current.narration, stale: true } : undefined, videos: staleVideos(current), storyboardApproved: false, videoState: "blocked", updatedAt: new Date().toISOString() }, root);
 }
