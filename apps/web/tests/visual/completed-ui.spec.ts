@@ -590,6 +590,7 @@ test.describe("completed Workshop judge path", () => {
       if (viewport.width > 900) await expect(page.locator(".object-page-header")).toContainText(/\d+ current/);
       await expectPreviewFramesReady(page);
       await expect(page.locator('.output-card iframe[aria-hidden="true"][scrolling="no"]')).toHaveCount(2);
+      await expect(page.locator(".output-card--images img")).toHaveCount(6);
       await expectScreen(page, `${viewport.name}-outputs`);
 
       await page.getByRole("button", { name: "Open Presentation" }).click();
@@ -619,15 +620,24 @@ test.describe("completed Workshop judge path", () => {
       await page.getByRole("button", { name: "Open Image set" }).click();
       await expect(page.getByRole("heading", { name: "Image set" })).toBeVisible();
       await expect(page.locator('[data-domain-ui="image-review-grid"] [data-domain-ui="image-tile"]')).toHaveCount(6);
+      await expect(page.locator('[data-domain-ui="image-review-grid"] img')).toHaveCount(6);
       await expect(page.getByText("6 images · 3 sources · One shared Style", { exact: true })).toBeVisible();
       await expect(page.getByText("Hero concept", { exact: true })).toBeVisible();
       await expect(page.getByRole("button", { name: "Show source" })).toHaveCount(6);
+      if (viewport.name === "mobile") expect(await page.locator(".focused-image-card").evaluateAll((cards) => cards.every((card) => {
+        const boundary = card.getBoundingClientRect();
+        return [...card.querySelectorAll(".focused-image-caption, .focused-image-actions .oai-button")].every((element) => {
+          const content = element.getBoundingClientRect();
+          return content.left >= boundary.left && content.right <= boundary.right + 1;
+        });
+      }))).toBe(true);
       await expectScreen(page, `${viewport.name}-image-set`);
       await page.getByRole("button", { name: "Back to Created work" }).click();
 
       await page.getByRole("button", { name: "Open Storyboard" }).click();
       await expectPrimaryActions(page, 1);
       await expect(page.getByRole("button", { name: "Save changes" })).toHaveCount(0);
+      await expect(page.locator(".panel-visual img")).toBeVisible();
       await expectScreen(page, `${viewport.name}-storyboard`);
       await page.locator(".storyboard-strip button").nth(2).click();
       await page.getByRole("button", { name: "Show source" }).click();

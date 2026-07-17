@@ -10925,3 +10925,32 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 04:18 CT — The judge fixture now shows one coherent visual system
+
+### Changed
+
+- Replaced the completed visual fixture's six empty `Planned` image tiles with the already verified, sanitized six-panel GPT Image 2 replay set. The fixture creates and approves Visual DNA before seeding the hash-bound image files.
+- Bound the same exact image versions into the current Presentation and all five Storyboard panels. The Presentation cover, Image set, Storyboard, and downstream Video context now read as expressions of one visual identity rather than unrelated placeholders.
+- Repaired the mobile Image set review layout so `Ready`, `Show source`, and `Request replacement` remain fully contained and legible in the two-column gallery.
+- Added browser assertions for six rendered Image set visuals, image-backed Storyboard review, and mobile card containment. Refreshed only the responsive evidence affected by the new real imagery.
+
+### Verified
+
+- Seeded a fresh temporary Workshop and inspected its stored state: all six image panels are `generated` from `gpt-image-2`; the Presentation references `image-batch-v1`; and all five Storyboard panels retain exact image paths and current version bindings.
+- Inspected the refreshed desktop, compact, and mobile Presentation, Created work, Image set, Storyboard, partial, `Needs update`, and Video-context screenshots. The six visuals remain coherent and the mobile review controls do not clip or escape their cards.
+- The production build succeeded and the complete production-browser suite passed all 32 scenarios.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 32 web tests and 129 worker tests.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam with both approval gates, two current outputs, Sketch, Cedar Audio Overview, six provider-backed image panels, five Storyboard panels, local Video, and build trace.
+- `pnpm submission:build` and `pnpm submission:verify` passed. The broader packet verifier remains order-dependent: rebuilding the generated submission manifest invalidates the hash intentionally embedded in the older clean-review film manifest until `pnpm demo:film:sample` rerenders that review film. Demo-film work is intentionally paused, so the existing film evidence was preserved instead of regenerated.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Treat provider-backed replay assets as the correct sanitized judge experience when their original requests, hashes, model, and limitations are inspectable. Do not replace verified visual evidence with blank deterministic placeholders.
+- Keep one image identity flowing through Presentation, Image set, and Storyboard; divergence between formats is now a regression.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
