@@ -54,7 +54,7 @@ Two things make this different from disconnected chat, presentation, and creativ
 
 **You stay in charge at exactly two moments.** Approve the Brief. Approve the Storyboard. Nothing expensive or final happens without your sign-off, and everything downstream honestly shows `Needs update` when your thinking changes upstream.
 
-**Every claim keeps its receipt.** Click a factual statement in a Presentation, an Infographic block, a Sketch, or a Storyboard panel and WorkshopLM opens the exact Source excerpt it came from. Not a citations page. The sentence.
+**Every claim keeps its receipt.** Open the Source link beside a factual statement in a Presentation, an Infographic block, a Sketch, or a Storyboard panel and WorkshopLM opens the exact Source excerpt it came from. Not a citations page. The sentence.
 
 It is built for the weekly rhythm, not the one-off demo: add Monday's new meeting to an existing Workshop and the Map expands, dependent work marks itself `Needs update`, and the saved Style carries over. After deliberate reapproval, WorkshopLM creates the next version of the affected work. New material stays traced to the new Source while earlier versions remain available in history.
 
@@ -125,7 +125,7 @@ Every public claim in this description is reconciled against the evidence ledger
 
 WorkshopLM is a local-first Codex plugin and browser workspace. You can score it three ways, in increasing depth:
 
-1. **Video (3 min):** the captured product flow, both approval gates, the plugin moment, and the source-to-submission provenance reveal.
+1. **Video (under 3 min):** the captured product flow, both approval gates, the plugin moment, and the source-to-submission provenance reveal.
 2. **Recorded fixture (5 min, no credentials):** clone the repo at the tagged release, run `pnpm install --frozen-lockfile && pnpm judge:start`, then open the printed local URL. That one command recreates and serves the exact sanitized acceptance Workshop; no account, API key, or cost.
 3. **Codex plugin (10 min):** `codex plugin marketplace add daniel-p-green/OAI-Build-Week-2026` then `codex plugin add workshoplm@workshoplm-local`. Activate `$workshoplm` in a fresh task to search and fetch grounded evidence, and open the local Workshop doorway. Verified platform: macOS with Codex desktop/CLI; Chrome-based in-app browser at 1200×800.
 

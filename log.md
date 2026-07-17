@@ -11073,3 +11073,29 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep Video contextual to the Storyboard approval gate rather than showing a permanent empty Video card.
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 05:16 CT — Judge-facing copy matches the implemented product
+
+### Changed
+
+- Corrected the Devpost description so source trust reflects the implemented gesture: professionals open the visible Source link beside a factual statement; the product does not claim that arbitrary rendered text is itself clickable.
+- Corrected judge instructions from `Video (3 min)` to `Video (under 3 min)`, matching the official requirement already preserved in the submission checklist.
+- Reconciled the public verification floor to the latest proven counts: thirteen packages, 129 worker tests, 32 web tests, and 32 production-browser scenarios.
+- Kept the third-party authorization checklist open. The repository license and no-third-party-media policy are evidenced, but final asset-by-asset authorization cannot be proved until the founder-derived public package exists.
+
+### Verified
+
+- `pnpm demo:e2e` passed the complete deterministic Capture-to-Video acceptance seam with both approvals, six provider-backed replay images, the Cedar Audio Overview, Storyboard, local Video, and build trace.
+- `pnpm submission:build` produced a 25-asset `partial` acceptance package, and `pnpm submission:verify` reported `valid: true`, `stale: false`, `tampered: false`, with zero issues.
+- Direct inspection confirmed the regenerated manifest's 25-asset count and its two truthful fixture limitations: deterministic Map generation and fallback Video narration.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- `pnpm submission:packet:verify` correctly failed after the acceptance-package rebuild because the existing sample-film manifest is hash-bound to the prior package. Demo-film work is paused by founder direction, so the sample film was not regenerated. The standalone acceptance package is valid; packet/film hash rebinding remains deferred until film work explicitly resumes.
+- Do not close the final licensing/authorization gate from repository policy alone. Resolve it from the exact public Video, fonts, images, music, trademarks, integrations, and final packaged work.
+- The founder recording, founder-derived provider run, cold professional judgment, public Video, `/feedback` ID, stable release, and submitted/logged-out links remain open.
+- User-owned `PLAN-2026-07-13.md`, capture/video work, demo-film-plan changes, and untracked final-preview/design-audit artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
