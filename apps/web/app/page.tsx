@@ -196,6 +196,7 @@ export default function WorkshopPage() {
   const [pendingSourceScope, setPendingSourceScope] = useState<PendingSourceScope | null>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
   const returnScrollRef = useRef<{ element: HTMLElement; top: number } | null>(null);
+  const objectCanvasRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => { void Promise.all([reload(), reloadWorkshops(), reloadStyleLibrary()]); }, []);
   useEffect(() => {
@@ -224,6 +225,20 @@ export default function WorkshopPage() {
     }, 750);
     return () => { stopped = true; window.clearInterval(timer); };
   }, [state?.onboarding.styleAnalysis?.status]);
+  useEffect(() => {
+    const surface = objectCanvasRef.current?.querySelector<HTMLElement>(".conversation-view, .brief-view, .outputs-view, .storyboard-view, .focused-output");
+    if (!surface) return;
+    const reset = () => { surface.scrollTop = 0; surface.scrollLeft = 0; };
+    reset();
+    const frame = window.requestAnimationFrame(reset);
+    const afterFocus = window.setTimeout(reset, 0);
+    const afterPreview = window.setTimeout(reset, 120);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(afterFocus);
+      window.clearTimeout(afterPreview);
+    };
+  }, [view, selectedOutputId]);
 
   const selectedNode = useMemo(() => state?.mapNodes.find((node) => node.id === selectedNodeId), [state, selectedNodeId]);
   const selectedPanel = useMemo(() => state?.storyboard.panels.find((panel) => panel.id === selectedPanelId) ?? state?.storyboard.panels[0], [state, selectedPanelId]);
@@ -522,7 +537,7 @@ export default function WorkshopPage() {
       {notice && <Card className={`notice notice--${notice.tone}`} role={notice.tone === "error" ? "alert" : "status"}><span>{notice.message}</span><IconButton label="Dismiss" onClick={() => setNotice(null)}><CloseIcon /></IconButton></Card>}
 
       <Workbench className="workbench">
-        <section className="object-canvas" aria-label={currentTitle}>
+        <section ref={objectCanvasRef} className="object-canvas" aria-label={currentTitle}>
           {loadState === "loading" && <StateMessage state="loading" title="Opening Workshop">Loading your Sources and work.</StateMessage>}
           {loadState === "error" && <StateMessage state="error" title="Couldn't open Workshop" action={<Button onClick={() => { void reload(); }}>Retry</Button>}>Your work is safe. Try opening it again.</StateMessage>}
           {loadState === "ready" && view === "conversation" && <ConversationView state={state} busy={busy} streamingReply={streamingReply} realtimeContinuation={realtimeContinuation} onRealtimeContinuationSent={() => setRealtimeContinuation(undefined)} onSend={sendConversation} onVoiceSave={async (text, capture) => Boolean(await post({ action: "captureFallbackTranscript", text, capture }))} onVoiceToolEvent={handleRealtimeToolEvent} onConfirmTool={confirmToolCall} onShowSource={showSource} />}

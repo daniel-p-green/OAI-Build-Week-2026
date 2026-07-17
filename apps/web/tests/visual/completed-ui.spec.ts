@@ -326,10 +326,14 @@ test("an empty Workshop reaches an editable Presentation through one obvious pat
     await page.getByRole("button", { name: "Create work" }).click();
 
     await expect(page.getByText("Your Presentation is ready.")).toBeVisible();
+    await page.waitForTimeout(200);
+    await expect.poll(() => page.locator(".outputs-view").evaluate((element) => element.scrollTop)).toBe(0);
     await page.getByRole("button", { name: "Got it" }).click();
     await expect(page.getByRole("heading", { name: "Presentation" })).toBeVisible();
     await page.locator('[data-output-role="hero"]').click();
     await expect(page.getByRole("link", { name: "Download PowerPoint" })).toBeVisible();
+    await page.waitForTimeout(200);
+    await expect.poll(() => page.locator(".focused-output").evaluate((element) => element.scrollTop)).toBe(0);
     const state = await (await page.request.get("/api/workshop")).json() as { sourceItems: Array<{ title: string }>; outputs: Array<{ type: string; editableRelativePath?: string }> };
     expect(state.sourceItems[0]?.title).toBe("Weekly client meeting");
     expect(state.outputs.find((output) => output.type === "deck")?.editableRelativePath).toMatch(/\.pptx$/);

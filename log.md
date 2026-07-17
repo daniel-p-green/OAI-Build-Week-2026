@@ -2747,6 +2747,34 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-17 02:18 CT — Fresh professional Create run and reliable object entry
+
+### Changed
+
+- Continued the fresh `Client strategy brief` Workshop from its approved Brief through a manually confirmed `WorkshopLM editorial` Style and the full Create action. One meeting Source produced a current Presentation, Infographic, Audio Overview, Sketch, six-panel image plan, and five-panel Storyboard.
+- Live inspection found that opening Created work preserved 64 pixels of inner scroll and clipped the page title; opening the Presentation similarly preserved 96.5 pixels and hid its title and primary actions.
+- Added one shared view-entry reset for scrollable Workshop objects. It runs across the render, focus handoff, and preview-mount boundary so both gallery and focused work consistently begin at the current object's title.
+- Added regressions to the real empty-Workshop path for Created work and focused Presentation entry.
+
+### Verified
+
+- Inspected the fresh Created work gallery and focused Presentation in the Codex in-app browser at the desktop viewport. Both report `scrollTop: 0`; the Created work heading and the Presentation title, PowerPoint download, source links, and preview action are visibly present on entry.
+- The Presentation uses the current Style, contains four source-linked content sections, and exports an editable PowerPoint. The Infographic presents one coherent Key insight → Context → Evidence → Recommendation composition with four source links.
+- The complete production-browser suite passed all 31 desktop, compact, mobile, accessibility, and workflow scenarios before the final timing hardening; the newly hardened empty-Workshop regression then passed independently against a fresh production build.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 128 worker tests, 30 web tests, and eight plugin tests.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam with the approved Brief, locked Style, six images, Cedar Audio Overview, five-panel Storyboard, rendered local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Treat a view transition as a change of professional object: the new object's identity and primary actions must be visible immediately, regardless of the prior object's scroll or the clicked control's focus behavior.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- Repository hygiene removed only ignored `.DS_Store` metadata and the empty duplicate Turbo cache directory after verification; durable local Workshop data, dependencies, evidence, and user-owned dirty files remain preserved.
+- User-owned `PLAN-2026-07-13.md`, interrupted founder/final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-17 00:59 CT — Live Build-my-Map seam and constrained semantic canvas verified
 
 ### Changed
@@ -10688,4 +10716,13 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep deterministic Brief selection source-grounded. Provider reasoning may improve the Map upstream, but approval must remain useful and honest when the local fallback is active.
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - User-owned `PLAN-2026-07-13.md`, interrupted founder/final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 02:19 CT — Log-order correction for the fresh Create milestone
+
+- The full `02:18 CT` fresh professional Create entry was appended earlier in this file because its patch matched a repeated milestone footer. It remains unchanged there to preserve append-only history; this correction establishes its intended current chronology.
+- The verified result is unchanged: one meeting Source produced six connected formats, Created work and focused Presentation now enter at `scrollTop: 0`, the hardened empty-Workshop regression passes, and the complete repository checks and recorded-fixture seam pass.
+- No OpenAI provider request ran; the provider-operation ledger remains 117. Founder visual acceptance and the authentic founder Workshop remain the next gates.
 - Codex Session ID: unavailable on this surface; not inferred.
