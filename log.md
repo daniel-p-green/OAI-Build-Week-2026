@@ -10660,3 +10660,32 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
 - User-owned `PLAN-2026-07-13.md`, interrupted founder/final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 02:07 CT — Brief approval now produces an executable professional direction
+
+### Changed
+
+- Ran a fresh local Capture → Map → Brief flow in the Codex in-app browser. The prior approved Brief used a truncated Source sentence as its headline and a hard-coded WorkshopLM demonstration instruction as `Success looks like`; the visual shell was polished, but the content did not function as a professional creation contract.
+- Rebuilt `FRAME.md` generation around the locked contract: a complete source-grounded Outcome, an intended Audience derived from the selected professional use case, an approved Direction selected from the grounded Map, and three exact Evidence claims with locators. The executable JSON retains the compatibility `productionProof` field while adding explicit `audience` and `direction` fields.
+- Updated the rendered Brief to show `For`, `Approved direction`, and `Evidence behind this brief` without exposing file or schema language. Corrected singular Source grammar.
+- Replaced arbitrary 700-character source splitting with sentence-safe chunking. Long pasted meeting notes now keep each factual claim intact across chunk boundaries, while genuinely overlong individual sentences still split safely at words.
+
+### Verified
+
+- Created a fresh `Client strategy brief` Workshop from one 741-character pasted meeting note. Its five persisted claims remained sentence-complete; the approved `FRAME.md` contained the full professional outcome, `Clients and external decision-makers`, the grounded visual-identity direction, and three exact Source locators.
+- Visually inspected the live Brief at the default desktop viewport, 900×700, and 390×844. The professional outcome remains dominant, Audience and Direction are immediately legible, and Evidence remains accessible without adding a navigation surface.
+- All 128 worker tests and all 30 web tests pass; worker and web typechecks pass. The new regression test crosses the chunk limit and rejects the prior severed `and changes` claim.
+- The production-browser suite passed all 31 scenarios without snapshot updates after the reviewed desktop, compact, and mobile Brief baselines were refreshed.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages.
+- `pnpm demo:e2e` passed the complete recorded fixture with eight Map ideas, two approved gates, two current rendered outputs, one Sketch, six provider-backed fixture images, a Cedar Audio Overview, five Storyboard panels, a current local Video, and build trace.
+- No OpenAI provider request ran; the provider-operation ledger remains 117.
+
+### Decisions and open items
+
+- Treat the approved Brief as a professional creation contract, not a prettier transcript summary or a description of WorkshopLM mechanics.
+- Keep deterministic Brief selection source-grounded. Provider reasoning may improve the Map upstream, but approval must remain useful and honest when the local fallback is active.
+- Keep the connected product-quality item open until founder visual acceptance. The authentic founder Workshop remains the next proof gate.
+- User-owned `PLAN-2026-07-13.md`, interrupted founder/final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

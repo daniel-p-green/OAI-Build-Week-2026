@@ -7,6 +7,7 @@
 05Demo video5s
 3 sources
 Approve
+Approved direction
 Ask sources
 Back to Brief
 Back to Created work
@@ -17,13 +18,14 @@ CaptureReady
 CreateReady
 Created work
 Edit
-Goal · capture
+Evidence behind this brief
 Image set
 Infographic
 Infographic3 sources4 source linksUp to date
 Judge proof
 Manage
 MapReady
+Meeting · 12:41
 PDFBuild Week brief3 claims
 Presentation
 Presentation3 sources4 source linksUp to date
@@ -31,11 +33,10 @@ Review storyboard
 Show source
 Sketch
 Sketch4 ideasUp to date3 sources
-Sources behind this brief
 Storyboard
-Success looks like
 TXTVoice brainstorm5 claims
 The product promise
+Turn raw thinking into finished work without losing the trail back to source material.
 Version 1Earlier version · 3 panels
 Version history
 Visual behavior

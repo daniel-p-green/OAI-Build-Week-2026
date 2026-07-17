@@ -171,7 +171,7 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await page.getByRole("button", { name: "Open Workshop index", exact: true }).focus();
   await pressTabUntil(page, "Approve brief");
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("The product promise");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Turn raw thinking into finished work without losing the trail back to source material");
   await pressTabUntil(page, "Choose style");
   await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog", { name: "Style" })).toBeVisible();

@@ -723,6 +723,7 @@ function frameSection(markdown: string | undefined, heading: string) {
 
 function BriefView({ state, onChooseStyle, onShowSource }: { state: PersistedWorkshop | null; onChooseStyle: () => void; onShowSource: (target?: EvidenceTarget) => void }) {
   const outcome = frameSection(state?.frame?.markdown, "Outcome") || "Turn raw thinking into professional knowledge work.";
+  const audience = frameSection(state?.frame?.markdown, "Audience");
   const evidence = frameSection(state?.frame?.markdown, "Evidence").split("\n").map((line) => line.replace(/^[-*]\s*/, "").trim()).filter(Boolean).map((item) => {
     const separator = item.lastIndexOf(" — ");
     const text = separator >= 0 ? item.slice(0, separator).trim() : item;
@@ -730,11 +731,12 @@ function BriefView({ state, onChooseStyle, onShowSource }: { state: PersistedWor
     const claim = state?.claims?.find((candidate) => candidate.locator === locator && candidate.text === text) ?? state?.claims?.find((candidate) => candidate.locator === locator);
     return { text, locator, claim };
   });
-  const proof = frameSection(state?.frame?.markdown, "Success looks like") || frameSection(state?.frame?.markdown, "Production proof");
+  const direction = frameSection(state?.frame?.markdown, "Direction") || frameSection(state?.frame?.markdown, "Success looks like") || frameSection(state?.frame?.markdown, "Production proof");
   const locked = Boolean(state?.style && !state.style.stale);
+  const sourceCount = state?.activeSourceIds.length ?? 0;
 
   return <article className="brief-view">
-    <Card className="brief-document"><main className="brief-editorial-main"><div className="brief-meta"><Status>Approved</Status><span>{state?.activeSourceIds.length ?? 0} sources · {state?.mapNodes.filter((node) => node.kind === "grounded").length ?? 0} sourced claims</span></div><h1>{outcome}</h1>{proof && <section className="brief-section"><h2>Success looks like</h2><p>{proof}</p></section>}</main><aside className="brief-editorial-side">{evidence.length > 0 && <section className="brief-section brief-evidence"><h2>Sources behind this brief</h2><ul>{evidence.map((item) => <li className="brief-evidence-item" key={`${item.text}-${item.locator ?? "untraced"}`}><span>{item.text}</span>{item.locator && <Token onClick={() => onShowSource({ sourceId: item.claim?.sourceId, claimId: item.claim?.id, locator: item.locator })}>{item.locator}</Token>}</li>)}</ul></section>}<section className="style-summary" aria-label="Style"><div className="style-summary-copy"><small>Style</small><strong>{locked ? state?.style?.name : "Not selected"}</strong></div><div className="palette-preview compact" data-domain-ui="palette-preview"><i style={{ background: state?.style?.accent ?? "#0285FF" }} /><i style={{ background: state?.style?.ink ?? "#0D0D0D" }} /><i style={{ background: state?.style?.paper ?? "#FFFFFF" }} /></div>{locked && <Button variant="secondary" size="small" onClick={onChooseStyle}>Edit</Button>}</section></aside></Card>
+    <Card className="brief-document"><main className="brief-editorial-main"><div className="brief-meta"><Status>Approved</Status><span>{sourceCount} {sourceCount === 1 ? "source" : "sources"} · {state?.mapNodes.filter((node) => node.kind === "grounded").length ?? 0} sourced claims</span></div>{audience && <p className="brief-audience"><span>For</span>{audience}</p>}<h1>{outcome}</h1>{direction && <section className="brief-section"><h2>Approved direction</h2><p>{direction}</p></section>}</main><aside className="brief-editorial-side">{evidence.length > 0 && <section className="brief-section brief-evidence"><h2>Evidence behind this brief</h2><ul>{evidence.map((item) => <li className="brief-evidence-item" key={`${item.text}-${item.locator ?? "untraced"}`}><span>{item.text}</span>{item.locator && <Token onClick={() => onShowSource({ sourceId: item.claim?.sourceId, claimId: item.claim?.id, locator: item.locator })}>{item.locator}</Token>}</li>)}</ul></section>}<section className="style-summary" aria-label="Style"><div className="style-summary-copy"><small>Style</small><strong>{locked ? state?.style?.name : "Not selected"}</strong></div><div className="palette-preview compact" data-domain-ui="palette-preview"><i style={{ background: state?.style?.accent ?? "#0285FF" }} /><i style={{ background: state?.style?.ink ?? "#0D0D0D" }} /><i style={{ background: state?.style?.paper ?? "#FFFFFF" }} /></div>{locked && <Button variant="secondary" size="small" onClick={onChooseStyle}>Edit</Button>}</section></aside></Card>
   </article>;
 }
 

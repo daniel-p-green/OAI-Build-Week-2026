@@ -490,16 +490,38 @@ function frameOutcomeScore(node: WorkshopMapNode) {
   if (roleSignals.split.test(text)) score -= 4;
   return score;
 }
+function frameDirectionScore(node: WorkshopMapNode) {
+  const text = prose(`${node.title} ${node.body}`);
+  let score = node.kind === "grounded" ? 2 : 0;
+  if (/\b(goal|success|outcome)\b/i.test(text)) score += 30;
+  if (/\b(should|must|recommend(?:ed|ation)?|prioriti[sz]e|focus|start|show|keep|ensure|next)\b/i.test(text)) score += 20;
+  if (/\b(professional|client|leadership|decision|defend|present|create)\b/i.test(text)) score += 7;
+  if (/\b(source|trace|evidence|grounded|style|identity|brand)\b/i.test(text)) score += 4;
+  return score;
+}
+function frameAudience(state: WorkshopState) {
+  if (state.onboarding.outcome === "board_deck") return "Board members and senior leadership";
+  if (state.onboarding.outcome === "internal_workshop") return "Internal collaborators and workshop participants";
+  return "Clients and external decision-makers";
+}
 function frameFor(state: WorkshopState, approvedAt: string, root?: string): WorkshopFrame {
   const available = state.mapNodes.filter((node) => node.kind !== "creative");
   const outcomeNode = [...available].sort((left, right) => frameOutcomeScore(right) - frameOutcomeScore(left) || available.indexOf(left) - available.indexOf(right))[0];
-  const evidenceNodes = available.filter((node) => node.id !== outcomeNode?.id).slice(0, 3);
+  const grounded = available.filter((node) => node.kind === "grounded");
+  const directionCandidates = grounded.filter((node) => node.id !== outcomeNode?.id);
+  const directionNode = [...(directionCandidates.length ? directionCandidates : available.filter((node) => node.id !== outcomeNode?.id))].sort((left, right) => frameDirectionScore(right) - frameDirectionScore(left) || available.indexOf(left) - available.indexOf(right))[0];
+  const evidenceNodes = grounded.filter((node) => node.id !== outcomeNode?.id && node.id !== directionNode?.id).slice(0, 3);
+  for (const node of grounded) {
+    if (evidenceNodes.length >= 3) break;
+    if (!evidenceNodes.some((candidate) => candidate.id === node.id)) evidenceNodes.push(node);
+  }
   if (!evidenceNodes.length && outcomeNode) evidenceNodes.push(outcomeNode);
-  const outcome = outcomeNode?.title ?? "Turn raw thinking into finished work.";
+  const outcome = prose(outcomeNode?.body ?? outcomeNode?.title ?? "Turn raw thinking into professional knowledge work.");
+  const audience = frameAudience(state);
+  const direction = prose(directionNode?.body ?? "Use the strongest evidence to create professional knowledge work for the intended audience.");
   const evidence = evidenceNodes.map((node) => `- ${prose(node.body)} — ${node.locator}`).join("\n");
-  const successCriterion = "Show the approved Map, source locators, and connected professional knowledge work in one continuous path.";
-  const version = (state.frame?.version ?? 0) + 1; const markdown = `# FRAME.md\n\n## Outcome\n${outcome}\n\n## Evidence\n${evidence}\n\n## Success looks like\n${successCriterion}\n`; const dataRoot = root ?? repositoryDataRoot(); const markdownPath = workshopGeneratedPath(state.id, `FRAME-v${version}.md`); const executablePath = workshopGeneratedPath(state.id, `FRAME-v${version}.json`); const generated = join(dataRoot, dirname(markdownPath));
-  mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, executablePath), `${JSON.stringify({ schemaVersion: 1, frameVersion: version, graphRevision: graphFor(state).graph.revision, outcome, evidence: evidenceNodes.map((node) => ({ nodeId: node.id, title: node.title, body: node.body, locator: node.locator, sourceId: node.sourceId })), productionProof: successCriterion, approvedAt }, null, 2)}\n`, "utf8");
+  const version = (state.frame?.version ?? 0) + 1; const markdown = `# FRAME.md\n\n## Outcome\n${outcome}\n\n## Audience\n${audience}\n\n## Direction\n${direction}\n\n## Evidence\n${evidence}\n`; const dataRoot = root ?? repositoryDataRoot(); const markdownPath = workshopGeneratedPath(state.id, `FRAME-v${version}.md`); const executablePath = workshopGeneratedPath(state.id, `FRAME-v${version}.json`); const generated = join(dataRoot, dirname(markdownPath));
+  mkdirSync(generated, { recursive: true }); writeFileSync(join(dataRoot, markdownPath), markdown, "utf8"); writeFileSync(join(dataRoot, executablePath), `${JSON.stringify({ schemaVersion: 1, frameVersion: version, graphRevision: graphFor(state).graph.revision, outcome, audience, direction, evidence: evidenceNodes.map((node) => ({ nodeId: node.id, title: node.title, body: node.body, locator: node.locator, sourceId: node.sourceId })), productionProof: direction, approvedAt }, null, 2)}\n`, "utf8");
   return { version, approvedAt, stale: false, markdown, markdownPath, executablePath };
 }
 export function applyMapOperation(operation: unknown, root?: string): WorkshopState {
@@ -722,7 +744,25 @@ export function normalizePdfLayoutText(text: string) {
 }
 function isSourceMetadataChunk(text: string) { return /^\s*(?:source\s+locator|source\s+url|citations?)\s*:/i.test(text); }
 function sourceClaimCount(text: string) { return Math.max(1, text.split(/\n\n+/).filter((paragraph) => !isSourceMetadataChunk(paragraph)).flatMap((paragraph) => paragraph.split(/[.!?]+/)).map((sentence) => sentence.trim()).filter(Boolean).length); }
-function chunksFor(text: string, sourceId: string, hash: string, origin: string): WorkshopChunk[] { return text.split(/\n\n+/).flatMap((paragraph) => paragraph.match(/.{1,700}(?:\s|$)/g) ?? [paragraph]).filter(Boolean).map((chunk, ordinal) => ({ id: `chunk-${hash.slice(0, 12)}-${ordinal + 1}`, sourceId, text: chunk.trim(), locator: `${origin} · chunk ${String(ordinal + 1).padStart(2, "0")}`, ordinal })); }
+function sentenceSafeChunks(paragraph: string, limit = 700) {
+  const sentences = paragraph.split(/(?<=[.!?])\s+/).map((sentence) => sentence.trim()).filter(Boolean);
+  const chunks: string[] = [];
+  let current = "";
+  for (const sentence of sentences) {
+    if (sentence.length > limit) {
+      if (current) { chunks.push(current); current = ""; }
+      const parts = sentence.match(new RegExp(`.{1,${limit}}(?:\\s|$)`, "g"))?.map((part) => part.trim()).filter(Boolean) ?? [sentence];
+      chunks.push(...parts.slice(0, -1));
+      current = parts.at(-1) ?? "";
+      continue;
+    }
+    if (!current || `${current} ${sentence}`.length <= limit) current = [current, sentence].filter(Boolean).join(" ");
+    else { chunks.push(current); current = sentence; }
+  }
+  if (current) chunks.push(current);
+  return chunks;
+}
+function chunksFor(text: string, sourceId: string, hash: string, origin: string): WorkshopChunk[] { return text.split(/\n\n+/).flatMap((paragraph) => sentenceSafeChunks(paragraph)).filter(Boolean).map((chunk, ordinal) => ({ id: `chunk-${hash.slice(0, 12)}-${ordinal + 1}`, sourceId, text: chunk.trim(), locator: `${origin} · chunk ${String(ordinal + 1).padStart(2, "0")}`, ordinal })); }
 function claimsFor(chunks: WorkshopChunk[], hash: string): WorkshopClaim[] { return chunks.filter((chunk) => !isSourceMetadataChunk(chunk.text)).flatMap((chunk) => chunk.text.split(/[.!?]+/).map((sentence) => sentence.trim()).filter(Boolean).map((text, index) => ({ id: `claim-${hash.slice(0, 12)}-${chunk.ordinal}-${index + 1}`, sourceId: chunk.sourceId, chunkId: chunk.id, text, evidenceState: "verified" as const, locator: chunk.locator }))); }
 function sourceExcerpt(text: string) { return text.length <= 240 ? text : `${text.slice(0, 240).replace(/\s+\S*$/, "").trimEnd()}…`; }
 function mapNodeTitle(text: string) {

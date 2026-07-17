@@ -242,7 +242,9 @@ button { -webkit-tap-highlight-color: transparent; }
 .brief-editorial-main { padding: 64px 70px 72px; }
 .brief-editorial-side { display: grid; align-content: start; gap: 34px; padding: 48px 38px; border-left: 1px solid rgba(13,13,13,.08); background: #fafafa; }
 .brief-meta { display: flex; align-items: center; gap: 10px; color: #5d5d5d; font-size: 12px; line-height: 16px; }
-.brief-document h1 { max-width: 680px; margin: 28px 0 12px; font-size: 44px; font-weight: 560; line-height: 48px; letter-spacing: -1.4px; }
+.brief-audience { display: flex; gap: 7px; margin: 28px 0 0; color: #5d5d5d; font-size: 14px; line-height: 20px; }
+.brief-audience span { color: #8f8f8f; }
+.brief-document h1 { max-width: 680px; margin: 12px 0; font-size: 44px; font-weight: 560; line-height: 48px; letter-spacing: -1.4px; }
 .brief-section { max-width: 640px; margin-top: 34px; }
 .brief-section h2 { margin: 0 0 10px; font-size: 18px; line-height: 26px; letter-spacing: -.45px; }
 .brief-section p, .brief-section li { color: #5d5d5d; font-size: 16px; line-height: 26px; letter-spacing: -.4px; }
