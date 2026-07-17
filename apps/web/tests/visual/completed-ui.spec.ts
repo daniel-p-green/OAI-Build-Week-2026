@@ -148,9 +148,9 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
   await expectMapReady(page, viewports[0]);
-  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("1 Evidence");
+  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("2 Evidence");
   await expect(page.getByRole("region", { name: "Map overview" })).toContainText("1 Synthesis");
-  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("2 Direction");
+  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("1 Direction");
   const mapOverview = page.getByRole("region", { name: "Map overview" });
   await expect(mapOverview).toContainText("The product promise");
   await expect(mapOverview).toContainText("Judge proof");

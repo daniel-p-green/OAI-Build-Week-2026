@@ -10,6 +10,7 @@ const ui = readFileSync(resolve(root, "packages/ui/src/index.tsx"), "utf8");
 const uiCss = readFileSync(resolve(root, "packages/ui/src/styles.css"), "utf8");
 const inventory = readFileSync(resolve(root, OAI_UI_SOURCE.inventory), "utf8");
 const design = readFileSync(resolve(root, "DESIGN.md"), "utf8");
+const workshopRoute = readFileSync(resolve(process.cwd(), "app/api/workshop/route.ts"), "utf8");
 
 describe("official Apps in ChatGPT UI implementation", () => {
   it("pins every reusable shell family to the inspected Figma inventory", () => {
@@ -71,6 +72,9 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(page.match(/origin: "Pasted notes", text: value, permission: "private"/g)).toHaveLength(2);
     expect(page).not.toContain('permission: "sanitized"');
     expect(page).not.toContain('title: title.trim(), outcome, onboardingStep: "style"');
+    expect(page).toContain('action: "buildMap"');
+    expect(workshopRoute).toContain("generateGroundedMapWithGpt56(workshopDataRoot()");
+    expect(workshopRoute).toContain('model: "gpt-5.6-terra", reasoningEffort: "medium"');
   });
 
   it("fits the complete first Map inside the visible workbench canvas", () => {

@@ -93,7 +93,7 @@ export type WorkshopNarration = { storyboardVersion: number; disclosure: "AI-gen
 export type WorkshopAudioOverviewSection = { id: string; title: string; text: string; evidence: WorkshopEvidenceReference[]; edited: boolean };
 export type WorkshopAudioOverview = { id: string; version: number; graphRevision: number; briefVersion: number; styleVersion: number; title: string; posture: "executive" | "overview" | "decision_review"; sections: WorkshopAudioOverviewSection[]; script: string; claimIds: string[]; status: "script_ready" | "audio_ready" | "failed"; disclosure: "AI-generated voice"; stale: boolean; audio?: { relativePath: string; sha256: string; byteCount: number; durationSeconds: number; model: "gpt-4o-mini-tts"; voice: "cedar" | "marin"; instructions: string; requestId?: string; generatedAt: string }; error?: string; createdAt: string; updatedAt: string };
 export type WorkshopAiRun = { id: string; operation: "grounded_graph"; model: "gpt-5.6-sol" | "gpt-5.6-terra" | "gpt-5.6-luna"; inputClaimIds: string[]; outputSha256: string; requestId?: string; createdAt: string };
-export type GroundedMapProposal = { nodes: { id: string; title: string; body: string; evidenceState: "grounded" | "derived"; evidenceClaimIds: string[]; x: number; y: number }[]; edges: WorkshopMapEdge[] };
+export type GroundedMapProposal = { nodes: { id: string; title: string; body: string; evidenceState: "grounded" | "derived" | "direction"; evidenceClaimIds: string[]; x: number; y: number }[]; edges: WorkshopMapEdge[] };
 export type WorkshopOutput = { id: string; type: "deck" | "infographic"; relativePath: string; editableRelativePath?: string; artifactPath: string; editableArtifactPath?: string; claimIds: string[]; imageBatchId?: string; imagePanels?: Array<{ id: string; version: number; sha256: string }>; stale: boolean; createdAt: string };
 export type WorkshopBuildTraceRecord = { htmlPath: string; dataPath: string; htmlSha256: string; dataSha256: string; milestoneCount: number; commitCount: number; taskIds: string[] };
 export type WorkshopVideo = { id: string; version: number; storyboardVersion: number; styleVersion: number; visualDnaVersion?: number; imageBatchId?: string; relativePath: string; provenancePath: string; artifactPath: string; sha256: string; byteCount: number; claimIds: string[]; buildTrace: WorkshopBuildTraceRecord; stale: boolean; createdAt: string };
@@ -596,7 +596,7 @@ export function applyGroundedMapProposal(proposal: GroundedMapProposal, run: Omi
   for (const node of proposal.nodes) {
     if (!/^[a-z0-9][a-z0-9-]{0,63}$/.test(node.id) || proposalIds.has(node.id)) throw new Error(`Invalid or duplicate Map node ID: ${node.id}.`);
     if (!node.title.trim() || !node.body.trim() || !Number.isFinite(node.x) || !Number.isFinite(node.y) || node.x < 0 || node.x > 100 || node.y < 0 || node.y > 100) throw new Error(`Map node ${node.id} has invalid content or position.`);
-    if (node.evidenceState === "grounded" && !node.evidenceClaimIds.length) throw new Error(`Grounded Map node ${node.id} requires evidence.`);
+    if (node.evidenceState !== "derived" && !node.evidenceClaimIds.length) throw new Error(`${node.evidenceState === "direction" ? "Direction" : "Grounded"} Map node ${node.id} requires evidence.`);
     if (new Set(node.evidenceClaimIds).size !== node.evidenceClaimIds.length) throw new Error(`Map node ${node.id} contains duplicate evidence claims.`);
     if (node.evidenceClaimIds.some((claimId) => !claimById.has(claimId))) throw new Error(`Map node ${node.id} cites a claim outside the active source scope.`);
     proposalIds.add(node.id);
@@ -614,7 +614,10 @@ export function applyGroundedMapProposal(proposal: GroundedMapProposal, run: Omi
   for (const node of proposal.nodes) {
     const evidence = node.evidenceClaimIds.map((claimId) => claimById.get(claimId)!);
     const primary = evidence[0];
-    const applied = appendGraphOperation(graph, history, GraphOperation.parse({ type: "add_node", node: { id: `node-${node.id}`, kind: "claim", label: node.title.trim(), claimId: primary?.id, evidenceState: node.evidenceState === "grounded" ? "verified" : "derived", priority: 0, unresolved: false, locked: false, metadata: { body: node.body.trim(), locator: primary?.locator ?? "Derived from active source set", sourceId: primary?.sourceId, evidenceClaimIds: node.evidenceClaimIds, x: node.x, y: node.y, width: 24, height: 18 } } }), { id: `operation-ai-${Date.now()}-${node.id}`, actor: "assistant", createdAt });
+    const title = node.title.trim().replace(/-\s+/g, "-");
+    const body = node.body.trim().replace(/-\s+/g, "-");
+    const evidenceState = node.evidenceState === "grounded" ? "verified" : node.evidenceState === "direction" ? "creative" : "derived";
+    const applied = appendGraphOperation(graph, history, GraphOperation.parse({ type: "add_node", node: { id: `node-${node.id}`, kind: "claim", label: title, claimId: primary?.id, evidenceState, priority: 0, unresolved: false, locked: false, metadata: { body, locator: primary?.locator ?? "Derived from active source set", sourceId: primary?.sourceId, evidenceClaimIds: node.evidenceClaimIds, x: node.x, y: node.y, width: 24, height: 18 } } }), { id: `operation-ai-${Date.now()}-${node.id}`, actor: "assistant", createdAt });
     graph = applied.graph; history = applied.history;
   }
   for (const edge of proposal.edges) {

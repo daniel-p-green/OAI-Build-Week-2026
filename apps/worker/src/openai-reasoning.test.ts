@@ -22,9 +22,11 @@ describe("GPT-5.6 grounded Map adapter", () => {
       { id: "proof-chain", title: "Visible proof chain", body: "Teams need to see the chain from evidence to output.", evidenceState: "grounded", evidenceClaimIds: [claims[0]!.id], x: 20, y: 25 },
       { id: "source-locators", title: "Source locators", body: "Every factual output retains its source locator.", evidenceState: "grounded", evidenceClaimIds: [claims[1]!.id], x: 65, y: 25 },
       { id: "professional-trust", title: "Professional trust", body: "Visible evidence and locators make the production path inspectable.", evidenceState: "derived", evidenceClaimIds: [claims[0]!.id, claims[1]!.id], x: 42, y: 65 },
+      { id: "review-first", title: "Review the evidence-to- proof chain", body: "Review the evidence path before creating professional work.", evidenceState: "direction", evidenceClaimIds: [claims[0]!.id, claims[1]!.id], x: 78, y: 65 },
     ], edges: [
       { id: "edge-proof-trust", from: "proof-chain", to: "professional-trust", kind: "supports", label: "builds" },
       { id: "edge-locator-trust", from: "source-locators", to: "professional-trust", kind: "supports", label: "grounds" },
+      { id: "edge-trust-review", from: "professional-trust", to: "review-first", kind: "depends_on", label: "guides" },
     ] };
     const fetchImpl: typeof fetch = async (_input, init) => {
       const body = JSON.parse(String(init?.body)) as { model: string; store: boolean; text: { format: { type: string } } };
@@ -33,10 +35,11 @@ describe("GPT-5.6 grounded Map adapter", () => {
     };
 
     const state = await generateGroundedMapWithGpt56(root, { apiKey: "test-key", model: "gpt-5.6-sol", reasoningEffort: "medium" }, fetchImpl);
-    expect(state.mapNodes).toHaveLength(3);
-    expect(state.mapEdges).toHaveLength(2);
+    expect(state.mapNodes).toHaveLength(4);
+    expect(state.mapEdges).toHaveLength(3);
     expect(state.mapNodes[0]).toMatchObject({ kind: "grounded", locator: "Fixture · chunk 01", sourceId: claims[0]!.sourceId });
     expect(state.mapNodes[2]).toMatchObject({ kind: "derived" });
+    expect(state.mapNodes[3]).toMatchObject({ kind: "creative", title: "Review the evidence-to-proof chain", locator: "Fixture · chunk 01" });
     expect(state.graphState).toContain('"actor":"assistant"');
     expect(state.aiRuns[0]).toMatchObject({ operation: "grounded_graph", model: "gpt-5.6-sol", inputClaimIds: expect.arrayContaining([claims[0]!.id, claims[1]!.id]), requestId: "response-request-1", outputSha256: expect.stringMatching(/^[a-f0-9]{64}$/) });
   });
@@ -64,5 +67,16 @@ describe("GPT-5.6 grounded Map adapter", () => {
       return new Response(JSON.stringify({ output_text: JSON.stringify(invalid) }), { status: 200, headers: { "content-type": "application/json" } });
     };
     await expect(generateGroundedMapWithGpt56(root, { apiKey: "test-key", model: "gpt-5.6-terra", reasoningEffort: "medium" }, fetchImpl)).rejects.toThrow(/duplicate evidence claims/);
+  });
+
+  it("rejects an ungrounded recommended direction", async () => {
+    const root = await rootWithEvidence();
+    const claims = readWorkshopState(root).claims;
+    const invalid = { nodes: [
+      { id: "one", title: "One", body: "One", evidenceState: "grounded", evidenceClaimIds: [claims[0]!.id], x: 20, y: 20 },
+      { id: "next", title: "Next", body: "Do something unrelated.", evidenceState: "direction", evidenceClaimIds: [], x: 75, y: 20 },
+    ], edges: [] };
+    const fetchImpl: typeof fetch = async () => new Response(JSON.stringify({ output_text: JSON.stringify(invalid) }), { status: 200, headers: { "content-type": "application/json" } });
+    await expect(generateGroundedMapWithGpt56(root, { apiKey: "test-key", model: "gpt-5.6-terra", reasoningEffort: "medium" }, fetchImpl)).rejects.toThrow(/Direction Map node next requires evidence/);
   });
 });

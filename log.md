@@ -2720,6 +2720,42 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-17 00:59 CT — Live Build-my-Map seam and constrained semantic canvas verified
+
+### Changed
+
+- Replaced the first-use `Build my Map` state toggle with a real product handoff. When live OpenAI is enabled, the same button now runs the existing grounded GPT-5.6 Terra adapter; without credentials, opt-in, or sufficient evidence it preserves the deterministic source-backed Map as the safe fallback.
+- Tightened the grounded Map contract around the actual professional thinking sequence: evidence, synthesis, and a source-supported recommended direction. Direction nodes are stored as creative recommendations, must cite active claims, and remain distinguishable from factual evidence.
+- Reorganized evidence-only fallback Maps into a compact two-column semantic overview instead of a single tall stack. Mixed Maps use node evidence state—not incidental canvas coordinates—to establish their Evidence, Synthesis, and Direction lanes.
+- Made the recommended path readable as concise connected pills, derived its fallback reading order from up to three grounded ideas, fit the canvas between the insight bar and Source shelf, and removed Source-shelf overlap on mobile.
+- Removed the orphan arrow from the compact Workshop spine and normalized model-authored whitespace after hyphens before it reaches the professional surface.
+- Regenerated only the intentional Map and Map-background visual baselines after production-browser inspection.
+
+### Verified
+
+- The first isolated live UI call completed in six seconds with seven nodes, seven edges, a persisted GPT-5.6 Terra run, request ID, and output hash. It exposed that the previous schema could produce Evidence and Synthesis but not Direction; that result was used as a failing product-quality probe rather than accepted as complete.
+- After the schema repair, the second isolated live UI call completed in four seconds with six nodes and five edges: three grounded Evidence nodes, one derived Synthesis node, and two source-linked Direction nodes. The recommended direction retained the exact `Authorized directional proof · chunk 01` locator and a Source ID.
+- The live desktop Map was visually inspected in the in-app browser and showed the complete left-to-right evidence-to-synthesis-to-direction hierarchy plus a four-step recommended path. The compact 390×844 view showed the same six ideas in a readable outline with the Source controls after, rather than over, the final idea.
+- `pnpm check` passed lint, typecheck, and tests across all thirteen packages, including 126 worker tests and 30 web tests.
+- `pnpm demo:e2e` passed the complete recorded Source-to-Video seam after the Map contract change.
+- The production-browser suite passed all 31 scenarios after the intentional baseline update and then passed all 31 again without updates. Current proofs include `desktop-map.png`, `compact-map.png`, `mobile-map.png`, and `desktop-onboarding-map.png` under `apps/web/tests/visual/__screenshots__/`.
+
+### Decisions
+
+- `Build my Map` must build the semantic Map. A button that only changes onboarding state is not an acceptable live product seam.
+- A recommended direction is explicitly a source-supported professional recommendation, not a factual claim. It uses the creative evidence state while retaining its supporting claim IDs and locator.
+- Evidence-only fallback remains honest and useful, but live founder and judge-facing runs should visibly show Evidence, Synthesis, Direction, and the recommended path whenever provider generation succeeds.
+- The two bounded GPT-5.6 Terra verification calls advance the provider-operation ledger from 115 to 117. Exact provider debit is unavailable from response metadata; no image, audio, or Realtime request ran in this milestone.
+
+### Open items
+
+- Founder visual acceptance remains required before closing the connected product-quality item.
+- The authentic founder Workshop, intended-audience review, public Video, link verification, and submission remain open.
+- User-owned `PLAN-2026-07-13.md`, interrupted founder/final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-17 00:26 CT — Four-stage product contract reconciled through generated work
 
 ### Changed
@@ -10473,6 +10509,14 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 ---
 
+## 2026-07-17 01:02 CT — Fresh Map status stays calm before creation
+
+- The live semantic Map inspection exposed one misleading status: a new Workshop could show `Create · Needs update` before any created work existed. The Workshop spine now allows `Needs update` only after created work actually exists.
+- Web typecheck and all 30 web tests pass after the correction. No additional provider request ran; the provider-operation ledger remains 117.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
 ## 2026-07-17 00:39 CT — Public, installed-plugin, and submission contracts reconciled
 
 ### Changed
@@ -10510,4 +10554,22 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Obtain founder visual judgment on the current first-use, Map, created-work, focused artifact, Presentation, and Infographic surfaces; repair only concrete visible blockers.
 - Record and run the authentic founder Workshop, then replace the four explicitly unresolved founder/publication slots.
 - User-owned `PLAN-2026-07-13.md`, interrupted founder/final-video capture work, demo-film-plan changes, and untracked design-audit/final-preview artifacts remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 01:00 CT — Log-order correction for the live semantic Map milestone
+
+- The full `00:59 CT` Build-my-Map, semantic hierarchy, responsive UI, live-provider, and verification entry was appended earlier in this file because its patch matched a repeated Session ID line instead of the physical end. It remains unchanged there to preserve append-only history; this correction establishes its intended current chronology.
+- The verified result is unchanged: the live product button now runs GPT-5.6 Terra when enabled; the second bounded proof produced three Evidence, one Synthesis, two source-linked Direction nodes, and a recommended path in four seconds; all 31 production-browser scenarios, all thirteen package checks, and the recorded Source-to-Video seam pass.
+- Two bounded GPT-5.6 Terra requests ran during the milestone, advancing the provider-operation ledger from 115 to 117. Exact debit remains unavailable from response metadata.
+- Founder visual acceptance and the authentic founder Workshop remain the next gates. User-owned plan/video/audit work remains excluded.
+- Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-17 01:03 CT — Log-order correction for the fresh Map status fix
+
+- The full `01:02 CT` fresh-Map status entry was appended earlier in this file because its patch again matched a repeated current-milestone footer. It remains unchanged there to preserve append-only history; this correction establishes its intended current chronology.
+- The verified result is unchanged: a new Workshop no longer shows `Create · Needs update` before created work exists; web typecheck and all 30 web tests pass; no additional provider request ran and the ledger remains 117.
 - Codex Session ID: unavailable on this surface; not inferred.

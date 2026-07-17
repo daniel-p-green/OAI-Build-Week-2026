@@ -608,7 +608,7 @@ function OnboardingFlow({ state, styleLibrary, busy, notice, onPost }: { state: 
         <div className="source-divider"><span>or add material</span></div>
         <TextArea label="Source" hint="Paste notes, https://…, or /path/to/file.pdf" value={source} onChange={(event) => setSource(event.target.value)} />
         {sourceKind === "text" && source.trim() && <Input label="Title (optional)" value={sourceTitle} onChange={(event) => setSourceTitle(event.target.value)} />}
-        <div className="source-start-actions"><Button variant="secondary" disabled={busy || !source.trim()} onClick={() => { void addSource(); }}>Add source</Button><Button disabled={busy || state.sourceItems.length === 0} onClick={() => { void onPost({ action: "updateOnboarding", onboardingStep: "complete" }); }}>Build my Map</Button></div>
+        <div className="source-start-actions"><Button variant="secondary" disabled={busy || !source.trim()} onClick={() => { void addSource(); }}>Add source</Button><Button disabled={busy || state.sourceItems.length === 0} onClick={() => { void onPost({ action: "buildMap", title: title.trim() || undefined, outcome }); }}>{busy ? "Building Map…" : "Build my Map"}</Button></div>
         {state.sourceItems.length > 0 && <p className="source-ready" role="status">{state.sourceItems.length} {state.sourceItems.length === 1 ? "source" : "sources"} ready</p>}
       </Card>}
     </section>
@@ -621,7 +621,7 @@ function WorkshopSpine({ current, state, onSelect, onOpenIndex }: { current: Wor
     { id: "capture", label: "Capture", ready: Boolean(state?.activeSourceIds.length), needsUpdate: false },
     { id: "map", label: "Map", ready: Boolean(state?.mapNodes.length), needsUpdate: Boolean(state?.frame?.stale) },
     { id: "brief", label: "Brief", ready: Boolean(state?.briefApproved && !state.frame?.stale), needsUpdate: Boolean(state?.frame?.stale) },
-    { id: "create", label: "Create", ready: created, needsUpdate: outputSetStatus(state).actionRequired },
+    { id: "create", label: "Create", ready: created, needsUpdate: created && outputSetStatus(state).actionRequired },
   ];
   return <nav className="workshop-spine" aria-label="Workshop progress">
     {stages.map((stage, index) => <div className="spine-step" key={stage.id}>
@@ -632,6 +632,7 @@ function WorkshopSpine({ current, state, onSelect, onOpenIndex }: { current: Wor
 }
 
 function recommendedMapPath(nodes: MapNode[], edges: MapEdge[]) {
+  if (!edges.length) return nodes.slice(0, 3);
   const nodeById = new Map(nodes.map((node) => [node.id, node]));
   const incoming = new Set(edges.map((edge) => edge.to));
   const outgoing = new Map<string, string[]>();
@@ -652,30 +653,17 @@ function recommendedMapPath(nodes: MapNode[], edges: MapEdge[]) {
   return paths.sort((left, right) => right.length - left.length)[0] ?? nodes.slice(0, 1);
 }
 
-function organizedMapNodes(nodes: MapNode[], edges: MapEdge[]) {
+function organizedMapNodes(nodes: MapNode[], _edges: MapEdge[]) {
   if (!nodes.length) return nodes;
-  const nodeIds = new Set(nodes.map((node) => node.id));
-  const incoming = new Map(nodes.map((node) => [node.id, 0]));
-  const outgoing = new Map<string, string[]>();
-  for (const edge of edges) {
-    if (!nodeIds.has(edge.from) || !nodeIds.has(edge.to)) continue;
-    incoming.set(edge.to, (incoming.get(edge.to) ?? 0) + 1);
-    outgoing.set(edge.from, [...(outgoing.get(edge.from) ?? []), edge.to]);
-  }
-  const depth = new Map<string, number>();
-  const queue = nodes.filter((node) => (incoming.get(node.id) ?? 0) === 0).map((node) => node.id);
-  for (const id of queue) depth.set(id, 0);
-  while (queue.length) {
-    const id = queue.shift()!;
-    for (const target of outgoing.get(id) ?? []) {
-      const nextDepth = Math.min(2, (depth.get(id) ?? 0) + 1);
-      if ((depth.get(target) ?? -1) < nextDepth) depth.set(target, nextDepth);
-      incoming.set(target, Math.max(0, (incoming.get(target) ?? 0) - 1));
-      if (incoming.get(target) === 0) queue.push(target);
-    }
-  }
-  const layerFor = (node: MapNode) => depth.get(node.id) ?? (node.kind === "grounded" ? 0 : node.kind === "derived" ? 1 : 2);
+  const layerFor = (node: MapNode) => node.kind === "grounded" ? 0 : node.kind === "derived" ? 1 : 2;
   const layers = [0, 1, 2].map((layer) => nodes.filter((node) => layerFor(node) === layer));
+  if (layers[0].length === nodes.length) {
+    const columns = nodes.length <= 3 ? 1 : 2;
+    const x = columns === 1 ? [34] : [18, 50];
+    const rows = Math.ceil(nodes.length / columns);
+    const step = rows <= 1 ? 0 : Math.min(26, 62 / (rows - 1));
+    return nodes.map((node, index) => ({ ...node, x: x[index % columns]!, y: Math.round((18 + Math.floor(index / columns) * step) * 10) / 10, width: 26, height: 18 }));
+  }
   const x = [6, 40, 74];
   return layers.flatMap((layer, layerIndex) => {
     const step = layer.length <= 1 ? 0 : Math.min(23, 72 / (layer.length - 1));
@@ -697,16 +685,16 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
   const displayedNodes = useMemo(() => shouldOrganize ? organizedMapNodes(nodes, state?.mapEdges ?? []) : nodes, [nodes, state?.mapEdges, shouldOrganize]);
   const path = recommendedMapPath(nodes, state?.mapEdges ?? []);
   const clusterCounts = {
-    evidence: displayedNodes.filter((node) => node.x < 23).length,
-    synthesis: displayedNodes.filter((node) => node.x >= 23 && node.x < 57).length,
-    direction: displayedNodes.filter((node) => node.x >= 57).length,
+    evidence: displayedNodes.filter((node) => node.kind === "grounded").length,
+    synthesis: displayedNodes.filter((node) => node.kind === "derived").length,
+    direction: displayedNodes.filter((node) => node.kind === "creative").length,
   };
 
   if (!nodes.length) return <div className="state-surface"><StateMessage state="empty" title="Start with a source">Create professional knowledge work, with every factual claim traced to its Source.</StateMessage></div>;
 
   return <div className="map-canvas" data-domain-ui="map-canvas">
     <section className="map-insight-bar" aria-label="Map overview">
-      <div className="map-clusters"><span><b>{clusterCounts.evidence}</b> Evidence</span><span><b>{clusterCounts.synthesis}</b> Synthesis</span><span><b>{clusterCounts.direction}</b> Direction</span></div>
+      <div className="map-clusters"><span><b>{clusterCounts.evidence}</b> Evidence</span>{clusterCounts.synthesis > 0 && <span><b>{clusterCounts.synthesis}</b> Synthesis</span>}{clusterCounts.direction > 0 && <span><b>{clusterCounts.direction}</b> Direction</span>}</div>
       <div className="map-path"><small>Recommended path</small><div>{path.map((node, index) => <span key={node.id}>{index > 0 && <i aria-hidden="true">→</i>}<Button variant="secondary" size="small" onClick={() => onSelect(node.id)}>{node.title}</Button></span>)}</div></div>
       {canUndo && <Button variant="secondary" size="small" disabled={busy} onClick={onUndo}>Undo</Button>}
     </section>

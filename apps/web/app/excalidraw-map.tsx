@@ -63,11 +63,15 @@ function sceneSkeleton(nodes: ExcalidrawMapNode[], sources: Source[], edges: Map
   const nodeIds = new Set(nodes.map((node) => node.id));
   const sourceGeometry = new Map(sources.map((source, index) => [source.id, { x: 24, y: 70 + index * 180, width: 184, height: 108 }]));
   const nodeGeometry = new Map(nodes.map((node) => [node.id, { x: toSceneX(node.x), y: toSceneY(node.y), width: toSceneWidth(node.width), height: toSceneY(node.height) }]));
-  const clusterLabels = [
-    { id: "map-cluster-evidence", text: "EVIDENCE", x: toSceneX(6) },
-    { id: "map-cluster-synthesis", text: "SYNTHESIS", x: toSceneX(40) },
-    { id: "map-cluster-direction", text: "DIRECTION", x: toSceneX(74) },
-  ].map((label) => ({
+  const clusterLabels = ([
+    { id: "map-cluster-evidence", text: "EVIDENCE", kind: "grounded" },
+    { id: "map-cluster-synthesis", text: "SYNTHESIS", kind: "derived" },
+    { id: "map-cluster-direction", text: "DIRECTION", kind: "creative" },
+  ] as const).flatMap((label) => {
+    const members = nodes.filter((node) => node.kind === label.kind);
+    if (!members.length) return [];
+    return [{ ...label, x: toSceneX(Math.min(...members.map((node) => node.x))) }];
+  }).map((label) => ({
     type: "text" as const,
     id: label.id,
     x: label.x,
