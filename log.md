@@ -11628,3 +11628,28 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The complete `09:23 CT — Created formats are peers in behavior, not only appearance` milestone was appended above later historical entries because its patch anchor again matched a repeated footer. Its evidence remains valid; this append-only note establishes that it occurred after the `09:15` mobile Map milestone.
 - No historical entry was moved or rewritten. Future log appends must use the unique current EOF heading rather than a repeated milestone footer.
+
+---
+
+## 2026-07-17 09:32 CT — Video is a professional format, not a demo artifact
+
+### Changed
+
+- Audited active UI copy for hackathon and fixture language. Every rendered Video was still hardcoded as `Demo video` in Created work, focused review, Workshop index, version history, and the responsive identity header, even for a normal professional Workshop.
+- Renamed the user-facing format to the locked plain noun `Video` everywhere in the product. Internal fixture paths such as `workshoplm-demo-v1.mp4` remain unchanged because they are implementation evidence, not professional copy.
+- Added `Demo video` to the retired-copy contract and `Video` to the required-copy contract so this hackathon-specific leak cannot silently return.
+
+### Verified
+
+- Rebuilt the optimized production app and ran the complete Playwright suite: all 35 desktop, compact, mobile, accessibility, first-use, source-tracing, history, original-reveal, and created-work scenarios passed against `Video` labels.
+- Forced regeneration of the affected review baselines because the normal screenshot tolerance correctly passed the small text-only change without rewriting the old images. Visually inspected the refreshed desktop Created work and focused Video screens plus the mobile gallery; all now show `Video` while retaining the same quiet hierarchy, controls, Source counts, and responsive layout.
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all thirteen packages, including the retired-copy contract, 37 web tests, and 130 worker tests. Repository hygiene reported 693 tracked files, zero tracked transient paths, and a 7.9 MiB largest tracked file.
+- `pnpm demo:e2e` passed the complete recorded-fixture seam through the grounded Map, both approvals, Style, Sketch, Presentation, Infographic, Audio Overview, six-image set, Storyboard, local Video, and build trace.
+- No OpenAI provider request ran; the append-only cumulative request count remains 118.
+
+### Decisions and open items
+
+- Product nouns describe reusable professional objects. Hackathon purpose belongs in the Workshop content and submission narrative, not in a universal format label.
+- The connected product-quality item remains open until founder visual acceptance. The authentic founder recording, paid run, and human review remain the next proof gate; demo-film work remains paused.
+- User-owned plan, capture/video, demo-film-plan, final-preview, and design-audit changes remain excluded.
+- Codex Session ID: unavailable on this surface; not inferred.

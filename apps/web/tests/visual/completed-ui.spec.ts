@@ -961,7 +961,7 @@ test("Storyboard previews the exact image versions bound for video", async ({ pa
     ["Infographic", "Distill the strongest evidence into one source-traceable visual.", 4],
     ["Image set", "Show one coherent art direction across the complete image set.", 4],
     ["Storyboard", "Review the exact sequence and visuals before creating Video.", 4],
-    ["Demo video", "Render only the Storyboard and image versions approved here.", 6],
+    ["Video", "Render only the Storyboard and image versions approved here.", 6],
   ].map(([title, narration, durationSeconds], index) => ({
     id: `storyboard-bound-panel-${index + 1}`,
     title,
@@ -1087,7 +1087,7 @@ test("finished Video reveals the original brainstorm without adding navigation",
     await page.goto("/");
     await openWorkshopView(page, "brief");
     await openWorkshopView(page, "outputs");
-    await page.getByRole("button", { name: "Open Demo video" }).click();
+    await page.getByRole("button", { name: "Open Video, version 1" }).click();
     await expect(page.getByRole("button", { name: "Show source", exact: true })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Edit storyboard" })).toHaveClass(/oai-button--primary/);
     await expect(page.getByRole("button", { name: /^Show source for / })).toHaveCount(videoSourceLinkCount);
@@ -1100,7 +1100,7 @@ test("finished Video reveals the original brainstorm without adding navigation",
     await expect(sheet).toContainText("Became professional knowledge work");
     await expect(sheet).toContainText("102 seconds from first transcript to first created work");
     await expect(sheet.getByText("Presentation", { exact: true })).toBeVisible();
-    await expect(sheet.getByText("Demo video", { exact: true })).toBeVisible();
+    await expect(sheet.getByText("Video", { exact: true })).toBeVisible();
     await expect(sheet.getByRole("link", { name: "How this was built" })).toHaveAttribute("href", "/api/workshop/artifacts/build-trace-v1");
     await expectScreen(page, `${viewport.name}-original-reveal`);
     await closeDialog(page, "Original brainstorm");
@@ -1152,12 +1152,12 @@ test("Video history preserves prior versions without adding another navigation s
   await page.goto("/");
   await openWorkshopView(page, "brief");
   await openWorkshopView(page, "outputs");
-  await expect(page.getByRole("button", { name: "Open Demo video, version 2" })).toContainText("Up to date");
-  await expect(page.getByRole("button", { name: "Open Demo video, version 1" })).toHaveCount(0);
-  await page.getByRole("button", { name: "Open Demo video, version 2" }).click();
+  await expect(page.getByRole("button", { name: "Open Video, version 2" })).toContainText("Up to date");
+  await expect(page.getByRole("button", { name: "Open Video, version 1" })).toHaveCount(0);
+  await page.getByRole("button", { name: "Open Video, version 2" }).click();
   const history = page.getByRole("region", { name: "Version history" });
-  await expect(history.getByRole("button", { name: "Open Demo video, version 1" })).toContainText("Needs update");
-  await history.getByRole("button", { name: "Open Demo video, version 1" }).click();
+  await expect(history.getByRole("button", { name: "Open Video, version 1" })).toContainText("Needs update");
+  await history.getByRole("button", { name: "Open Video, version 1" }).click();
   await expect(page.getByText("Video · Version 1")).toBeVisible();
   await expect(page.getByText("Needs update", { exact: true })).toBeVisible();
   await expect(page.locator(".focused-output-preview video")).toHaveAttribute("src", "/api/workshop/artifacts/video-v1");
@@ -1452,7 +1452,7 @@ test("the local render becomes a real Video preview and the next action", async 
     await page.goto("/");
     await openWorkshopView(page, "brief");
     await openWorkshopView(page, "outputs");
-    const videoCard = page.getByRole("button", { name: "Open Demo video" });
+    const videoCard = page.getByRole("button", { name: "Open Video, version 1" });
     await expect(videoCard).toBeVisible();
     const previewVideo = videoCard.locator("video");
     await expect(previewVideo).toHaveAttribute("src", "/api/workshop/artifacts/video-v1");
@@ -1490,7 +1490,7 @@ test("the local render becomes a real Video preview and the next action", async 
     expect(traceResponse.ok()).toBeTruthy();
     expect(await traceResponse.text()).toContain("One thought became the Build Week submission.");
     await closeDialog(page, "Original brainstorm");
-    await expect(page.locator(".workshop-identity")).toContainText("WorkshopLM Build Week/Demo video");
+    await expect(page.locator(".workshop-identity")).toContainText("WorkshopLM Build Week/Video");
     await expect.poll(async () => Math.abs(await page.locator(".focused-output").evaluate((node) => node.scrollTop) - scrollBeforeOriginal) <= 32).toBe(true);
     await expect(page.locator(".focused-output-heading h1")).toBeInViewport();
     await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
@@ -1514,7 +1514,7 @@ test("the local render becomes a real Video preview and the next action", async 
   await expect(page.getByRole("button", { name: "Approve storyboard" })).toBeVisible();
   await expect(page.locator(".storyboard-strip .film-frame.selected")).toContainText("7s");
   await openWorkshopView(page, "outputs");
-  await expect(page.getByRole("button", { name: /Open Demo video/ })).toContainText("Needs update");
+  await expect(page.getByRole("button", { name: /Open Video/ })).toContainText("Needs update");
 });
 
 test("a new professional reaches the real Map through the durable first-use path", async ({ page }) => {
