@@ -784,15 +784,19 @@ function MapCanvas({ state, selectedNode, busy, onSelect, onSync, onUndo, onShow
   const clusterCounts = {
     evidence: displayedNodes.filter((node) => node.kind === "grounded").length,
     synthesis: displayedNodes.filter((node) => node.kind === "derived").length,
-    direction: displayedNodes.filter((node) => node.kind === "creative").length,
   };
 
   if (!nodes.length) return <div className="state-surface"><StateMessage state="empty" title="Start with a source">Create professional knowledge work, with every factual claim traced to its Source.</StateMessage></div>;
 
   return <div className={`map-canvas ${canUndo ? "has-map-undo" : ""}`} data-domain-ui="map-canvas">
-    <section className="map-insight-bar" aria-label="Map overview">
-      <div className="map-clusters"><span><b>{clusterCounts.evidence}</b> {showAllEvidence ? "Evidence" : "key evidence"}</span>{shouldOrganize && extraEvidenceCount > 0 && <Button variant="secondary" size="small" className="map-more-evidence" onClick={() => setShowAllEvidence((visible) => !visible)}>{showAllEvidence ? "Show key evidence" : `Show ${extraEvidenceCount} more`}</Button>}{clusterCounts.synthesis > 0 && <span><b>{clusterCounts.synthesis}</b> Synthesis</span>}{clusterCounts.direction > 0 && <span><b>{clusterCounts.direction}</b> Direction</span>}</div>
-      {recommendation && <div className="map-path"><small>{directionLabel}</small><Button variant="secondary" size="small" data-compact-label={directionLabel} aria-label={`${directionLabel}: ${recommendation.title}`} onClick={() => onSelect(recommendation.id)}>{recommendation.title}</Button></div>}
+    <section className="map-insight-bar" aria-label="Map hierarchy">
+      <div className="map-hierarchy">
+        <div className="map-hierarchy-step"><small>Evidence</small><strong>{clusterCounts.evidence} {showAllEvidence ? "claims" : "key claims"}</strong></div>
+        <span className="map-hierarchy-arrow" aria-hidden="true">→</span>
+        <div className="map-hierarchy-step"><small>Synthesis</small><strong>{clusterCounts.synthesis} {clusterCounts.synthesis === 1 ? "point" : "points"}</strong></div>
+        {recommendation && <><span className="map-hierarchy-arrow" aria-hidden="true">→</span><div className="map-hierarchy-step map-hierarchy-direction"><small>{directionLabel}</small><Button variant="secondary" size="small" data-compact-label={directionLabel} aria-label={`${directionLabel}: ${recommendation.title}`} onClick={() => onSelect(recommendation.id)}>{recommendation.title}</Button></div></>}
+      </div>
+      {shouldOrganize && extraEvidenceCount > 0 && <Button variant="secondary" size="small" className="map-more-evidence" onClick={() => setShowAllEvidence((visible) => !visible)}>{showAllEvidence ? "Show key evidence" : `Show ${extraEvidenceCount} more`}</Button>}
       {canUndo && <Button variant="secondary" size="small" disabled={busy} onClick={onUndo}>Undo</Button>}
     </section>
     {!state?.style && analysis && <Card className="style-analysis-status" role="status"><div><strong>{analysis.status === "reviewing" ? `Reviewing ${analysisDomain}…` : analysis.status === "ready" ? "Company style ready to review" : "Couldn't review this website"}</strong><p>{analysis.status === "reviewing" ? "Keep shaping the Map while WorkshopLM checks the public visual foundation." : analysis.status === "ready" ? "Review the suggested colors, type, and brand assets before creating work." : analysis.error ?? "Try again or continue with a clean professional Style."}</p></div><div className="button-row">{analysis.status === "ready" && <Button variant="secondary" size="small" onClick={onReviewStyle}>Review style</Button>}{analysis.status === "error" && <><Button variant="secondary" size="small" disabled={busy} onClick={() => onRetryStyle(analysis.url)}>Try again</Button><Button variant="secondary" size="small" onClick={onReviewStyle}>Set manually</Button><Button variant="secondary" size="small" disabled={busy} onClick={onUseDefaultStyle}>Use a clean default</Button></>}</div></Card>}

@@ -95,6 +95,15 @@ describe("official Apps in ChatGPT UI implementation", () => {
     expect(map).not.toContain("sourceShapeId");
   });
 
+  it("makes the Map hierarchy and recommended direction explicit", () => {
+    expect(page).toContain('aria-label="Map hierarchy"');
+    expect(page).toContain('className="map-hierarchy"');
+    expect(page).toContain('<small>Evidence</small>');
+    expect(page).toContain('<small>Synthesis</small>');
+    expect(page).toContain('aria-label={`${directionLabel}: ${recommendation.title}`}');
+    expect(appCss).toContain(".map-hierarchy-direction");
+  });
+
   it("keeps one dominant desktop object and moves Sources and navigation into contextual sheets", () => {
     expect(page).toContain('<Workbench className="workbench">');
     expect(page).not.toContain('{loadState === "ready" && <SourcesRail');

@@ -119,16 +119,18 @@ button { -webkit-tap-highlight-color: transparent; }
 
 /* WorkshopLM's only custom visual surface: the editable evidence Map. */
 .map-canvas { position: relative; width: 100%; height: 100%; overflow: hidden; background: #fff; }
-.map-insight-bar { position: absolute; z-index: 8; top: 16px; right: 20px; left: 20px; min-width: 0; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 18px; padding: 9px 10px 9px 14px; border: .5px solid rgba(13,13,13,.12); border-radius: 14px; background: rgba(255,255,255,.95); box-shadow: 0 5px 20px rgba(0,0,0,.055); backdrop-filter: blur(18px); }
-.map-clusters { display: flex; align-items: center; gap: 12px; }
-.map-clusters span { color: #6b6b6b; font-size: 11px; line-height: 15px; white-space: nowrap; }
-.map-clusters b { color: #0d0d0d; font-weight: 650; }
+.map-insight-bar { position: absolute; z-index: 8; top: 16px; right: 20px; left: 20px; min-width: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 14px; padding: 7px 10px 7px 14px; border: .5px solid rgba(13,13,13,.12); border-radius: 14px; background: rgba(255,255,255,.95); box-shadow: 0 5px 20px rgba(0,0,0,.055); backdrop-filter: blur(18px); }
+.map-hierarchy { min-width: 0; display: grid; grid-template-columns: auto 18px auto 18px minmax(180px, 1fr); align-items: center; }
+.map-hierarchy-step { min-width: 0; display: grid; gap: 1px; }
+.map-hierarchy-step small { color: #8f8f8f; font-size: 9px; font-weight: 600; line-height: 12px; text-transform: uppercase; }
+.map-hierarchy-step strong { color: #383838; font-size: 11px; font-weight: 600; line-height: 15px; white-space: nowrap; }
+.map-hierarchy-arrow { color: #b5b5b5; font-size: 12px; text-align: center; }
+.map-hierarchy-direction { grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px; padding-left: 10px; border-left: 1px solid rgba(13,13,13,.1); }
+.map-hierarchy-direction small { white-space: nowrap; }
+.map-hierarchy-direction button { min-width: 0; height: auto; display: block; overflow: hidden; padding: 5px 10px; border: 0; border-radius: 999px; background: #eaf3ff; color: #075985; font: 650 11px/15px inherit; text-align: left; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.map-hierarchy-direction button:hover { background: #dcecff; }
 .map-more-evidence.oai-button { min-height: 0; height: auto; padding: 2px 0; border: 0; border-bottom: 1px solid rgba(13,13,13,.28); border-radius: 0; background: transparent; color: #5d5d5d; font: 500 11px/15px inherit; white-space: nowrap; box-shadow: none; }
 .map-more-evidence:hover { color: #0d0d0d; border-bottom-color: #0d0d0d; }
-.map-path { min-width: 0; display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
-.map-path > small { flex: 0 0 auto; color: #8f8f8f; font-size: 10px; font-weight: 600; line-height: 14px; text-transform: uppercase; }
-.map-path button { min-width: 0; max-width: min(420px, 100%); height: auto; display: block; overflow: hidden; padding: 5px 10px; border: 0; border-radius: 999px; background: #f3f3f3; font: 600 11px/15px inherit; text-align: left; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
-.map-path button:hover { background: #e7e7e7; }
 .map-source-shelf { position: absolute; z-index: 7; right: 24px; bottom: 20px; left: 24px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 10px 12px; border: 1px solid rgba(13,13,13,.1); border-radius: 16px; background: rgba(255,255,255,.96); box-shadow: 0 12px 38px rgba(0,0,0,.08); backdrop-filter: blur(18px); }
 .map-source-shelf-heading { display: flex; align-items: center; gap: 10px; padding-right: 12px; border-right: 1px solid rgba(13,13,13,.08); }
 .map-source-shelf-heading > div { display: grid; gap: 1px; }
@@ -565,7 +567,7 @@ button { -webkit-tap-highlight-color: transparent; }
   .map-insight-bar { display: none; }
   .map-canvas.has-map-undo { padding-top: 52px; }
   .has-map-undo .map-insight-bar { top: 10px; right: 12px; left: auto; display: block; padding: 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
-  .has-map-undo .map-clusters, .has-map-undo .map-path { display: none; }
+  .has-map-undo .map-hierarchy, .has-map-undo .map-more-evidence { display: none; }
   .excalidraw-map { display: none; }
   .map-canvas > .semantic-map { height: auto; padding: 12px; }
   .map-mobile-outline { display: grid; gap: 10px; }

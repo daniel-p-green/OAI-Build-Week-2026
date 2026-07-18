@@ -12077,3 +12077,23 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Checked the repository metadata gate in the submission checklist. This reversible public correction changed no product file, release tag, submission form, or Video.
 - No OpenAI provider request ran; the cumulative recorded provider-operation count remains 119. Demo-film work remains paused.
 - Codex Session ID: unavailable on this surface; not inferred.
+
+---
+
+## 2026-07-18 14:25 CT — Map hierarchy and HyperFrames source-progress motion
+
+### Changed
+
+- Reworked the existing Map status strip into an explicit `Evidence → Synthesis → Recommended direction` chain, while preserving the locked Apps-in-ChatGPT shell, current Map canvas, approval behavior, and mobile structure.
+- Added a per-panel, source-labelled GSAP progress rail to the HyperFrames video renderer. The rail runs for the panel duration; source images do not zoom, pan, or drift.
+
+### Verified
+
+- A Sol implementation lane (`/root/workshoplm_taste_gsap`; opaque session ID unavailable here) completed targeted web tests (39 passing), worker seeded executor tests (11 passing), both package typechecks, and `git diff --check`.
+- `pnpm demo:e2e` exited successfully in the local deterministic acceptance fixture.
+- In the local app, the Map exposed the hierarchy landmark and the approved-direction control opened the corresponding bound claim.
+- `pnpm demo:render` exited successfully. `generated/videos/workshoplm-demo-v2.mp4` is a 48-second H.264/AAC file; an extracted frame visibly contains the source label and progress rail.
+
+### Decision / remaining gate
+
+- This is a restrained product-quality pass, not evidence of final readiness. It did not run provider generation and does not replace the founder-recorded browser flow, real founder inputs, review feedback ID, public video, or Devpost checks in `GOAL.md`.
