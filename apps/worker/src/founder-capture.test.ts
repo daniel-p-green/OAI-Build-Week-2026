@@ -44,4 +44,15 @@ describe("founder capture evidence", () => {
     const inspected = await inspectFounderCapture(recording, transcript, async () => ({ format: { duration: "12", tags: { creation_time: "2026-07-16T08:15:30-05:00" } }, streams: [{ codec_type: "video", codec_name: "h264" }, { codec_type: "audio", codec_name: "aac" }] }));
     expect(inspected).toMatchObject({ recordedAt: "2026-07-16T13:15:30.000Z", recordedAtEvidence: "embedded_media_creation_time" });
   });
+
+  it("labels a founder-authorized script narrated by AI without treating it as founder voice", async () => {
+    const root = await mkdtemp(join(tmpdir(), "workshop-founder-tts-")); roots.push(root);
+    const recording = join(root, "brainstorm.mov");
+    const transcript = join(root, "brainstorm.txt");
+    await writeFile(recording, "recording-bytes");
+    await writeFile(transcript, "This founder-authorized project script is narrated with a disclosed AI-generated voice.");
+    const inspected = await inspectFounderCapture(recording, transcript, async () => ({ format: { duration: "9" }, streams: [{ codec_type: "video", codec_name: "h264" }, { codec_type: "audio", codec_name: "aac" }] }));
+    const manifest = await stageFounderCapture(inspected, join(root, "output"), "founder-authorized-script-and-ai-narration");
+    expect(manifest).toMatchObject({ provenance: "founder-authorized-script-and-ai-narration", providerRealtimeEvidence: false });
+  });
 });

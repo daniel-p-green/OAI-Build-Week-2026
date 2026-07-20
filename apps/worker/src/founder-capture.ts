@@ -13,9 +13,11 @@ export type FounderCaptureManifest = {
   stagedAt: string;
   recording: { sourceName: string; relativePath: string; sha256: string; byteCount: number; durationSeconds: number; videoCodec?: string; audioCodec?: string };
   transcript: { sourceName: string; relativePath: string; sha256: string; byteCount: number; characterCount: number };
-  provenance: "founder-provided-recording-and-transcript";
+  provenance: "founder-provided-recording-and-transcript" | "founder-authorized-script-and-ai-narration";
   providerRealtimeEvidence: false;
 };
+
+export type FounderCaptureProvenance = FounderCaptureManifest["provenance"];
 
 type ProbeResult = { format?: { duration?: string; tags?: { creation_time?: string } }; streams?: Array<{ codec_type?: string; codec_name?: string; tags?: { creation_time?: string } }> };
 type Probe = (path: string) => Promise<ProbeResult>;
@@ -59,7 +61,7 @@ export async function inspectFounderCapture(recordingPath: string, transcriptPat
   return { recordingPath: recording, transcriptPath: transcriptFile, recordingBytes, transcriptBytes: Buffer.from(`${transcript}\n`), transcript, durationSeconds, videoCodec, audioCodec, recordedAt: embeddedRecordedAt ?? recordingInfo.mtime.toISOString(), recordedAtEvidence: embeddedRecordedAt ? "embedded_media_creation_time" : "file_modified_time" };
 }
 
-export async function stageFounderCapture(input: Awaited<ReturnType<typeof inspectFounderCapture>>, root: string): Promise<FounderCaptureManifest> {
+export async function stageFounderCapture(input: Awaited<ReturnType<typeof inspectFounderCapture>>, root: string, provenance: FounderCaptureProvenance = "founder-provided-recording-and-transcript"): Promise<FounderCaptureManifest> {
   const evidenceRoot = join(resolve(root), "evidence", "founder-capture");
   await mkdir(evidenceRoot, { recursive: true });
   const recordingExtension = extname(input.recordingPath).toLowerCase() || ".mov";
@@ -74,14 +76,14 @@ export async function stageFounderCapture(input: Awaited<ReturnType<typeof inspe
     stagedAt: new Date().toISOString(),
     recording: { sourceName: basename(input.recordingPath), relativePath: recordingRelativePath, sha256: sha256(input.recordingBytes), byteCount: input.recordingBytes.byteLength, durationSeconds: input.durationSeconds, videoCodec: input.videoCodec, audioCodec: input.audioCodec },
     transcript: { sourceName: basename(input.transcriptPath), relativePath: transcriptRelativePath, sha256: sha256(input.transcriptBytes), byteCount: input.transcriptBytes.byteLength, characterCount: input.transcript.length },
-    provenance: "founder-provided-recording-and-transcript",
+    provenance,
     providerRealtimeEvidence: false,
   };
   await writeFile(join(evidenceRoot, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
   return manifest;
 }
 
-export async function stageFounderFilmInputs(input: Awaited<ReturnType<typeof inspectFounderCapture>>, outputDirectory: string): Promise<FounderCaptureManifest> {
+export async function stageFounderFilmInputs(input: Awaited<ReturnType<typeof inspectFounderCapture>>, outputDirectory: string, provenance: FounderCaptureProvenance = "founder-provided-recording-and-transcript"): Promise<FounderCaptureManifest> {
   const output = resolve(outputDirectory);
   await mkdir(output, { recursive: true });
   const recordingRelativePath = "founder-brainstorm.mov";
@@ -95,7 +97,7 @@ export async function stageFounderFilmInputs(input: Awaited<ReturnType<typeof in
     stagedAt: new Date().toISOString(),
     recording: { sourceName: basename(input.recordingPath), relativePath: recordingRelativePath, sha256: sha256(input.recordingBytes), byteCount: input.recordingBytes.byteLength, durationSeconds: input.durationSeconds, videoCodec: input.videoCodec, audioCodec: input.audioCodec },
     transcript: { sourceName: basename(input.transcriptPath), relativePath: transcriptRelativePath, sha256: sha256(input.transcriptBytes), byteCount: input.transcriptBytes.byteLength, characterCount: input.transcript.length },
-    provenance: "founder-provided-recording-and-transcript",
+    provenance,
     providerRealtimeEvidence: false,
   };
   await writeFile(join(output, "founder-capture.json"), `${JSON.stringify(manifest, null, 2)}\n`);

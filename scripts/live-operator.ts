@@ -1,7 +1,7 @@
 import { access, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { basename, dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { executeOne } from "../apps/worker/src/executor.ts";
-import { inspectFounderCapture, stageFounderCapture, stageFounderFilmInputs, type FounderCaptureManifest } from "../apps/worker/src/founder-capture.ts";
+import { inspectFounderCapture, stageFounderCapture, stageFounderFilmInputs, type FounderCaptureManifest, type FounderCaptureProvenance } from "../apps/worker/src/founder-capture.ts";
 import { defaultOpenAiMediaConfig, generateOpenAiAudioOverview, generateOpenAiImageBatch, generateOpenAiNarration, planOpenAiMediaRetry, validateImageBatchCoherence, validateNarrationReadiness, type OpenAiMediaConfig } from "../apps/worker/src/openai-media.ts";
 import { classifyFailedRun, operatorRunEvidence, operatorStateFingerprint, protectsPaidOperatorState, retryCommandFor, retryEligibility, safeOperatorError, verifiedRealtimeCaptures, type OperatorRunRecord } from "../apps/worker/src/live-operator-evidence.ts";
 import { generateGroundedMapWithGpt56 } from "../apps/worker/src/openai-reasoning.ts";
@@ -48,9 +48,11 @@ if (!rootRelative || rootRelative.startsWith("..") || isAbsolute(rootRelative)) 
 const root = requestedRoot;
 const founderRecordingPath = flagValue("--founder-recording");
 const founderTranscriptPath = flagValue("--founder-transcript");
+const aiNarratedSource = process.argv.includes("--ai-narrated-source");
 const shareFounderSource = process.argv.includes("--share-founder-source");
 const stageFilmInputs = process.argv.includes("--stage-film-inputs");
 if (Boolean(founderRecordingPath) !== Boolean(founderTranscriptPath)) throw new Error("--founder-recording and --founder-transcript must be provided together.");
+if (aiNarratedSource && (!founderRecordingPath || !founderTranscriptPath)) throw new Error("--ai-narrated-source requires a recording and transcript.");
 if (shareFounderSource && (!founderRecordingPath || !founderTranscriptPath)) throw new Error("--share-founder-source requires a founder recording and transcript.");
 if (stageFilmInputs && (!founderRecordingPath || !founderTranscriptPath)) throw new Error("--stage-film-inputs requires a founder recording and transcript.");
 if (stageFilmInputs && !shareFounderSource) throw new Error("--stage-film-inputs requires --share-founder-source because it copies founder evidence into the final film input directory.");
@@ -88,6 +90,9 @@ function liveConfig(requiredRequests: number): { media: OpenAiMediaConfig; budge
 }
 
 type FounderCapture = Awaited<ReturnType<typeof inspectFounderCapture>>;
+const founderCaptureProvenance: FounderCaptureProvenance = aiNarratedSource ? "founder-authorized-script-and-ai-narration" : "founder-provided-recording-and-transcript";
+const founderSourceOrigin = aiNarratedSource ? "Founder-authorized script with AI narration" : "Founder-provided recording";
+const founderSourceTitle = aiNarratedSource ? "Project brainstorm" : "Founder brainstorm";
 
 async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: ProviderRequestBudget }, onRootReady?: () => Promise<void>, preserveVoice = true, allowSample = false, founderCapture?: FounderCapture): Promise<FounderCaptureManifest | undefined> {
   const preservedCaptures = preserveVoice && await operatorStateExists() ? verifiedRealtimeCaptures(readWorkshopState(root)) : [];
@@ -95,10 +100,10 @@ async function prepareWorkshop(config?: { media: OpenAiMediaConfig; budget: Prov
   await rm(root, { recursive: true, force: true });
   await mkdir(root, { recursive: true });
   await onRootReady?.();
-  const founderManifest = founderCapture ? await stageFounderCapture(founderCapture, root) : undefined;
-  if (founderCapture && stageFilmInputs) await stageFounderFilmInputs(founderCapture, resolve(repository, "outputs", "demo-film-inputs"));
+  const founderManifest = founderCapture ? await stageFounderCapture(founderCapture, root, founderCaptureProvenance) : undefined;
+  if (founderCapture && stageFilmInputs) await stageFounderFilmInputs(founderCapture, resolve(repository, "outputs", "demo-film-inputs"), founderCaptureProvenance);
   if (preservedCaptures.length) for (const capture of preservedCaptures) await captureFallbackTranscript(capture.text, root, capture.evidence);
-  if (founderCapture) await captureImportedTranscript(founderCapture.transcript, { title: "Founder brainstorm", origin: "Founder-provided recording", permission: shareFounderSource ? "shareable" : "private" }, root);
+  if (founderCapture) await captureImportedTranscript(founderCapture.transcript, { title: founderSourceTitle, origin: founderSourceOrigin, permission: shareFounderSource ? "shareable" : "private" }, root);
   else if (!preservedCaptures.length && allowSample) await captureImportedTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved Brief, coherent visuals, an editable Storyboard, and the final Build Week demonstration Video.", { title: "Authorized sample brainstorm", origin: "Authorized sample script", permission: "sanitized" }, root);
   else if (!preservedCaptures.length) await captureFallbackTranscript("WorkshopLM should show how a messy spoken idea becomes a grounded Map, an approved Brief, coherent visuals, an editable Storyboard, and the final Build Week demonstration Video.", root);
   if (!founderCapture) {
@@ -200,7 +205,7 @@ async function main(): Promise<void> {
     const publicPackageEligible = privateSources.length === 0;
     const rootFlag = `--root ${shellQuote(relative(repository, root))}`;
     const founderInputFlags = founderRecordingPath && founderTranscriptPath
-      ? ` --founder-recording ${shellQuote(founderRecordingPath)} --founder-transcript ${shellQuote(founderTranscriptPath)}`
+      ? ` --founder-recording ${shellQuote(founderRecordingPath)} --founder-transcript ${shellQuote(founderTranscriptPath)}${aiNarratedSource ? " --ai-narrated-source" : ""}`
       : "";
     const shareablePreflightCommand = founderPrivacyReviewRequired
       ? `pnpm demo:live -- ${rootFlag}${founderInputFlags} --share-founder-source --stage-film-inputs`
@@ -231,14 +236,14 @@ async function main(): Promise<void> {
       publicPackageEligible,
       privateSources: privateSources.map((source) => ({ title: source.title, origin: source.origin })),
       captureEvidence: providerVoiceTurns > 0
-        ? (founderManifest ? "provider-verified-realtime-and-founder-recording" : "provider-verified-realtime")
+        ? (founderManifest ? (aiNarratedSource ? "provider-verified-realtime-and-founder-authorized-ai-narration" : "provider-verified-realtime-and-founder-recording") : "provider-verified-realtime")
         : founderManifest
-          ? "founder-provided-recording-and-transcript"
+          ? founderCaptureProvenance
           : allowSampleTranscript
             ? "authorized-sample-script"
             : "private-capture-placeholder",
       approvals: { brief: prepared.briefApproved, storyboard: prepared.storyboardApproved },
-      sources: prepared.sourceItems.filter((source) => source.origin === "Sanitized operator fixture" || source.origin.includes("capture-only fallback") || source.origin === "Founder-provided recording" || source.origin === "Authorized sample script").map((source) => ({ title: source.title, origin: source.origin, permission: source.permission })),
+      sources: prepared.sourceItems.filter((source) => source.origin === "Sanitized operator fixture" || source.origin.includes("capture-only fallback") || source.origin === "Founder-provided recording" || source.origin === "Founder-authorized script with AI narration" || source.origin === "Authorized sample script").map((source) => ({ title: source.title, origin: source.origin, permission: source.permission })),
       outputs: prepared.outputs.map((output) => ({ type: output.type, relativePath: output.relativePath, claims: output.claimIds.length })),
       sketch: prepared.sketch ? { version: prepared.sketch.version, relativePath: prepared.sketch.relativePath, claims: prepared.sketch.claimIds.length, stale: prepared.sketch.stale } : null,
       imageReadiness,

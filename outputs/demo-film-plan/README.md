@@ -1,31 +1,28 @@
 # WorkshopLM demo edit readiness
 
-Status: **draft**
+Status: **final-ready**
 
 - Planned runtime: 140s (2:20)
 - Hard ceiling: 175s
 - Shots: 10
-- Narration words: 278 (119.1 words per minute)
-- Source walkthrough: 60.76s, fixture-draft, hash verified
-- Ready shots: 8
-- Blocked shots: 2
+- Narration words: 277 (118.7 words per minute)
+- Source walkthrough: 27.48s, founder-final-candidate, hash verified
+- Ready shots: 10
+- Blocked shots: 0
 
 ## Missing evidence
 
-- **capture-and-shape:** Honestly dated founder-brainstorm recording — `outputs/demo-film-inputs/founder-brainstorm.mov` — Evidence file is missing or empty.
-- **capture-and-shape:** Founder-brainstorm transcript used by the recorded Workshop — `outputs/demo-film-inputs/founder-brainstorm.txt` — Evidence file is missing or empty.
-- **meta-reveal:** Verified non-partial final connected Workshop — `.workshoplm/final-operator/generated/submission-output-set-v1/manifest.json` — Evidence file is missing or empty.
-- **final-export:** Final edited MP4 with video and audio streams — `outputs/demo-film-final/workshoplm-demo.mp4`
+- None.
 
 ## Edit sequence
 
 - 000-013 · **The promise** · ready · fixture beats: map
 - 013-026 · **Codex is the conversation surface** · ready
-- 026-044 · **Messy thought becomes a grounded Map** · blocked · fixture beats: sources
+- 026-044 · **Authorized project brief becomes a grounded Map** · ready · fixture beats: sources
 - 044-058 · **Evidence remains inspectable and editable** · ready · fixture beats: source-trace, map-edit
 - 058-070 · **First approval: Brief** · ready · fixture beats: brief-approval
 - 070-082 · **One reviewable visual system** · ready · fixture beats: style
 - 082-096 · **One Workshop, many expressions** · ready · fixture beats: create-outputs, output-evidence
 - 096-109 · **Second approval: Storyboard** · ready · fixture beats: storyboard-edit, storyboard-approval
 - 109-124 · **Approved work renders locally** · ready · fixture beats: video-render
-- 124-140 · **The submission proves the product** · blocked · fixture beats: original-reveal
+- 124-140 · **The submission proves the product** · ready · fixture beats: original-reveal

@@ -1,6 +1,6 @@
 # Third-party notices and media boundary
 
-Last reviewed: 2026-07-17 CT.
+Last reviewed: 2026-07-20 CT.
 
 WorkshopLM is MIT-licensed. This inventory records the non-WorkshopLM software and design references that materially affect the runnable product or judge-facing media. It is an evidence record, not legal advice.
 
@@ -29,6 +29,7 @@ Attribution: “Apps in ChatGPT · OpenAI Official,” OpenAI, Figma Community, 
 - The six judge-fixture images were generated with `gpt-image-2` from sanitized WorkshopLM prompts. Their manifest records model, request IDs, hashes, and generation timestamps.
 - Audio Overview and Storyboard narration were generated with `gpt-4o-mini-tts` using Cedar. The interface and public claim ledger disclose AI-generated voice.
 - Local Videos are assembled from WorkshopLM UI captures, generated images, generated narration, Style tokens, and locally authored graphic elements. No music track is included.
+- The final public-demo master is hash-bound to one founder-authorized project script narrated with a disclosed OpenAI Cedar AI voice. It does not imitate or represent the founder's voice.
 - The Image API reference fixture is a locally authored one-pixel PNG with its own license note.
 - System font stacks are used for WorkshopLM UI and generated professional work unless a user explicitly supplies and confirms a licensed font.
 
@@ -42,8 +43,7 @@ Attribution: “Apps in ChatGPT · OpenAI Official,” OpenAI, Figma Community, 
 
 Before checking the submission's complete third-party-authorization requirement:
 
-1. Inventory the exact founder-derived public package and final Video by hash.
-2. Confirm every frame and audio track is WorkshopLM-authored, founder-authorized, OpenAI-generated, or covered by a recorded license.
-3. Confirm the final Video has no third-party music, research screenshots, external logos, or unlicensed fonts.
-4. Retain this notice in the tagged judge release and record any additional attribution required by final assets.
-
+1. The exact ready package and final Video are inventoried by their manifests and SHA-256 hashes.
+2. Every reviewed frame and audio track is WorkshopLM-authored, founder-authorized, OpenAI-generated, or covered by the dependency licenses above.
+3. The final Video contains no third-party music, research screenshots, external logos, or unlicensed fonts.
+4. Retain this notice in the tagged judge release and record any additional attribution required by later publication assets.

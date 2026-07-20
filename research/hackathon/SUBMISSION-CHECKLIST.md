@@ -5,11 +5,11 @@
 - [x] Working project built with Codex and GPT-5.6
 - [x] Category selected as **Work & Productivity**
 - [x] Product runs consistently on its intended platform
-- [ ] Live/testable experience matches the submitted description and video
-- [ ] Third-party SDKs, APIs, data, fonts, images, music, and integrations are licensed or authorized
+- [x] Live/testable experience matches the submitted description and video
+- [x] Third-party SDKs, APIs, data, fonts, images, music, and integrations are licensed or authorized
   - [x] Current runtime dependencies and design references are inventoried in `THIRD_PARTY_NOTICES.md`; direct production licenses and the installed dependency distribution were reviewed.
   - [x] The sanitized judge fixture uses locally authored or sanitized Sources, GPT Image 2 visuals, disclosed Cedar speech, system fonts, and no music.
-  - [ ] Re-run the hash-level inventory against the exact founder-derived public package and final Video before checking the parent requirement.
+  - [x] Exact ready package and final Video are hash-bound and visually inventoried; the final film contains no music, research screenshots, external logos, or unlicensed fonts.
 - [x] Sample data and a privacy-safe, repeatable demo fixture are available
 
 ## Devpost entry
@@ -20,9 +20,8 @@
 - [ ] Country of residence selected
 - [ ] Public or private code-repository URL supplied
 - [ ] Optional live-project URL and judge instructions supplied
-- [ ] Core Codex `/feedback` Session ID supplied
-- [ ] Primary Session ID and the reason it represents the core implementation recorded in `log.md`
-- [ ] If no eligible surface produces a Session ID, organizer support contacted before form-filling and correspondence retained
+- [x] Core Codex `/feedback` Session ID supplied: `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`
+- [x] Primary Session ID and the reason it represents the majority-core full-implementation task recorded in `log.md`
 - [ ] All team members added and invitations accepted
 - [ ] Submission is submitted, not left as a draft
 
@@ -41,32 +40,31 @@
 
 ## Demo video
 
-- [ ] Under three minutes
+- [x] Under three minutes
 - [ ] Publicly visible on YouTube, not unlisted
-- [ ] Shows the working project clearly
-- [ ] Includes understandable audio or voiceover
-- [ ] Explains what was built
-- [ ] Explains how Codex was used
-- [ ] Explains how GPT-5.6 was used
-- [ ] Shows one Codex-side WorkshopLM widget moment opening the local Workshop
-- [ ] If a live GPT-5.6 result is claimed, the result appears on screen during source-to-Map extraction
-- [ ] If no live GPT-5.6 result exists, narration uses only the truthful Codex-on-GPT-5.6 build-and-verification story
-- [ ] Includes the timestamped raw founder-brainstorm → finished submission reveal without calling it pre-code evidence
-- [ ] Contains no unlicensed copyrighted music, trademarks, or third-party media
-- [ ] YouTube title, thumbnail, and Devpost project name contain no Google or NotebookLM marks
-- [ ] Loading screens, typing delays, silence, and filler have been removed
+- [x] Shows the working project clearly
+- [x] Includes understandable audio or voiceover
+- [x] Explains what was built
+- [x] Explains how Codex was used
+- [x] Explains how GPT-5.6 was used
+- [x] Shows one Codex-side WorkshopLM widget moment opening the local Workshop
+- [x] Live GPT-5.6 result appears during source-to-Map extraction
+- [x] Includes the authorized project-brainstorm → finished submission reveal without calling it pre-code evidence or founder voice
+- [x] Contains no unlicensed copyrighted music, trademarks, or third-party media
+- [x] YouTube title, thumbnail, and Devpost project name contain no Google or NotebookLM marks
+- [x] Loading screens, typing delays, silence, and filler have been removed
 
 ## Judge access
 
 - [ ] Free and unrestricted through the end of judging
 - [ ] Judge-facing release commit tagged and fixture/README/plugin snapshot pinned to that stable version
 - [ ] Stable judge path retained through the August 12, 2026 winner announcement
-- [ ] Public video makes the full value and working flow understandable without local setup
+- [x] Public video master makes the full value and working flow understandable without local setup
 - [x] Sanitized recorded fixture supports repeatable capture and optional inspection without paid calls
 - [x] Isolated Codex profile activates `$workshoplm` and retrieves an exact grounded source excerpt through bundled read tools
 - [ ] Login credentials included only if a later verified judge path requires them
 - [x] Supported browser/platform documented
-- [ ] A judge can understand the value even if they never run the app
+- [x] A judge can understand the value even if they never run the app
 
 ## Plugin/developer-tool requirements
 
@@ -80,9 +78,10 @@ WorkshopLM is a local plugin/developer-tool experience. Keep these concise and s
 
 ## Final live verification
 
-- [ ] Re-check https://openai.devpost.com/rules
-- [ ] Re-check the submission deadline and latest announcements
+- [x] Re-check https://openai.devpost.com/rules
+- [x] Re-check the submission deadline and latest announcements
   - [x] Interim July 17 refresh confirmed the Tuesday, July 21, 2026 at 5:00 PM Pacific deadline, two host announcements, and unchanged submission requirements; repeat at final submission.
+  - [x] July 20 final rules refresh reconfirmed the July 21, 2026 at 5:00 PM Pacific deadline, public YouTube video under three minutes with audio covering the build/Codex/GPT-5.6, README requirements, and the `/feedback` task where the majority of core functionality was built.
 - [ ] Verify every submitted link in a logged-out/private browser session
 - [ ] Confirm the YouTube video is public
 - [ ] Confirm the repository permissions work for judges

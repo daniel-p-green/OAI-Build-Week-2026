@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "status": "founder-resolved-candidate",
+  "createdAt": "2026-07-20T19:53:24.346Z",
+  "elapsedSeconds": 6,
+  "sourceDraft": "submission/DEVPOST-DRAFT.md",
+  "submission": {
+    "relativePath": ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json",
+    "publicRelativePath": "outputs/final-submission-output-set/manifest.json",
+    "sha256": "2e89ee4397da11f86de61d78c90128e8a2bb7261763b6a5e0b3fed64f57c6291"
+  },
+  "capture": {
+    "relativePath": "outputs/demo-recording-final/manifest.json",
+    "submissionSha256": "2e89ee4397da11f86de61d78c90128e8a2bb7261763b6a5e0b3fed64f57c6291"
+  },
+  "film": {
+    "relativePath": "outputs/demo-film-final/manifest.json",
+    "videoSha256": "3b7cecda641588335129b2cbcdc4cf0543c9be029ec03d713097213be1f37694",
+    "durationSeconds": 140.010667
+  },
+  "candidate": {
+    "relativePath": "submission/DEVPOST-FOUNDER-CANDIDATE.md",
+    "sha256": "f6900423b2fa69ea773cb761269a73f1ae281b716ae1d5eaa48b5216b2efef7b"
+  },
+  "remainingPublicationFields": [
+    "public YouTube URL"
+  ]
+}

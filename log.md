@@ -12097,3 +12097,41 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 ### Decision / remaining gate
 
 - This is a restrained product-quality pass, not evidence of final readiness. It did not run provider generation and does not replace the founder-recorded browser flow, real founder inputs, review feedback ID, public video, or Devpost checks in `GOAL.md`.
+
+---
+
+## 2026-07-20 14:36 CT — Founder-authorized package and 2:20 public-demo master verified
+
+### Changed
+
+- Replaced the missing founder-voice dependency with a founder-authorized project script narrated by a disclosed OpenAI Cedar AI voice. The manifest states that the audio is not Daniel's voice and is not Realtime capture.
+- Extended founder-capture, live-operator, final-capture, film, and submission-promotion contracts to preserve the exact `founder-authorized-script-and-ai-narration` provenance and shareable Source permission without weakening the private-Source or stale-approval gates.
+- Ran the bounded final operator with 13 paid provider requests: one `gpt-5.6-terra` Map, six GPT Image 2 panels, five Cedar Storyboard clips, and one Cedar Audio Overview. A local HyperFrames clipping failure was repaired without repeating provider requests.
+- Captured all twelve live browser beats, regenerated only three changed editorial Cedar clips, rendered the final film, normalized narration, and promoted the founder-resolved Devpost candidate.
+
+### Verified
+
+- The final operator package `.workshoplm/final-operator/generated/submission-output-set-v1/manifest.json` is `ready`, verifies as valid/current/untampered, contains 30 assets, and records no limitations. Its image contact sheet passed visual review for coherence and absence of third-party logos or watermarks.
+- `pnpm demo:capture-final` passed with a 27.48-second, twelve-beat browser capture bound to the exact ready package and shareable founder-authorized Source.
+- `pnpm demo:film:final` and `pnpm demo:film:verify-final` passed with ten ready shots, zero blocked shots, zero missing evidence, a 140.010667-second H.264/AAC master, and SHA-256 `3b7cecda641588335129b2cbcdc4cf0543c9be029ec03d713097213be1f37694`.
+- Full FFmpeg decode completed without error. EBU R128 measurement reported -16.7 LUFS integrated, 4.6 LU loudness range, and -2.4 dB true peak.
+- `pnpm submission:promote-founder` produced `submission/DEVPOST-FOUNDER-CANDIDATE.md`; the only remaining publication field is the public YouTube URL.
+- The official rules were fetched live on July 20. They still require submission by July 21, 2026 at 5:00 PM Pacific, a public YouTube video under three minutes with audio covering what was built and use of Codex/GPT-5.6, the required README, and the `/feedback` task where the majority of core functionality was built.
+
+### Decisions and remaining gates
+
+- Selected Codex task `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`, titled `Build WorkshopLM — Full Implementation`, for `/feedback`. Live Codex task inspection confirms it is the long-running full-implementation task containing the majority of core product construction, integration, verification, and delegated lanes. The current final-publication task is not substituted for it.
+- The final provider-operation increment is 17 requests: one source TTS request, thirteen final-operator requests, and three selective editorial-narration requests. The source TTS request ID is unavailable because local assembly failed after the successful provider response; the preserved WAV and transcript are hash-bound, and the assembly retry made no second provider call.
+- External gates remain: upload the verified master publicly to YouTube, verify playback logged out, create and push the stable judge release, complete the account-specific Devpost fields, and submit.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (final publication and acceptance task; not the majority-core `/feedback` task).
+
+---
+
+## 2026-07-20 14:51 CT — Final local submission regression is green
+
+- `pnpm check` passed repository hygiene, lint, typecheck, and tests across all 13 packages: 132 worker tests and 39 web tests passed.
+- The production-build Playwright suite passed all 35 scenarios after three stale screenshot/ARIA expectations were reconciled to the already-implemented Evidence → Synthesis → direction hierarchy. Each changed baseline was inspected at native size before acceptance.
+- `pnpm demo:e2e` passed all six deterministic acceptance gates. `pnpm submission:build` and `pnpm submission:verify` rebuilt a valid, current, untampered 25-asset no-credential fixture package.
+- `pnpm demo:film:verify-sample` passed with the intentional authorized-sample boundary preserved at eight ready shots and two blocked final-evidence shots. `pnpm demo:film:verify-final` passed with ten ready shots and no missing evidence.
+- `pnpm submission:packet:verify` passed against both proof paths and the founder-resolved candidate. The only unresolved candidate field is the public YouTube URL.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3`.

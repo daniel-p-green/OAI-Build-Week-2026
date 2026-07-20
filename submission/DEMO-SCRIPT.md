@@ -1,6 +1,6 @@
 # WorkshopLM public demo script
 
-Target: 2:20. Treat 2:55 as the absolute export ceiling so YouTube cannot report a rules-breaking duration. The current rough cut already runs 2:20 with verified Cedar narration; replace only the two blocked evidence beats.
+Target: 2:20. Treat 2:55 as the absolute export ceiling so YouTube cannot report a rules-breaking duration. The final verified master runs 2:20 with disclosed Cedar narration and no blocked evidence beats.
 
 ## Evidence selector before recording
 
@@ -11,17 +11,17 @@ Every answer must point to an inspected artifact in `log.md`. A missing or ambig
 | Live GPT-5.6 result | **Yes.** Terra request/result provenance and inspected grounded Map exist. | Show the provider-backed source-to-Map result. |
 | Live GPT Image 2 set | **Yes.** Six hashed images, request provenance, coherence review, and gallery footage exist. | Show the provider-backed gallery insert. |
 | Provider narration | **Yes.** Five product-Video clips and ten editorial-film Cedar clips are hash-bound and inspected. | Disclose AI-generated voice. |
-| Live Realtime voice | **Yes, controlled Chrome.** Grounded speech, durable transcript/tool provenance, interruption, and confirmed write are recorded. | Do not imply the imported founder recording itself used Realtime or that the automated Codex in-app browser granted microphone permission. |
+| Live Realtime voice | **Yes, controlled Chrome.** Grounded speech, durable transcript/tool provenance, interruption, and confirmed write are recorded. | Do not imply the imported project-brainstorm media itself used Realtime or that the automated Codex in-app browser granted microphone permission. |
 | Codex plugin doorway captured | **Yes.** Legible Codex-side footage opens the local Workshop. | Keep the current doorway shot. |
-| Founder brainstorm captured | **No.** Dated recording and transcript are missing. | Call it a contemporaneous brainstorm, never pre-code evidence. This blocks shot 3. |
-| Final submission produced in WorkshopLM | **No.** The founder-derived final created work is missing. | Do not call the current partial fixture the final submission. This blocks shot 10. |
-| Primary `/feedback` ID recorded | **No.** | Required before final submission, but not a film-content gate. |
+| Authorized project brainstorm captured | **Yes.** The authorized script, disclosed AI narration, transcript, permission, and hashes are bound to the final Workshop. | Never describe the AI voice as Daniel's voice or as Realtime capture. |
+| Final submission produced in WorkshopLM | **Yes.** The ready connected package verifies with no limitations. | Show the exact package and build trace in shot 10. |
+| Primary `/feedback` ID recorded | **Yes.** `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324` is the long-running “Build WorkshopLM — Full Implementation” task where the majority of core functionality was built. | Use this exact ID in Devpost. |
 
 | Time | Screen action | Narration |
 | --- | --- | --- |
 | 0:00–0:13 | Open the connected Presentation, Infographic, Audio Overview, and Video, then pull back to their WorkshopLM Map. | “WorkshopLM turns conversations and Sources into professional knowledge work—every expression sharing one Style and one source trail.” |
 | 0:13–0:26 | Show the captured Codex-side WorkshopLM doorway and use it to open the Workshop. | “WorkshopLM is one unified plugin. Codex stays the conversation surface, uses the project's grounded tools, and opens the visual Workshop only when spatial editing is useful.” |
-| 0:26–0:44 | Open Sources and the dated founder brainstorm, then show the provider-backed Terra Map result and separate Realtime proof cue. | “I begin with an honestly dated, unstructured recording, imported as a grounded Source—not relabeled as Realtime. Live OpenAI Realtime voice is proven separately. GPT-5.6 then shapes the founder transcript and selected Sources into a semantic Map, with every factual node retaining its exact locator.” |
+| 0:26–0:44 | Open Sources and the authorized project brainstorm, then show the provider-backed Terra Map result and separate Realtime proof cue. | “I begin with an authorized project brainstorm, narrated by a disclosed AI voice and imported as a grounded Source. Separately, live Realtime voice is proven. GPT-5.6 shapes the text into a semantic Map while every factual node keeps its exact locator.” |
 | 0:44–0:58 | Open a source locator, then move or rename one Map node. | “The Map stays editable, and a meaningful change makes dependent work stale.” |
 | 0:58–1:10 | Choose `Approve brief`, then show the readable Brief. | “The first approval turns the current Map into an inspectable executable Brief.” |
 | 1:10–1:22 | Show the Style summary with palette, type, layout, and negative rules. | “Style is set once and stays reviewable, so every created format follows the same visual rules.” |
@@ -45,10 +45,10 @@ Every answer must point to an inspected artifact in `log.md`. A missing or ambig
 
 ## Recording gate and order
 
-1. Capture and timestamp the founder brainstorm plus transcript; label it truthfully as a current recording.
-2. Run the bounded founder operator to create the Source-derived Terra Map, six-image batch, Cedar narration, Audio Overview, HyperFrames Video, and verified submission package.
-3. Run `pnpm demo:film:final`; it replaces the two blocked beats and refuses false finality.
-4. Retrieve the `/feedback` ID from the session that most honestly represents the core implementation; record the selected ID and rationale in `log.md`.
+1. Keep the authorized project script, disclosed AI narration, transcript, and shareable permission bound to the package.
+2. Preserve the verified Source-derived Terra Map, six-image batch, Cedar narration, Audio Overview, HyperFrames Video, and ready submission package.
+3. Re-run `pnpm demo:film:verify-final` after any edit.
+4. Use `/feedback` task `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324` and retain the rationale in `log.md`.
 5. Reject any final export longer than 2:55, then verify the public upload logged out.
 
 ## Repeatable fixture draft

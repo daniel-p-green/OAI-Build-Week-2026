@@ -1,72 +1,40 @@
 {
   "schemaVersion": 1,
-  "sourceCapturedAt": "2026-07-17T00:17:05.510Z",
-  "mode": "draft",
-  "planStatus": "draft",
-  "finalReady": false,
+  "sourceCapturedAt": "2026-07-20T19:26:54.334Z",
+  "mode": "final",
+  "planStatus": "final",
+  "finalReady": true,
   "timeline": {
     "durationSeconds": 140,
     "maxDurationSeconds": 175,
     "shots": 10,
-    "narrationWords": 278,
-    "narrationWordsPerMinute": 119.1
+    "narrationWords": 277,
+    "narrationWordsPerMinute": 118.7
   },
   "capture": {
-    "status": "fixture-draft",
-    "durationSeconds": 60.76,
-    "sha256": "5084c86ab2329e10dde5a78da73bab373cc83f157160cc466071c99a4977a9cd",
+    "status": "founder-final-candidate",
+    "durationSeconds": 27.48,
+    "sha256": "4f8fd768cf0109acb609d4eb64609990c4cf4b6cb57993e55c8ec44b787c3698",
     "referencedBeats": 12
   },
   "finalVideo": {
-    "exists": false
+    "exists": true,
+    "durationSeconds": 140.010667,
+    "videoStreams": 1,
+    "audioStreams": 1
   },
   "readyShots": [
     "promise",
     "codex-doorway",
+    "capture-and-shape",
     "evidence-and-control",
     "brief-approval",
     "style",
     "outputs",
     "storyboard-approval",
-    "render-and-trace"
-  ],
-  "blockedShots": [
-    "capture-and-shape",
+    "render-and-trace",
     "meta-reveal"
   ],
-  "missingEvidence": [
-    {
-      "shotId": "capture-and-shape",
-      "label": "Honestly dated founder-brainstorm recording",
-      "path": "outputs/demo-film-inputs/founder-brainstorm.mov",
-      "validator": "founder-capture",
-      "exists": false,
-      "satisfied": false,
-      "issue": "Evidence file is missing or empty."
-    },
-    {
-      "shotId": "capture-and-shape",
-      "label": "Founder-brainstorm transcript used by the recorded Workshop",
-      "path": "outputs/demo-film-inputs/founder-brainstorm.txt",
-      "validator": "founder-capture",
-      "exists": false,
-      "satisfied": false,
-      "issue": "Evidence file is missing or empty."
-    },
-    {
-      "shotId": "meta-reveal",
-      "label": "Verified non-partial final connected Workshop",
-      "path": ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json",
-      "validator": "ready-submission-manifest",
-      "exists": false,
-      "satisfied": false,
-      "issue": "Evidence file is missing or empty."
-    },
-    {
-      "shotId": "final-export",
-      "label": "Final edited MP4 with video and audio streams",
-      "path": "outputs/demo-film-final/workshoplm-demo.mp4",
-      "exists": false
-    }
-  ]
+  "blockedShots": [],
+  "missingEvidence": []
 }

@@ -149,10 +149,9 @@ test("reset fixture is calm and responsive", async ({ page }) => {
   await page.setViewportSize({ width: 1200, height: 800 });
   await page.goto("/");
   await expectMapReady(page, viewports[0]);
-  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("1 key evidence");
-  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("1 Synthesis");
-  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("1 Direction");
-  const mapOverview = page.getByRole("region", { name: "Map overview" });
+  await expect(page.getByRole("region", { name: "Map hierarchy" })).toContainText("1 key claims");
+  await expect(page.getByRole("region", { name: "Map hierarchy" })).toContainText("1 point");
+  const mapOverview = page.getByRole("region", { name: "Map hierarchy" });
   await expect(mapOverview).toContainText("Recommended direction");
   await expect(mapOverview).toContainText("Visual behavior");
   await expect(mapOverview).not.toContainText("The product promise");
@@ -651,8 +650,8 @@ test.describe("completed Workshop judge path", () => {
         await expect(page.locator(".map-insight-bar")).toBeHidden();
         await expect(page.locator(".map-mobile-outline > button").first()).toContainText("Direction");
       } else {
-        await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Approved direction");
-        await expect(page.getByRole("region", { name: "Map overview" })).not.toContainText("Turn this evidence into an approved Brief");
+        await expect(page.getByRole("region", { name: "Map hierarchy" })).toContainText("Approved direction");
+        await expect(page.getByRole("region", { name: "Map hierarchy" })).not.toContainText("Turn this evidence into an approved Brief");
       }
       await expectPrimaryActions(page, 1);
       await expectScreen(page, `${viewport.name}-map`);
@@ -1547,8 +1546,8 @@ test("a new professional reaches the real Map through the durable first-use path
   await expectScreen(page, "desktop-onboarding-source-ready");
   await page.getByRole("button", { name: "Build my Map" }).click();
 
-  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("key evidence");
-  await expect(page.getByRole("region", { name: "Map overview" })).toContainText("Recommended direction");
+  await expect(page.getByRole("region", { name: "Map hierarchy" })).toContainText("key claims");
+  await expect(page.getByRole("region", { name: "Map hierarchy" })).toContainText("Recommended direction");
   await expect(page.getByRole("button", { name: "Recommended direction: Create work a consultant can refine and present" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Approve brief" })).toBeVisible();
   await expect(page.locator(".map-source-shelf")).toContainText("1 selected");

@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "mode": "final",
+  "planStatus": "draft",
+  "finalReady": false,
+  "missingEvidence": [
+    {
+      "shotId": "capture-and-shape",
+      "label": "Honestly dated founder-brainstorm recording",
+      "path": "outputs/demo-film-inputs/founder-brainstorm.mov",
+      "validator": "founder-capture",
+      "exists": false,
+      "satisfied": false,
+      "issue": "Evidence file is missing or empty."
+    },
+    {
+      "shotId": "capture-and-shape",
+      "label": "Founder-brainstorm transcript used by the recorded Workshop",
+      "path": "outputs/demo-film-inputs/founder-brainstorm.txt",
+      "validator": "founder-capture",
+      "exists": false,
+      "satisfied": false,
+      "issue": "Evidence file is missing or empty."
+    },
+    {
+      "shotId": "meta-reveal",
+      "label": "Verified non-partial final connected Workshop",
+      "path": ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json",
+      "validator": "ready-submission-manifest",
+      "exists": false,
+      "satisfied": false,
+      "issue": "Evidence file is missing or empty."
+    },
+    {
+      "shotId": "final-capture",
+      "label": "Founder-derived browser capture",
+      "path": "outputs/demo-recording-final/manifest.json",
+      "exists": false,
+      "satisfied": false,
+      "issue": "Run pnpm demo:capture-final after the founder Workshop package is ready."
+    },
+    {
+      "shotId": "final-export",
+      "label": "Final edited MP4 with video and audio streams",
+      "path": "outputs/demo-film-final/workshoplm-demo.mp4",
+      "exists": false,
+      "satisfied": false,
+      "issue": "Run pnpm demo:film:final after final capture succeeds."
+    }
+  ]
+}

@@ -22,6 +22,11 @@ const paths = {
   roughCut: "outputs/demo-film-rough-cut/manifest.json",
   sampleReadme: "outputs/demo-film-sample/README.md",
   sampleCut: "outputs/demo-film-sample/manifest.json",
+  finalCut: "outputs/demo-film-final/manifest.json",
+  finalReadiness: "outputs/demo-film-plan/edit-readiness.json",
+  founderCandidate: "submission/DEVPOST-FOUNDER-CANDIDATE.md",
+  founderCandidateEvidence: "submission/DEVPOST-FOUNDER-CANDIDATE.json",
+  publicFinalPackage: "outputs/final-submission-output-set/manifest.json",
   filmPlan: "submission/demo-film-plan.json",
   thumbnail: "outputs/demo-film-plan/thumbnail-preview.png",
   thumbnailManifest: "outputs/demo-film-plan/thumbnail-preview.json",
@@ -33,7 +38,7 @@ const paths = {
   package: "package.json",
 };
 
-const [readme, founderRunbook, devpost, script, ledger, audit, checklist, roughReadme, sampleReadme, provider, narration, roughCut, sampleCut, filmPlan, thumbnailManifest, uiGallery, judgeImages, judgeAudio, acceptanceManifest, packageJson] = await Promise.all([
+const [readme, founderRunbook, devpost, script, ledger, audit, checklist, roughReadme, sampleReadme, founderCandidate, provider, narration, roughCut, sampleCut, finalCut, finalReadiness, founderCandidateEvidence, publicFinalPackageBytes, filmPlan, thumbnailManifest, uiGallery, judgeImages, judgeAudio, acceptanceManifest, packageJson] = await Promise.all([
   readText(paths.readme),
   readText(paths.founderRunbook),
   readText(paths.devpost),
@@ -43,10 +48,15 @@ const [readme, founderRunbook, devpost, script, ledger, audit, checklist, roughR
   readText(paths.checklist),
   readText(paths.roughReadme),
   readText(paths.sampleReadme),
+  readText(paths.founderCandidate),
   readJson(paths.provider),
   readJson(paths.narration),
   readJson(paths.roughCut),
   readJson(paths.sampleCut),
+  readJson(paths.finalCut),
+  readJson(paths.finalReadiness),
+  readJson(paths.founderCandidateEvidence),
+  readFile(resolve(repository, paths.publicFinalPackage)),
   readJson(paths.filmPlan),
   readJson(paths.thumbnailManifest),
   readJson(paths.uiGallery),
@@ -76,7 +86,7 @@ for (const phrase of forbidden) {
 
 assert(devpost.includes("**GPT-5.6 runs the product.**"), "Devpost copy does not include the verified GPT-5.6 runtime result.");
 assert(devpost.includes("six GPT Image 2 visuals") && devpost.includes("one grounded Cedar Audio Overview") && devpost.includes("five Cedar Storyboard clips"), "Devpost copy does not include verified provider media.");
-assert(script.includes("Target: 2:20") && script.includes("**No.** Dated recording and transcript are missing"), "Demo script is not reconciled to the current 2:20 founder-gated edit.");
+assert(script.includes("Target: 2:20") && script.includes("Authorized project brainstorm captured | **Yes.**") && script.includes("Final submission produced in WorkshopLM | **Yes.**"), "Demo script is not reconciled to the verified 2:20 final edit.");
 assert(roughReadme.includes("Replace shot 10 only after the final non-partial submission Output set exists.") && roughReadme.includes("`/feedback` remains a separate Devpost submission requirement, not a film-content gate."), "Rough-cut handoff incorrectly treats /feedback as film evidence.");
 assert(sampleReadme.includes("It is intentionally not founder footage or the public submission video.") && sampleReadme.includes("pnpm demo:film:verify-sample"), "Sample-film handoff does not preserve its truth boundary or verifier.");
 assert(packageJson.scripts?.["judge:start"] === "pnpm demo:e2e && pnpm demo:serve", "The one-command judge fixture path is missing or no longer serves the acceptance root.");
@@ -85,7 +95,7 @@ assert(packageJson.scripts?.["demo:capture-final"] === "pnpm --filter @workshopl
 assert(packageJson.scripts?.["submission:promote-founder"] === "tsx scripts/promote-founder-submission.ts" && readme.includes("pnpm submission:promote-founder") && founderRunbook.includes("pnpm submission:promote-founder"), "The founder-evidence Devpost promotion command is missing from the executable handoff.");
 assert(devpost.includes("pnpm install --frozen-lockfile") && devpost.includes("pnpm judge:start") && !devpost.includes("pnpm demo:e2e && pnpm dev"), "Devpost judge instructions do not use the verified one-command fixture path.");
 assert(founderRunbook.includes("exactly thirteen planned OpenAI requests") && founderRunbook.includes("pnpm demo:founder -- --founder-recording") && founderRunbook.includes("shareablePreflightCommand") && !/twelve-request|MAX_PAID_REQUESTS=12|below twelve/.test(founderRunbook), "Founder runbook has drifted from the current thirteen-request private-review workflow.");
-assert(ledger.includes("Last reconciled: 2026-07-17 CT") && audit.includes("Audit date: 2026-07-17 CT"), "Submission truth files are not dated to the current reconciliation.");
+assert(ledger.includes("Last reconciled: 2026-07-20 CT") && audit.includes("Audit date: 2026-07-20 CT"), "Submission truth files are not dated to the current reconciliation.");
 
 assert(provider.sourceMode === "authorized-sample" && provider.founderSource === false, "Provider evidence no longer records the authorized-sample boundary.");
 assert(provider.groundedMap?.model === "gpt-5.6-terra" && provider.groundedMap.requestId, "Verified Terra Map provenance is missing.");
@@ -129,8 +139,17 @@ for (const evidence of [sampleCut.metaRevealEvidence.submissionManifest, sampleC
   const bytes = await readFile(resolve(repository, evidence.relativePath));
   assert(createHash("sha256").update(bytes).digest("hex") === evidence.sha256, `Clean review trace hash mismatch: ${evidence.relativePath}`);
 }
-assert(filmPlan.shots.at(-1)?.endSeconds === 140 && filmPlan.shots.filter((shot) => shot.state === "ready").length === 8 && filmPlan.shots.filter((shot) => shot.state === "blocked").length === 2, "Film plan is not at the eight-ready/two-blocked truth state.");
+assert(filmPlan.status === "final" && filmPlan.shots.at(-1)?.endSeconds === 140 && filmPlan.shots.every((shot) => shot.state === "ready"), "Film plan is not at the final ten-ready truth state.");
 assert(filmPlan.finalCaptureManifest === "outputs/demo-recording-final/manifest.json" && filmPlan.shots.find((shot) => shot.id === "render-and-trace")?.preferCapture === true, "Final film is not bound to the founder-derived browser capture and its played Video beat.");
+const finalRoot = resolve(repository, "outputs/demo-film-final");
+const finalVideoBytes = await readFile(resolve(finalRoot, finalCut.video.relativePath));
+assert(finalCut.status === "final-public-demo" && finalCut.limitations?.length === 0 && Math.round(finalCut.video.durationSeconds) === 140, "Final film manifest is not publication-ready.");
+assert(finalCut.video.streams.some((stream) => stream.codec_name === "h264") && finalCut.video.streams.some((stream) => stream.codec_name === "aac"), "Final film is missing H.264/AAC streams.");
+assert(createHash("sha256").update(finalVideoBytes).digest("hex") === finalCut.video.sha256, "Final film no longer matches its manifest hash.");
+assert(finalReadiness.mode === "final" && finalReadiness.finalReady === true && finalReadiness.blockedShots?.length === 0 && finalReadiness.missingEvidence?.length === 0, "Final edit-readiness report is not green.");
+assert(founderCandidateEvidence.remainingPublicationFields?.length === 1 && founderCandidateEvidence.remainingPublicationFields[0] === "public YouTube URL", "Founder candidate has unexpected unresolved publication fields.");
+assert(founderCandidate.includes("019f5eb9-d996-7f42-ac5a-d4ed2cc8a324") && !founderCandidate.includes("[designated primary session ID"), "Founder candidate is missing the majority-core /feedback task ID.");
+assert(founderCandidateEvidence.submission?.publicRelativePath === paths.publicFinalPackage && createHash("sha256").update(publicFinalPackageBytes).digest("hex") === founderCandidateEvidence.submission.sha256, "Public final-package mirror is missing or no longer hash-identical to the promoted package.");
 
 const thumbnailBytes = await readFile(resolve(repository, paths.thumbnail));
 const thumbnailProofBytes = await readFile(resolve(repository, thumbnailManifest.productProof));
@@ -157,7 +176,7 @@ for (const panel of judgeImages.panels) {
 }
 const judgeAudioBytes = await readFile(resolve(repository, paths.judgeAudioFile));
 assert(judgeAudio.audio?.model === "gpt-4o-mini-tts" && judgeAudio.audio.voice === "cedar" && judgeAudio.audio.durationSeconds > 0 && judgeAudio.audio.sha256 === judgeAudio.downloadedSha256, "Judge Audio Overview provider provenance is incomplete.");
-assert(readme.includes(`a playable ${judgeAudio.audio.durationSeconds.toFixed(1)}-second Cedar Audio Overview`), "README Audio Overview duration has drifted from the verified provider artifact.");
+assert(readme.includes(`a playable ${judgeAudio.audio.durationSeconds}-second Cedar Audio Overview`), "README Audio Overview duration has drifted from the verified provider artifact.");
 assert(createHash("sha256").update(judgeAudioBytes).digest("hex") === judgeAudio.audio.sha256 && judgeAudioBytes.length === judgeAudio.audio.byteCount, "Judge Audio Overview fixture hash mismatch.");
 const packagedAudio = acceptanceManifest.assets?.find((asset) => asset.type === "audio_overview" && asset.provenance === "narration");
 assert(packagedAudio?.relativePath === "audio-overview.wav" && packagedAudio.sha256 === judgeAudio.audio.sha256 && packagedAudio.byteCount === judgeAudio.audio.byteCount, "Acceptance package does not contain the verified Cedar Audio Overview.");
@@ -174,4 +193,6 @@ process.stdout.write(`${JSON.stringify({
   uiGallery: { screenshots: uiGallery.screenshots.length, providerBackedOutputs: "08-current-outputs.png" },
   judgeFixture: { providerBackedImages: judgeImages.panels.length, providerBackedAudioOverview: { model: judgeAudio.audio.model, voice: judgeAudio.audio.voice, seconds: judgeAudio.audio.durationSeconds }, paidReplayCalls: 0 },
   unresolvedFounderSlots: unresolvedSlots,
+  finalFilm: { status: finalCut.status, seconds: finalCut.video.durationSeconds, sha256: finalCut.video.sha256, readyShots: finalReadiness.readyShots.length },
+  remainingPublicationFields: founderCandidateEvidence.remainingPublicationFields,
 }, null, 2)}\n`);

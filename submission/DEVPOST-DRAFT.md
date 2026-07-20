@@ -119,7 +119,7 @@ Every public claim in this description is reconciled against the evidence ledger
 | Category | Work & Productivity |
 | Repository URL | https://github.com/daniel-p-green/OAI-Build-Week-2026 |
 | Video URL | `[final public YouTube URL after logged-out verification]` |
-| Codex /feedback Session ID | `[designated primary session ID; rationale logged in log.md]` |
+| Codex /feedback Session ID | `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324` |
 
 ## Judge access and testing instructions (form field)
 
@@ -131,7 +131,7 @@ WorkshopLM is a local-first Codex plugin and browser workspace. You can score it
 
 The append-only build log (`log.md`), goal file (`GOAL.md`), and claim ledger (`submission/CLAIM-LEDGER.md`) document the autonomous build and bound every public claim to direct evidence.
 
-## Video narration spine (aligns with the verified 2:20 rough cut)
+## Video narration spine (aligns with the verified 2:20 final master)
 
 1. **Why (0:00–0:13):** conversations and Sources become connected professional knowledge work.
 2. **How (0:13–1:22):** Codex doorway, founder Source, Terra Map, exact evidence, Brief approval, and Style.

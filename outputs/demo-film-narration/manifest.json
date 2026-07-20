@@ -6,7 +6,7 @@
   "voice": "cedar",
   "requestCount": 10,
   "regeneratedRequestCount": 1,
-  "generatedAt": "2026-07-17T01:13:31.676Z",
+  "generatedAt": "2026-07-20T19:21:21.879Z",
   "planPath": "submission/demo-film-plan.json",
   "shots": [
     {
@@ -39,17 +39,17 @@
     },
     {
       "id": "capture-and-shape",
-      "title": "Messy thought becomes a grounded Map",
+      "title": "Authorized project brief becomes a grounded Map",
       "relativePath": "outputs/demo-film-narration/capture-and-shape.wav",
-      "sha256": "0d4784d6ab688472823c83a4bd634906a7ccb7130cb849de0570824cfdf01cf1",
-      "narrationSha256": "d6b1661cd328ad4a7cb4511789d5dab80923221c6c856926ad649bc1615239a8",
-      "byteCount": 933644,
-      "durationSeconds": 19.45,
+      "sha256": "13c510147b0c278617f4036db6a9fb233029e10b99eefb619a471da7691d9e9f",
+      "narrationSha256": "a0899e742a472cefa941b5109d1768b74b452793fcffcd6d5d1485edf9caf184",
+      "byteCount": 844844,
+      "durationSeconds": 17.6,
       "slotSeconds": 18,
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
-      "requestId": "req_3b18d35339ba4b1f86ed9bacb0e9fc7d",
-      "generatedAt": "2026-07-17T01:13:31.675Z"
+      "requestId": "req_3b922e0284a94955b30db0353fe5343d",
+      "generatedAt": "2026-07-20T19:21:21.879Z"
     },
     {
       "id": "evidence-and-control",
@@ -139,15 +139,15 @@
       "id": "meta-reveal",
       "title": "The submission proves the product",
       "relativePath": "outputs/demo-film-narration/meta-reveal.wav",
-      "sha256": "e5d4c744396ebbe92549648737c5bd0ff14ef422ee0388f5959895c13fcc728b",
-      "narrationSha256": "c5b40684a357583e8a9341661d6827f45ac3fc80e68e06cd21dfc598bb1edac5",
-      "byteCount": 698444,
-      "durationSeconds": 14.55,
+      "sha256": "5c0e6a0604c97ab1f2cb34a332dc0ec9fb967eaf23b11f263d6a7b70bef77e9d",
+      "narrationSha256": "973cf4438a3c1256e8e0fa63037b6fea7a749993a327ba11b20cfa002d4d85f5",
+      "byteCount": 739244,
+      "durationSeconds": 15.4,
       "slotSeconds": 16,
       "model": "gpt-4o-mini-tts",
       "voice": "cedar",
-      "requestId": "req_91622fa7d5c54890889ad6b670b0be21",
-      "generatedAt": "2026-07-16T23:47:15.915Z"
+      "requestId": "req_9ab198e2b480498495410170ce3c5297",
+      "generatedAt": "2026-07-20T19:21:03.254Z"
     }
   ]
 }

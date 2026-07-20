@@ -38,6 +38,10 @@ describe("final founder submission promotion", () => {
     expect(() => validateFounderPromotion({ ...evidence(), editFinalReady: false })).toThrow(/verification has not passed/);
   });
 
+  it("accepts a founder-authorized script with disclosed AI narration", () => {
+    expect(validateFounderPromotion({ ...evidence(), captureEvidence: "founder-authorized-script-and-ai-narration" })).toBe(125);
+  });
+
   it("resolves only the LIVE statements and records the measured elapsed time", () => {
     const draft = `Header\n\n\`[LIVE: Founder work is complete.]\`\n\`[FALLBACK: Founder work is not complete.]\`\n\n\`[LIVE: The run took {X minutes}.]\`\n\`[FALLBACK: omit the sentence.]\`\n`;
     expect(resolveFounderSubmissionSlots(draft, 125)).toBe("Header\n\nFounder work is complete.\n\nThe run took 2 minutes 5 seconds.\n");

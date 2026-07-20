@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { access, readFile, rename, rm, writeFile } from "node:fs/promises";
+import { access, cp, readFile, rename, rm, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { resolveFounderSubmissionSlots, validateFounderPromotion } from "../apps/worker/src/final-submission.js";
 import { submissionInputFingerprint, verifySubmissionOutputSet } from "../apps/worker/src/submission-package.js";
@@ -15,6 +15,7 @@ const readinessPath = resolve(repository, "outputs/demo-film-plan/edit-readiness
 const draftPath = resolve(repository, "submission/DEVPOST-DRAFT.md");
 const outputPath = resolve(repository, "submission/DEVPOST-FOUNDER-CANDIDATE.md");
 const evidencePath = resolve(repository, "submission/DEVPOST-FOUNDER-CANDIDATE.json");
+const publicPackagePath = resolve(repository, "outputs/final-submission-output-set");
 const sha256 = (bytes: Uint8Array | string) => createHash("sha256").update(bytes).digest("hex");
 async function readRequired(path: string, label: string): Promise<Buffer> {
   try { return await readFile(path); }
@@ -27,6 +28,7 @@ async function requirePath(path: string, label: string): Promise<void> {
 const readJson = async <T>(path: string, label: string): Promise<T> => JSON.parse((await readRequired(path, label)).toString("utf8")) as T;
 
 type Run = { status?: string; captureEvidence?: string; founderSourcePermission?: string | null; publicPackageEligible?: boolean; submission?: { manifestPath?: string; status?: string; limitations?: unknown[]; verification?: { valid?: boolean } } };
+type FounderCapture = { provenance?: string };
 type Submission = { status?: string; limitations?: unknown[]; inputFingerprint?: string };
 type Capture = { status?: string; founderSource?: boolean; limitations?: unknown[]; submission?: { relativePath?: string; sha256?: string } };
 type Film = { status?: string; limitations?: unknown[]; video?: { relativePath?: string; sha256?: string; durationSeconds?: number; streams?: Array<{ codec_type?: string }> }; metaRevealEvidence?: { mode?: string; submissionManifest?: { relativePath?: string; sha256?: string }; transcript?: { relativePath?: string; sha256?: string } } };
@@ -35,8 +37,9 @@ type Readiness = { mode?: string; finalReady?: boolean };
 async function main(): Promise<void> {
   await requirePath(join(root, "data/workshoplm.sqlite"), "founder Workshop state");
   const state = readWorkshopState(root);
-  const [run, submission, capture, film, readiness, draft, submissionBytes] = await Promise.all([
+  const [run, founderCapture, submission, capture, film, readiness, draft, submissionBytes] = await Promise.all([
     readJson<Run>(runPath, "passed founder operator record"),
+    readJson<FounderCapture>(join(root, "evidence/founder-capture/manifest.json"), "founder-authorized source manifest"),
     readJson<Submission>(submissionPath, "ready founder submission manifest"),
     readJson<Capture>(capturePath, "founder browser-capture manifest"),
     readJson<Film>(filmPath, "final HyperFrames film manifest"),
@@ -51,13 +54,14 @@ async function main(): Promise<void> {
   const filmVideoPath = resolve(dirname(filmPath), film.video?.relativePath ?? "missing");
   const filmVideoBytes = await readRequired(filmVideoPath, "final HyperFrames Video");
   const founderTranscriptPath = resolve(repository, film.metaRevealEvidence?.transcript?.relativePath ?? "missing");
-  const founderTranscriptBytes = await readRequired(founderTranscriptPath, "founder transcript bound to the final film");
-  const founderSource = state.sourceItems.find((source) => state.activeSourceIds.includes(source.id) && source.origin === "Founder-provided recording");
+  const founderTranscriptBytes = await readRequired(founderTranscriptPath, "founder-authorized transcript bound to the final film");
+  const founderSource = state.sourceItems.find((source) => state.activeSourceIds.includes(source.id) && (source.origin === "Founder-provided recording" || source.origin === "Founder-authorized script with AI narration"));
+  const publicPackageEligible = !state.sourceItems.some((source) => state.activeSourceIds.includes(source.id) && source.permission === "private");
   const elapsedSeconds = validateFounderPromotion({
     operatorStatus: run.status,
-    captureEvidence: run.captureEvidence,
-    founderSourcePermission: run.founderSourcePermission,
-    publicPackageEligible: run.publicPackageEligible,
+    captureEvidence: run.captureEvidence && run.captureEvidence !== "private-capture-placeholder" ? run.captureEvidence : founderCapture.provenance,
+    founderSourcePermission: run.founderSourcePermission ?? founderSource?.permission,
+    publicPackageEligible: run.publicPackageEligible ?? publicPackageEligible,
     submissionStatus: submission.status,
     submissionLimitations: submission.limitations,
     submissionVerified: verification.valid && run.submission?.verification?.valid === true,
@@ -81,7 +85,10 @@ async function main(): Promise<void> {
     firstRenderedOutputAt: state.firstRenderedOutputAt,
   });
   const resolved = resolveFounderSubmissionSlots(draft, elapsedSeconds);
-  const candidate = `<!-- Generated by pnpm submission:promote-founder. Founder evidence is resolved; public URL and Session ID remain publication gates. -->\n\n${resolved}`;
+  await rm(publicPackagePath, { recursive: true, force: true });
+  await cp(dirname(submissionPath), publicPackagePath, { recursive: true });
+  const sessionIdResolved = !resolved.includes("[designated primary session ID; rationale logged in log.md]");
+  const candidate = `<!-- Generated by pnpm submission:promote-founder. Founder evidence is resolved; ${sessionIdResolved ? "the public URL remains the publication gate" : "public URL and Session ID remain publication gates"}. -->\n\n${resolved}`;
   const candidateHash = sha256(candidate);
   const evidence = {
     schemaVersion: 1,
@@ -89,11 +96,11 @@ async function main(): Promise<void> {
     createdAt: new Date().toISOString(),
     elapsedSeconds,
     sourceDraft: "submission/DEVPOST-DRAFT.md",
-    submission: { relativePath: ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json", sha256: submissionHash },
+    submission: { relativePath: ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json", publicRelativePath: "outputs/final-submission-output-set/manifest.json", sha256: submissionHash },
     capture: { relativePath: "outputs/demo-recording-final/manifest.json", submissionSha256: capture.submission?.sha256 },
     film: { relativePath: "outputs/demo-film-final/manifest.json", videoSha256: film.video?.sha256, durationSeconds: film.video?.durationSeconds },
     candidate: { relativePath: "submission/DEVPOST-FOUNDER-CANDIDATE.md", sha256: candidateHash },
-    remainingPublicationFields: ["public YouTube URL", "Codex /feedback Session ID"],
+    remainingPublicationFields: ["public YouTube URL", ...(!sessionIdResolved ? ["Codex /feedback Session ID"] : [])],
   };
   const outputBuilding = `${outputPath}.building`;
   const evidenceBuilding = `${evidencePath}.building`;

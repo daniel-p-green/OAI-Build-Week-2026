@@ -46,7 +46,7 @@ const repository = resolve(import.meta.dirname, "..");
 const planPath = resolve(repository, "submission/demo-film-plan.json");
 const reportRoot = resolve(repository, "outputs/demo-film-plan");
 const finalMode = process.argv.includes("--final");
-const requiredMomentIds = ["plugin-doorway", "founder-brainstorm", "realtime-voice", "gpt-5.6-map", "source-trace", "edit-control", "brief-approval", "provider-image-set", "storyboard-approval", "provider-narration", "original-reveal", "build-record", "codex-evidence", "final-submission-output-set"];
+const requiredMomentIds = ["plugin-doorway", "project-brainstorm", "realtime-voice", "gpt-5.6-map", "source-trace", "edit-control", "brief-approval", "provider-image-set", "storyboard-approval", "provider-narration", "original-reveal", "build-record", "codex-evidence", "final-submission-output-set"];
 
 function assert(condition: unknown, message: string): asserts condition {
   if (!condition) throw new Error(message);
@@ -127,14 +127,14 @@ async function inspectEvidence(item: RequiredEvidence): Promise<{ exists: boolea
     try {
       const manifestPath = resolve(dirname(resolve(repository, item.path)), "founder-capture.json");
       const manifest = JSON.parse(await readFile(manifestPath, "utf8")) as { provenance?: string; providerRealtimeEvidence?: boolean; recording?: { relativePath?: string; sha256?: string; byteCount?: number; durationSeconds?: number }; transcript?: { relativePath?: string; sha256?: string; byteCount?: number; characterCount?: number } };
-      if (manifest.provenance !== "founder-provided-recording-and-transcript" || manifest.providerRealtimeEvidence !== false) return { exists: true, satisfied: false, issue: "Founder capture manifest overstates or omits its provenance boundary." };
+      if (!["founder-provided-recording-and-transcript", "founder-authorized-script-and-ai-narration"].includes(manifest.provenance ?? "") || manifest.providerRealtimeEvidence !== false) return { exists: true, satisfied: false, issue: "Primary-source capture manifest overstates or omits its provenance boundary." };
       const directory = dirname(manifestPath);
       for (const evidence of [manifest.recording, manifest.transcript]) {
         if (!evidence?.relativePath || !evidence.sha256 || !evidence.byteCount) return { exists: true, satisfied: false, issue: "Founder capture manifest is incomplete." };
         const bytes = await readFile(resolve(directory, evidence.relativePath));
         if (bytes.byteLength !== evidence.byteCount || createHash("sha256").update(bytes).digest("hex") !== evidence.sha256) return { exists: true, satisfied: false, issue: "Founder capture no longer matches its recorded hash and byte count." };
       }
-      if (!manifest.recording?.durationSeconds || manifest.recording.durationSeconds < 3 || !manifest.transcript?.characterCount || manifest.transcript.characterCount < 40) return { exists: true, satisfied: false, issue: "Founder capture does not meet the minimum media and transcript evidence bar." };
+      if (!manifest.recording?.durationSeconds || manifest.recording.durationSeconds < 3 || !manifest.transcript?.characterCount || manifest.transcript.characterCount < 40) return { exists: true, satisfied: false, issue: "Primary-source capture does not meet the minimum media and transcript evidence bar." };
       const probe = JSON.parse(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-show_entries", "stream=codec_type", "-of", "json", resolve(directory, manifest.recording.relativePath!)], { encoding: "utf8" })) as { format?: { duration?: string }; streams?: Array<{ codec_type?: string }> };
       if (Number(probe.format?.duration ?? 0) < 3 || !probe.streams?.some((stream) => stream.codec_type === "video") || !probe.streams.some((stream) => stream.codec_type === "audio")) return { exists: true, satisfied: false, issue: "Founder recording must remain playable with both video and audio streams." };
     } catch {
@@ -190,11 +190,25 @@ async function main(): Promise<void> {
   for (const moment of requiredMomentIds) assert(seenMoments.has(moment), `Required judge moment is absent: ${moment}`);
 
   const captureManifestPath = resolve(repository, finalMode ? plan.finalCaptureManifest : plan.captureManifest);
+  if (finalMode && !await existsWithBytes(plan.finalCaptureManifest)) {
+    const evidence = await Promise.all(plan.shots.flatMap((shot) => shot.requiredEvidence.map(async (item) => ({ shotId: shot.id, ...item, ...await inspectEvidence(item) }))));
+    const missingEvidence = [
+      ...evidence.filter((item) => !item.satisfied),
+      { shotId: "final-capture", label: "Founder-derived browser capture", path: plan.finalCaptureManifest, exists: false, satisfied: false, issue: "Run pnpm demo:capture-final after the founder Workshop package is ready." },
+      ...(await existsWithBytes(plan.finalVideoPath) ? [] : [{ shotId: "final-export", label: "Final edited MP4 with video and audio streams", path: plan.finalVideoPath, exists: false, satisfied: false, issue: "Run pnpm demo:film:final after final capture succeeds." }]),
+    ];
+    const report = { schemaVersion: 1, mode: "final", planStatus: plan.status, finalReady: false, missingEvidence };
+    await mkdir(reportRoot, { recursive: true });
+    await writeFile(resolve(reportRoot, "final-readiness.json"), `${JSON.stringify(report, null, 2)}\n`, "utf8");
+    console.log(JSON.stringify(report, null, 2));
+    process.exitCode = 1;
+    return;
+  }
   const capture = JSON.parse(await readFile(captureManifestPath, "utf8")) as CaptureManifest;
   if (finalMode) {
-    assert(capture.status === "founder-final-candidate" && capture.founderSource === true, "Final verification requires the founder-derived browser capture.");
+    assert(capture.status === "founder-final-candidate" && capture.founderSource === true, "Final verification requires the founder-authorized browser capture.");
     assert(Array.isArray(capture.limitations) && capture.limitations.length === 0, "Final browser capture still records limitations.");
-    assert(capture.founderSourceEvidence?.origin === "Founder-provided recording" && capture.founderSourceEvidence.permission === "shareable", "Final browser capture lacks explicit founder Source sharing evidence.");
+    assert(["Founder-provided recording", "Founder-authorized script with AI narration"].includes(capture.founderSourceEvidence?.origin ?? "") && capture.founderSourceEvidence.permission === "shareable", "Final browser capture lacks explicit founder-authorized Source sharing evidence.");
     assert(Boolean(capture.submission?.relativePath && capture.submission.sha256), "Final browser capture is not bound to its founder submission package.");
     const capturedSubmissionHash = createHash("sha256").update(await readFile(resolve(repository, capture.submission!.relativePath!))).digest("hex");
     assert(capturedSubmissionHash === capture.submission!.sha256, "Final browser capture references a different founder submission package version.");

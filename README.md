@@ -45,9 +45,11 @@ The repository currently provides a local-first deterministic seam with:
 - a unified `0.1.3` plugin whose stdio tools search and fetch grounded local evidence, route authorized workflow writes through the same loopback Workshop API, and declare Granola and Google Drive as optional host-provided source apps using the current plugin manifest contract;
 - a responsive Apps in ChatGPT-aligned interface where one current expression is the focus and the rest of the Workshop remains one interaction away.
 
-This is active Build Week work, not a claim that every locked capability is complete. The authorized sample run has now proven a grounded `gpt-5.6-terra` Map, six accepted GPT Image 2 panels, a live grounded Realtime conversation, OpenAI Cedar narration, and a local HyperFrames Video. The no-credential recorded fixture remains a separate deterministic path: it replays six hash-bound sanitized GPT Image 2 files and one hash-bound Cedar Audio Overview while clearly labeling the Video's fallback narration. Native ChatGPT durable voice synchronization is not supported, and the founder-derived final package and public demo remain open. See [GOAL.md](GOAL.md) for the exact completion definition, [log.md](log.md) for dated evidence, and the [public claim ledger](submission/CLAIM-LEDGER.md) for the allowed wording and proof boundary.
+The final founder-authorized run proves a grounded `gpt-5.6-terra` Map, six accepted GPT Image 2 panels, a shareable connected package, OpenAI Cedar narration, and a local HyperFrames Video. Its project-brainstorm source uses a disclosed AI voice from an authorized script; it is not Daniel's voice and is not presented as Realtime capture. Live grounded Realtime behavior is proven separately. The no-credential fixture remains a deterministic judge path with sanitized replay assets, while native ChatGPT durable voice synchronization is not supported or claimed. See [GOAL.md](GOAL.md) for current state, [log.md](log.md) for dated evidence, and the [public claim ledger](submission/CLAIM-LEDGER.md) for proof boundaries.
 
-The [current clean 2:20 editorial review cut](outputs/demo-film-sample/workshoplm-demo-sample.mp4) uses the authorized sample transcript, verified Cedar narration, and acceptance created-work set. It is visibly and structurally labeled as a sample and is not the founder-derived public demo; its manifest and all ten review frames are verified by `pnpm demo:film:verify-sample`.
+The [final 2:20 public-demo master](outputs/demo-film-final/workshoplm-demo.mp4) uses the founder-authorized source, verified Cedar narration, and the ready connected Workshop. `pnpm demo:film:verify-final` verifies all ten shots, both media streams, hashes, source/package binding, and the under-three-minute limit.
+
+The exact sanitized 30-asset package shown in that film is mirrored at [`outputs/final-submission-output-set/`](outputs/final-submission-output-set/). Its manifest is hash-identical to the promoted operator package and includes editable PowerPoints, rendered previews, Audio Overview, Storyboard, Video, thumbnails, evidence, and build trace without the private local database or provider credentials.
 
 ## Run the recorded fixture
 
@@ -86,22 +88,22 @@ pnpm demo:film:verify-final
 pnpm submission:promote-founder
 ```
 
-`demo:capture-final` copies the founder Workshop into a disposable recording root, records all twelve browser beats, and refuses fixture, private-Source, stale-approval, incomplete-package, or unrendered-Video state. Final film mode consumes that founder capture; the sample film continues to use the sanitized fixture capture. `submission:promote-founder` then verifies the operator run, package fingerprint, founder Source permission, capture binding, final-film hashes and streams, sub-three-minute duration, and final edit-readiness report before resolving the founder-only Devpost statements into `submission/DEVPOST-FOUNDER-CANDIDATE.md`. It leaves the public YouTube URL and Codex Session ID as explicit publication gates.
+`demo:capture-final` copies the founder-authorized Workshop into a disposable recording root, records all twelve browser beats, and refuses fixture, private-Source, stale-approval, incomplete-package, or unrendered-Video state. Final film mode consumes that capture; the sample film continues to use the sanitized fixture capture. `submission:promote-founder` then verifies the operator run, package fingerprint, Source permission, capture binding, final-film hashes and streams, sub-three-minute duration, and final edit-readiness report before resolving the Devpost candidate. The public YouTube URL remains the final external publication field.
 
 The inspected authorized-sample run is recorded in [`artifacts/live/provider-run.json`](artifacts/live/provider-run.json). Visual review artifacts include the [GPT Image 2 contact sheet](artifacts/live-review/gpt-image-2-contact-sheet.png), [HyperFrames Video review](artifacts/live-review/hyperframes-v4/README.md), and [Realtime grounded-conversation record](artifacts/live-review/realtime-grounded-conversation.json). These prove provider behavior without implying that the final founder Source or public submission is complete.
 
-### Replace the sample with the founder brainstorm
+### Rebuild from an authorized project brainstorm
 
-The founder handoff validates a recording and transcript, keeps the Source private inside the isolated final Workshop, and prepares a no-spend review before any public-film staging:
+The source handoff validates a recording and transcript, keeps the Source private inside the isolated final Workshop, and prepares a no-spend review before any public-film staging. To use an authorized script with disclosed AI narration, add `--ai-narrated-source`:
 
 ```bash
-pnpm demo:founder -- --founder-recording /absolute/path/founder.mov --founder-transcript /absolute/path/founder.txt
+pnpm demo:founder -- --founder-recording /absolute/path/project.mov --founder-transcript /absolute/path/project.txt --ai-narrated-source
 ```
 
-Founder material is private by default. The preflight prints `viewCommand` for local review, withholds the paid command, and does not copy the raw recording or transcript into the final film-input directory. WorkshopLM also refuses to build a public submission package while any active Source is private. Only continue when the recording and transcript are intentionally part of the public meta-demo, using the exact `shareablePreflightCommand` printed after review. Its equivalent is:
+Source material is private by default. The preflight prints `viewCommand` for local review, withholds the paid command, and does not copy the raw recording or transcript into the final film-input directory. WorkshopLM also refuses to build a public submission package while any active Source is private. Only continue when the media and transcript are intentionally part of the public meta-demo, using the exact `shareablePreflightCommand` printed after review. Its equivalent is:
 
 ```bash
-pnpm demo:live -- --root .workshoplm/final-operator --founder-recording /absolute/path/founder.mov --founder-transcript /absolute/path/founder.txt --share-founder-source --stage-film-inputs
+pnpm demo:live -- --root .workshoplm/final-operator --founder-recording /absolute/path/project.mov --founder-transcript /absolute/path/project.txt --ai-narrated-source --share-founder-source --stage-film-inputs
 ```
 
 `--share-founder-source` marks that local Source as shareable so it may appear in generated submission evidence and the build trace. `--stage-film-inputs` copies the validated recording and transcript into the Git-ignored local film-input directory. Neither flag uploads or publishes anything. Only the second preflight prints the paid follow-up command, preserving both choices.

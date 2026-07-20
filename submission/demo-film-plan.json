@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "status": "draft",
+  "status": "final",
   "publicTitle": "WorkshopLM — From conversations to professional knowledge work",
   "thumbnailText": "One thought. Every format. Sources attached.",
   "targetDurationSeconds": 140,
@@ -16,7 +16,9 @@
       "startSeconds": 0,
       "endSeconds": 13,
       "state": "ready",
-      "captureBeats": ["map"],
+      "captureBeats": [
+        "map"
+      ],
       "openingSequence": {
         "type": "finished-work-to-map",
         "proofSeconds": 4.5,
@@ -42,7 +44,9 @@
       "state": "ready",
       "captureBeats": [],
       "narration": "WorkshopLM is one unified plugin. Codex stays the conversation surface, uses the project's grounded tools, and opens the visual Workshop only when spatial editing is useful.",
-      "requiredMoments": ["plugin-doorway"],
+      "requiredMoments": [
+        "plugin-doorway"
+      ],
       "requiredEvidence": [
         {
           "label": "Legible Codex host footage opening the correct local Workshop",
@@ -52,23 +56,29 @@
     },
     {
       "id": "capture-and-shape",
-      "title": "Messy thought becomes a grounded Map",
-      "caption": "A raw brainstorm becomes a grounded visual Map",
+      "title": "Authorized project brief becomes a grounded Map",
+      "caption": "One project brief becomes a grounded visual Map",
       "startSeconds": 26,
       "endSeconds": 44,
-      "state": "blocked",
-      "captureBeats": ["sources"],
+      "state": "ready",
+      "captureBeats": [
+        "sources"
+      ],
       "captureEndHoldbackSeconds": 0.9,
-      "narration": "I begin with an honestly dated, unstructured recording, imported as a grounded Source—not relabeled as Realtime. Live OpenAI Realtime voice is proven separately. GPT-5.6 then shapes the founder transcript and selected Sources into a semantic Map, with every factual node retaining its exact locator.",
-      "requiredMoments": ["founder-brainstorm", "realtime-voice", "gpt-5.6-map"],
+      "narration": "I begin with an authorized project brainstorm, narrated by a disclosed AI voice and imported as a grounded Source. Separately, live Realtime voice is proven. GPT-5.6 shapes the text into a semantic Map while every factual node keeps its exact locator.",
+      "requiredMoments": [
+        "project-brainstorm",
+        "realtime-voice",
+        "gpt-5.6-map"
+      ],
       "requiredEvidence": [
         {
-          "label": "Honestly dated founder-brainstorm recording",
+          "label": "Founder-authorized brainstorm with disclosed AI narration",
           "path": "outputs/demo-film-inputs/founder-brainstorm.mov",
           "validator": "founder-capture"
         },
         {
-          "label": "Founder-brainstorm transcript used by the recorded Workshop",
+          "label": "Authorized project transcript used by the recorded Workshop",
           "path": "outputs/demo-film-inputs/founder-brainstorm.txt",
           "validator": "founder-capture"
         },
@@ -91,10 +101,16 @@
       "startSeconds": 44,
       "endSeconds": 58,
       "state": "ready",
-      "captureBeats": ["source-trace", "map-edit"],
+      "captureBeats": [
+        "source-trace",
+        "map-edit"
+      ],
       "captureEndHoldbackSeconds": 1.1,
       "narration": "This is not a flattened summary. I can open a factual claim to its exact excerpt, move it, or rewrite it. A meaningful change automatically marks dependent work as needing an update.",
-      "requiredMoments": ["source-trace", "edit-control"],
+      "requiredMoments": [
+        "source-trace",
+        "edit-control"
+      ],
       "requiredEvidence": []
     },
     {
@@ -104,10 +120,14 @@
       "startSeconds": 58,
       "endSeconds": 70,
       "state": "ready",
-      "captureBeats": ["brief-approval"],
+      "captureBeats": [
+        "brief-approval"
+      ],
       "captureEndHoldbackSeconds": 1.1,
       "narration": "When the thinking is right, the first approval turns this exact Map into an inspectable Brief. Source coverage and unresolved evidence remain visible before creation begins.",
-      "requiredMoments": ["brief-approval"],
+      "requiredMoments": [
+        "brief-approval"
+      ],
       "requiredEvidence": []
     },
     {
@@ -117,7 +137,9 @@
       "startSeconds": 70,
       "endSeconds": 82,
       "state": "ready",
-      "captureBeats": ["style"],
+      "captureBeats": [
+        "style"
+      ],
       "captureEndHoldbackSeconds": 1.1,
       "narration": "Style is set once and stays reviewable, so every created format follows the same palette, typography, layout, image treatment, and negative rules.",
       "requiredMoments": [],
@@ -130,10 +152,15 @@
       "startSeconds": 82,
       "endSeconds": 96,
       "state": "ready",
-      "captureBeats": ["create-outputs", "output-evidence"],
+      "captureBeats": [
+        "create-outputs",
+        "output-evidence"
+      ],
       "preferCapture": true,
       "narration": "The Presentation, Infographic, images, Audio Overview, Storyboard, and Video are different expressions of the same approved knowledge and Style.",
-      "requiredMoments": ["provider-image-set"],
+      "requiredMoments": [
+        "provider-image-set"
+      ],
       "requiredEvidence": [
         {
           "label": "Inspected six-image GPT Image 2 gallery capture",
@@ -154,10 +181,15 @@
       "startSeconds": 96,
       "endSeconds": 109,
       "state": "ready",
-      "captureBeats": ["storyboard-edit", "storyboard-approval"],
+      "captureBeats": [
+        "storyboard-edit",
+        "storyboard-approval"
+      ],
       "captureEndHoldbackSeconds": 0.8,
       "narration": "Unlike a black-box video generator, WorkshopLM shows the Storyboard first. I can rewrite a panel, inspect its source, and then make the second and final blocking approval.",
-      "requiredMoments": ["storyboard-approval"],
+      "requiredMoments": [
+        "storyboard-approval"
+      ],
       "requiredEvidence": []
     },
     {
@@ -168,9 +200,13 @@
       "endSeconds": 124,
       "state": "ready",
       "preferCapture": true,
-      "captureBeats": ["video-render"],
+      "captureBeats": [
+        "video-render"
+      ],
       "narration": "The local HyperFrames worker accepts only that approved current Storyboard, synchronizes the OpenAI narration, and renders the Video. Show source still follows a factual claim through the Brief and Map to evidence.",
-      "requiredMoments": ["provider-narration"],
+      "requiredMoments": [
+        "provider-narration"
+      ],
       "requiredEvidence": [
         {
           "label": "Audibly inspected provider-narrated render",
@@ -182,14 +218,21 @@
     {
       "id": "meta-reveal",
       "title": "The submission proves the product",
-      "caption": "The brainstorm became the submission you just watched",
+      "caption": "One source became the connected work you just watched",
       "startSeconds": 124,
       "endSeconds": 140,
-      "state": "blocked",
-      "captureBeats": ["original-reveal"],
+      "state": "ready",
+      "captureBeats": [
+        "original-reveal"
+      ],
       "captureEndHoldbackSeconds": 0.7,
-      "narration": "Now the reveal: one messy thought became everything you just watched. The source trail, two human decisions, and build record stayed attached. WorkshopLM created the submission, while Codex accelerated the implementation and verification.",
-      "requiredMoments": ["original-reveal", "build-record", "codex-evidence", "final-submission-output-set"],
+      "narration": "Now the reveal: one authorized project brief became everything you just watched. Its source trail, two explicit approvals, and build record stayed attached. WorkshopLM created the connected work, while Codex accelerated the implementation and verification.",
+      "requiredMoments": [
+        "original-reveal",
+        "build-record",
+        "codex-evidence",
+        "final-submission-output-set"
+      ],
       "requiredEvidence": [
         {
           "label": "Verified non-partial final connected Workshop",

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance created-work set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-17T05:37:26.197Z",
+  "builtAt": "2026-07-20T19:50:23.318Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "compositor": {
@@ -14,12 +14,12 @@
     "spatialTransforms": false,
     "transition": "neutral-dip",
     "design": {
-      "sha256": "270ced4bfce95f4e17b92bf6492487da2bd276ee17df792c25b0b56ef76bb6f8",
+      "sha256": "033bbe10152d7f94884fa36fbd9c2ce80b6e3a59c9ad71f2a93f299828efde30",
       "source": ".workshoplm/acceptance/generated/DESIGN-v1.md"
     },
     "frame": {
       "version": 1,
-      "sha256": "6a133da9da2f4abc4c9e947475e2af2455ca9aaf88ac43012099d04aa7f59838",
+      "sha256": "c5ddf1c61af4e157cefb40314ae6d21e5f5caf18e99f9f8c9774bc6928a02be8",
       "source": ".workshoplm/acceptance/generated/FRAME-v1.md"
     }
   },
@@ -33,7 +33,7 @@
   },
   "video": {
     "relativePath": "workshoplm-demo-sample.mp4",
-    "sha256": "7cf670e39e9b39508412c4724ae8568d13308a2abfde598475554cb760a79c10",
+    "sha256": "534194563aa1ba33d3a29f4bbb6a5e69dbc8a60c633deee4044a6464eeb86f60",
     "durationSeconds": 140.010667,
     "streams": [
       {
@@ -51,7 +51,7 @@
   },
   "contactSheet": {
     "relativePath": "contact-sheet.jpg",
-    "sha256": "89a2ac0a09f22fd6ae221ad89247684a792c1946d61dca8296c7c719161bc7cc"
+    "sha256": "0a1ad4a8f3fbe181e212f2ae3a90dd9fd0300e3d84a49dc0c4ab92c422c8054c"
   },
   "openingProofFrame": {
     "relativePath": "review/opening-proof.jpg",
@@ -93,11 +93,11 @@
     },
     {
       "relativePath": "review/09.jpg",
-      "sha256": "fe57ba052d5ce11a4f04ca782bfc1035e3de38eda220e4e32717b0efe5629547"
+      "sha256": "74cc27829f878c844915c639e160076ee0935704838d904faf74dedeef392cfb"
     },
     {
       "relativePath": "review/10.jpg",
-      "sha256": "ba880eb3db7d5dade3e5c01a4ad0123662e7d348a1aba760dc731cfeb59ab4a8"
+      "sha256": "f766a370eed50f7299ccc093bcd2664c27df6aae062ceafaf813f6b3f9bec671"
     }
   ],
   "metaRevealEvidence": {
@@ -114,11 +114,11 @@
     },
     "submissionManifest": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
-      "sha256": "7e5f0da9c220fd9399eaf2a5b51a50490c974c4528b12ad2048646e99ab784fb"
+      "sha256": "10997186b6e49ba6c8ca22b5722a96261680dff1bce91f396f9c1970c4ed516c"
     },
     "buildTrace": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/BUILD-TRACE.json",
-      "sha256": "f20f3ea1ba16f3000b7d41af175335ddb51c73053d14167ab2836906ead69c86"
+      "sha256": "4b437785ad46d02b77fa470391dae4500573940d6105627db8d57ca30880da8b"
     }
   },
   "shots": [
@@ -179,8 +179,8 @@
       "narration": {
         "model": "gpt-4o-mini-tts",
         "voice": "cedar",
-        "requestId": "req_3b18d35339ba4b1f86ed9bacb0e9fc7d",
-        "sha256": "0d4784d6ab688472823c83a4bd634906a7ccb7130cb849de0570824cfdf01cf1"
+        "requestId": "req_3b922e0284a94955b30db0353fe5343d",
+        "sha256": "13c510147b0c278617f4036db6a9fb233029e10b99eefb619a471da7691d9e9f"
       },
       "sourceBeats": [
         "sources"
@@ -328,7 +328,7 @@
       },
       "sourceBeats": [],
       "externalVideo": ".workshoplm/acceptance/generated/videos/workshoplm-demo-v1.mp4",
-      "sourceDurationSeconds": 25.002667,
+      "sourceDurationSeconds": 48,
       "sourcePlaybackRate": 1,
       "fixtureVideo": true,
       "motion": {
@@ -345,8 +345,8 @@
       "narration": {
         "model": "gpt-4o-mini-tts",
         "voice": "cedar",
-        "requestId": "req_91622fa7d5c54890889ad6b670b0be21",
-        "sha256": "e5d4c744396ebbe92549648737c5bd0ff14ef422ee0388f5959895c13fcc728b"
+        "requestId": "req_9ab198e2b480498495410170ce3c5297",
+        "sha256": "5c0e6a0604c97ab1f2cb34a332dc0ec9fb967eaf23b11f263d6a7b70bef77e9d"
       },
       "sourceBeats": [],
       "generatedMetaReveal": true,
@@ -359,7 +359,7 @@
     }
   ],
   "limitations": [
-    "2 final-evidence shots use explicitly labeled sample or fixture material in this review cut.",
+    "0 final-evidence shots use explicitly labeled sample or fixture material in this review cut.",
     "The walkthrough uses the sanitized deterministic fixture and six hash-bound GPT Image 2 replay files; it makes no paid image call during replay.",
     "OpenAI Cedar narration is present; founder footage and final public export remain pending.",
     "Founder brainstorm, final Source-derived connected work, and public-export evidence remain gated elsewhere."

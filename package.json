@@ -28,6 +28,7 @@
     "demo:film:preview-final": "node scripts/build-demo-rough-cut.mjs --preview-final-style",
     "demo:film:prepare-live": "tsx scripts/prepare-live-film-evidence.ts",
     "demo:film:narrate": "tsx scripts/generate-demo-film-narration.ts",
+    "demo:source:tts": "tsx scripts/generate-authorized-source-tts.ts",
     "demo:audio:refresh": "tsx scripts/refresh-judge-audio.ts",
     "demo:film:verify": "tsx scripts/verify-demo-film.ts",
     "demo:film:verify-final": "tsx scripts/verify-demo-film.ts --final",

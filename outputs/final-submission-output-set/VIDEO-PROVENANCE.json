@@ -1,0 +1,176 @@
+{
+  "schemaVersion": 1,
+  "workshopId": "workshop-build-week",
+  "storyboardVersion": 1,
+  "styleVersion": 1,
+  "visualDnaVersion": 1,
+  "imageBatchId": "image-batch-v1",
+  "design": {
+    "styleVersion": 1,
+    "markdownPath": "generated/DESIGN-v1.md",
+    "tokensPath": "generated/DESIGN-v1.tokens.json"
+  },
+  "frame": {
+    "version": 1,
+    "markdownPath": "generated/FRAME-v1.md",
+    "executablePath": "generated/FRAME-v1.json"
+  },
+  "video": {
+    "relativePath": "artifacts/e7/workshop-build-week-workshoplm-demo-v1-e7429a76ad74b41ff273a63f2d24c8ac6464ad224d659d4cfbd272bc2dec835d",
+    "sha256": "e7429a76ad74b41ff273a63f2d24c8ac6464ad224d659d4cfbd272bc2dec835d",
+    "byteCount": 4009951,
+    "mimeType": "video/mp4"
+  },
+  "panels": [
+    {
+      "panelId": "storyboard-v1-panel-1",
+      "title": "The opportunity",
+      "startSeconds": 0,
+      "durationSeconds": 9,
+      "claimIds": [
+        "claim-23c939c71e00-0-2"
+      ],
+      "evidence": [
+        {
+          "claimId": "claim-23c939c71e00-0-2",
+          "sourceId": "source-23c939c71e00",
+          "chunkId": "chunk-23c939c71e00-1",
+          "locator": "Founder-authorized script with AI narration · chunk 01",
+          "sourceTitle": "Project brainstorm",
+          "snippet": "I want a workspace where a professional can talk through a messy idea, ground it in their meetings and documents, shape it on a visual Map, approve the thinking, and create a polished presentation, graphics, an Audio Overview, a Storyboard, and Video without losing the Source trail. The product should feel simple but built for serious work, with OpenAI quality and two clear moments of human control."
+        }
+      ],
+      "image": {
+        "panelId": "image-panel-1",
+        "version": 1,
+        "sha256": "3dcc82833d9728f8c9cd9327d3fa29eb2ddd1c5ef5421e1c8785124c6031666b",
+        "referenceId": "style-v1-dna-v1"
+      },
+      "narration": {
+        "sha256": "e5c5929f7e63b303fc3235bce5886b4eb6ba11d8021bc46e0082b94cca390f70",
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar"
+      }
+    },
+    {
+      "panelId": "storyboard-v1-panel-2",
+      "title": "The friction",
+      "startSeconds": 9,
+      "durationSeconds": 9,
+      "claimIds": [
+        "claim-23c939c71e00-0-2"
+      ],
+      "evidence": [
+        {
+          "claimId": "claim-23c939c71e00-0-2",
+          "sourceId": "source-23c939c71e00",
+          "chunkId": "chunk-23c939c71e00-1",
+          "locator": "Founder-authorized script with AI narration · chunk 01",
+          "sourceTitle": "Project brainstorm",
+          "snippet": "I want a workspace where a professional can talk through a messy idea, ground it in their meetings and documents, shape it on a visual Map, approve the thinking, and create a polished presentation, graphics, an Audio Overview, a Storyboard, and Video without losing the Source trail. The product should feel simple but built for serious work, with OpenAI quality and two clear moments of human control."
+        }
+      ],
+      "image": {
+        "panelId": "image-panel-2",
+        "version": 1,
+        "sha256": "c3e3b2240fd3d964e06534d19ff3ec4f07df22f66e70b0189639f904d192c797",
+        "referenceId": "style-v1-dna-v1"
+      },
+      "narration": {
+        "sha256": "b1718837e22ea28d49f7583154e878aae1f1615f2aea063923932335b3626cd4",
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar"
+      }
+    },
+    {
+      "panelId": "storyboard-v1-panel-3",
+      "title": "The proof",
+      "startSeconds": 18,
+      "durationSeconds": 9,
+      "claimIds": [
+        "claim-23c939c71e00-0-2"
+      ],
+      "evidence": [
+        {
+          "claimId": "claim-23c939c71e00-0-2",
+          "sourceId": "source-23c939c71e00",
+          "chunkId": "chunk-23c939c71e00-1",
+          "locator": "Founder-authorized script with AI narration · chunk 01",
+          "sourceTitle": "Project brainstorm",
+          "snippet": "I want a workspace where a professional can talk through a messy idea, ground it in their meetings and documents, shape it on a visual Map, approve the thinking, and create a polished presentation, graphics, an Audio Overview, a Storyboard, and Video without losing the Source trail. The product should feel simple but built for serious work, with OpenAI quality and two clear moments of human control."
+        }
+      ],
+      "image": {
+        "panelId": "image-panel-3",
+        "version": 1,
+        "sha256": "3296e665e8c08d3d4f255196ba6632252e7fed143c19bc28237072757bb798dc",
+        "referenceId": "style-v1-dna-v1"
+      },
+      "narration": {
+        "sha256": "8508d5fcaa11464290295207f8856fe54a1f80b919fb7e034a298c8c27d93122",
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar"
+      }
+    },
+    {
+      "panelId": "storyboard-v1-panel-4",
+      "title": "The evidence",
+      "startSeconds": 27,
+      "durationSeconds": 9,
+      "claimIds": [
+        "claim-23c939c71e00-0-2"
+      ],
+      "evidence": [
+        {
+          "claimId": "claim-23c939c71e00-0-2",
+          "sourceId": "source-23c939c71e00",
+          "chunkId": "chunk-23c939c71e00-1",
+          "locator": "Founder-authorized script with AI narration · chunk 01",
+          "sourceTitle": "Project brainstorm",
+          "snippet": "I want a workspace where a professional can talk through a messy idea, ground it in their meetings and documents, shape it on a visual Map, approve the thinking, and create a polished presentation, graphics, an Audio Overview, a Storyboard, and Video without losing the Source trail. The product should feel simple but built for serious work, with OpenAI quality and two clear moments of human control."
+        }
+      ],
+      "image": {
+        "panelId": "image-panel-4",
+        "version": 1,
+        "sha256": "4f86c85a811a1efe38f50c176c5664fbfcf7b1fe34eb18c494ea2cd24169812d",
+        "referenceId": "style-v1-dna-v1"
+      },
+      "narration": {
+        "sha256": "b9e0f838eebb0c341af8d1401e947b88ddb36f97a082da6f733d8344780f960a",
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar"
+      }
+    },
+    {
+      "panelId": "storyboard-v1-panel-5",
+      "title": "The experience",
+      "startSeconds": 36,
+      "durationSeconds": 10,
+      "claimIds": [
+        "claim-23c939c71e00-0-1"
+      ],
+      "evidence": [
+        {
+          "claimId": "claim-23c939c71e00-0-1",
+          "sourceId": "source-23c939c71e00",
+          "chunkId": "chunk-23c939c71e00-1",
+          "locator": "Founder-authorized script with AI narration · chunk 01",
+          "sourceTitle": "Project brainstorm",
+          "snippet": "I want a workspace where a professional can talk through a messy idea, ground it in their meetings and documents, shape it on a visual Map, approve the thinking, and create a polished presentation, graphics, an Audio Overview, a Storyboard, and Video without losing the Source trail. The product should feel simple but built for serious work, with OpenAI quality and two clear moments of human control."
+        }
+      ],
+      "image": {
+        "panelId": "image-panel-5",
+        "version": 1,
+        "sha256": "560a2347d2c37d20f884b21675ba08db1f4869b06cde6f122a5143c9dcf622f7",
+        "referenceId": "style-v1-dna-v1"
+      },
+      "narration": {
+        "sha256": "60f05508086d5e423dfa8a19d77a580676431defa5f2fa260d23fef94eb9c16d",
+        "model": "gpt-4o-mini-tts",
+        "voice": "cedar"
+      }
+    }
+  ]
+}

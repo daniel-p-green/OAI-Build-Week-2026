@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "status": "founder-final-candidate",
+  "disclosure": "Hash-bound browser capture of the reviewed source-derived Workshop. The primary brainstorm media uses disclosed AI narration; no provider calls occur during capture.",
+  "capturedAt": "2026-07-20T19:26:54.334Z",
+  "sourceRoot": ".workshoplm/final-operator",
+  "founderSource": true,
+  "founderSourceEvidence": {
+    "id": "source-23c939c71e00",
+    "origin": "Founder-authorized script with AI narration",
+    "permission": "shareable"
+  },
+  "submission": {
+    "relativePath": ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json",
+    "status": "ready",
+    "sha256": "2e89ee4397da11f86de61d78c90128e8a2bb7261763b6a5e0b3fed64f57c6291"
+  },
+  "viewport": {
+    "width": 1200,
+    "height": 800
+  },
+  "video": {
+    "relativePath": "workshoplm-founder-walkthrough.webm",
+    "sha256": "4f8fd768cf0109acb609d4eb64609990c4cf4b6cb57993e55c8ec44b787c3698",
+    "durationSeconds": 27.48,
+    "streams": [
+      {
+        "codec_name": "vp8",
+        "codec_type": "video",
+        "width": 1200,
+        "height": 800
+      }
+    ]
+  },
+  "reviewImages": [
+    {
+      "relativePath": "contact-sheet.png",
+      "sha256": "99547b888f6542a7f750fcc46ae1369353668494ff51f368a15942a22099b09c"
+    },
+    {
+      "relativePath": "review/01.jpg",
+      "sha256": "d36467eccaf54c2feea4109fd182fb12f51b967c6d7c8b70f11117ac0ff81461",
+      "beatId": "map",
+      "atSeconds": 2.276
+    },
+    {
+      "relativePath": "review/02.jpg",
+      "sha256": "8bf9ef99c1fd88fe2b2f332a3f7679498239cfd456fc695b2fa4018549c598ff",
+      "beatId": "sources",
+      "atSeconds": 4.509
+    },
+    {
+      "relativePath": "review/03.jpg",
+      "sha256": "ce7d9eeec3609f67fe49ddded2b929b2f25689172ad489af6574987e3bb8276b",
+      "beatId": "source-trace",
+      "atSeconds": 6.585
+    },
+    {
+      "relativePath": "review/04.jpg",
+      "sha256": "e3c452f673d664bafb946a7f2eee4127f432568d9dcb90ca859c7e313ef43dc5",
+      "beatId": "map-edit",
+      "atSeconds": 8.315
+    },
+    {
+      "relativePath": "review/05.jpg",
+      "sha256": "bba688a779b4982a543d6ebcc19907c9bc0a3a740d532c7b28423f12a25fdd31",
+      "beatId": "brief-approval",
+      "atSeconds": 10.114
+    },
+    {
+      "relativePath": "review/06.jpg",
+      "sha256": "7f56b71d99d3561cd60ede7d58913763624fad7ce4d68d37c440e6fdad5b6150",
+      "beatId": "style",
+      "atSeconds": 11.998
+    },
+    {
+      "relativePath": "review/07.jpg",
+      "sha256": "8821e5557927abaf34de5c3b49fed0990c12088d4cbcc23d4b30d3a7a857cf04",
+      "beatId": "create-outputs",
+      "atSeconds": 14.126
+    },
+    {
+      "relativePath": "review/08.jpg",
+      "sha256": "6f4742427b93656f606f39af358c91f425543a940e8739af4d405322681916d7",
+      "beatId": "output-evidence",
+      "atSeconds": 16.268
+    },
+    {
+      "relativePath": "review/09.jpg",
+      "sha256": "8a539591431f1829170af01682d3b5f2b54d4e38c33dc7561b9b9100034da96d",
+      "beatId": "storyboard-edit",
+      "atSeconds": 18.244
+    },
+    {
+      "relativePath": "review/10.jpg",
+      "sha256": "d5529a9fe17c64aef6f4c86c133316a6e078ae2b6d73c9591996ed28e5e4c0cd",
+      "beatId": "storyboard-approval",
+      "atSeconds": 20.029
+    },
+    {
+      "relativePath": "review/11.jpg",
+      "sha256": "3af87775a02f7462a26a9b75214f673d9f817179c802f571b9c810a967638aea",
+      "beatId": "video-render",
+      "atSeconds": 22.188
+    },
+    {
+      "relativePath": "review/12.jpg",
+      "sha256": "a8a5a110b3a33ecff9cb5aaeba4fcc6b17eb4c26b41d3fb2bd3c496b61a12cc9",
+      "beatId": "original-reveal",
+      "atSeconds": 25.056
+    }
+  ],
+  "beats": [
+    {
+      "id": "map",
+      "label": "Source-derived grounded Map",
+      "startMs": 1175,
+      "endMs": 3378
+    },
+    {
+      "id": "sources",
+      "label": "Authorized project brainstorm and selected Sources",
+      "startMs": 3378,
+      "endMs": 5640
+    },
+    {
+      "id": "source-trace",
+      "label": "Exact project Source excerpt",
+      "startMs": 5640,
+      "endMs": 7531
+    },
+    {
+      "id": "map-edit",
+      "label": "Semantic Map remains directly editable",
+      "startMs": 7560,
+      "endMs": 9070
+    },
+    {
+      "id": "brief-approval",
+      "label": "Approved source-grounded Brief",
+      "startMs": 9096,
+      "endMs": 11132
+    },
+    {
+      "id": "style",
+      "label": "Reusable Style applied across the Workshop",
+      "startMs": 11132,
+      "endMs": 12864
+    },
+    {
+      "id": "create-outputs",
+      "label": "Connected source-derived professional knowledge work",
+      "startMs": 12877,
+      "endMs": 15374
+    },
+    {
+      "id": "output-evidence",
+      "label": "Created work traces to its exact Source",
+      "startMs": 15374,
+      "endMs": 17163
+    },
+    {
+      "id": "storyboard-edit",
+      "label": "Editable Storyboard with bound images and narration",
+      "startMs": 17262,
+      "endMs": 19227
+    },
+    {
+      "id": "storyboard-approval",
+      "label": "Approved Storyboard controls Video",
+      "startMs": 19227,
+      "endMs": 20830
+    },
+    {
+      "id": "video-render",
+      "label": "Rendered founder Video and build trace",
+      "startMs": 20830,
+      "endMs": 23546
+    },
+    {
+      "id": "original-reveal",
+      "label": "Project brainstorm beside the connected work",
+      "startMs": 23546,
+      "endMs": 26566
+    }
+  ],
+  "finalState": {
+    "briefApproved": true,
+    "storyboardApproved": true,
+    "videoState": "rendered",
+    "sources": 1,
+    "outputs": 3,
+    "imagePanels": 6,
+    "storyboardPanels": 5
+  },
+  "limitations": []
+}

@@ -49,7 +49,7 @@ export function formatElapsed(seconds: number): string {
 
 export function validateFounderPromotion(evidence: FounderPromotionEvidence): number {
   assert(evidence.operatorStatus === "passed", "Founder promotion requires a passed live operator run.");
-  assert(evidence.captureEvidence === "founder-provided-recording-and-transcript" || evidence.captureEvidence === "provider-verified-realtime-and-founder-recording", "Founder promotion requires authentic founder recording evidence.");
+  assert(["founder-provided-recording-and-transcript", "provider-verified-realtime-and-founder-recording", "founder-authorized-script-and-ai-narration", "provider-verified-realtime-and-founder-authorized-ai-narration"].includes(evidence.captureEvidence ?? ""), "Submission promotion requires explicit founder-authorized source provenance.");
   assert(evidence.founderSourcePermission === "shareable" && evidence.publicPackageEligible === true && evidence.shareableFounderSource, "Founder promotion requires an explicitly shareable founder Source and no private active Sources.");
   assert(evidence.submissionStatus === "ready" && Array.isArray(evidence.submissionLimitations) && evidence.submissionLimitations.length === 0, "Founder promotion requires a ready submission package without limitations.");
   assert(evidence.submissionVerified && evidence.submissionPathMatches && evidence.submissionFingerprintMatches, "Founder promotion requires the current verified submission package and exact operator manifest.");

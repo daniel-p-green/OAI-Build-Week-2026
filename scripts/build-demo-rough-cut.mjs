@@ -266,10 +266,10 @@ async function main() {
     const finalManifestEvidence = plan.shots.flatMap((shot) => shot.requiredEvidence).find((item) => item.validator === "ready-submission-manifest");
     if (!finalManifestEvidence) throw new Error("The film plan does not name the final submission manifest.");
     finalSubmissionManifestPath = resolve(repository, finalManifestEvidence.path);
-    if (!plan.finalCaptureManifest) throw new Error("The film plan does not name the founder-derived final browser capture.");
+    if (!plan.finalCaptureManifest) throw new Error("The film plan does not name the founder-authorized final browser capture.");
     const finalCapture = JSON.parse(await readFile(resolve(repository, plan.finalCaptureManifest), "utf8"));
-    if (finalCapture.status !== "founder-final-candidate" || finalCapture.founderSource !== true || finalCapture.limitations?.length) throw new Error("Final film requires a limitation-free founder-derived browser capture.");
-    if (finalCapture.founderSourceEvidence?.origin !== "Founder-provided recording" || finalCapture.founderSourceEvidence.permission !== "shareable") throw new Error("Final browser capture does not preserve explicit founder Source sharing evidence.");
+    if (finalCapture.status !== "founder-final-candidate" || finalCapture.founderSource !== true || finalCapture.limitations?.length) throw new Error("Final film requires a limitation-free founder-authorized browser capture.");
+    if (!["Founder-provided recording", "Founder-authorized script with AI narration"].includes(finalCapture.founderSourceEvidence?.origin) || finalCapture.founderSourceEvidence.permission !== "shareable") throw new Error("Final browser capture does not preserve explicit founder-authorized Source sharing evidence.");
     if (finalCapture.submission?.relativePath !== finalManifestEvidence.path || finalCapture.submission.sha256 !== sha256(await readFile(finalSubmissionManifestPath))) throw new Error("Final browser capture is not bound to the current founder submission package.");
   } else if (sampleEditorialBuild) {
     finalSubmissionManifestPath = resolve(repository, ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json");
@@ -324,7 +324,11 @@ async function main() {
     if (!providerShot) run("say", ["-v", voice, "-r", String(shotSpeechRate), "-o", audioPath, shot.narration]);
 
     const selectedBeats = shot.captureBeats.map((id) => beatsById.get(id)).filter(Boolean);
-    const effectiveState = finalBuild ? "ready" : shot.state;
+    const effectiveState = finalBuild
+      ? "ready"
+      : sampleEditorialBuild && ["capture-and-shape", "meta-reveal"].includes(shot.id)
+        ? "blocked"
+        : shot.state;
     const sampleProductVideo = sampleEditorialBuild && shot.id === "render-and-trace"
       ? resolve(repository, ".workshoplm/acceptance/generated/videos/workshoplm-demo-v1.mp4")
       : undefined;
@@ -378,7 +382,7 @@ async function main() {
     const audioDuration = Number(probe(audioPath).format?.duration || 0);
     const targetSpeechDuration = Math.max(1, duration - 0.55);
     const tempo = providerShot ? Math.max(1, Math.min(2, audioDuration / targetSpeechDuration)) : Math.max(0.6, Math.min(2, audioDuration / targetSpeechDuration));
-    const audioFilter = `${Math.abs(tempo - 1) > 0.01 ? `atempo=${tempo.toFixed(5)},` : ""}aresample=48000,volume=0.96,apad=whole_dur=${duration}`;
+    const audioFilter = `${Math.abs(tempo - 1) > 0.01 ? `atempo=${tempo.toFixed(5)},` : ""}aresample=48000,volume=0.96,loudnorm=I=-16:LRA=7:TP=-1.5,apad=whole_dur=${duration}`;
     run("ffmpeg", ["-y", "-i", basePath, "-loop", "1", "-i", overlayPath, "-i", audioPath, "-filter_complex", `[0:v][1:v]overlay=0:0:shortest=1,format=yuv420p[v];[2:a]${audioFilter}[a]`, "-map", "[v]", "-map", "[a]", "-t", String(duration), "-r", "30", "-c:v", "libx264", "-preset", "fast", "-crf", "22", "-g", "30", "-keyint_min", "30", "-sc_threshold", "0", "-c:a", "aac", "-b:a", "160k", "-movflags", "+faststart", segmentPath]);
     segments.push(segmentPath);
   }
@@ -428,7 +432,7 @@ async function main() {
   const manifest = {
     schemaVersion: 1,
     status: finalBuild ? "final-public-demo" : sampleEditorialBuild ? "sample-editorial-cut" : "editorial-rough-cut",
-    disclosure: finalBuild ? "Final WorkshopLM demo with OpenAI Cedar narration, hash-bound founder evidence, and a verified traced connected Workshop." : sampleEditorialBuild ? "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance created-work set. This is not founder footage or the public submission video." : providerNarration ? "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video." : "Truthful fixture rough cut with a local macOS guide voice. This is not provider narration, final host footage, or the public submission video.",
+    disclosure: finalBuild ? "Final WorkshopLM demo with disclosed OpenAI Cedar narration, hash-bound founder-authorized source evidence, and a verified traced connected Workshop." : sampleEditorialBuild ? "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance created-work set. This is not founder footage or the public submission video." : providerNarration ? "Truthful fixture rough cut with OpenAI Cedar editorial narration. This is not final founder footage or the public submission video." : "Truthful fixture rough cut with a local macOS guide voice. This is not provider narration, final host footage, or the public submission video.",
     builtAt: new Date().toISOString(),
     plan: "submission/demo-film-plan.json",
     sourceCapture: plan.captureManifest,
