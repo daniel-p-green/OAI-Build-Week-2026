@@ -1,6 +1,6 @@
 # WorkshopLM Goal
 
-Last updated: 2026-07-18 CT
+Last updated: 2026-07-20 CT
 
 This file is the current product compass. It defines the durable product contract, completion bar, and immediate execution path. Chronological implementation evidence belongs in [`log.md`](log.md).
 
@@ -20,7 +20,7 @@ WorkshopLM creates multiple first-class expressions of the same knowledge: prese
 
 WorkshopLM wins when a professional can move from messy material to coherent professional knowledge work without repeatedly rebuilding context, visual identity, or the source trail.
 
-The current phase is **final publication**. The core product and founder-authorized connected Workshop are verified. Work now concentrates on the public upload, Devpost form, stable release, and logged-out link checks.
+The current phase is **final publication**. The core product, founder-authorized connected Workshop, 2:20 public-demo master, stable GitHub release, and populated Devpost draft are verified. The sole blocking deliverable is a public YouTube upload and its logged-out playback URL; that URL then unlocks the final Devpost submission and X post.
 
 The hackathon category is **Work & Productivity**. Education mode, general-purpose design-tool scope, and unsupported public claims remain outside the product direction.
 
@@ -198,9 +198,9 @@ Completion is an outcome judgment, not a count of routes, tests, files, provider
   - The Map now makes its decision path explicit as `Evidence → Synthesis → Recommended direction`, without changing the locked official Apps-in-ChatGPT shell or turning the canvas into a generic whiteboard. HyperFrames renders a restrained GSAP source-progress rail for each approved storyboard panel; the source image remains spatially fixed, so the motion explains timing and provenance rather than decorating the scene. The deterministic acceptance flow and a local sanitized-fixture render passed; the inspected 48-second H.264/AAC `workshoplm-demo-v2.mp4` visibly includes the rail. This improves product quality only: founder evidence, provider proof, and the remaining public-package gates still remain.
 - [x] **Record and run the founder-authorized Workshop.** Import an authorized project script with disclosed AI narration outside the public data root, review Source sharing explicitly, then create the source-derived Map, approved Brief, Style, connected professional knowledge work, approved Storyboard, and local HyperFrames Video.
   - The zero-spend founder preflight is now transcript-led rather than fixture-led. Founder mode imports only the supplied recording transcript, organizes a deterministic Evidence → Synthesis → Direction Map for private review, and keeps every planned Presentation, Infographic, Sketch, image, narration, and Storyboard evidence edge on that Source. It creates the grounded Style-bound Sketch before evaluating Create completeness, so the compact spine honestly reads `Capture Ready → Map Ready → Brief Ready → Create Ready` instead of showing a false update warning. Source review labels the recording `Private` before sharing and `Shareable` after the deliberate handoff. Disposable recording and transcript media proved both permission states without a provider request; the authentic founder files and paid run remain open.
-- [ ] **Review and refine the resulting knowledge work.** Inspect every format together for knowledge quality, visual coherence, source trust, and professional usefulness; repair only visible blockers and obtain an intended-audience `Ready` or concrete revision judgment.
+- [x] **Review and refine the resulting knowledge work.** The exact 30-asset package, six-image contact sheet, twelve-beat product capture, and 2:20 film contact sheet were inspected together for source trust, visual coherence, legibility, licensing, and professional usefulness. The resulting manifest is `ready`, valid/current/untampered, and records no limitations.
 - [x] **Complete and review the public video master.** Replace sample-only evidence with founder-authorized proof, preserve the meta reveal, verify stable motion and audio, and complete visual and A/V QA. The verified 2:20 H.264/AAC master measures -16.7 LUFS integrated and -2.4 dB true peak.
-- [ ] **Verify and submit.** Re-run the clean judge path, reconcile claims, publish the under-three-minute video, finish Devpost, verify all public links while logged out, and record final submission evidence.
+- [ ] **Verify and submit.** The full local regression, stable release `build-week-submission-2026-07-20`, anonymous tagged-manifest read, and populated Devpost draft at `https://devpost.com/software/workshoplm` are complete. Remaining: upload the verified master publicly to YouTube, verify playback logged out, add that URL to Devpost, submit, and publish the prepared X post.
 
 ### Alignment test
 

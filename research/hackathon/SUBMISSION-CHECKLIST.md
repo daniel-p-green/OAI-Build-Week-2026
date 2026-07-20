@@ -22,7 +22,8 @@
 - [ ] Optional live-project URL and judge instructions supplied
 - [x] Core Codex `/feedback` Session ID supplied: `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`
 - [x] Primary Session ID and the reason it represents the majority-core full-implementation task recorded in `log.md`
-- [ ] All team members added and invitations accepted
+- [x] Devpost project created and populated at `https://devpost.com/software/workshoplm`; verified live as an author-owned draft with the final project thumbnail
+- [x] All team members added and invitations accepted (individual submission; authenticated author is the sole project member)
 - [ ] Submission is submitted, not left as a draft
 
 ## Repository
@@ -57,7 +58,7 @@
 ## Judge access
 
 - [ ] Free and unrestricted through the end of judging
-- [ ] Judge-facing release commit tagged and fixture/README/plugin snapshot pinned to that stable version
+- [x] Judge-facing release commit `857cee4f8420a09ddca2acbac92886bf00c93b4c` tagged as `build-week-submission-2026-07-20`; fixture/README/plugin snapshot is pinned and the tagged manifest was fetched anonymously
 - [ ] Stable judge path retained through the August 12, 2026 winner announcement
 - [x] Public video master makes the full value and working flow understandable without local setup
 - [x] Sanitized recorded fixture supports repeatable capture and optional inspection without paid calls
@@ -84,6 +85,6 @@ WorkshopLM is a local plugin/developer-tool experience. Keep these concise and s
   - [x] July 20 final rules refresh reconfirmed the July 21, 2026 at 5:00 PM Pacific deadline, public YouTube video under three minutes with audio covering the build/Codex/GPT-5.6, README requirements, and the `/feedback` task where the majority of core functionality was built.
 - [ ] Verify every submitted link in a logged-out/private browser session
 - [ ] Confirm the YouTube video is public
-- [ ] Confirm the repository permissions work for judges
+- [x] Confirm the repository permissions work for judges
 - [ ] Confirm the Devpost entry is not a draft
 - [ ] Confirm the tagged judge release reproduces the submitted fixture commands after `main` moves

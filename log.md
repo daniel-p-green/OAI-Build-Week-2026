@@ -12135,3 +12135,23 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - `pnpm demo:film:verify-sample` passed with the intentional authorized-sample boundary preserved at eight ready shots and two blocked final-evidence shots. `pnpm demo:film:verify-final` passed with ten ready shots and no missing evidence.
 - `pnpm submission:packet:verify` passed against both proof paths and the founder-resolved candidate. The only unresolved candidate field is the public YouTube URL.
 - Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3`.
+
+---
+
+## 2026-07-20 15:03 CT — Stable judge release and live Devpost draft created
+
+### Changed
+
+- Committed the verified submission package as `857cee4f8420a09ddca2acbac92886bf00c93b4c` (`Finalize WorkshopLM submission package`), pushed `main`, created annotated tag `build-week-submission-2026-07-20`, and pushed the tag.
+- Created the authenticated Devpost project `WorkshopLM` at `https://devpost.com/software/workshoplm`. Populated its verified name, tagline, full description, technology list, public repository link, and final 1280×720 WorkshopLM thumbnail.
+
+### Verified
+
+- The remote `main` head matched commit `857cee4f8420a09ddca2acbac92886bf00c93b4c` after push.
+- An anonymous raw GitHub fetch from tag `build-week-submission-2026-07-20` returned the final public-demo manifest with the verified Video hash, H.264/AAC contract, and no limitations.
+- Devpost returned project ID `1356586`, slug `workshoplm`, state `draft`, authenticated membership `author`, and a successfully accepted thumbnail upload. The account is already registered for OpenAI Build Week, whose live plugin status remains `submissions_open`.
+
+### Remaining gate
+
+- Devpost requires a public YouTube URL and the current environment exposes no YouTube upload integration. Upload `outputs/demo-film-final/workshoplm-demo.mp4` using `submission/YOUTUBE.md`, verify it while logged out, then add the URL to Devpost, submit with the prepared required fields, and publish `submission/X-POST.md`.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (publication/integration task; the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
