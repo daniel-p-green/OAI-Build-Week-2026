@@ -21,6 +21,8 @@
     "demo:capture-draft": "pnpm --filter @workshoplm/web capture:demo",
     "demo:capture-final": "pnpm --filter @workshoplm/web capture:final",
     "demo:capture-final-preview": "pnpm --filter @workshoplm/web capture:final -- --preview",
+    "demo:capture-film-highres": "pnpm --filter @workshoplm/web capture:final -- --film-highres",
+    "demo:film:opening-proof": "node scripts/build-demo-opening-proof-v6.mjs",
     "demo:film:rough": "node scripts/build-demo-rough-cut.mjs",
     "demo:film:sample": "node scripts/build-demo-rough-cut.mjs --sample-editorial",
     "demo:film:verify-sample": "node scripts/verify-demo-film-sample.mjs",

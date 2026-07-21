@@ -12450,3 +12450,26 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - The working tree is clean after local preservation checkpoints. The four local commits remain unpushed pending Daniel's review of the final public artifact set.
 - Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-21 17:55 CT — OpenAI motion study, native high-resolution capture, and 30-second opening proof
+
+### Changed
+
+- Studied current official OpenAI product demonstrations for Codex, ChatGPT agent, and GPT-5.6. Locked the replacement grammar to full-screen real UI for proof, one focal region per shot, restrained eased reframing, completed-state holds, and direct beat-led cuts instead of permanent step badges, decorative window chrome, or wipe transitions.
+- Added `submission/DEMO-FILM-V6-PRODUCTION-SPEC.md` and a non-destructive `pnpm demo:capture-film-highres` path. The capture records real interaction full-frame at 1920×1080 and saves one native 3840×2160 Retina product state per verified workflow beat for sharp editorial zooms.
+- Rejected and removed the first padded 3840×2160 attempt after original-resolution inspection proved that Playwright had placed a smaller app frame in a gray canvas. It was never promoted or used.
+- Captured `outputs/demo-recording-film-highres/workshoplm-film-workflow-highres.webm` plus twelve 4K states across Map, Sources, exact source trace, Brief approval, Style, Created work, output evidence, Storyboard editing and approval, Video render, and original-source reveal.
+- Added `scripts/build-demo-opening-proof-v6.mjs` and rendered the local-only 30-second proof `outputs/demo-film-v6-opening-proof/workshoplm-v6-opening-proof.mp4`. It uses the approved 4K cover, the new native product states, hard cuts on the detected `Different Window` beat grid, one dry Cedar path, and the exact authorized stereo master with manual gain automation only.
+
+### Verified
+
+- Web typecheck and diff checks passed. The deterministic founder workflow completed with an approved Brief, approved Storyboard, rendered Video, one shareable Source, three output records, six image panels, five Storyboard panels, and zero limitations.
+- Motion capture: VP8 1920×1080 at 25 fps, 102.96 seconds, SHA-256 `73efcaf01f4b655e5abbe16bf576115e13f2b1299e2b2ef52d7b0c85bd04ac80`. All twelve editorial stills are 3840×2160; original-resolution Map, Brief/Style, Created work, and original-source reveal frames were inspected and fill the frame without padding.
+- Opening proof: H.264 1920×1080 at 30 fps with 48 kHz stereo AAC, exactly 30.0 seconds, SHA-256 `414baf733af9d713341473b6da7d6b4a2b2e52974765b1111333c990483db110`; complete FFmpeg decode passed. The mastered mix measures -14.53 LUFS integrated and -1.50 dB true peak. The contact sheet was inspected across all six shots.
+
+### Remaining gate
+
+- Daniel must watch and listen to the exact 30-second opening proof. The complete 2:39 replacement remains intentionally unrendered until the why story, focus choreography, Cedar clarity, and music balance in this proof are approved. No public surface was changed.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).

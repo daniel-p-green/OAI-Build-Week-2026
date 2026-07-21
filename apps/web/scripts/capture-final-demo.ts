@@ -7,16 +7,19 @@ import { readWorkshopState } from "../../worker/src/workshop-service.ts";
 
 const repository = resolve(process.cwd(), "../..");
 const preview = process.argv.includes("--preview");
-const film = process.argv.includes("--film");
+const highResolutionFilm = process.argv.includes("--film-highres");
+const film = highResolutionFilm || process.argv.includes("--film");
 const sourceRoot = resolve(repository, process.env.WORKSHOPLM_FINAL_CAPTURE_SOURCE_ROOT ?? (preview ? ".workshoplm/acceptance" : ".workshoplm/final-operator"));
 const dataRoot = resolve(repository, ".workshoplm-final-recording-copy");
-const outputRoot = resolve(repository, film ? "outputs/demo-recording-film" : preview ? "outputs/demo-recording-final-preview" : "outputs/demo-recording-final");
-const workingRoot = resolve(repository, film ? "outputs/demo-recording-film.building" : preview ? "outputs/demo-recording-final-preview.building" : "outputs/demo-recording-final.building");
+const outputRoot = resolve(repository, highResolutionFilm ? "outputs/demo-recording-film-highres" : film ? "outputs/demo-recording-film" : preview ? "outputs/demo-recording-final-preview" : "outputs/demo-recording-final");
+const workingRoot = resolve(repository, highResolutionFilm ? "outputs/demo-recording-film-highres.building" : film ? "outputs/demo-recording-film.building" : preview ? "outputs/demo-recording-final-preview.building" : "outputs/demo-recording-final.building");
 const temporaryVideoRoot = resolve(workingRoot, ".playwright-video");
+const highResolutionStillsRoot = resolve(workingRoot, "stills-4k");
 const port = 3105;
 const baseUrl = `http://127.0.0.1:${port}`;
 const holdMultiplier = film ? 4 : 1;
-const viewport = film ? { width: 1280, height: 720 } : { width: 1200, height: 800 };
+const viewport = highResolutionFilm ? { width: 1920, height: 1080 } : film ? { width: 1280, height: 720 } : { width: 1200, height: 800 };
+const recordSize = viewport;
 
 type Beat = { id: string; label: string; startMs: number; endMs: number };
 
@@ -52,6 +55,7 @@ async function main(): Promise<void> {
   await rm(workingRoot, { recursive: true, force: true });
   await cp(sourceRoot, dataRoot, { recursive: true });
   await mkdir(temporaryVideoRoot, { recursive: true });
+  if (highResolutionFilm) await mkdir(highResolutionStillsRoot, { recursive: true });
 
   let sourceState: ReturnType<typeof readWorkshopState>;
   try { sourceState = readWorkshopState(dataRoot); }
@@ -87,15 +91,22 @@ async function main(): Promise<void> {
     browser = await chromium.launch(film ? { headless: true } : { channel: "chrome", headless: true });
     const context = await browser.newContext({
       viewport, colorScheme: "light", locale: "en-US", timezoneId: "America/Chicago", reducedMotion: "reduce",
-      recordVideo: { dir: temporaryVideoRoot, size: viewport },
+      deviceScaleFactor: highResolutionFilm ? 2 : 1,
+      recordVideo: { dir: temporaryVideoRoot, size: recordSize },
     });
     const page = await context.newPage();
     const video = page.video();
     const startedAt = performance.now();
     const beats: Beat[] = [];
+    const highResolutionStills: Array<{ relativePath: string; beatId: string }> = [];
     const beat = async (id: string, label: string, action: () => Promise<void>, holdMs = 1500) => {
       const startMs = Math.round(performance.now() - startedAt);
       await action();
+      if (highResolutionFilm) {
+        const name = `${String(beats.length + 1).padStart(2, "0")}-${id}.png`;
+        await page.screenshot({ path: resolve(highResolutionStillsRoot, name), fullPage: false });
+        highResolutionStills.push({ relativePath: `stills-4k/${name}`, beatId: id });
+      }
       await hold(holdMs * holdMultiplier);
       beats.push({ id, label, startMs, endMs: Math.round(performance.now() - startedAt) });
     };
@@ -186,7 +197,7 @@ async function main(): Promise<void> {
     await browser.close();
     if (!video) throw new Error("Playwright did not create the final recording video.");
     const temporaryVideo = await video.path();
-    const destination = resolve(workingRoot, film ? "workshoplm-film-workflow.webm" : preview ? "workshoplm-final-preview.webm" : "workshoplm-founder-walkthrough.webm");
+    const destination = resolve(workingRoot, highResolutionFilm ? "workshoplm-film-workflow-highres.webm" : film ? "workshoplm-film-workflow.webm" : preview ? "workshoplm-final-preview.webm" : "workshoplm-founder-walkthrough.webm");
     await copyFile(temporaryVideo, destination);
     const bytes = await readFile(destination);
     const probe = JSON.parse(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-show_entries", "stream=codec_type,codec_name,width,height", "-of", "json", destination], { encoding: "utf8" })) as { format?: { duration?: string }; streams?: unknown[] };
@@ -204,6 +215,10 @@ async function main(): Promise<void> {
     const contactSheet = resolve(workingRoot, "contact-sheet.png");
     execFileSync("ffmpeg", ["-y", "-framerate", "1", "-start_number", "1", "-i", resolve(reviewRoot, "%02d.jpg"), "-vf", "scale=480:-1,tile=4x3", "-frames:v", "1", "-update", "1", contactSheet], { stdio: "ignore" });
     const contactSheetBytes = await readFile(contactSheet);
+    const captureStills = await Promise.all(highResolutionStills.map(async (still) => ({
+      ...still,
+      sha256: createHash("sha256").update(await readFile(resolve(workingRoot, still.relativePath))).digest("hex"),
+    })));
     const manifest = {
       schemaVersion: 1,
       status: preview ? "founder-capture-preview" : "founder-final-candidate",
@@ -212,7 +227,10 @@ async function main(): Promise<void> {
       founderSourceEvidence: founderSource ? { id: founderSource.id, origin: founderSource.origin, permission: founderSource.permission } : null,
       submission: { relativePath: preview ? ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json" : ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json", status: submission.status, sha256: createHash("sha256").update(submissionBytes).digest("hex") },
       viewport,
-      video: { relativePath: film ? "workshoplm-film-workflow.webm" : preview ? "workshoplm-final-preview.webm" : "workshoplm-founder-walkthrough.webm", sha256: createHash("sha256").update(bytes).digest("hex"), durationSeconds, streams: probe.streams ?? [] },
+      recordSize,
+      deviceScaleFactor: highResolutionFilm ? 2 : 1,
+      video: { relativePath: highResolutionFilm ? "workshoplm-film-workflow-highres.webm" : film ? "workshoplm-film-workflow.webm" : preview ? "workshoplm-final-preview.webm" : "workshoplm-founder-walkthrough.webm", sha256: createHash("sha256").update(bytes).digest("hex"), durationSeconds, streams: probe.streams ?? [] },
+      captureStills,
       reviewImages: [{ relativePath: "contact-sheet.png", sha256: createHash("sha256").update(contactSheetBytes).digest("hex") }, ...beatReviewImages],
       beats,
       finalState: { briefApproved: sourceState.briefApproved, storyboardApproved: sourceState.storyboardApproved, videoState: sourceState.videoState, sources: sourceState.activeSourceIds.length, outputs: sourceState.outputs.length, imagePanels: sourceState.imageBatch?.panels.length ?? 0, storyboardPanels: sourceState.storyboard.panels.length },

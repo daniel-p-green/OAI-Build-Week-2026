@@ -25,7 +25,9 @@ outputs/demo-film-beat-cut/
 outputs/demo-film-local-review-v*/
 outputs/demo-film-rejected-*/
 outputs/demo-recording-film/
+outputs/demo-recording-film-highres/
 outputs/demo-recording-final-preview/
+outputs/demo-film-v6-opening-proof/
 outputs/demo-film-highres/*
 !outputs/demo-film-highres/workshoplm-openai-gradient-background.png
 !outputs/demo-film-highres/workshoplm-cover-native-4k-v3.png
