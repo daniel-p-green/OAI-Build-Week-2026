@@ -159,8 +159,9 @@ assert(finalCut.audioQa?.transcriptionSha256 && finalCut.audioQa.requiredCoverag
 assert(finalCut.video.streams.some((stream) => stream.codec_name === "h264") && finalCut.video.streams.some((stream) => stream.codec_name === "aac"), "Final film is missing H.264/AAC streams.");
 assert(createHash("sha256").update(finalVideoBytes).digest("hex") === finalCut.video.sha256, "Final film no longer matches its manifest hash.");
 assert(finalReadiness.mode === "final" && finalReadiness.finalReady === true && finalReadiness.blockedShots?.length === 0 && finalReadiness.missingEvidence?.length === 0, "Final edit-readiness report is not green.");
-assert(founderCandidateEvidence.remainingPublicationFields?.length === 1 && founderCandidateEvidence.remainingPublicationFields[0] === "public YouTube URL", "Founder candidate has unexpected unresolved publication fields.");
+assert(founderCandidateEvidence.remainingPublicationFields?.length === 0, "Founder candidate still has unresolved repository-controlled publication fields.");
 assert(founderCandidate.includes("019f5eb9-d996-7f42-ac5a-d4ed2cc8a324") && !founderCandidate.includes("[designated primary session ID"), "Founder candidate is missing the majority-core /feedback task ID.");
+assert(founderCandidate.includes("https://youtu.be/gwi_q6X1i5g"), "Founder candidate is missing the anonymously verified public YouTube URL.");
 assert(founderCandidateEvidence.submission?.publicRelativePath === paths.publicFinalPackage && createHash("sha256").update(publicFinalPackageBytes).digest("hex") === founderCandidateEvidence.submission.sha256, "Public final-package mirror is missing or no longer hash-identical to the promoted package.");
 
 const thumbnailBytes = await readFile(resolve(repository, paths.thumbnail));

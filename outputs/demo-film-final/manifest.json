@@ -52,11 +52,11 @@
       }
     },
     "submissionManifest": {
-      "relativePath": ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json",
+      "relativePath": "outputs/final-submission-output-set/manifest.json",
       "sha256": "2e89ee4397da11f86de61d78c90128e8a2bb7261763b6a5e0b3fed64f57c6291"
     },
     "buildTrace": {
-      "relativePath": ".workshoplm/final-operator/generated/submission-output-set-v1/BUILD-TRACE.json",
+      "relativePath": "outputs/final-submission-output-set/BUILD-TRACE.json",
       "sha256": "5673179f3999cd25bb39489a29396eee788b3452fca592891f21dcd5c60c02f3"
     }
   },

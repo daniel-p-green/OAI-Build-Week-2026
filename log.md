@@ -12187,3 +12187,47 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - This reset used 27 bounded provider requests: 21 TTS requests across an obsolete first pass, one failed-overlong current clip, and the ten retained final clips; plus six transcription QA requests used to locate and verify the mix fault. The retained narration clips are hash-bound; eight request IDs were not persisted because the first current generation aborted before writing its manifest, while the final two request IDs are preserved.
 - The July 20 stable tag still points to the rejected film. Before upload/submission, commit and push a new stable release that binds the 2:39 master, then upload publicly to YouTube, verify logged-out playback, update and submit Devpost, and publish the X post.
 - Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (publication/integration task; the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-20 21:02 CT — Replacement release and public YouTube video verified
+
+### Changed
+
+- Committed the replacement 2:39 demo and its reproducible beat plan, Cedar narration, HyperFrames compositor, mixed-export transcript proof, review frames, and release verifiers as commit `15f9bd33b23af879358d823c5e73c1f08fe367f3` (`Replace demo with beat-synchronized 2:39 master`). Pushed `main`, created annotated tag `build-week-submission-2026-07-21`, and pushed the tag without moving the July 20 historical tag.
+- Uploaded the exact canonical MP4 with SHA-256 `1effd2359c941e82e42eedce18f708667f447c17d190cbe90ba30b70ff198306` to Daniel Green's YouTube channel. Published it Public with the why-first title `Why good thinking disappears after the meeting | WorkshopLM`, the disclosed Cedar/music description, and the verified opening thumbnail.
+- Bound the public URL `https://youtu.be/gwi_q6X1i5g` into the README, Devpost source draft, YouTube handoff, X post, claim ledger, evidence audit, checklist, and current goal.
+
+### Verified
+
+- An anonymous raw GitHub fetch from tag `build-week-submission-2026-07-21` returned `final-public-demo`, Video hash `1effd2359c941e82e42eedce18f708667f447c17d190cbe90ba30b70ff198306`, full authorized `Different Window` master hash `c4a78f30fc3d962e899d21ed6adda321e185182b28dee5f6f359031c5becd14f`, H.264/AAC streams, and no limitations. The annotated tag dereferences to commit `15f9bd33b23af879358d823c5e73c1f08fe367f3`.
+- YouTube reported `Upload complete`, a 2:39 player duration, custom thumbnail saved, copyright check complete with no issues, and Community Guidelines check complete with no issues before publication.
+- YouTube confirmed `Video published` at `https://youtu.be/gwi_q6X1i5g`. A cookie-free oEmbed request returned the exact title and author `Daniel Green`; an anonymous watch-page request returned playability status `OK`.
+
+### Remaining gates
+
+- Update the authenticated Devpost project with the verified public URL and resolved candidate, submit it, confirm its `Submitted` state, then publish the prepared X post with the same URL.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (publication/integration task; the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-20 21:12 CT — Devpost submitted, X launched, and clean release portability repaired
+
+### Changed
+
+- Regenerated the founder candidate with the public YouTube URL; the candidate evidence now reports zero remaining repository-controlled publication fields, and the submission packet verifier requires that state.
+- Updated the authenticated Devpost project with the d-slopped why-first description, shorter tagline, and public Video. Submitted to OpenAI Build Week as an Individual in Work & Productivity with United States residence, the public repository, no-credential judge instructions, plugin testing instructions, and majority-core `/feedback` Session ID `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`.
+- Published the why-first X announcement from `@dgrreen` at `https://x.com/dgrreen/status/2079387902304243747` with the public YouTube link.
+- A clean extraction of the first replacement tag exposed that the film manifest still named two private `.workshoplm` provenance paths. Rebound those identical hashes to `outputs/final-submission-output-set/manifest.json` and `BUILD-TRACE.json`, and updated the promotion gate to accept the public mirror.
+
+### Verified
+
+- Devpost returned submission `1108961`, status `Submitted`, and `submitted_at: 2026-07-20T22:06:42.253-04:00`. Live project read-back reports `state: published`, the correct Video URL, OpenAI Build Week membership, and the final why-first description.
+- An anonymous Devpost fetch returned `<title>WorkshopLM | Devpost`, the final tagline, the embedded YouTube ID `gwi_q6X1i5g`, and the `Why I built it` heading.
+- X returned `Your post was sent`, the public status path `/dgrreen/status/2079387902304243747`, the exact post text, and a rendered YouTube card.
+- A clean archive of `build-week-submission-2026-07-21` installed from the frozen lockfile and completed `pnpm demo:e2e`. Its separate final-film verification then correctly failed on the private provenance paths; after the repair, the working-tree final-film verifier and complete submission-packet verifier both passed with zero unresolved publication fields.
+
+### Release decision
+
+- Preserve `build-week-submission-2026-07-21` as historical evidence instead of moving it. Publish the portability-corrected commit under the new immutable tag `build-week-submission-final-2026-07-21`, then repeat the clean final-film verification and anonymous tagged-manifest read.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (publication/integration task; the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).

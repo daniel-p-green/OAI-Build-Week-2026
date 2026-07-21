@@ -28,7 +28,7 @@ Attribution: “Apps in ChatGPT · OpenAI Official,” OpenAI, Figma Community, 
 
 - The six judge-fixture images were generated with `gpt-image-2` from sanitized WorkshopLM prompts. Their manifest records model, request IDs, hashes, and generation timestamps.
 - Audio Overview and Storyboard narration were generated with `gpt-4o-mini-tts` using Cedar. The interface and public claim ledger disclose AI-generated voice.
-- Local Videos are assembled from WorkshopLM UI captures, generated images, generated narration, Style tokens, and locally authored graphic elements. No music track is included.
+- Local product Videos are assembled from WorkshopLM UI captures, generated images, generated narration, Style tokens, and locally authored graphic elements. The separate Build Week public-demo edit uses the `Different Window` master supplied and authorized by project owner Daniel Green.
 - The final public-demo master is hash-bound to one founder-authorized project script narrated with a disclosed OpenAI Cedar AI voice. It does not imitate or represent the founder's voice.
 - The Image API reference fixture is a locally authored one-pixel PNG with its own license note.
 - System font stacks are used for WorkshopLM UI and generated professional work unless a user explicitly supplies and confirms a licensed font.
@@ -45,5 +45,5 @@ Before checking the submission's complete third-party-authorization requirement:
 
 1. The exact ready package and final Video are inventoried by their manifests and SHA-256 hashes.
 2. Every reviewed frame and audio track is WorkshopLM-authored, founder-authorized, OpenAI-generated, or covered by the dependency licenses above.
-3. The final Video contains no third-party music, research screenshots, external logos, or unlicensed fonts.
+3. The final public demo contains no unlicensed music, research screenshots, external logos, or unlicensed fonts. Its `Different Window` master is project-owner authorized and hash-bound in the film manifest.
 4. Retain this notice in the tagged judge release and record any additional attribution required by later publication assets.

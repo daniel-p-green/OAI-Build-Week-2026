@@ -4,9 +4,11 @@
 
 Why should good thinking disappear in the handoff after a meeting?
 
-I built WorkshopLM for OpenAI Build Week: one grounded conversation becomes an editable Map, approved Brief, coordinated professional work, Storyboard, and Video—with Sources attached throughout.
+I built WorkshopLM for OpenAI Build Week: one conversation becomes an editable Map, approved Brief, slides, graphics, audio, Storyboard, and Video—source-linked.
 
-Built with Codex + GPT-5.6. Demo: [PUBLIC YOUTUBE URL]
+Built with Codex + GPT-5.6. https://youtu.be/gwi_q6X1i5g
+
+Published: https://x.com/dgrreen/status/2079387902304243747
 
 ## Alt text
 

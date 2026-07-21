@@ -9,22 +9,22 @@
 - [x] Third-party SDKs, APIs, data, fonts, images, music, and integrations are licensed or authorized
   - [x] Current runtime dependencies and design references are inventoried in `THIRD_PARTY_NOTICES.md`; direct production licenses and the installed dependency distribution were reviewed.
   - [x] The sanitized judge fixture uses locally authored or sanitized Sources, GPT Image 2 visuals, disclosed Cedar speech, system fonts, and no music.
-  - [x] Exact ready package and final Video are hash-bound and visually inventoried; the final film contains no music, research screenshots, external logos, or unlicensed fonts.
+  - [x] Exact ready package and final Video are hash-bound and visually inventoried; the final film contains the project-owner-authorized `Different Window` master and no research screenshots, external logos, or unlicensed fonts.
 - [x] Sample data and a privacy-safe, repeatable demo fixture are available
 
 ## Devpost entry
 
 - [x] Clear project description explaining features and functionality
 - [x] Evidence-gated draft copy maps current claims to direct proof and bounded fallback wording
-- [ ] Submitter type selected: Individual, Team of Individuals, or Organization
-- [ ] Country of residence selected
-- [ ] Public or private code-repository URL supplied
-- [ ] Optional live-project URL and judge instructions supplied
+- [x] Submitter type selected: Individual
+- [x] Country of residence selected: United States
+- [x] Public code-repository URL supplied
+- [x] Optional judge instructions supplied with no-credential fixture path
 - [x] Core Codex `/feedback` Session ID supplied: `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`
 - [x] Primary Session ID and the reason it represents the majority-core full-implementation task recorded in `log.md`
-- [x] Devpost project created and populated at `https://devpost.com/software/workshoplm`; verified live as an author-owned draft with the final project thumbnail
+- [x] Devpost project created and populated at `https://devpost.com/software/workshoplm`; verified live as an author-owned published project with the final project thumbnail and public YouTube video
 - [x] All team members added and invitations accepted (individual submission; authenticated author is the sole project member)
-- [ ] Submission is submitted, not left as a draft
+- [x] Submission `1108961` is `Submitted`, not left as a draft
 
 ## Repository
 
@@ -42,7 +42,7 @@
 ## Demo video
 
 - [x] Under three minutes
-- [ ] Publicly visible on YouTube, not unlisted
+- [x] Publicly visible on YouTube, not unlisted: `https://youtu.be/gwi_q6X1i5g`; cookie-free playback status `OK`
 - [x] Shows the working project clearly
 - [x] Includes understandable audio or voiceover
 - [x] Explains what was built
@@ -57,8 +57,8 @@
 
 ## Judge access
 
-- [ ] Free and unrestricted through the end of judging
-- [x] Judge-facing release commit `857cee4f8420a09ddca2acbac92886bf00c93b4c` tagged as `build-week-submission-2026-07-20`; fixture/README/plugin snapshot is pinned and the tagged manifest was fetched anonymously
+- [x] Free and unrestricted through the end of judging through the public YouTube video, public repository, and no-credential fixture
+- [x] Portable judge-facing release is tagged as `build-week-submission-final-2026-07-21`; it contains the 2:39 master and public provenance paths
 - [ ] Stable judge path retained through the August 12, 2026 winner announcement
 - [x] Public video master makes the full value and working flow understandable without local setup
 - [x] Sanitized recorded fixture supports repeatable capture and optional inspection without paid calls
@@ -83,8 +83,8 @@ WorkshopLM is a local plugin/developer-tool experience. Keep these concise and s
 - [x] Re-check the submission deadline and latest announcements
   - [x] Interim July 17 refresh confirmed the Tuesday, July 21, 2026 at 5:00 PM Pacific deadline, two host announcements, and unchanged submission requirements; repeat at final submission.
   - [x] July 20 final rules refresh reconfirmed the July 21, 2026 at 5:00 PM Pacific deadline, public YouTube video under three minutes with audio covering the build/Codex/GPT-5.6, README requirements, and the `/feedback` task where the majority of core functionality was built.
-- [ ] Verify every submitted link in a logged-out/private browser session
-- [ ] Confirm the YouTube video is public
+- [x] Verify every submitted link without authentication: public YouTube, public Devpost, public repository, and raw tagged manifest
+- [x] Confirm the YouTube video is public
 - [x] Confirm the repository permissions work for judges
-- [ ] Confirm the Devpost entry is not a draft
-- [ ] Confirm the tagged judge release reproduces the submitted fixture commands after `main` moves
+- [x] Confirm the Devpost entry is not a draft: submission `1108961` reports `Submitted`, project state `published`
+- [x] Confirm the tagged judge release reproduces the submitted fixture commands after `main` moves: clean extracted release completed dependency install and `pnpm demo:e2e`; final-film portability was corrected to public package paths and reverified

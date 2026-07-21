@@ -34,4 +34,4 @@ https://github.com/daniel-p-green/OAI-Build-Week-2026
 
 ## Visibility check
 
-After upload, set visibility to **Public**, open the watch URL in a logged-out browser, confirm playback and audio, then put that exact URL into Devpost and `submission/X-POST.md`.
+Published **Public** at https://youtu.be/gwi_q6X1i5g. YouTube reported both copyright and Community Guidelines checks complete with no issues. A cookie-free oEmbed read returned the correct title and author, and the anonymous watch page returned playability status `OK`.
