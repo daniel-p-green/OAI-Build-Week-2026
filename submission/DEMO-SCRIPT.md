@@ -1,6 +1,6 @@
 # WorkshopLM public demo script
 
-Target: 2:20. Treat 2:55 as the absolute export ceiling so YouTube cannot report a rules-breaking duration. The final verified master runs 2:20 with disclosed Cedar narration and no blocked evidence beats.
+Target: 2:39. Treat 2:59 as the absolute export ceiling. The final verified master runs 158.6 seconds with disclosed Cedar narration, the full Daniel-provided `Different Window` master as its beat skeleton, and no blocked evidence beats.
 
 ## Evidence selector before recording
 
@@ -19,16 +19,16 @@ Every answer must point to an inspected artifact in `log.md`. A missing or ambig
 
 | Time | Screen action | Narration |
 | --- | --- | --- |
-| 0:00–0:13 | Open the connected Presentation, Infographic, Audio Overview, and Video, then pull back to their WorkshopLM Map. | “WorkshopLM turns conversations and Sources into professional knowledge work—every expression sharing one Style and one source trail.” |
-| 0:13–0:26 | Show the captured Codex-side WorkshopLM doorway and use it to open the Workshop. | “WorkshopLM is one unified plugin. Codex stays the conversation surface, uses the project's grounded tools, and opens the visual Workshop only when spatial editing is useful.” |
-| 0:26–0:44 | Open Sources and the authorized project brainstorm, then show the provider-backed Terra Map result and separate Realtime proof cue. | “I begin with an authorized project brainstorm, narrated by a disclosed AI voice and imported as a grounded Source. Separately, live Realtime voice is proven. GPT-5.6 shapes the text into a semantic Map while every factual node keeps its exact locator.” |
-| 0:44–0:58 | Open a source locator, then move or rename one Map node. | “The Map stays editable, and a meaningful change makes dependent work stale.” |
-| 0:58–1:10 | Choose `Approve brief`, then show the readable Brief. | “The first approval turns the current Map into an inspectable executable Brief.” |
-| 1:10–1:22 | Show the Style summary with palette, type, layout, and negative rules. | “Style is set once and stays reviewable, so every created format follows the same visual rules.” |
-| 1:22–1:36 | Open the Presentation and its exact evidence, then reveal the provider-backed GPT Image 2 set and the other coordinated work. | “The Presentation, Infographic, images, Audio Overview, Storyboard, and Video are different expressions of the same approved knowledge and Style.” |
-| 1:36–1:49 | Open Storyboard, edit one panel, save, then choose `Approve storyboard`. | “The Storyboard remains editable. This is the second and final blocking approval before video creation.” |
-| 1:49–2:04 | Show the approved Storyboard becoming the current narrated MP4. | “The local worker renders only the approved current Storyboard. The same trace follows the Video back through the Brief and Map to exact evidence.” |
-| 2:04–2:20 | Reveal the contemporaneous brainstorm beside the verified founder-derived created work, then show concise Codex and GPT-5.6 evidence. | “This trace shows how one messy thought became everything on screen. You watched GPT-5.6 shape it; Codex accelerated the implementation and verification.” |
+| 0:00–0:17 | Why-first fragments show the work breaking apart after a meeting. | “The meeting ends. The documents are real. The decisions are real. Then the work splinters: slides in one tool, notes in another, graphics somewhere else, and no clean way back to the source.” |
+| 0:17–0:28 | The fragments resolve into the WorkshopLM `Capture → Map → Brief → Create` spine. | “WorkshopLM keeps that work together. One conversation becomes one grounded Workshop, with the knowledge, visual direction, and source trail still attached.” |
+| 0:28–0:44 | Show the real Capture/source screen and supported input types. | “Start by talking through the messy idea, pasting notes, adding a website, or importing a document. The original material stays local, visible, and selected inside the Workshop.” |
+| 0:44–1:06 | Play the founder-authorized live workflow and Map hierarchy. | “GPT-5.6 Terra turns that material into a Map. Evidence becomes synthesis. Synthesis becomes one recommended direction. This is still an editable thinking surface, not a frozen model answer, and every grounded idea keeps its exact source locator.” |
+| 1:06–1:22 | Open the exact Source excerpt and show the `Needs update` consequence. | “Open a Source link and WorkshopLM shows the sentence behind the claim. There is no separate citations page to hunt through. Change the evidence later, and affected work marks itself Needs update.” |
+| 1:22–1:39 | Show approved Brief and Storyboard as the two human checkpoints. | “There are two real checkpoints. Approve the Brief before creating anything downstream. Approve the Storyboard before rendering Video. If the thinking changes, both gates fail closed until you review it again.” |
+| 1:39–2:01 | Hard-cut every four beats through Presentation, Infographic, image set, Audio Overview, Sketch, Storyboard, and Video. | “Then one approved direction becomes a Presentation, Infographic, image set, Audio Overview, Sketch, Storyboard, and Video. The formats are different, but they share one Style, one decision, and one source trail. Editable PowerPoint exports stay part of the package.” |
+| 2:01–2:17 | Show editable Storyboard beside the locally rendered Video. | “The Storyboard stays editable panel by panel: visual, narration, timing, and Source. After approval, HyperFrames renders the Video locally and records the claim, image, narration, and source hashes behind every scene.” |
+| 2:17–2:28 | Show Codex build evidence beside the verified GPT-5.6 Terra provenance. | “Codex with GPT-5.6 built and tested WorkshopLM. Inside the product, GPT-5.6 Terra turns the authorized Source into the grounded Map shown here.” |
+| 2:28–2:39 | Resolve the opening fragments into one connected Workshop. | “This submission started as one authorized conversation. WorkshopLM turned it into the work you just saw, with every claim still connected to its source.” |
 
 ## Recording guardrails
 
@@ -40,7 +40,7 @@ Every answer must point to an inspected artifact in `log.md`. A missing or ambig
 - Show the verified Terra result during the source-to-Map beat; do not leave it as a spoken end-card claim.
 - A new founder-brainstorm recording must be timestamped and described as a contemporaneous source. It is not the missing original pre-code brainstorm.
 - Keep the YouTube title, thumbnail, and Devpost project name free of Google or NotebookLM marks. The comparison may appear only in narration or explanatory prose.
-- Include no third-party music, logos, or unlicensed media.
+- Use only the Daniel-provided `Different Window` master as the music bed; include no other third-party music, logos, or unlicensed media.
 - Before upload, resolve every gated row in `submission/CLAIM-LEDGER.md` with captured evidence or use its bounded wording.
 
 ## Recording gate and order
@@ -95,7 +95,7 @@ Run the draft verifier before editing:
 pnpm demo:film:verify
 ```
 
-`submission/demo-film-plan.json` is the machine-readable paper edit. It fixes the intended runtime at 2:20 across ten contiguous shots, maps all twelve fixture beats into the film, checks narration density, and names the exact external evidence required by each unfinished shot. Its report is written to `outputs/demo-film-plan/`.
+`submission/demo-film-beat-plan.json` is the final machine-readable paper edit. It fixes the intended runtime at 158.592 seconds across ten contiguous song-phrase sections, places all major cuts and the output flex on the detected beat grid, and binds the final Cedar narration. The earlier `submission/demo-film-plan.json` remains the 2:20 sample/legacy edit record.
 
 The final export gate is intentionally separate:
 
@@ -103,4 +103,4 @@ The final export gate is intentionally separate:
 pnpm demo:film:verify-final
 ```
 
-That command must fail until every shot is marked ready, every named evidence file exists, the plan status is `final`, and `outputs/demo-film-final/workshoplm-demo.mp4` has both video and audio streams with a verified duration no longer than 2:55. Do not bypass the failure by removing evidence entries; replace blocked inputs with inspected artifacts and update their shot state.
+That command fails unless the full-song plan, ten Cedar clips, founder-authorized walkthrough, source/package bindings, beat-grid timing, HyperFrames composition, H.264/AAC streams, complete decode, hashes, and mixed-export transcription all pass. The public master must remain under three minutes.

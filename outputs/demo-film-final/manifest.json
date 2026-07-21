@@ -1,105 +1,44 @@
 {
   "schemaVersion": 1,
   "status": "final-public-demo",
-  "disclosure": "Final WorkshopLM demo with disclosed OpenAI Cedar narration, hash-bound founder-authorized source evidence, and a verified traced connected Workshop.",
-  "builtAt": "2026-07-20T19:30:39.434Z",
-  "plan": "submission/demo-film-plan.json",
-  "sourceCapture": "outputs/demo-recording-draft/manifest.json",
-  "compositor": {
-    "engine": "hyperframes",
-    "mode": "local",
-    "version": "0.7.60",
-    "composition": "workshoplm-editorial-film",
-    "jitterProneZoompan": false,
-    "spatialTransforms": false,
-    "transition": "neutral-dip",
-    "design": {
-      "sha256": "caa0267a3a5c6d1ca90a700a79616983085fbc1c1c5750c3314f1dc3e1437f05",
-      "source": ".workshoplm/final-operator/generated/DESIGN-v1.md"
-    },
-    "frame": {
-      "version": 1,
-      "sha256": "cff0ce050473f11051dba4e9892d8872d77ad63b2cfdf9af0ddd883a91b5d363",
-      "source": ".workshoplm/final-operator/generated/FRAME-v1.md"
-    }
+  "disclosure": "AI-generated OpenAI Cedar voiceover. Different Window is the Daniel-provided music master and supplies the full edit skeleton.",
+  "builtAt": "2026-07-21T01:41:42.649Z",
+  "plan": {
+    "relativePath": "submission/demo-film-beat-plan.json",
+    "sha256": "d40301474809c7f8f4ac969773b39dbfc51a1e1d008bb84c6039210912fc2f15",
+    "durationSeconds": 158.592,
+    "estimatedBpm": 87.593
   },
-  "voice": {
+  "music": {
+    "title": "Different Window",
+    "authorization": "Daniel-provided master",
+    "sha256": "c4a78f30fc3d962e899d21ed6adda321e185182b28dee5f6f359031c5becd14f",
+    "fullMasterUsed": true
+  },
+  "narration": {
+    "manifest": "outputs/demo-film-beat-narration/manifest.json",
+    "sha256": "26e84689c5741e1f42e01e079d878657468ca0a20cc84c762be2f8fb61e18c7b",
     "provider": "OpenAI",
     "model": "gpt-4o-mini-tts",
-    "name": "cedar",
-    "disclosure": "AI-generated voice",
-    "requestCount": 10,
-    "finalProviderNarration": true
+    "voice": "cedar",
+    "disclosure": "AI-generated voice"
   },
-  "video": {
-    "relativePath": "workshoplm-demo.mp4",
-    "sha256": "3b7cecda641588335129b2cbcdc4cf0543c9be029ec03d713097213be1f37694",
-    "durationSeconds": 140.010667,
-    "streams": [
-      {
-        "codec_name": "h264",
-        "codec_type": "video",
-        "width": 1280,
-        "height": 720
-      },
-      {
-        "codec_name": "aac",
-        "codec_type": "audio",
-        "sample_rate": "48000"
-      }
-    ]
+  "compositor": {
+    "engine": "hyperframes",
+    "version": "0.7.60",
+    "composition": "workshoplm-beat-cut",
+    "editGrammar": "song-phrase sections with hard-cut four-beat output flex"
   },
-  "contactSheet": {
-    "relativePath": "contact-sheet.jpg",
-    "sha256": "4966f421a49e5d6cc34d14a6ab7c5b2daefbd9bc4f50053eeb58c0245e4d6b66"
+  "siteBed": {
+    "site": "WorkshopLM Product Story Mockup",
+    "version": 6,
+    "commit": "63398efd970c34908e09274c2fb4643a7de22bc9",
+    "deployedUrl": "https://workshoplm-product-story.daniel-green.chatgpt.site"
   },
-  "openingProofFrame": {
-    "relativePath": "review/opening-proof.jpg",
-    "sha256": "81c5e46ef53ec17dde3831a9240ffdf94aeacc7ec476fed2370673b99fcfee79",
-    "atSeconds": 2.25
+  "sourceCapture": {
+    "relativePath": "outputs/demo-recording-final/workshoplm-founder-walkthrough.webm",
+    "sha256": "4f8fd768cf0109acb609d4eb64609990c4cf4b6cb57993e55c8ec44b787c3698"
   },
-  "reviewFrames": [
-    {
-      "relativePath": "review/01.jpg",
-      "sha256": "21a252a74dbcb5e79334dc2cb141cc9b561924c4265ebe7b7d9b510057af9a34"
-    },
-    {
-      "relativePath": "review/02.jpg",
-      "sha256": "cfe99cf03ee395b64f7612f9b7a85bd61a157778772d746c39a2021b92ced5b3"
-    },
-    {
-      "relativePath": "review/03.jpg",
-      "sha256": "98b992fd98eb560916ff76fa807e2c77060c0794ecb0c9d3d891ad50da0c8e4e"
-    },
-    {
-      "relativePath": "review/04.jpg",
-      "sha256": "ef26e20051f068ad581ad4e22e487fb7d3b7b44e921b1157b333aaa144d0cf67"
-    },
-    {
-      "relativePath": "review/05.jpg",
-      "sha256": "040360aaaea2cfa40341ba2242d0b42c124cc97d525959e28f280d1a1594979b"
-    },
-    {
-      "relativePath": "review/06.jpg",
-      "sha256": "393435485f6d692c6d4abef2596696afef995027ef849394d3b18e2b8fd2173a"
-    },
-    {
-      "relativePath": "review/07.jpg",
-      "sha256": "983ebe915eeb19da76e43e968526fffd2acfe7cee351d5660385df5ed5bd84ef"
-    },
-    {
-      "relativePath": "review/08.jpg",
-      "sha256": "2b2117cb8f67c06316d7e979ae87331f89e11befd439154a1b33bc045b36e660"
-    },
-    {
-      "relativePath": "review/09.jpg",
-      "sha256": "2c02b6b19508bb12cf76bb895197977575da23ce5a44ce66b99b7ce0ed8e22b9"
-    },
-    {
-      "relativePath": "review/10.jpg",
-      "sha256": "f2f119cd402088f7b44177523d1625772be1337ed1aa732c98d679186d6c7f47"
-    }
-  ],
   "metaRevealEvidence": {
     "mode": "founder",
     "transcript": {
@@ -121,240 +60,150 @@
       "sha256": "5673179f3999cd25bb39489a29396eee788b3452fca592891f21dcd5c60c02f3"
     }
   },
+  "video": {
+    "relativePath": "workshoplm-demo.mp4",
+    "sha256": "1effd2359c941e82e42eedce18f708667f447c17d190cbe90ba30b70ff198306",
+    "durationSeconds": 158.6,
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio",
+        "sample_rate": "48000"
+      }
+    ]
+  },
+  "contactSheet": {
+    "relativePath": "contact-sheet.jpg",
+    "sha256": "77ba109572090afe53b0a709e7c04c4f665c18b39504aacb9ed7d63888ba5be6"
+  },
+  "outputFlexContactSheet": {
+    "relativePath": "output-flex-contact-sheet.jpg",
+    "sha256": "530abacf5d98d4cd7c952c5a2f1bc1e69d2ce39b03ccd3f95657812bfd244e39"
+  },
+  "audioQa": {
+    "transcriptionRelativePath": "transcription.json",
+    "transcriptionSha256": "457f63c14dfdbcb1e1a1e7e41145cfe5fcbd8474e182e1496457a0d8707477ec",
+    "model": "gpt-4o-mini-transcribe",
+    "requiredCoverage": [
+      "what was built",
+      "Codex with GPT-5.6",
+      "GPT-5.6 Terra",
+      "Brief approval",
+      "Storyboard approval",
+      "HyperFrames local render"
+    ],
+    "integratedLoudnessLufs": -14.6,
+    "loudnessRangeLu": 10.5,
+    "truePeakDbfs": -1.6
+  },
+  "reviewFrames": [
+    {
+      "relativePath": "review/01.jpg",
+      "sha256": "ab35e7f147ae55df445b9c7f21691695ff689faa7d240b4cb3162adf19f5762d"
+    },
+    {
+      "relativePath": "review/02.jpg",
+      "sha256": "868edcae4a081c47781ef6d83254542240256d444ca02f315509f59d3a21b199"
+    },
+    {
+      "relativePath": "review/03.jpg",
+      "sha256": "3c9b9ded0da2cc88d1db0779c1e5ab2773f5b75e960b6370055c9873aaa6fbb9"
+    },
+    {
+      "relativePath": "review/04.jpg",
+      "sha256": "9c8cd54138f8542b4b2f5ec1ae993da5fb0f7f0d2f6346582119fef8f161b5d7"
+    },
+    {
+      "relativePath": "review/05.jpg",
+      "sha256": "9e80c5a3887e87bc6f30dca1e0e9991b4421745c41f186172268eeb7f095c6f4"
+    },
+    {
+      "relativePath": "review/06.jpg",
+      "sha256": "a5fb29e39b38b87ef01c93f21755a7760d4d31f8287860f2e3381c21cd94bd09"
+    },
+    {
+      "relativePath": "review/07.jpg",
+      "sha256": "ba7e2f35f4cba14f65d85761c927450c1a0aec837d98ef50df3e5858d9a81008"
+    },
+    {
+      "relativePath": "review/08.jpg",
+      "sha256": "8d86c50e1c72f0cac5d0bce5080c89533a0f7781f256b93365f5a7fd0d6bd99f"
+    },
+    {
+      "relativePath": "review/09.jpg",
+      "sha256": "6877f2be6f845c108521c42dc6b4919535d0a2b25090cbff893c59b6f48580f4"
+    },
+    {
+      "relativePath": "review/10.jpg",
+      "sha256": "63ad15a449ed51e84dce2b3cacb7e2a9ad8aba4a685ac4a548feb873dc5c1e0c"
+    }
+  ],
   "shots": [
     {
-      "id": "promise",
-      "state": "ready",
-      "durationSeconds": 13,
-      "narration": {
-        "model": "gpt-4o-mini-tts",
-        "voice": "cedar",
-        "requestId": "req_75ed5d07d0724553ac61d9abb06d989b",
-        "sha256": "68d826cc17953da380593b56d2002b94b2015cfce3b0d07dd57f4c7129f5007d"
-      },
-      "sourceBeats": [
-        "map"
-      ],
-      "sourceStartSeconds": 0.975,
-      "sourceEndSeconds": 2.678,
-      "openingProof": {
-        "type": "finished-work-to-map",
-        "relativePath": ".workshoplm/final-operator/generated/submission-output-set-v1/thumbnail-opening.png",
-        "sha256": "546c22ded7d5d6634137245fcd11d9bbd260b648dbbef2c61dce8a89fa8b59dc",
-        "durationSeconds": 4.5,
-        "transition": "neutral-dip"
-      },
-      "motion": {
-        "type": "hyperframes-stable-media",
-        "transition": "opening-proof-dip",
-        "spatialTransform": false,
-        "jitterProneZoompan": false
-      }
+      "id": "why",
+      "startSeconds": 0,
+      "endSeconds": 16.695,
+      "narrationSha256": "f50bce5532edab40f741a83479f6cab5601c3d9c6009ffa69fe8d379ec764ca7"
     },
     {
-      "id": "codex-doorway",
-      "state": "ready",
-      "durationSeconds": 13,
-      "narration": {
-        "model": "gpt-4o-mini-tts",
-        "voice": "cedar",
-        "requestId": "req_9bad20020f4e456fb6f1332b0349d06f",
-        "sha256": "594f855355d7c4599c7f86fc0e25615f46d211bf8784467e7b9f10e63c9988b6"
-      },
-      "sourceBeats": [],
-      "externalVideo": "outputs/demo-film-inputs/codex-doorway.mov",
-      "sourceDurationSeconds": 12,
-      "sourcePlaybackRate": 1,
-      "motion": {
-        "type": "hyperframes-stable-media",
-        "transition": "neutral-dip",
-        "spatialTransform": false,
-        "jitterProneZoompan": false
-      }
+      "id": "one-workshop",
+      "startSeconds": 16.695,
+      "endSeconds": 27.655,
+      "narrationSha256": "a4a2ba3527b8707a76b17c90c890d7d40088849aed4d7f14841768e2fc9857ef"
     },
     {
-      "id": "capture-and-shape",
-      "state": "ready",
-      "durationSeconds": 18,
-      "narration": {
-        "model": "gpt-4o-mini-tts",
-        "voice": "cedar",
-        "requestId": "req_3b922e0284a94955b30db0353fe5343d",
-        "sha256": "13c510147b0c278617f4036db6a9fb233029e10b99eefb619a471da7691d9e9f"
-      },
-      "sourceBeats": [],
-      "externalVideo": "outputs/demo-film-inputs/founder-brainstorm.mov",
-      "sourceDurationSeconds": 25.333333,
-      "sourcePlaybackRate": 1.407407388888889,
-      "motion": {
-        "type": "hyperframes-stable-media",
-        "transition": "neutral-dip",
-        "spatialTransform": false,
-        "jitterProneZoompan": false
-      },
-      "realtimeProof": {
-        "relativePath": "artifacts/live/realtime-turn.json",
-        "sha256": "46b265900e2851b6dfd492e1b604a36c89d872d8ab784098f1fb75525674318c",
-        "model": "gpt-realtime-2.1",
-        "transport": "webrtc",
-        "successfulToolCallCount": 3,
-        "captureMode": "controlled-synthetic-microphone-audio",
-        "founderRecording": false
-      }
+      "id": "capture",
+      "startSeconds": 27.655,
+      "endSeconds": 44.095,
+      "narrationSha256": "b460d005847c677894c75111bb90f8f4b7d860cb3d7b7ee83d8212525d367b3c"
     },
     {
-      "id": "evidence-and-control",
-      "state": "ready",
-      "durationSeconds": 14,
-      "narration": {
-        "model": "gpt-4o-mini-tts",
-        "voice": "cedar",
-        "requestId": "req_5fa723425b8e4b3ca80634aff4a43407",
-        "sha256": "015d7239d7f96f16138fca7efd0f0588ef920a84660d23727964b8359906392d"
-      },
-      "sourceBeats": [
-        "source-trace",
-        "map-edit"
-      ],
-      "sourceStartSeconds": 5.44,
-      "sourceEndSeconds": 7.97,
-      "motion": {
-        "type": "hyperframes-stable-media",
-        "transition": "neutral-dip",
-        "spatialTransform": false,
-        "jitterProneZoompan": false
-      }
+      "id": "map",
+      "startSeconds": 44.095,
+      "endSeconds": 66.014,
+      "narrationSha256": "d28e0bca990766651e753d8dec539eb342b8ae7ecb9f478963355fdf2e20cf0c"
     },
     {
-      "id": "brief-approval",
-      "state": "ready",
-      "durationSeconds": 12,
-      "narration": {
-        "model": "gpt-4o-mini-tts",
-        "voice": "cedar",
-        "requestId": "req_1a8fe110bc8348a88315b6aaa2bade37",
-        "sha256": "cd819b3bfb82043dd7747e7ba208e0dd5b80a24b3e216e3264e2f7ee2b89339e"
-      },
-      "sourceBeats": [
-        "brief-approval"
-      ],
-      "sourceStartSeconds": 8.896,
-      "sourceEndSeconds": 10.032,
-      "motion": {
-        "type": "hyperframes-stable-media",
-        "transition": "neutral-dip",
-        "spatialTransform": false,
-        "jitterProneZoompan": false
-      }
+      "id": "source-proof",
+      "startSeconds": 66.014,
+      "endSeconds": 82.454,
+      "narrationSha256": "3492b9540a1da072c2a3c215034b9ce26cba42030acb92895176e9d50f6d6d6d"
     },
     {
-      "id": "style",
-      "state": "ready",
-      "durationSeconds": 12,
-      "narration": {
-        "model": "gpt-4o-mini-tts",
-        "voice": "cedar",
-        "requestId": "req_560f7043101c4f75867aecdc493dee42",
-        "sha256": "23508310cbefb0896579e9f056c9303f18d57e5d18811f44fe7dcaddc9f9acf2"
-      },
-      "sourceBeats": [
-        "style"
-      ],
-      "sourceStartSeconds": 10.932,
-      "sourceEndSeconds": 11.764,
-      "motion": {
-        "type": "hyperframes-stable-media",
-        "transition": "neutral-dip",
-        "spatialTransform": false,
-        "jitterProneZoompan": false
-      }
+      "id": "approvals",
+      "startSeconds": 82.454,
+      "endSeconds": 98.894,
+      "narrationSha256": "640a2bca8eea6fc92aee268b488dcebde38cbb390d3b01d729106fb4e58aa2cd"
     },
     {
-      "id": "outputs",
-      "state": "ready",
-      "durationSeconds": 14,
-      "narration": {
-        "model": "gpt-4o-mini-tts",
-        "voice": "cedar",
-        "requestId": "req_5e8cb32081cb4b24a2a65bae9ba84f23",
-        "sha256": "ac43614da2ba1520e4bea96b70911e586698ad8e191c92318370b3b6a75c5c25"
-      },
-      "sourceBeats": [
-        "create-outputs",
-        "output-evidence"
-      ],
-      "sourceStartSeconds": 12.677,
-      "sourceEndSeconds": 16.863,
-      "motion": {
-        "type": "hyperframes-stable-media",
-        "transition": "neutral-dip",
-        "spatialTransform": false,
-        "jitterProneZoompan": false
-      }
+      "id": "output-flex",
+      "startSeconds": 98.894,
+      "endSeconds": 120.813,
+      "narrationSha256": "1b8db829cbeca7aa91be98b8098a82fc56ad7e95132ff4f8e37384d1480e39a5"
     },
     {
-      "id": "storyboard-approval",
-      "state": "ready",
-      "durationSeconds": 13,
-      "narration": {
-        "model": "gpt-4o-mini-tts",
-        "voice": "cedar",
-        "requestId": "req_522fec504ce14669bb8bd04f24392951",
-        "sha256": "bdbe295821c5171219c37b52189fb36caae685acb361e9b182e4844873178516"
-      },
-      "sourceBeats": [
-        "storyboard-edit",
-        "storyboard-approval"
-      ],
-      "sourceStartSeconds": 17.062,
-      "sourceEndSeconds": 20.03,
-      "motion": {
-        "type": "hyperframes-stable-media",
-        "transition": "neutral-dip",
-        "spatialTransform": false,
-        "jitterProneZoompan": false
-      }
+      "id": "render",
+      "startSeconds": 120.813,
+      "endSeconds": 137.253,
+      "narrationSha256": "eefecdbc9d1e5c4fd0087f8e061b6dae76e532e9f2bdc5536d9d2d98e58e2ada"
     },
     {
-      "id": "render-and-trace",
-      "state": "ready",
-      "durationSeconds": 15,
-      "narration": {
-        "model": "gpt-4o-mini-tts",
-        "voice": "cedar",
-        "requestId": "req_504c9cd9c9bc41028d035a0108da3b93",
-        "sha256": "1e482546520557c5b59fe7b17b047cf04cf3bb7a30ab91e7834f2732569f919e"
-      },
-      "sourceBeats": [
-        "video-render"
-      ],
-      "sourceStartSeconds": 20.63,
-      "sourceEndSeconds": 23.246,
-      "motion": {
-        "type": "hyperframes-stable-media",
-        "transition": "neutral-dip",
-        "spatialTransform": false,
-        "jitterProneZoompan": false
-      }
+      "id": "codex-gpt",
+      "startSeconds": 137.253,
+      "endSeconds": 148.213,
+      "narrationSha256": "bcfe8d32fcd8c75db72e7002300fc6e55f1cbb64b73d47365b6367adf3ef2f40"
     },
     {
-      "id": "meta-reveal",
-      "state": "ready",
-      "durationSeconds": 16,
-      "narration": {
-        "model": "gpt-4o-mini-tts",
-        "voice": "cedar",
-        "requestId": "req_9ab198e2b480498495410170ce3c5297",
-        "sha256": "5c0e6a0604c97ab1f2cb34a332dc0ec9fb967eaf23b11f263d6a7b70bef77e9d"
-      },
-      "sourceBeats": [],
-      "generatedMetaReveal": true,
-      "motion": {
-        "type": "hyperframes-stable-media",
-        "transition": "neutral-dip",
-        "spatialTransform": false,
-        "jitterProneZoompan": false
-      }
+      "id": "close",
+      "startSeconds": 148.213,
+      "endSeconds": 158.592,
+      "narrationSha256": "43a2f4a4b47e33903e7d7c3963370718920f07cd277e3bf828283667d02ab2c7"
     }
   ],
   "limitations": []

@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "status": "founder-resolved-candidate",
-  "createdAt": "2026-07-20T19:53:24.346Z",
+  "createdAt": "2026-07-21T01:52:32.629Z",
   "elapsedSeconds": 6,
   "sourceDraft": "submission/DEVPOST-DRAFT.md",
   "submission": {
@@ -15,12 +15,12 @@
   },
   "film": {
     "relativePath": "outputs/demo-film-final/manifest.json",
-    "videoSha256": "3b7cecda641588335129b2cbcdc4cf0543c9be029ec03d713097213be1f37694",
-    "durationSeconds": 140.010667
+    "videoSha256": "1effd2359c941e82e42eedce18f708667f447c17d190cbe90ba30b70ff198306",
+    "durationSeconds": 158.6
   },
   "candidate": {
     "relativePath": "submission/DEVPOST-FOUNDER-CANDIDATE.md",
-    "sha256": "f6900423b2fa69ea773cb761269a73f1ae281b716ae1d5eaa48b5216b2efef7b"
+    "sha256": "a154c88ea263f693399adaae24c2807765edcff9fe7dc0b285e3b92b7f987c8b"
   },
   "remainingPublicationFields": [
     "public YouTube URL"

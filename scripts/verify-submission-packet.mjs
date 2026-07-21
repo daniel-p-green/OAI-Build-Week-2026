@@ -18,6 +18,7 @@ const paths = {
   checklist: "research/hackathon/SUBMISSION-CHECKLIST.md",
   provider: "artifacts/live/provider-run.json",
   narration: "outputs/demo-film-narration/manifest.json",
+  beatNarration: "outputs/demo-film-beat-narration/manifest.json",
   roughReadme: "outputs/demo-film-rough-cut/README.md",
   roughCut: "outputs/demo-film-rough-cut/manifest.json",
   sampleReadme: "outputs/demo-film-sample/README.md",
@@ -28,6 +29,7 @@ const paths = {
   founderCandidateEvidence: "submission/DEVPOST-FOUNDER-CANDIDATE.json",
   publicFinalPackage: "outputs/final-submission-output-set/manifest.json",
   filmPlan: "submission/demo-film-plan.json",
+  beatPlan: "submission/demo-film-beat-plan.json",
   thumbnail: "outputs/demo-film-plan/thumbnail-preview.png",
   thumbnailManifest: "outputs/demo-film-plan/thumbnail-preview.json",
   uiGallery: "outputs/workshoplm-current-ui/manifest.json",
@@ -38,7 +40,7 @@ const paths = {
   package: "package.json",
 };
 
-const [readme, founderRunbook, devpost, script, ledger, audit, checklist, roughReadme, sampleReadme, founderCandidate, provider, narration, roughCut, sampleCut, finalCut, finalReadiness, founderCandidateEvidence, publicFinalPackageBytes, filmPlan, thumbnailManifest, uiGallery, judgeImages, judgeAudio, acceptanceManifest, packageJson] = await Promise.all([
+const [readme, founderRunbook, devpost, script, ledger, audit, checklist, roughReadme, sampleReadme, founderCandidate, provider, narration, beatNarration, roughCut, sampleCut, finalCut, finalReadiness, founderCandidateEvidence, publicFinalPackageBytes, filmPlan, beatPlan, thumbnailManifest, uiGallery, judgeImages, judgeAudio, acceptanceManifest, packageJson] = await Promise.all([
   readText(paths.readme),
   readText(paths.founderRunbook),
   readText(paths.devpost),
@@ -51,6 +53,7 @@ const [readme, founderRunbook, devpost, script, ledger, audit, checklist, roughR
   readText(paths.founderCandidate),
   readJson(paths.provider),
   readJson(paths.narration),
+  readJson(paths.beatNarration),
   readJson(paths.roughCut),
   readJson(paths.sampleCut),
   readJson(paths.finalCut),
@@ -58,6 +61,7 @@ const [readme, founderRunbook, devpost, script, ledger, audit, checklist, roughR
   readJson(paths.founderCandidateEvidence),
   readFile(resolve(repository, paths.publicFinalPackage)),
   readJson(paths.filmPlan),
+  readJson(paths.beatPlan),
   readJson(paths.thumbnailManifest),
   readJson(paths.uiGallery),
   readJson(paths.judgeImages),
@@ -86,7 +90,7 @@ for (const phrase of forbidden) {
 
 assert(devpost.includes("**GPT-5.6 runs the product.**"), "Devpost copy does not include the verified GPT-5.6 runtime result.");
 assert(devpost.includes("six GPT Image 2 visuals") && devpost.includes("one grounded Cedar Audio Overview") && devpost.includes("five Cedar Storyboard clips"), "Devpost copy does not include verified provider media.");
-assert(script.includes("Target: 2:20") && script.includes("Authorized project brainstorm captured | **Yes.**") && script.includes("Final submission produced in WorkshopLM | **Yes.**"), "Demo script is not reconciled to the verified 2:20 final edit.");
+assert(script.includes("Target: 2:39") && script.includes("Authorized project brainstorm captured | **Yes.**") && script.includes("Final submission produced in WorkshopLM | **Yes.**"), "Demo script is not reconciled to the verified 2:39 final edit.");
 assert(roughReadme.includes("Replace shot 10 only after the final non-partial submission Output set exists.") && roughReadme.includes("`/feedback` remains a separate Devpost submission requirement, not a film-content gate."), "Rough-cut handoff incorrectly treats /feedback as film evidence.");
 assert(sampleReadme.includes("It is intentionally not founder footage or the public submission video.") && sampleReadme.includes("pnpm demo:film:verify-sample"), "Sample-film handoff does not preserve its truth boundary or verifier.");
 assert(packageJson.scripts?.["judge:start"] === "pnpm demo:e2e && pnpm demo:serve", "The one-command judge fixture path is missing or no longer serves the acceptance root.");
@@ -108,6 +112,11 @@ assert(narration.shots.every((shot) => {
   const planned = filmPlan.shots.find((candidate) => candidate.id === shot.id);
   return planned && shot.narrationSha256 === createHash("sha256").update(planned.narration).digest("hex");
 }), "Editorial Cedar narration was generated from stale film copy.");
+assert(beatNarration.model === "gpt-4o-mini-tts" && beatNarration.voice === "cedar" && beatNarration.fileCount === 10 && beatNarration.shots.length === 10, "Final beat-cut Cedar narration manifest is incomplete.");
+assert(beatNarration.shots.every((shot) => {
+  const planned = beatPlan.shots.find((candidate) => candidate.id === shot.id);
+  return planned && shot.narrationSha256 === createHash("sha256").update(planned.narration).digest("hex");
+}), "Final beat-cut Cedar narration was generated from stale copy.");
 assert(roughCut.voice?.provider === "OpenAI" && roughCut.voice.name === "cedar" && roughCut.voice.finalProviderNarration === true, "Rough cut has regressed from verified Cedar narration.");
 assert(roughCut.limitations?.some((item) => item.includes("six hash-bound GPT Image 2 replay files")) && !(roughCut.limitations ?? []).some((item) => item.includes("planned image panels")), "Rough cut does not disclose the provider-backed judge-image replay accurately.");
 assert(roughCut.shots?.length === 10 && roughCut.shots.every((shot) => shot.motion?.type === "editorial-push-in" && shot.motion?.maxScale === 1.06 && shot.motion?.ratePerFrame === 0.0001), "The editorial film no longer applies the verified restrained push-in and drift to every shot.");
@@ -143,7 +152,10 @@ assert(filmPlan.status === "final" && filmPlan.shots.at(-1)?.endSeconds === 140 
 assert(filmPlan.finalCaptureManifest === "outputs/demo-recording-final/manifest.json" && filmPlan.shots.find((shot) => shot.id === "render-and-trace")?.preferCapture === true, "Final film is not bound to the founder-derived browser capture and its played Video beat.");
 const finalRoot = resolve(repository, "outputs/demo-film-final");
 const finalVideoBytes = await readFile(resolve(finalRoot, finalCut.video.relativePath));
-assert(finalCut.status === "final-public-demo" && finalCut.limitations?.length === 0 && Math.round(finalCut.video.durationSeconds) === 140, "Final film manifest is not publication-ready.");
+assert(finalCut.status === "final-public-demo" && finalCut.limitations?.length === 0 && Math.round(finalCut.video.durationSeconds) === 159, "Final film manifest is not publication-ready.");
+assert(beatPlan.targetDurationSeconds === 158.592 && beatPlan.music?.title === "Different Window" && beatPlan.songSkeleton?.length === 10, "Final beat plan is not the locked full-song edit.");
+assert(finalCut.music?.fullMasterUsed === true && finalCut.compositor?.composition === "workshoplm-beat-cut", "Final film is not the full-song HyperFrames beat cut.");
+assert(finalCut.audioQa?.transcriptionSha256 && finalCut.audioQa.requiredCoverage?.includes("Codex with GPT-5.6") && finalCut.audioQa.requiredCoverage.includes("GPT-5.6 Terra"), "Final film lacks mixed-export intelligibility proof.");
 assert(finalCut.video.streams.some((stream) => stream.codec_name === "h264") && finalCut.video.streams.some((stream) => stream.codec_name === "aac"), "Final film is missing H.264/AAC streams.");
 assert(createHash("sha256").update(finalVideoBytes).digest("hex") === finalCut.video.sha256, "Final film no longer matches its manifest hash.");
 assert(finalReadiness.mode === "final" && finalReadiness.finalReady === true && finalReadiness.blockedShots?.length === 0 && finalReadiness.missingEvidence?.length === 0, "Final edit-readiness report is not green.");

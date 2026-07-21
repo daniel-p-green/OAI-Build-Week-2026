@@ -12155,3 +12155,35 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Devpost requires a public YouTube URL and the current environment exposes no YouTube upload integration. Upload `outputs/demo-film-final/workshoplm-demo.mp4` using `submission/YOUTUBE.md`, verify it while logged out, then add the URL to Devpost, submit with the prepared required fields, and publish `submission/X-POST.md`.
 - Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (publication/integration task; the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-20 20:48 CT — Rejected demo replaced with full-song 2:39 master and improved Site bed
+
+### Changed
+
+- Withdrew the earlier 2:20 film from creative approval after Daniel explicitly rejected it. Preserved that export at `outputs/demo-film-rejected-2026-07-20/`; it is historical evidence only and must not be uploaded or reused.
+- Researched official HyperFrames launch-video production guidance, Devpost demo-video guidance, a winning Devpost example, and the live Build Week judging criteria. Applied the resulting rules: begin with the real problem, move at frame zero, keep one visual idea per section, show the product running, hard-cut the range proof, and make Codex/GPT-5.6 use explicit.
+- Used the `d-slop` skill to rewrite the Devpost draft around `Why I built it`, concrete product behavior, honest Codex/GPT-5.6 use, and a shorter judge path. Re-promoted the founder-resolved candidate.
+- Improved the owner-only WorkshopLM Product Story Site by replacing every placeholder with real WorkshopLM Capture, Map, Source, Brief, Style, output, Storyboard, and Presentation artifacts. Changed the opening to the why-first line `Good thinking shouldn't disappear in the handoff.` Sites version 6, commit `63398efd970c34908e09274c2fb4643a7de22bc9`, deployed successfully at `https://workshoplm-product-story.daniel-green.chatgpt.site`.
+- Analyzed the full Daniel-provided `Different Window (DOLBY).wav` master as 158.592 seconds at an estimated 87.593 BPM. Locked ten song-phrase sections and seven four-beat output cuts in `submission/demo-film-beat-plan.json`.
+- Built `scripts/build-demo-beat-cut.mjs` and `scripts/verify-demo-beat-final.mjs`. The new HyperFrames film combines Site-style why-first motion, current product captures, the founder-authorized live walkthrough, seven distinct output worlds, Storyboard/Video proof, Codex/GPT-5.6 proof, disclosed Cedar narration, and the full song master as its edit skeleton.
+- Replaced the canonical final master with `outputs/demo-film-final/workshoplm-demo.mp4`; archived the rejected predecessor before replacement. Updated the README, demo script, final-film verifier, submission-packet verifier, founder candidate evidence, and GOAL to the 2:39 truth.
+
+### Verified
+
+- HyperFrames lint, runtime/layout check, and high-quality render passed. Visual review passed on the ten-scene contact sheet and the seven-world output-flex sheet.
+- Every major section and all seven output-world starts land on the detected beat grid with 0 ms measured drift. The full 158.592-second song defines the edit, and the final container reports 158.6 seconds.
+- Final video is H.264 at 1280×720/30 fps with 48 kHz stereo AAC. Full FFmpeg decode completed without error. SHA-256 is `1effd2359c941e82e42eedce18f708667f447c17d190cbe90ba30b70ff198306`.
+- EBU R128 measurement reported -14.6 LUFS integrated, 10.5 LU loudness range, and -1.6 dB true peak.
+- Audio QA initially failed because the rap masked the required narration, then exposed a filter-graph bug where the voice pad was consumed as the ducking key without a separate audible branch. The final graph uses an explicit split, stronger voice priority, and a quieter song bed. A full `gpt-4o-mini-transcribe` pass on the finished MP4 recovered all ten sections, including what was built, GPT-5.6 Terra, Brief approval, Storyboard approval, HyperFrames local rendering, and `Codex with GPT-5.6 built and tested WorkshopLM`.
+- `pnpm demo:film:verify-final` passed with ten ready shots, zero blocked shots, zero missing evidence, verified source/package/music/narration/transcription hashes, full decode, and the under-three-minute limit.
+- `pnpm submission:packet:verify` passed against the new 158.6-second master. `submission/DEVPOST-FOUNDER-CANDIDATE.json` now binds video hash `1effd2359c941e82e42eedce18f708667f447c17d190cbe90ba30b70ff198306`; the only remaining publication field is the public YouTube URL.
+
+### Decisions and remaining gates
+
+- Public YouTube is the chosen visibility. No unlisted/private rationale remains.
+- The song controls structure and transitions; narration controls intelligibility. The final music bed is intentionally quieter under speech because the required voiceover failed mixed-export transcription at the earlier level.
+- This reset used 27 bounded provider requests: 21 TTS requests across an obsolete first pass, one failed-overlong current clip, and the ten retained final clips; plus six transcription QA requests used to locate and verify the mix fault. The retained narration clips are hash-bound; eight request IDs were not persisted because the first current generation aborted before writing its manifest, while the final two request IDs are preserved.
+- The July 20 stable tag still points to the rejected film. Before upload/submission, commit and push a new stable release that binds the 2:39 master, then upload publicly to YouTube, verify logged-out playback, update and submit Devpost, and publish the X post.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (publication/integration task; the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
