@@ -58,7 +58,7 @@
 ## Judge access
 
 - [x] Free and unrestricted through the end of judging through the public YouTube video, public repository, and no-credential fixture
-- [x] Portable judge-facing release is tagged as `build-week-submission-final-2026-07-21`; it contains the 2:39 master and public provenance paths
+- [x] Portable judge-facing release commit `36d9874c6fa7cb90880dea85ad240d37e51e3424` is tagged as `build-week-submission-final-2026-07-21`; it contains the 2:39 master and public provenance paths
 - [ ] Stable judge path retained through the August 12, 2026 winner announcement
 - [x] Public video master makes the full value and working flow understandable without local setup
 - [x] Sanitized recorded fixture supports repeatable capture and optional inspection without paid calls

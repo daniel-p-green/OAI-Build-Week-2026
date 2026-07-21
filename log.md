@@ -12231,3 +12231,14 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Preserve `build-week-submission-2026-07-21` as historical evidence instead of moving it. Publish the portability-corrected commit under the new immutable tag `build-week-submission-final-2026-07-21`, then repeat the clean final-film verification and anonymous tagged-manifest read.
 - Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (publication/integration task; the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-20 21:18 CT — Portable final tag verified and rebound into submitted Devpost entry
+
+- Committed the public submission record and provenance-path repair as `36d9874c6fa7cb90880dea85ad240d37e51e3424` (`Finalize public submission and portable release`), pushed `main`, created annotated tag `build-week-submission-final-2026-07-21`, and pushed the tag.
+- Extracted that tag into a clean temporary directory, installed the frozen dependency graph, completed `pnpm demo:e2e`, and passed `pnpm demo:film:verify-final` with ten ready sections, zero missing evidence, full decode, the expected Video/music/narration/transcription hashes, and only public package provenance paths.
+- An anonymous raw GitHub fetch returned the corrected final manifest with Video hash `1effd2359c941e82e42eedce18f708667f447c17d190cbe90ba30b70ff198306`, public submission manifest and build-trace paths, and no limitations. The annotated remote tag dereferences to `36d9874c6fa7cb90880dea85ad240d37e51e3424`.
+- Re-submitted Devpost submission `1108961` with judge and plugin instructions pinned to `build-week-submission-final-2026-07-21`; Devpost retained status `Submitted` and the original submission timestamp.
+- All required external outcomes are complete: public YouTube, anonymous playback, portable public release, Devpost `Submitted` state, public Devpost page, and public X announcement.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (publication/integration task; the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
