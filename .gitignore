@@ -33,6 +33,14 @@ outputs/demo-film-highres/*
 !outputs/demo-film-highres/workshoplm-cover-devpost-3x2.png
 !outputs/demo-film-highres/workshoplm-cover-devpost-3x2.svg
 !outputs/demo-film-highres/workshoplm-cover-devpost-preview.png
+# Preserved local design/package drafts that are outside the final submission graph.
+outputs/WorkshopLM-*.tldraw
+outputs/tldraw-native-reference.tldraw
+outputs/workshoplm-full-ux-map.svg
+product-design-audit/
+public/tldraw-master/
+packages/plugin-mcp/src/widgets/
+scripts/create_native_tldraw_map.py
 artifacts/spikes/**/*.json
 artifacts/spikes/**/*.mp4
 artifacts/spikes/**/*.png

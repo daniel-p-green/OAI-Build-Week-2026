@@ -12360,3 +12360,25 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Daniel's exact artifact review remains required. When approved, update only the reviewed hashes and statuses in `submission/FINAL-HUMAN-REVIEW.json`, rerun the complete verifier, and show the final Devpost field set before any external mutation.
 - Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-21 16:58 CT — Remaining worktree drafts classified and preserved
+
+### Changed
+
+- Preserved the validated local-only demo capture, narration, mixing, transcription, and v5 plan tooling in local commit `30c6215`. Every retained review builder labels its output `local-human-review-only`; generated media remains ignored.
+- Removed thirteen stale macOS duplicate sample-review files after resolving each exact path against its canonical file and git history. Ten image duplicates were byte-identical; the older manifest and two older frames were superseded by the tracked, newly verified canonical sample set. These generated duplicates are not recoverable from the working directory, but their historical canonical versions remain in git.
+- Classified the remaining untracked UX maps, screenshot audit, native tldraw helper, unreferenced widget mockups, and standalone `public/tldraw-master` skill package as preserved local drafts outside the final WorkshopLM submission graph. Added exact ignore rules without deleting those files.
+- Preserved the dated `PLAN-2026-07-13.md` revision as historical planning context. It remains subordinate to `GOAL.md`, implemented state, and current evidence.
+
+### Verified
+
+- All nine retained `.mjs` review tools passed `node --check`; `submission/demo-film-v5-plan.json` parsed successfully.
+- The plugin contract test explicitly rejects a `widgets` manifest surface, and no runtime source references the two untracked HTML widget mockups. The UX-map, audit, tldraw skill, and helper paths are not required by the judge fixture or submission verifier.
+- The revised plan diff passed `git diff --check` and contains no local absolute path, credential, email, or key material.
+
+### Remaining gate
+
+- The working tree is clean after local preservation checkpoints. The four local commits remain unpushed pending Daniel's review of the final public artifact set.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
