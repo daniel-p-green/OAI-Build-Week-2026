@@ -7,7 +7,8 @@ type Shot = { id: string; title: string; startSeconds: number; endSeconds: numbe
 
 const repository = resolve(import.meta.dirname, "..");
 const planPath = resolve(repository, "submission/demo-film-beat-plan.json");
-const outputRoot = resolve(repository, "outputs/demo-film-beat-narration");
+const outputRootRelative = process.env.WORKSHOPLM_DEMO_BEAT_NARRATION_OUTPUT_ROOT?.trim() || "outputs/demo-film-beat-narration";
+const outputRoot = resolve(repository, outputRootRelative);
 const model = "gpt-4o-mini-tts";
 const voice = "cedar";
 const sha256 = (value: Uint8Array | string) => createHash("sha256").update(value).digest("hex");
@@ -38,7 +39,7 @@ async function main(): Promise<void> {
 
   const records = [];
   for (const shot of plan.shots) {
-    const relativePath = `outputs/demo-film-beat-narration/${shot.id}.wav`;
+    const relativePath = `${outputRootRelative}/${shot.id}.wav`;
     const absolutePath = resolve(repository, relativePath);
     let requestId: string | undefined;
     let bytes: Buffer;
@@ -54,7 +55,7 @@ async function main(): Promise<void> {
           model,
           voice,
           input: shot.narration,
-          instructions: "Read this as a calm, human product-demo voiceover. Be direct and conversational, with forward momentum and small pauses at sentence boundaries. Do not add words. Preserve WorkshopLM, Codex, GPT-5.6, GPT-5.6 Terra, and HyperFrames exactly.",
+          instructions: "Dry, close-miked studio narration. One speaker only. Absolutely no reverb, echo, room sound, chorus, doubling, whispered doubles, backing voice, or background texture. Read as a calm, direct human product-demo voiceover with forward momentum and small pauses at sentence boundaries. Do not add words. Preserve WorkshopLM, Codex, GPT-5.6, GPT-5.6 Terra, and HyperFrames exactly.",
           response_format: "wav",
         }),
       });

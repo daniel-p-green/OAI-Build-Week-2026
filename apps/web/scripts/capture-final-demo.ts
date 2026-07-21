@@ -7,13 +7,16 @@ import { readWorkshopState } from "../../worker/src/workshop-service.ts";
 
 const repository = resolve(process.cwd(), "../..");
 const preview = process.argv.includes("--preview");
+const film = process.argv.includes("--film");
 const sourceRoot = resolve(repository, process.env.WORKSHOPLM_FINAL_CAPTURE_SOURCE_ROOT ?? (preview ? ".workshoplm/acceptance" : ".workshoplm/final-operator"));
 const dataRoot = resolve(repository, ".workshoplm-final-recording-copy");
-const outputRoot = resolve(repository, preview ? "outputs/demo-recording-final-preview" : "outputs/demo-recording-final");
-const workingRoot = resolve(repository, preview ? "outputs/demo-recording-final-preview.building" : "outputs/demo-recording-final.building");
+const outputRoot = resolve(repository, film ? "outputs/demo-recording-film" : preview ? "outputs/demo-recording-final-preview" : "outputs/demo-recording-final");
+const workingRoot = resolve(repository, film ? "outputs/demo-recording-film.building" : preview ? "outputs/demo-recording-final-preview.building" : "outputs/demo-recording-final.building");
 const temporaryVideoRoot = resolve(workingRoot, ".playwright-video");
 const port = 3105;
 const baseUrl = `http://127.0.0.1:${port}`;
+const holdMultiplier = film ? 4 : 1;
+const viewport = film ? { width: 1280, height: 720 } : { width: 1200, height: 800 };
 
 type Beat = { id: string; label: string; startMs: number; endMs: number };
 
@@ -81,10 +84,10 @@ async function main(): Promise<void> {
 
   try {
     await waitForServer(server);
-    browser = await chromium.launch({ channel: "chrome", headless: true });
+    browser = await chromium.launch(film ? { headless: true } : { channel: "chrome", headless: true });
     const context = await browser.newContext({
-      viewport: { width: 1200, height: 800 }, colorScheme: "light", locale: "en-US", timezoneId: "America/Chicago", reducedMotion: "reduce",
-      recordVideo: { dir: temporaryVideoRoot, size: { width: 1200, height: 800 } },
+      viewport, colorScheme: "light", locale: "en-US", timezoneId: "America/Chicago", reducedMotion: "reduce",
+      recordVideo: { dir: temporaryVideoRoot, size: viewport },
     });
     const page = await context.newPage();
     const video = page.video();
@@ -93,7 +96,7 @@ async function main(): Promise<void> {
     const beat = async (id: string, label: string, action: () => Promise<void>, holdMs = 1500) => {
       const startMs = Math.round(performance.now() - startedAt);
       await action();
-      await hold(holdMs);
+      await hold(holdMs * holdMultiplier);
       beats.push({ id, label, startMs, endMs: Math.round(performance.now() - startedAt) });
     };
 
@@ -183,7 +186,7 @@ async function main(): Promise<void> {
     await browser.close();
     if (!video) throw new Error("Playwright did not create the final recording video.");
     const temporaryVideo = await video.path();
-    const destination = resolve(workingRoot, preview ? "workshoplm-final-preview.webm" : "workshoplm-founder-walkthrough.webm");
+    const destination = resolve(workingRoot, film ? "workshoplm-film-workflow.webm" : preview ? "workshoplm-final-preview.webm" : "workshoplm-founder-walkthrough.webm");
     await copyFile(temporaryVideo, destination);
     const bytes = await readFile(destination);
     const probe = JSON.parse(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-show_entries", "stream=codec_type,codec_name,width,height", "-of", "json", destination], { encoding: "utf8" })) as { format?: { duration?: string }; streams?: unknown[] };
@@ -208,8 +211,8 @@ async function main(): Promise<void> {
       capturedAt: new Date().toISOString(), sourceRoot: preview ? "acceptance-preview" : ".workshoplm/final-operator", founderSource: !preview,
       founderSourceEvidence: founderSource ? { id: founderSource.id, origin: founderSource.origin, permission: founderSource.permission } : null,
       submission: { relativePath: preview ? ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json" : ".workshoplm/final-operator/generated/submission-output-set-v1/manifest.json", status: submission.status, sha256: createHash("sha256").update(submissionBytes).digest("hex") },
-      viewport: { width: 1200, height: 800 },
-      video: { relativePath: preview ? "workshoplm-final-preview.webm" : "workshoplm-founder-walkthrough.webm", sha256: createHash("sha256").update(bytes).digest("hex"), durationSeconds, streams: probe.streams ?? [] },
+      viewport,
+      video: { relativePath: film ? "workshoplm-film-workflow.webm" : preview ? "workshoplm-final-preview.webm" : "workshoplm-founder-walkthrough.webm", sha256: createHash("sha256").update(bytes).digest("hex"), durationSeconds, streams: probe.streams ?? [] },
       reviewImages: [{ relativePath: "contact-sheet.png", sha256: createHash("sha256").update(contactSheetBytes).digest("hex") }, ...beatReviewImages],
       beats,
       finalState: { briefApproved: sourceState.briefApproved, storyboardApproved: sourceState.storyboardApproved, videoState: sourceState.videoState, sources: sourceState.activeSourceIds.length, outputs: sourceState.outputs.length, imagePanels: sourceState.imageBatch?.panels.length ?? 0, storyboardPanels: sourceState.storyboard.panels.length },
