@@ -12242,3 +12242,100 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - Re-submitted Devpost submission `1108961` with judge and plugin instructions pinned to `build-week-submission-final-2026-07-21`; Devpost retained status `Submitted` and the original submission timestamp.
 - All required external outcomes are complete: public YouTube, anonymous playback, portable public release, Devpost `Submitted` state, public Devpost page, and public X announcement.
 - Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (publication/integration task; the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-20 21:30 CT — Published audio rejected; external surfaces frozen; local mix v2 rendered
+
+### Changed
+
+- Daniel rejected the published 2:39 audio because the voice sounds echoed and the music is ducked too heavily. He also established the controlling publication boundary: no YouTube or X posting without human review. This correction supersedes the earlier autonomous-publication decision. Existing public surfaces were left untouched; no update, deletion, repost, submission edit, push, tag, or release action was taken.
+- Diagnosed the rejected mix recipe as over-aggressive: `Different Window` was reduced to `0.12`, cut by 10 dB around 2.5 kHz, and sidechain-compressed at 20:1 with a 500 ms release. The container has one audio stream and the graph has one audible Cedar branch, so the likely echo impression is the song's sung/rap vocal competing with the TTS rather than a second muxed narration track.
+- Added `scripts/build-demo-audio-review.mjs` and rendered the local-only candidate `outputs/demo-film-local-review-v2/workshoplm-demo-audio-review-v2.mp4`. It retains the complete 158.592-second supplied master and beat timing, suppresses the centered speech-dominant band while retaining bass, stereo sides, and high-frequency detail, uses one dry Cedar path, raises pre-duck music gain to `0.42`, and reduces sidechain compression to 4:1 with a 220 ms release.
+- Created matched 44.095-66.014 second A/B excerpts: `ab-a-rejected-mix-44s-66s.m4a` and `ab-b-revised-mix-44s-66s.m4a`. These and the complete v2 are local human-review artifacts only.
+
+### Verified
+
+- Full FFmpeg decode passed. The candidate is 158.6 seconds, H.264 1280×720 with 48 kHz stereo AAC, SHA-256 `23ee4dc715636f9db71c4793b0ea1ef7d6d5d2593150e751cd4ee0d2d143da8c`.
+- The v2 master measures -15.08 LUFS integrated, 5.50 LU loudness range, and -1.49 dB true peak. The ducked music stem measures -29.4 LUFS versus -37.4 LUFS in the rejected chain, an 8.0 LU restoration. Centered 190 Hz-7.2 kHz energy measures -31.1 dB mean versus -22.3 dB in the supplied master, an 8.8 dB reduction in the band most likely to read as a competing voice.
+- Local MLX Whisper transcription was attempted with cached small, base, and tiny models; each process exited 137 before producing an artifact, so no new speech-integrity claim is made from transcription. The prior final-export transcript remains evidence for script coverage only, not approval of this revised mix.
+
+### Remaining gate
+
+- Daniel must listen to the matched A/B excerpt and complete local v2. Only explicit approval can authorize replacing the canonical file or changing YouTube, X, Devpost, GitHub releases, or any other external surface.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3`.
+
+---
+
+## 2026-07-20 23:52 CT — Rejected edit reset to private product-first v4
+
+### Changed
+
+- Daniel rejected the attempted revisions as still having echo and broader problems. Withdrew v2 and v3 as submission candidates instead of defending their technical checks. Existing YouTube, X, Devpost, GitHub releases, and other public surfaces remained untouched.
+- Replaced phase cancellation with a fine-tuned `htdemucs_ft` two-stem separation of the exact authorized `Different Window (DOLBY).wav` master. Replaced the Cedar source with locally generated Samantha narration: one dry mono clip per section, no reverb, delay, chorus, doubling, spatialization, or narration dynamics processing.
+- Removed sidechain compression and ducking entirely. The song now runs at a constant `0.44` gain under the narration; the full 158.592-second song structure and beat-section timing remain intact.
+- Rejected the previous slide-heavy picture grammar. Added a film capture mode to the verified founder walkthrough and recorded 100.84 seconds of continuous 1280×720 product interaction across Map, Sources, exact source trace, Brief, Style, Created work, Storyboard, Video, and original-source reveal.
+- Built `scripts/build-demo-review-v4.mjs`. The private v4 uses that real workflow as the full-frame picture, keeps titles to short lower thirds, and replaces irrelevant Codex doorway footage with explicit, truthful on-screen evidence for the majority-core Codex task and the founder-source `gpt-5.6-terra` Map run.
+
+### Verified
+
+- Playwright final-state checks passed before capture: approved current Brief, approved current Storyboard, rendered Video, shareable founder Source, and ready submission package with no limitations.
+- HyperFrames lint and 16-sample runtime/layout checks passed, followed by a high-quality 1280×720 render. The contact sheet and native opening, Map/source, build-proof, and close frames were inspected; the product remains readable and no full-screen marketing title card is used before the demo.
+- Private review file: `outputs/demo-film-local-review-v4/workshoplm-demo-review-v4.mp4`; SHA-256 `4b61313714d7d5559cc664703d0429be650a2acb47b5b257bf7976dc280a5237`; 158.6 seconds; H.264 1280×720 with 48 kHz stereo AAC. Full FFmpeg decode passed.
+- Final mix measures -14.99 LUFS integrated, 6.50 LU loudness range, and -1.46 dB true peak. Diagnostic Map-section files isolate the complete mix, dry voice, and fine-tuned instrumental for human listening.
+
+### Remaining gate
+
+- This is `local-human-review-only`, not a canonical or public master. Daniel must review the v4 picture and actual exported audio. No external replacement, edit, repost, deletion, release, or submission change is authorized without that explicit approval.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (publication/integration task; the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-21 11:55 CT — Cedar, original-master, Screen Studio-style v5 candidate audited
+
+### Changed
+
+- Locked Cedar after a two-voice OpenAI speech audition and Daniel's listening review. Daniel also approved the revised opening duck, which holds the original master at `0.24` for the opening line, `0.31` under the rest of the opening narration, and releases it smoothly into the music-only passage.
+- Generated five cohesive narration acts with `gpt-4o-mini-tts-2025-12-15`. The script starts with why, explains the working product, and explicitly covers Codex and GPT-5.6 without filling the complete film with voiceover.
+- Built `scripts/build-demo-review-v5.mjs` and the locked plan `submission/demo-film-v5-plan.json`. The picture opens inside the real Map, uses smooth wrapper-based zoom and focus moves over the verified product capture, reveals finished outputs in an animated grid, and spends one short section on truthful Codex/GPT-5.6 evidence.
+- Mixed only the exact authorized `Different Window (DOLBY).wav` stereo master, hash `c4a78f30fc3d962e899d21ed6adda321e185182b28dee5f6f359031c5becd14f`, with explicit phrase-level gain rides. No separated stem, EQ, phase cancellation, sidechain compression, pitch change, or time stretch is present. Cedar remains one dry voice path with no echo, delay, reverb, chorus, or doubling.
+- Replaced a full-frame white transition discovered in the first visual audit with a narrow blue-white beat sweep and added restrained continuous motion to the finished-output montage.
+
+### Verified
+
+- HyperFrames lint, 20-sample runtime/layout check, inspect, and high-quality render passed. The native contact sheet, fifteen audit frames, corrected transition frame, output-motion frame, and Codex/GPT-5.6 proof frame were inspected.
+- Final private review file: `outputs/demo-film-local-review-v5/workshoplm-demo-review-v5.mp4`; SHA-256 `8e078f69c0169f6a1313d9fb866f4a0533b8cc36ec2c25d089db106599693a59`; 158.6 seconds; H.264 1280×720 at 30 fps with 48 kHz stereo AAC. Full FFmpeg decode passed.
+- The mastered mix measures -14.59 LUFS integrated and -1.50 dB true peak. OpenAI mixed-export transcription request `req_450d819a552a44a9a1890ca65e24ea06` recovered every narration sentence, including WorkshopLM, Codex, GPT-5.6 Terra, HyperFrames, both approvals, and the source-trace close.
+- Claim review against `submission/CLAIM-LEDGER.md`, `submission/EVIDENCE-AUDIT.md`, `GOAL.md`, and the immutable build trace supports the two approvals, `Needs update` propagation, editable PowerPoint exports, local HyperFrames render, and source/provenance statements used in the film.
+
+### Remaining gate
+
+- Daniel must watch and listen to the complete v5 export. No YouTube, X, Devpost, Sites, repository release, tag, push, or other external surface was changed. Explicit human approval remains required before replacing the rejected public video or any submission surface.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-21 16:48 CT — Devpost copy and repository review packet prepared
+
+### Changed
+
+- Used the Devpost Hackathons plugin read-only to verify the live WorkshopLM project, submission deadline, judging criteria, and exact required fields. The project remains published and submitted; no external field was changed.
+- Rewrote the Devpost candidate as a 696-word founder-voice review draft at `submission/DEVPOST-HUMAN-VOICE-REVIEW.md`. The proposal starts with the post-meeting problem, keeps the source trail and two approval gates central, and preserves the verified Codex, GPT-5.6 Terra, local architecture, and no-credential judge claims.
+- Added `submission/DEVPOST-APPROVAL-DIFF.md` with the exact current-to-proposed tagline, copy, thumbnail, judge-instruction, and Video decisions for Daniel's review.
+- Preserved the approved 16:9 cover and created a deterministic 3000×2000 Devpost derivative from the same locked background and typography. The derivative prevents Devpost's 3:2 crop from cutting off the left edge of the text.
+- Ignored 820 MB of local rejected/review demo-film exports without deleting them. User-owned `PLAN-2026-07-13.md`, tldraw files, `product-design-audit/`, `public/`, plugin widget drafts, and in-progress film scripts remain untouched and visible until their owners classify them.
+- Corrected the README to describe the published Video as historical, playable, and owner-rejected. Added a narrow hygiene allowlist for that immutable 11.8 MiB historical MP4 so the repository's 10 MiB review gate continues to reject new oversized files.
+
+### Verified
+
+- Live Devpost read-back: project `1356586`, state `published`, submitted to OpenAI Build Week, current public Video `https://youtu.be/gwi_q6X1i5g`, submissions open until `2026-07-22T00:00:00Z` (5:00 PM PT July 21).
+- Public GitHub read-back: repository visibility `public`, default branch `main`, MIT license, remote head `2f2b74e7e22f24661133f0a8c68d44a6a6a5c5af`.
+- The crop-safe thumbnail is 3000×2000, 3.2 MB, and visually readable at Devpost's current 333×222 derivative size. The approved 16:9 cover remains 3840×2160.
+- `pnpm check` passed repository hygiene, lint, typecheck, and all package tests.
+- `pnpm demo:e2e` passed the recorded-fixture judge path with grounded Map, approved Brief, locked Style, six image panels, approved five-panel Storyboard, and rendered Video.
+
+### Decisions and remaining gates
+
+- The static approved cover is the submission default. An animated GIF is a stretch goal only after the replacement film and submission fields are approved.
+- Daniel must review the exact copy, crop-safe thumbnail, complete replacement Video, and final Devpost field set. No YouTube, Devpost, X, GitHub push, release, or tag change is authorized before that review.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).

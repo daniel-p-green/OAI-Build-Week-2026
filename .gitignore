@@ -20,6 +20,19 @@ outputs/workshoplm-current-ui.zip
 outputs/workshoplm-project-overview.pdf
 outputs/demo-film-inputs/founder-brainstorm.mov
 outputs/demo-film-inputs/founder-brainstorm.txt
+# Local demo-film iterations and review exports. Keep approved release assets explicit.
+outputs/demo-film-beat-cut/
+outputs/demo-film-local-review-v*/
+outputs/demo-film-rejected-*/
+outputs/demo-recording-film/
+outputs/demo-recording-final-preview/
+outputs/demo-film-highres/*
+!outputs/demo-film-highres/workshoplm-openai-gradient-background.png
+!outputs/demo-film-highres/workshoplm-cover-native-4k-v3.png
+!outputs/demo-film-highres/workshoplm-cover-native-4k-v3.svg
+!outputs/demo-film-highres/workshoplm-cover-devpost-3x2.png
+!outputs/demo-film-highres/workshoplm-cover-devpost-3x2.svg
+!outputs/demo-film-highres/workshoplm-cover-devpost-preview.png
 artifacts/spikes/**/*.json
 artifacts/spikes/**/*.mp4
 artifacts/spikes/**/*.png
