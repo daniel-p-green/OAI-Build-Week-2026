@@ -34,7 +34,7 @@ Approve the Brief, choose a Style, and WorkshopLM can create a presentation, inf
 
 There are two deliberate sign-offs: the Brief before anything downstream is created, and the Storyboard before Video renders. If a source or decision changes, affected work moves to **Needs update** instead of quietly passing stale material forward.
 
-The part I care about most is the source trail. Open a source link beside a claim, graphic, or Storyboard panel and WorkshopLM shows the supporting excerpt. Add a new meeting later and the Map can grow without erasing the earlier version.
+Open a source link beside a claim, graphic, or Storyboard panel and WorkshopLM shows the supporting excerpt. Add a new meeting later and the Map can grow without erasing the earlier version.
 
 ### The hard part
 
@@ -48,19 +48,17 @@ The judge fixture follows the same path with sanitized data and no account, conn
 
 I used Codex to build, test, and review WorkshopLM. `GOAL.md` held the product decisions and completion gates. `AGENTS.md` required evidence before a task could be called done, and `log.md` became the append-only build record.
 
-Codex implemented the domain contracts, local persistence, graph engine, visual Map, Style system, renderers, job queue, HyperFrames worker, and the WorkshopLM plugin. It also red-teamed approval bypass, stale rendering, broken citations, and interrupted jobs.
+Codex implemented the domain contracts, local persistence, graph engine, visual Map, Style system, renderers, job queue, and HyperFrames worker. It also red-teamed approval bypass, stale rendering, broken citations, and interrupted jobs.
 
 One moment in the build captures the process well: an agent called the UI rebuild complete, another inspected the rendered styles, disproved the claim, and reopened the work. I left that correction in the log because it shows how I actually used Codex: as a build-and-review loop.
 
-WorkshopLM also ships as a Codex plugin. Its `$workshoplm` skill and local MCP server let Codex search and fetch exact evidence from a Workshop.
-
 ### How I used GPT-5.6
 
-GPT-5.6 worked at two levels. Codex on GPT-5.6 handled implementation, orchestration, review, and verification. Inside the product, `gpt-5.6-terra` turns grounded sources into the semantic Map shown in the demo.
+I used GPT-5.6 Sol at medium and high reasoning for orchestration and review in Codex. Inside WorkshopLM, `gpt-5.6-terra` turns grounded source material into the semantic Map shown in the demo.
 
 I benchmarked Sol, Terra, and Luna on the real graph, brief, and triage operations instead of choosing by feel. All three passed the deterministic quality bar. Terra became the Map default after producing a valid structure in 2.8 seconds, compared with Sol's 6.8 seconds in the final comparable run.
 
-The live provider run preserves the request, response hash, and model route. It generated six GPT Image 2 visuals, a grounded Cedar Audio Overview, and five Cedar Storyboard clips. The recorded judge fixture replays the sanitized media bytes by hash, so judges can inspect the complete experience without credentials or spend.
+The repository preserves the live Map request ID, response hash, and model route. The recorded judge fixture replays sanitized outputs, so judges can inspect the complete experience without credentials or spend.
 
 ### Try it
 
@@ -69,11 +67,11 @@ pnpm install --frozen-lockfile
 pnpm judge:start
 ```
 
-That rebuilds the sanitized Workshop and serves the full Capture → Map → Brief → Create flow at the printed local URL. The verified platform is macOS with Codex desktop or CLI. The README includes the optional live-provider path and plugin installation.
+That rebuilds the sanitized Workshop and serves the full Capture → Map → Brief → Create flow at the printed local URL. The verified platform is macOS. The README includes the optional live-provider path.
 
 ## Judge access and testing instructions
 
-The fastest path is the public demo video. To inspect the working product without credentials, clone the tagged release and run:
+The fastest path is the public demo video. To inspect the working product without credentials, clone the repository and run:
 
 ```bash
 pnpm install --frozen-lockfile
@@ -82,14 +80,7 @@ pnpm judge:start
 
 The command rebuilds and serves the sanitized acceptance Workshop. It requires no account, connector, API key, or paid request.
 
-For the Codex plugin on macOS:
-
-```bash
-codex plugin marketplace add daniel-p-green/OAI-Build-Week-2026
-codex plugin add workshoplm@workshoplm-local
-```
-
-Start a fresh Codex task and activate `$workshoplm` to search and fetch grounded Workshop evidence. The repository includes setup details, sample data, the build log, product goal, and claim ledger.
+The repository includes setup details, sample data, the build log, product goal, and claim ledger.
 
 ## Review-only launch values
 

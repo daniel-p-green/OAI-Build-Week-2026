@@ -54,7 +54,7 @@ The approved 16:9 cover remains the YouTube/video title-card source:
 
 ### Judge instructions
 
-Use the exact **Judge access and testing instructions** section in [`DEVPOST-HUMAN-VOICE-REVIEW.md`](DEVPOST-HUMAN-VOICE-REVIEW.md). It preserves the no-credential fixture and verified macOS Codex plugin path without making judges rebuild the provider-backed run.
+Use the exact **Judge access and testing instructions** section in [`DEVPOST-HUMAN-VOICE-REVIEW.md`](DEVPOST-HUMAN-VOICE-REVIEW.md). It preserves the no-credential fixture and verified macOS path without making judges rebuild the provider-backed run. The optional repository-bundled Codex plugin is intentionally omitted because it is locally installable, not published in an official marketplace.
 
 ### Video
 

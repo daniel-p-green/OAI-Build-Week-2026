@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "pending",
   "owner": "Daniel Green",
-  "reviewedAt": null,
+  "reviewedAt": "2026-07-21T17:37:30-05:00",
   "publicationAuthorized": false,
   "currentPublicVideo": {
     "status": "rejected",
@@ -16,17 +16,18 @@
     "sha256": null
   },
   "devpostCopy": {
-    "status": "pending",
+    "status": "approved",
     "relativePath": "submission/DEVPOST-HUMAN-VOICE-REVIEW.md",
-    "sha256": "aab31a0a29052a5642b18b8641c80e67ea16126335213258d7185162b78d6b76"
+    "sha256": "dd6bbc44a4d0868379eebe763e5e08b3c186e8f8c26bd14943d31ae8113f8eb4"
   },
   "thumbnail": {
-    "status": "pending",
+    "status": "approved",
     "relativePath": "outputs/demo-film-highres/workshoplm-cover-devpost-3x2.png",
     "sha256": "94b3fef3476fb794a48731714f27cd51349332617ffa0eb269a06257bb03b1f4"
   },
   "notes": [
-    "This record is intentionally pending until Daniel reviews the exact replacement export, Devpost copy, and crop-safe thumbnail.",
-    "Approval of this record does not itself publish, upload, push, tag, release, or update any external surface."
+    "Daniel approved the exact Devpost copy and crop-safe thumbnail; both were published to the existing submitted project on 2026-07-21.",
+    "The overall record remains pending and publicationAuthorized remains false because the replacement Video is still missing and the current public Video remains owner-rejected.",
+    "No YouTube upload, X post, GitHub push, release, or tag was performed."
   ]
 }

@@ -37,6 +37,74 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 
 ---
 
+## 2026-07-21 17:38 CT — Owner-approved Devpost copy and thumbnail published
+
+### Changed
+
+- After Daniel's explicit approval, updated Devpost project `1356586` with the reviewed tagline and exact project-description section from `submission/DEVPOST-HUMAN-VOICE-REVIEW.md`.
+- Re-submitted project `workshoplm` to OpenAI Build Week with Individual, United States, Work & Productivity, the public repository, no-credential macOS judge instructions, and majority-core `/feedback` Session ID `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`.
+- Replaced the old plugin-installation answer with an explicit boundary: WorkshopLM is submitted in Work & Productivity and is not represented as a published plugin or developer tool.
+- Uploaded the approved 3000×2000 crop-safe thumbnail `outputs/demo-film-highres/workshoplm-cover-devpost-3x2.png` to the existing Devpost project.
+- Marked only the Devpost copy and thumbnail approved in `submission/FINAL-HUMAN-REVIEW.json`. Overall publication authorization remains false because the replacement Video is still missing.
+
+### Verified
+
+- The Devpost submission write returned submission `1108961` with status `Submitted`.
+- Authenticated live project read-back returned the new tagline, the complete revised description, GPT-5.6 Sol orchestration and Terra runtime wording, no published-plugin claim, and unchanged public Video URL `https://youtu.be/gwi_q6X1i5g`.
+- The thumbnail upload returned HTTP 200. Its final CDN asset returned HTTP 200 as `image/png`, and an anonymous read of the public Devpost page references that exact processed thumbnail URL.
+- The approved local source hashes remain `dd6bbc44a4d0868379eebe763e5e08b3c186e8f8c26bd14943d31ae8113f8eb4` for the copy and `94b3fef3476fb794a48731714f27cd51349332617ffa0eb269a06257bb03b1f4` for the thumbnail.
+- No YouTube upload, Video URL change, X post, GitHub push, release, or tag occurred.
+
+### Remaining gate
+
+- Replace the owner-rejected public Video only after Daniel approves the exact new export and public YouTube upload. Until then, the Devpost submission is correctly submitted but the demo-film quality gate remains open.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-21 17:33 CT — GPT-5.6 orchestration wording corrected
+
+### Changed
+
+- Corrected the pending Devpost copy after Daniel identified that GPT-5.6 Sol, not Terra, was used at medium and high reasoning for orchestration and review. The copy now reserves `gpt-5.6-terra` for WorkshopLM's in-product grounded Map route.
+- Rebound the pending Devpost-copy approval hash to `dd6bbc44a4d0868379eebe763e5e08b3c186e8f8c26bd14943d31ae8113f8eb4`.
+
+### Verified
+
+- Project-session turn records include 446 `gpt-5.6-sol` medium contexts and 21 `gpt-5.6-sol` high contexts for the WorkshopLM repository. The selected majority-core `/feedback` task itself records `gpt-5.6-terra` at medium reasoning, so the public copy describes the broader orchestration usage without mislabeling the in-product route.
+- `git diff --check` passed. No live Devpost field or other external surface was changed.
+
+### Remaining gate
+
+- Daniel must review the revised Devpost wording before publication.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-21 17:31 CT — Devpost GPT-5.6, plugin, and `/feedback` claims audited
+
+### Changed
+
+- Removed the personal aside beginning “The part I care about most” from the pending Devpost description while preserving the direct source-trail explanation.
+- Rewrote the GPT-5.6 section to distinguish the two verified uses: GPT-5.6 Terra in the majority-core Codex build task and `gpt-5.6-terra` as WorkshopLM's grounded Map model.
+- Removed the Codex plugin from the pending Devpost description and judge instructions. The repository contains a working local plugin manifest and the plugin is installed and enabled from the local repository, but this does not establish publication in an official Codex marketplace.
+- Removed “tagged release” from the judge path because the public submission should direct judges to the repository without implying an externally verified release state.
+- Updated the pending human-review record to bind approval to the revised Devpost-copy hash `f0960ef19b8f2dae81a528787699c00fc53e16511c94d2f8dd1b3ac1c62b64b8`.
+
+### Verified
+
+- `artifacts/live/provider-run.json` records the Map model `gpt-5.6-terra`, request ID `req_11ee10453c1e45cd8067e578171f82d6`, and response hash. The two nine-request routing runs recorded in the evidence audit passed deterministic checks; the final comparable graph run was Terra 2.815 seconds versus Sol 6.815 seconds.
+- The Codex session file and live task for `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`, titled `Build WorkshopLM — Full Implementation`, resolve to the repository's long-running majority-core task. Its turn records identify `gpt-5.6-terra` as the model.
+- `.agents/plugins/marketplace.json` and `.codex-plugin/plugin.json` exist on `origin/main`; `codex plugin list --json` reports `workshoplm@workshoplm-local` version `0.1.3` installed and enabled from this local repository. This proves local operation, not official publication.
+- `git diff --check` passed. No Devpost field, public repository, release, tag, YouTube video, or X post was changed.
+
+### Remaining gate
+
+- Daniel must review the exact revised Devpost copy before any live field is updated. The replacement public demo Video remains a separate unresolved submission gate.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
 ## 2026-07-13 23:32 CT — Durable sanitized-source ingestion reaches the browser Map
 
 **Area:** Capture / Runtime / Product
