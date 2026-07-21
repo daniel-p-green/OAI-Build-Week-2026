@@ -12339,3 +12339,24 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 - The static approved cover is the submission default. An animated GIF is a stretch goal only after the replacement film and submission fields are approved.
 - Daniel must review the exact copy, crop-safe thumbnail, complete replacement Video, and final Devpost field set. No YouTube, Devpost, X, GitHub push, release, or tag change is authorized before that review.
 - Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-21 16:55 CT — Submission verifier now fails closed on owner review
+
+### Changed
+
+- Added `submission/FINAL-HUMAN-REVIEW.json` as the explicit publication authority record. It marks the existing public film hash rejected and the replacement Video, proposed Devpost copy, and crop-safe thumbnail pending.
+- Updated `scripts/verify-submission-packet.mjs` so technical integrity cannot stand in for Daniel's creative approval. A passing packet now requires `publicationAuthorized: true`, approved statuses for all three artifacts, and byte-for-byte matches to the hashes Daniel reviewed.
+- Refreshed the deterministic sample-film manifest through the canonical submission fixture command; the rendered MP4 remained hash-identical while current generated Design, package, and build-trace hashes were rebound.
+
+### Verified
+
+- The complete `pnpm submission:fixture:verify` path rebuilt and verified the recorded Workshop, 25-asset partial judge package, 140.01-second HyperFrames sample, ten review frames, and its provenance.
+- The final packet step then failed with the intended message: `Final human review is pending. Daniel must approve the exact replacement Video, Devpost copy, and thumbnail before publication.`
+- No provider request, upload, public edit, push, release, or tag occurred.
+
+### Remaining gate
+
+- Daniel's exact artifact review remains required. When approved, update only the reviewed hashes and statuses in `submission/FINAL-HUMAN-REVIEW.json`, rerun the complete verifier, and show the final Devpost field set before any external mutation.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).

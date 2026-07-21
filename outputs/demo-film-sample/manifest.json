@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "status": "sample-editorial-cut",
   "disclosure": "Clean editorial review cut with OpenAI Cedar narration, the authorized sample transcript, and the verified acceptance created-work set. This is not founder footage or the public submission video.",
-  "builtAt": "2026-07-20T19:50:23.318Z",
+  "builtAt": "2026-07-21T21:53:46.767Z",
   "plan": "submission/demo-film-plan.json",
   "sourceCapture": "outputs/demo-recording-draft/manifest.json",
   "compositor": {
@@ -14,7 +14,7 @@
     "spatialTransforms": false,
     "transition": "neutral-dip",
     "design": {
-      "sha256": "033bbe10152d7f94884fa36fbd9c2ce80b6e3a59c9ad71f2a93f299828efde30",
+      "sha256": "1c5c5ea7a21acc104587c3e1adabb72580abe414dd4c6465d8ef0f8370ddec65",
       "source": ".workshoplm/acceptance/generated/DESIGN-v1.md"
     },
     "frame": {
@@ -114,11 +114,11 @@
     },
     "submissionManifest": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
-      "sha256": "10997186b6e49ba6c8ca22b5722a96261680dff1bce91f396f9c1970c4ed516c"
+      "sha256": "0c07fba1bde1ccacc0fafa20f01cb0ab910a8136081f7d2ab2d913815f2bebfc"
     },
     "buildTrace": {
       "relativePath": ".workshoplm/acceptance/generated/submission-output-set-v1/BUILD-TRACE.json",
-      "sha256": "4b437785ad46d02b77fa470391dae4500573940d6105627db8d57ca30880da8b"
+      "sha256": "b2548c1e72722fd29da1a12024fea67d410a02cc617e24f2de2973b098ae4284"
     }
   },
   "shots": [

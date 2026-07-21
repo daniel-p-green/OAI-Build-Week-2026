@@ -37,10 +37,11 @@ const paths = {
   judgeAudio: "artifacts/live-review/audio-overview.json",
   judgeAudioFile: "artifacts/live-review/audio-overview.wav",
   acceptanceManifest: ".workshoplm/acceptance/generated/submission-output-set-v1/manifest.json",
+  ownerReview: "submission/FINAL-HUMAN-REVIEW.json",
   package: "package.json",
 };
 
-const [readme, founderRunbook, devpost, script, ledger, audit, checklist, roughReadme, sampleReadme, founderCandidate, provider, narration, beatNarration, roughCut, sampleCut, finalCut, finalReadiness, founderCandidateEvidence, publicFinalPackageBytes, filmPlan, beatPlan, thumbnailManifest, uiGallery, judgeImages, judgeAudio, acceptanceManifest, packageJson] = await Promise.all([
+const [readme, founderRunbook, devpost, script, ledger, audit, checklist, roughReadme, sampleReadme, founderCandidate, provider, narration, beatNarration, roughCut, sampleCut, finalCut, finalReadiness, founderCandidateEvidence, publicFinalPackageBytes, filmPlan, beatPlan, thumbnailManifest, uiGallery, judgeImages, judgeAudio, acceptanceManifest, ownerReview, packageJson] = await Promise.all([
   readText(paths.readme),
   readText(paths.founderRunbook),
   readText(paths.devpost),
@@ -67,6 +68,7 @@ const [readme, founderRunbook, devpost, script, ledger, audit, checklist, roughR
   readJson(paths.judgeImages),
   readJson(paths.judgeAudio),
   readJson(paths.acceptanceManifest),
+  readJson(paths.ownerReview),
   readJson(paths.package),
 ]);
 
@@ -196,6 +198,14 @@ assert(packagedAudio?.relativePath === "audio-overview.wav" && packagedAudio.sha
 assert(!(acceptanceManifest.limitations ?? []).some((item) => item.includes("no provider-generated speech file")), "Acceptance package still claims the Cedar Audio Overview is missing.");
 const unresolvedSlots = [...devpost.matchAll(/`\[(LIVE|FALLBACK):/g)].length;
 assert(unresolvedSlots === 4, `Expected four founder/final-package slots, found ${unresolvedSlots}.`);
+
+assert(ownerReview.schemaVersion === 1 && ownerReview.owner === "Daniel Green", "Final human-review record is missing or malformed.");
+assert(ownerReview.status === "approved" && ownerReview.publicationAuthorized === true, "Final human review is pending. Daniel must approve the exact replacement Video, Devpost copy, and thumbnail before publication.");
+for (const [label, item] of Object.entries({ replacementVideo: ownerReview.replacementVideo, devpostCopy: ownerReview.devpostCopy, thumbnail: ownerReview.thumbnail })) {
+  assert(item?.status === "approved" && item.relativePath && item.sha256, `Final human review has not approved ${label}.`);
+  const bytes = await readFile(resolve(repository, item.relativePath));
+  assert(createHash("sha256").update(bytes).digest("hex") === item.sha256, `Approved ${label} has changed since Daniel reviewed it.`);
+}
 
 process.stdout.write(`${JSON.stringify({
   status: "passed",

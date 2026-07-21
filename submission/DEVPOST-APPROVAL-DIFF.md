@@ -70,3 +70,7 @@ Do not change the live URL until Daniel watches and approves the complete replac
 6. Update Devpost, re-submit if required, and verify the project still reports `Submitted` before 5:00 PM PT.
 
 No YouTube, Devpost, X, GitHub push, release, or tag change is authorized by this document.
+
+## Automated owner gate
+
+[`FINAL-HUMAN-REVIEW.json`](FINAL-HUMAN-REVIEW.json) records the exact hashes Daniel reviewed. `pnpm submission:fixture:verify` now fails closed until that record marks the replacement Video, Devpost copy, and thumbnail approved and `publicationAuthorized` is true. Technical validity alone cannot label an owner-rejected film publication-ready.
