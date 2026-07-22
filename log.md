@@ -12538,3 +12538,24 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - No local implementation gate remains. The cleanup commit follows this entry; do not push or mutate Devpost, YouTube, releases, or tags without explicit owner direction.
 - Current Codex Session ID: `019f8773-40f7-78e3-94c4-b264d8b9bce2`.
+
+---
+
+## 2026-07-21 21:09 CT — Stale worktree audit closed without product regression
+
+### Changed
+
+- Audited the two remaining Codex worktrees against current `main`. Their onboarding, company-style, professional-workbench, provenance, stale-state, and live-evidence work is already represented by newer mainline implementations; a literal overlay produced broad conflicts against the submitted product and visual baselines.
+- Preserved the submitted mainline experience and demo-video proof instead of forcing the stale UI snapshots and week-old service state over current code.
+- Carried forward the two small, non-conflicting hardening improvements that were not already present: artifact responses now include no-store, sandbox CSP, and nosniff headers; JSON Workshop actions now pass an explicit allowlist, and raw local-path PDF ingestion is no longer exposed through that endpoint.
+- Kept the duplicate Devpost draft and two research concept screenshots outside the public repository, consistent with the post-submission cleanup boundary.
+
+### Verified
+
+- `pnpm check` passed repository hygiene, lint, typecheck, and all tests across thirteen packages. Worker tests passed 132 cases; web tests passed 39 cases.
+- Repository hygiene still reports 337 tracked files, zero tracked transient/generated/publication paths, and a maximum tracked file size of 1.4 MiB.
+
+### Remaining gate
+
+- No product or submission gate remains. The stale worktree branches are retained locally as recoverable proof of process but are intentionally not overlaid on the newer submitted mainline.
+- Current Codex Session ID: `019f8773-40f7-78e3-94c4-b264d8b9bce2`.

@@ -9,8 +9,10 @@ import { executeWorkshopTool, type ExecuteWorkshopToolInput } from "../../../../
 import { handleWorkshopProviderToolEvent, type WorkshopProviderToolEvent } from "../../../../worker/src/provider-tool-events";
 
 export const runtime = "nodejs";
-type Action = "resetTestFixture" | "createWorkshop" | "selectWorkshop" | "updateOnboarding" | "buildMap" | "dismissOrientation" | "beginWebsiteStyleAnalysis" | "approveBrief" | "analyzeWebsiteStyle" | "lockManualStyle" | "lockWebsiteStyle" | "applyStyleLibrary" | "createSketch" | "approveSketch" | "createVisualDna" | "approveVisualDna" | "approveStoryboard" | "renderVideo" | "cancelVideoRender" | "ingestSource" | "captureFallbackTranscript" | "sendConversationMessage" | "executeTool" | "handleProviderToolEvent" | "ingestUrl" | "ingestPdfFile" | "extractCandidates" | "setActiveSourceScope" | "mapOperation" | "syncMapCanvas" | "undoMapOperation" | "generateAssetPlan" | "generateOutput" | "generateAudioOverview" | "updateAudioOverview" | "generateAudioOverviewAudio" | "generateStoryboard" | "createImageBatch" | "regenerateImagePanel" | "updateStoryboardPanel";
-type RequestBody = { action?: Action; workshopId?: string; styleLibraryId?: string; title?: string; source?: SourceIngestion; text?: string; capture?: RealtimeCaptureEvidence; toolCall?: ExecuteWorkshopToolInput; providerEvent?: WorkshopProviderToolEvent; url?: string; filePath?: string; permission?: "private" | "sanitized" | "shareable"; sourceIds?: string[]; panelId?: string; revisionRequest?: string; audioOverviewId?: string; audioSections?: Array<{ id: string; text: string }>; operation?: unknown; canvasNodes?: CanvasNodePatch[]; outputType?: "deck" | "infographic"; manualStyle?: ManualStyleInput; intentProfile?: ManualStyleInput["intentProfile"]; onboardingStep?: WorkshopOnboarding["step"]; outcome?: WorkshopOutcome; orientation?: "map" | "outputs"; panel?: { id: string; title: string; narration: string; durationSeconds: number } };
+const actions = ["resetTestFixture", "createWorkshop", "selectWorkshop", "updateOnboarding", "buildMap", "dismissOrientation", "beginWebsiteStyleAnalysis", "approveBrief", "analyzeWebsiteStyle", "lockManualStyle", "lockWebsiteStyle", "applyStyleLibrary", "createSketch", "approveSketch", "createVisualDna", "approveVisualDna", "approveStoryboard", "renderVideo", "cancelVideoRender", "ingestSource", "captureFallbackTranscript", "sendConversationMessage", "executeTool", "handleProviderToolEvent", "ingestUrl", "extractCandidates", "setActiveSourceScope", "mapOperation", "syncMapCanvas", "undoMapOperation", "generateAssetPlan", "generateOutput", "generateAudioOverview", "updateAudioOverview", "generateAudioOverviewAudio", "generateStoryboard", "createImageBatch", "regenerateImagePanel", "updateStoryboardPanel"] as const;
+type Action = typeof actions[number];
+type RequestBody = { action: Action; workshopId?: string; styleLibraryId?: string; title?: string; source?: SourceIngestion; text?: string; capture?: RealtimeCaptureEvidence; toolCall?: ExecuteWorkshopToolInput; providerEvent?: WorkshopProviderToolEvent; url?: string; permission?: "private" | "sanitized" | "shareable"; sourceIds?: string[]; panelId?: string; revisionRequest?: string; audioOverviewId?: string; audioSections?: Array<{ id: string; text: string }>; operation?: unknown; canvasNodes?: CanvasNodePatch[]; outputType?: "deck" | "infographic"; manualStyle?: ManualStyleInput; intentProfile?: ManualStyleInput["intentProfile"]; onboardingStep?: WorkshopOnboarding["step"]; outcome?: WorkshopOutcome; orientation?: "map" | "outputs"; panel?: { id: string; title: string; narration: string; durationSeconds: number } };
+function isAction(value: unknown): value is Action { return typeof value === "string" && (actions as readonly string[]).includes(value); }
 
 export async function GET(request: NextRequest) { const view = request.nextUrl.searchParams.get("view"); return NextResponse.json(view === "collection" ? { workshops: listWorkshopSummaries() } : view === "styles" ? { styles: listStyleLibrary() } : readWorkshopState()); }
 
@@ -35,8 +37,9 @@ export async function POST(request: NextRequest) {
       try { await writeFile(filePath, bytes); return NextResponse.json(await ingestPdfFile(filePath, undefined, permission ?? "sanitized")); }
       catch (error) { await rm(filePath, { force: true }); throw error; }
     }
-    const body = await request.json() as RequestBody;
-    if (!body.action) return NextResponse.json({ error: "action is required" }, { status: 400 });
+    const raw = await request.json() as Record<string, unknown>;
+    if (!isAction(raw.action)) return NextResponse.json({ error: "Unsupported or missing action" }, { status: 400 });
+    const body = raw as RequestBody;
     if (body.action === "resetTestFixture") return NextResponse.json(resetSeededFixture());
     if (body.action === "createWorkshop") { if (!body.title) return NextResponse.json({ error: "title is required" }, { status: 400 }); return NextResponse.json(createWorkshop(body.title)); }
     if (body.action === "selectWorkshop") { if (!body.workshopId) return NextResponse.json({ error: "workshopId is required" }, { status: 400 }); return NextResponse.json(selectWorkshop(body.workshopId)); }
@@ -63,7 +66,6 @@ export async function POST(request: NextRequest) {
     if (body.action === "executeTool") { if (!body.toolCall) return NextResponse.json({ error: "toolCall is required" }, { status: 400 }); return NextResponse.json(await executeWorkshopTool(body.toolCall)); }
     if (body.action === "handleProviderToolEvent") { if (!body.providerEvent) return NextResponse.json({ error: "providerEvent is required" }, { status: 400 }); return NextResponse.json(await handleWorkshopProviderToolEvent(body.providerEvent)); }
     if (body.action === "ingestUrl") { if (!body.url) return NextResponse.json({ error: "url is required" }, { status: 400 }); return NextResponse.json(await ingestUrl(body.url)); }
-    if (body.action === "ingestPdfFile") { if (!body.filePath) return NextResponse.json({ error: "filePath is required" }, { status: 400 }); return NextResponse.json(await ingestPdfFile(body.filePath, undefined, body.permission)); }
     if (body.action === "extractCandidates") return NextResponse.json(extractWorkshopCandidates());
     if (body.action === "setActiveSourceScope") { if (!Array.isArray(body.sourceIds)) return NextResponse.json({ error: "sourceIds are required" }, { status: 400 }); return NextResponse.json(setActiveSourceScope(body.sourceIds)); }
     if (body.action === "analyzeWebsiteStyle") { if (!body.url) return NextResponse.json({ error: "url is required" }, { status: 400 }); return NextResponse.json(await analyzeWebsiteStyle(body.url)); }
@@ -96,6 +98,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(selectImagePanelForRegeneration(body.panelId, undefined, body.revisionRequest));
     }
     if (body.action === "updateStoryboardPanel") { if (!body.panel) return NextResponse.json({ error: "panel is required" }, { status: 400 }); const { id, ...panel } = body.panel; return NextResponse.json(updateStoryboardPanel(id, panel)); }
-    return NextResponse.json(applyWorkshopAction(body.action));
+    if (body.action === "approveBrief" || body.action === "approveStoryboard" || body.action === "renderVideo") return NextResponse.json(applyWorkshopAction(body.action));
+    return NextResponse.json({ error: "Unsupported action" }, { status: 400 });
   } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : "Workshop action failed" }, { status: 409 }); }
 }

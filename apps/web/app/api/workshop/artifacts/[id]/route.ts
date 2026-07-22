@@ -10,6 +10,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const artifact = resolveWorkshopArtifact(id, undefined, undefined, format);
   if (!artifact) return NextResponse.json({ error: "Artifact not found" }, { status: 404 });
   try {
-    return new NextResponse(await readFile(artifact.path), { headers: { "content-type": artifact.contentType, "content-disposition": artifact.fileName ? `attachment; filename="${artifact.fileName}"` : "inline" } });
+    return new NextResponse(await readFile(artifact.path), { headers: {
+      "content-type": artifact.contentType,
+      "content-disposition": artifact.fileName ? `attachment; filename="${artifact.fileName}"` : "inline",
+      "cache-control": "no-store",
+      "content-security-policy": "sandbox; default-src 'none'; style-src 'unsafe-inline'; img-src 'self' data:; media-src 'self'",
+      "x-content-type-options": "nosniff",
+    } });
   } catch { return NextResponse.json({ error: "Artifact file not found" }, { status: 404 }); }
 }
