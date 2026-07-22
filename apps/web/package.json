@@ -8,10 +8,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run app --passWithNoTests",
     "test:e2e": "tsx scripts/e2e.ts",
-    "test:visual": "node scripts/prepare-visual-build.mjs && WORKSHOPLM_NEXT_DIST_DIR=.next-playwright next build && node scripts/normalize-next-env.mjs && playwright test --config playwright.config.ts",
-    "capture:demo": "tsx scripts/capture-demo.ts",
-    "capture:final": "tsx scripts/capture-final-demo.ts",
-    "capture:created-work-proof": "tsx scripts/capture-created-work-proof.ts"
+    "test:visual": "node scripts/prepare-visual-build.mjs && WORKSHOPLM_NEXT_DIST_DIR=.next-playwright next build && node scripts/normalize-next-env.mjs && playwright test --config playwright.config.ts"
   },
   "dependencies": {
     "@excalidraw/excalidraw": "^0.18.1",

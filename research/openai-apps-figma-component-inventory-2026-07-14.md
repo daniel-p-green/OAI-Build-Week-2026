@@ -4,7 +4,7 @@ Status: verified from the editable local import on 2026-07-14
 
 ## Source and boundary
 
-- Source supplied by Daniel: `/Users/danielgreen/Downloads/Apps in ChatGPT · OpenAI Official (Community).fig`
+- Source supplied locally for inspection: `Apps in ChatGPT · OpenAI Official (Community).fig` (not committed)
 - Editable imported Figma file: `jVilV9akIrMbbpl8sUqC6K`
 - Official library key: `lk-24d24d963bf059b4e22691f6b8f402164b1a11a53c467f75ea5b85d46c1f02c20d75fb2278bb55e74a42fe03dc1d24d2b52cd3531fff494c4f24e2b3ff79c9b4`
 - Official Community library key: `lk-f306f8d233f5cb87d9954fdb03451abcf25354bd03b280b77e53ac158796e0ed8f3c594e0dc3791be1859984909d1c6268631ab4e88c2714a0429a6ba6e44347`

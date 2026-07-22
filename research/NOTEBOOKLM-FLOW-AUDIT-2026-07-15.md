@@ -12,8 +12,8 @@ This does not need a NotebookLM clone. It needs NotebookLM's stable geography ap
 
 ## Evidence reviewed
 
-- Seven NotebookLM reference screenshots in `research/screenshots/notebooklm/`
-- Sixteen current WorkshopLM journey screenshots plus a generated manifest, contact sheet, and shareable ZIP in `outputs/workshoplm-current-ui/`
+- The July 15 NotebookLM reference review, retained as written analysis without committed third-party screenshots
+- The corresponding WorkshopLM journey review, retained in Git history without generated screenshot exports
 - Current route and state orchestration in `apps/web/app/page.tsx`
 - Current responsive/layout rules in `apps/web/app/globals.css`
 - Current goal, plan, and latest build-log evidence

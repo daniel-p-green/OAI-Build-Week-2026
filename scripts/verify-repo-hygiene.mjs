@@ -14,14 +14,13 @@ for (const file of requiredFiles) if (!existsSync(resolve(root, file))) failures
 const transientPath = /(^|\/)(?:\.DS_Store|node_modules|\.next|\.turbo|test-results|playwright-report|\.workshoplm(?:-[^/]*)?|\.pet-runs)(?:\/|$)/;
 for (const file of tracked) if (transientPath.test(file)) failures.push(`transient runtime path is tracked: ${file}`);
 
+const generatedPublicPath = /^(?:artifacts|outputs|research\/screenshots|submission)\//;
+for (const file of tracked) if (generatedPublicPath.test(file)) failures.push(`generated or publication-only path is tracked: ${file}`);
+
 const maximumTrackedBytes = 10 * 1024 * 1024;
-const historicalLargeFiles = new Set([
-  // Published before the 10 MiB review gate existed; retained as immutable submission evidence.
-  "outputs/demo-film-final/workshoplm-demo.mp4",
-]);
 for (const file of tracked) {
   const absolute = resolve(root, file);
-  if (existsSync(absolute) && statSync(absolute).size > maximumTrackedBytes && !historicalLargeFiles.has(file)) failures.push(`tracked file exceeds 10 MiB review threshold: ${file}`);
+  if (existsSync(absolute) && statSync(absolute).size > maximumTrackedBytes) failures.push(`tracked file exceeds 10 MiB review threshold: ${file}`);
 }
 
 const ignoreProbes = [
@@ -33,6 +32,10 @@ const ignoreProbes = [
   "apps/web/test-results/.hygiene-probe",
   ".env.local",
   ".DS_Store",
+  "outputs/.hygiene-probe",
+  "artifacts/.hygiene-probe",
+  "research/screenshots/.hygiene-probe",
+  "submission/.hygiene-probe",
 ];
 for (const probe of ignoreProbes) {
   const result = spawnSync("git", ["check-ignore", "--no-index", "-q", probe], { cwd: root });

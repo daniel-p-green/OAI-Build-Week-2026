@@ -1,8 +1,0 @@
-WorkshopLM cold review
-
-Review ID: aic-655e7b36d6138279
-Decision: Send / Revise
-Role:
-First blocker:
-
-Reason:

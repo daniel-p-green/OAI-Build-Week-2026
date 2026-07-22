@@ -1,6 +1,6 @@
 # Repository map
 
-This repository contains product source, deterministic fixtures, inspected provider evidence, visual regression baselines, and temporary local work. Their roles are intentionally different.
+This repository contains product source, deterministic fixtures, and visual regression baselines. Generated review media, research screenshots, raw Sources, and publication packages stay outside Git.
 
 ## Authority
 
@@ -18,21 +18,13 @@ This repository contains product source, deterministic fixtures, inspected provi
 - `packages/production/` — source-traceable renderers and editable exports.
 - `packages/plugin-mcp/` — packaged Codex skill and local MCP doorway.
 - `packages/ui/` — official Apps in ChatGPT primitive contract.
-- `scripts/` — deterministic fixture, provider, rendering, verification, and submission commands.
+- `scripts/` — deterministic fixture, provider, rendering, and verification commands.
 - `spikes/` — isolated integration probes retained as executable evidence.
 
-## Proof and review material
+## Versioned verification material
 
 - `apps/web/tests/visual/__screenshots__/` — current production-browser regression baselines. These are product test fixtures, not marketing mockups.
 - `fixtures/` — sanitized, licensed, or hash-bound inputs required for deterministic verification.
-- `artifacts/live/` — compact provider-run records.
-- `artifacts/live-review/` — inspected provider and created-work evidence.
-- `artifacts/spikes/` — sanitized integration reports; raw provider payloads and generated spike media stay ignored.
-- `artifacts/ui-review/` and `artifacts/ui-concepts/` — dated design review and exploration, not current implementation authority.
-- `outputs/demo-film-sample/` — verified sample editorial review cut. It is not the founder-derived final public Video.
-- `outputs/demo-film-rough-cut/` and `outputs/demo-recording-draft/` — dated review evidence, not final submission proof.
-- `outputs/dogfood-ai-collective-chapter-brief/` — external-workflow dogfood candidate and review packet.
-- `submission/` — judge-facing drafts, claim boundaries, checklists, and machine-readable film plan.
 
 ## Local-only state
 
@@ -41,8 +33,11 @@ The following remain Git-ignored and must not be treated as repository proof:
 - `.workshoplm/` and `.workshoplm-*/` runtime databases, jobs, private Sources, and generated work;
 - `node_modules/`, `.next/`, `.turbo/`, Playwright results, and local caches;
 - `.env*` credentials;
-- founder recording and transcript inputs until explicitly sanitized and promoted;
-- disposable capture previews unless deliberately reviewed and added as evidence.
+- `outputs/` generated product, demo, capture, and review media;
+- `artifacts/` provider reports, design explorations, and review exports;
+- `research/screenshots/` visual references;
+- `submission/` publication drafts and packages;
+- founder recording and transcript inputs.
 
 ## Hygiene contract
 
@@ -52,4 +47,4 @@ Run:
 pnpm repo:hygiene
 ```
 
-The check fails when a cache or runtime path becomes tracked, an active-document link breaks, a required ignore boundary disappears, or a newly tracked file exceeds the repository's 10 MiB review threshold. Existing evidence media remains intentional; rewriting Git history is outside routine hygiene work.
+The check fails when a cache, generated artifact, research screenshot, or publication-only path becomes tracked; when an active-document link breaks; when a required ignore boundary disappears; or when a tracked file exceeds the repository's 10 MiB review threshold. Git history preserves the Build Week development record without keeping generated media in the current tree.

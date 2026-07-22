@@ -60,8 +60,6 @@ Append-only record of meaningful work completed for the OpenAI Build Week projec
 - Replace the owner-rejected public Video only after Daniel approves the exact new export and public YouTube upload. Until then, the Devpost submission is correctly submitted but the demo-film quality gate remains open.
 - Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
 
----
-
 ## 2026-07-21 17:33 CT — GPT-5.6 orchestration wording corrected
 
 ### Changed
@@ -12473,3 +12471,70 @@ The 12:41 CT judge-film Sketch entry and its first 12:42 CT correction matched a
 
 - Daniel must watch and listen to the exact 30-second opening proof. The complete 2:39 replacement remains intentionally unrendered until the why story, focus choreography, Cedar clarity, and music balance in this proof are approved. No public surface was changed.
 - Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-21 18:30 CT — Full 2:39 causal review cut rendered
+
+### Changed
+
+- Extended the deterministic founder capture from twelve to eighteen native 3840×2160 product states. The first state now shows Daniel's authorized spoken project brief inside Capture, followed by Map, approved Brief, Created work, and dedicated Presentation, Infographic, Audio Overview, Sketch, Image Set, Storyboard, Video, and original-source views.
+- Replaced the unmotivated opening zoom with direct full-screen `Capture → Map → Brief → Create` cuts. Added `scripts/build-demo-review-v6.mjs` and rendered the complete local-only 2:39 candidate at `outputs/demo-film-local-review-v6/workshoplm-demo-review-v6.mp4`.
+- Preserved the exact authorized `Different Window (DOLBY).wav` stereo master with gain automation only. Cedar narration is mixed once with no delay, reverb, chorus, doubling, stemming, filtering, pitch change, or time stretch.
+
+### Verified
+
+- HyperFrames lint, deterministic timeline check, explicit-time inspection, and render passed. The final MP4 completed a full FFmpeg decode.
+- The candidate is H.264 1920×1080 at 24 fps with 48 kHz stereo AAC, 158.625 seconds, SHA-256 `ed0b9e1680d3d149295bff0e7fd0a9486a541a0b95608b99086c6d3be013780d`.
+- The final mix measures -14.53 LUFS integrated and -1.50 dB true peak. The 24-shot contact sheet was inspected and shows the complete causal sequence and all seven individually legible output formats.
+
+### Remaining gate
+
+- Daniel must watch and listen to this exact file. It remains marked `local-human-review-only`; no YouTube, Devpost, X, release, tag, or other public mutation occurred.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-21 18:45 CT — Motion-first click-through review cut rendered
+
+### Changed
+
+- Added a visible Screen Studio-style cursor and click pulse to the deterministic capture. Each movement resolves the real Playwright locator's DOM bounds before clicking, so the recorded reaction comes from the running WorkshopLM application rather than a simulated screenshot transition.
+- Re-recorded the complete founder workflow at 1920×1080 with eighteen verified beats and natural-speed motion across Capture, Map, Source evidence, Brief, Style, all seven outputs, Storyboard, Video, and original-source reveal.
+- Added `scripts/build-demo-review-v7.mjs`. HyperFrames embeds the complete 149.36-second live capture between the approved cover and close; GSAP applies sixteen short focus moves to the active UI region and returns to the full frame. Narration cues were aligned to the real Map, approval, Storyboard, and Video events.
+
+### Verified
+
+- Web typecheck, diff check, capture manifest gate, HyperFrames lint, deterministic check, explicit-time inspection, render, and full FFmpeg decode passed.
+- Motion-pair frames before and after Sources, Presentation, source evidence, and Storyboard/Video navigation have distinct hashes and visibly show the real state changes, cursor positions, and focus landings.
+- Final private candidate: `outputs/demo-film-local-review-v7/workshoplm-demo-review-v7.mp4`; H.264 1920×1080 at 24 fps with 48 kHz stereo AAC; 158.625 seconds; SHA-256 `aea4d310c79ffff7bca9892764b2c700e612fbbda6058225985720ff1b36047d`.
+- The exact supplied `Different Window` stereo master remains unstemmed and unfiltered with gain automation only. The final mix measures -14.56 LUFS integrated and -1.50 dB true peak; Cedar is mixed once without echo, reverb, delay, chorus, or doubling.
+
+### Remaining gate
+
+- Daniel must watch and listen to this exact motion-first candidate. It remains `local-human-review-only`; no YouTube, Devpost, X, release, tag, or other public mutation occurred.
+- Current Codex Session ID: `019f80cf-b411-7470-bd93-a394c3152ea3` (the required majority-core `/feedback` task remains `019f5eb9-d996-7f42-ac5a-d4ed2cc8a324`).
+
+---
+
+## 2026-07-21 20:43 CT — Public repository frozen around the runnable product
+
+### Changed
+
+- Rewrote the README as a concise judge-facing product and setup guide. It now presents the implemented `Capture → Map → Brief → Create` workflow, deterministic judge path, optional spend-gated provider path, plugin install, architecture, privacy boundary, and checks without exposing internal film rejection or replacement deliberation.
+- Removed generated `artifacts/`, `outputs/`, `submission/`, and `research/screenshots/` content from Git tracking, including raw founder-source media, third-party research imagery, dogfood packets, public-submission bundles, review cuts, narration, and design exports. Local ignored copies remain on disk; every previously committed version remains recoverable from Git history.
+- Removed obsolete one-off submission, capture, film-review, narration, thumbnail, dogfood, transcription, and publication-verification commands. Preserved the runnable application, deterministic fixture, local render path, optional live-provider path, plugin tooling, executable spikes, and browser regression baselines.
+- Added a fail-closed hygiene rule that rejects tracked generated/publication trees and corresponding ignore probes. Updated `GOAL.md`, `docs/REPOSITORY-MAP.md`, and two research notes so the current public tree has no broken active links, personal absolute paths, or stale claims that generated evidence is versioned source.
+
+### Verified
+
+- `git diff --check` passed.
+- `pnpm repo:hygiene` passed with 337 tracked files, zero tracked transient/generated/publication paths, and a maximum tracked file size of 1.4 MiB.
+- `pnpm check` passed repository hygiene, lint, typecheck, and all tests across thirteen packages. Worker tests passed 132 cases; web tests passed 39 cases.
+- `pnpm demo:e2e` passed after rerunning outside the restricted IPC sandbox. The first attempt failed only because `tsx` could not bind its temporary Unix socket.
+- A tracked-tree scan found no Daniel-specific absolute filesystem path outside the historical append-only log.
+
+### Remaining gate
+
+- No local implementation gate remains. The cleanup commit follows this entry; do not push or mutate Devpost, YouTube, releases, or tags without explicit owner direction.
+- Current Codex Session ID: `019f8773-40f7-78e3-94c4-b264d8b9bce2`.
